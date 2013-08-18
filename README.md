@@ -1,2 +1,2 @@
-sandbox-android-signinwithtwitter
+sandbox-android-twitter
 =================================
