@@ -1,15 +1,32 @@
 package justaway.signinwithtwitter;
 
+import java.util.Locale;
+
+//import twitter4j.auth.OAuthAuthorization;
+//import twitter4j.auth.RequestToken;
+//import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Intent;
 import android.view.Menu;
+//import android.view.View;
+//import android.view.View.OnTouchListener;
+//import android.widget.Button;
 
 public class MainActivity extends Activity {
+
+	// TODO: config file
+
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		if (!TwitterUtils.hasAccessToken(this)) {
+            Intent intent = new Intent(this, TwitterOAuthActivity.class);
+            startActivity(intent);
+            finish();
+        }
 	}
 
 	@Override
