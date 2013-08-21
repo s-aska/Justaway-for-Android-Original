@@ -26,9 +26,10 @@ public class TwitterUtils {
 		TwitterFactory factory = new TwitterFactory();
 		Twitter twitter = factory.getInstance();
 		twitter.setOAuthConsumer(consumerKey, consumerSecret);
-
-		if (hasAccessToken(context)) {
-			twitter.setOAuthAccessToken(loadAccessToken(context));
+		AccessToken token = loadAccessToken(context);
+		if (token != null) {
+    		System.out.println(token);
+			twitter.setOAuthAccessToken(token);
 		}
 		return twitter;
 	}
