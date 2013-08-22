@@ -37,8 +37,8 @@ public class TwitterOAuthActivity extends Activity {
 	}
 
 	/**
-	 * OAuth”FØiŒµ–§‚É‚Í”F‰Âj‚ğŠJn‚µ‚Ü‚·B
-	 * 
+	 * OAuthèªè¨¼ï¼ˆå³å¯†ã«ã¯èªå¯ï¼‰ã‚’é–‹å§‹ã—ã¾ã™ã€‚
+	 *
 	 * @param listener
 	 */
 	private void startAuthorize() {
@@ -61,7 +61,7 @@ public class TwitterOAuthActivity extends Activity {
 							Uri.parse(url));
 					startActivity(intent);
 				} else {
-					// ¸”sBBB
+					// å¤±æ•—
 				}
 			}
 		};
@@ -76,31 +76,6 @@ public class TwitterOAuthActivity extends Activity {
 		}
 		String verifier = intent.getData().getQueryParameter("oauth_verifier");
 		new GetAccessTokenTask().execute(verifier);
-		// AsyncTask<String, Void, AccessToken> task = new AsyncTask<String,
-		// Void, AccessToken>() {
-		// @Override
-		// protected AccessToken doInBackground(String... params) {
-		// try {
-		// return mTwitter.getOAuthAccessToken(mRequestToken, params[0]);
-		// } catch (TwitterException e) {
-		// e.printStackTrace();
-		// }
-		// return null;
-		// }
-		//
-		// @Override
-		// protected void onPostExecute(AccessToken accessToken) {
-		// if (accessToken != null) {
-		// // ”FØ¬Œ÷I
-		// showToast("”FØ¬Œ÷I");
-		// successOAuth(accessToken);
-		// } else {
-		// // ”FØ¸”sBBB
-		// showToast("”FØ¸”sBBB");
-		// }
-		// }
-		// };
-		// task.execute(verifier);
 	}
 
 	private class GetAccessTokenTask extends AsyncTask<String, Void, Boolean> {
@@ -110,8 +85,6 @@ public class TwitterOAuthActivity extends Activity {
 			try {
 				AccessToken accessToken = mTwitter.getOAuthAccessToken(
 						mRequestToken, verifier);
-				// ƒAƒNƒZƒXƒg[ƒNƒ“‚ğ•Û‘¶
-				// storeAccessToken(accessToken);
 				successOAuth(accessToken);
 				return true;
 			} catch (Exception e) {
@@ -122,13 +95,10 @@ public class TwitterOAuthActivity extends Activity {
 
 		@Override
 		protected void onPostExecute(Boolean success) {
-			// dismissProgressDialog();
 			if (success) {
-				// ”FØ‚ªŠ®—¹‚µ‚½‚Ì‚ÅƒcƒC[ƒg‰æ–Ê‚ğ•\¦‚·‚é
-				// setUpTweetPage();
-				showToast("”FØ‚ªŠ®—¹‚µ‚Ü‚µ‚ tI‚P ‚±‚ê‚Å‚ ");
+				showToast("èªè¨¼ãŒå®Œäº†ã—ã¾ã—ã‚tï¼ï¼‘ ã“ã‚Œã§ã‚");
 			} else {
-				showToast("OAuthAccessToken‚Ìæ“¾‚É¸”s‚µ‚Ü‚µ‚½„ƒ");
+				showToast("OAuthAccessTokenã®å–å¾—ã«å¤±æ•—ã—ã¾ã—ãŸï¼ï¼œ");
 			}
 		}
 	}

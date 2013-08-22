@@ -60,9 +60,9 @@ public class MainActivity extends Activity {
 //			// TODO Auto-generated catch block
 //			e.printStackTrace();
 //			if (e.isCausedByNetworkIssue()) {
-//				showToast("ƒlƒbƒgƒ[ƒN‚ÉÚ‘±‚µ‚Ä‰º‚³‚¢");
+//				showToast("ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯ã«æ¥ç¶šã—ã¦ä¸‹ã•ã„");
 //		    }else{
-//				showToast("ƒGƒ‰[‚ª”­¶‚µ‚Ü‚µ‚½B");
+//				showToast("ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ã¾ã—ãŸã€‚");
 //		    }
 //		}
 //	}
@@ -88,11 +88,11 @@ public class MainActivity extends Activity {
 				for (twitter4j.Status status : homeTl) {
 					showToast(status.getText());
 				}
-				// ”FØ‚ªŠ®—¹‚µ‚½‚Ì‚ÅƒcƒC[ƒg‰æ–Ê‚ğ•\¦‚·‚é
+				// èªè¨¼ãŒå®Œäº†ã—ãŸã®ã§ãƒ„ã‚¤ãƒ¼ãƒˆç”»é¢ã‚’è¡¨ç¤ºã™ã‚‹
 				// setUpTweetPage();
-//				showToast("”FØ‚ªŠ®—¹‚µ‚Ü‚µ‚ tI‚P ‚±‚ê‚Å‚ ");
+//				showToast("èªè¨¼ãŒå®Œäº†ã—ã¾ã—ã‚tï¼ï¼‘ ã“ã‚Œã§ã‚");
 			} else {
-//				showToast("OAuthAccessToken‚Ìæ“¾‚É¸”s‚µ‚Ü‚µ‚½„ƒ");
+//				showToast("OAuthAccessTokenã®å–å¾—ã«å¤±æ•—ã—ã¾ã—ãŸï¼ï¼œ");
 			}
 		}
 	}

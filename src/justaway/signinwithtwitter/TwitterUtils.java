@@ -13,8 +13,8 @@ public class TwitterUtils {
 	private static final String PREF_NAME = "twitter_access_token";
 
 	/**
-	 * TwitterƒCƒ“ƒXƒ^ƒ“ƒX‚ðŽæ“¾‚µ‚Ü‚·BƒAƒNƒZƒXƒg[ƒNƒ“‚ª•Û‘¶‚³‚ê‚Ä‚¢‚ê‚ÎŽ©“®“I‚ÉƒZƒbƒg‚µ‚Ü‚·B
-	 * 
+	 * Twitterã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’å–å¾—ã—ã¾ã™ã€‚ã‚¢ã‚¯ã‚»ã‚¹ãƒˆãƒ¼ã‚¯ãƒ³ãŒä¿å­˜ã•ã‚Œã¦ã„ã‚Œã°è‡ªå‹•çš„ã«ã‚»ãƒƒãƒˆã—ã¾ã™ã€‚
+	 *
 	 * @param context
 	 * @return
 	 */
@@ -35,8 +35,8 @@ public class TwitterUtils {
 	}
 
 	/**
-	 * ƒAƒNƒZƒXƒg[ƒNƒ“‚ðƒvƒŠƒtƒ@ƒŒƒ“ƒX‚É•Û‘¶‚µ‚Ü‚·B
-	 * 
+	 * ã‚¢ã‚¯ã‚»ã‚¹ãƒˆãƒ¼ã‚¯ãƒ³ã‚’ãƒ—ãƒªãƒ•ã‚¡ãƒ¬ãƒ³ã‚¹ã«ä¿å­˜ã—ã¾ã™ã€‚
+	 *
 	 * @param context
 	 * @param accessToken
 	 */
@@ -50,8 +50,8 @@ public class TwitterUtils {
 	}
 
 	/**
-	 * ƒAƒNƒZƒXƒg[ƒNƒ“‚ðƒvƒŠƒtƒ@ƒŒƒ“ƒX‚©‚ç“Ç‚Ýž‚Ý‚Ü‚·B
-	 * 
+	 * ã‚¢ã‚¯ã‚»ã‚¹ãƒˆãƒ¼ã‚¯ãƒ³ã‚’ãƒ—ãƒªãƒ•ã‚¡ãƒ¬ãƒ³ã‚¹ã‹ã‚‰èª­ã¿è¾¼ã¿ã¾ã™ã€‚
+	 *
 	 * @param context
 	 * @return
 	 */
@@ -68,8 +68,8 @@ public class TwitterUtils {
 	}
 
 	/**
-	 * ƒAƒNƒZƒXƒg[ƒNƒ“‚ª‘¶Ý‚·‚éê‡‚Ítrue‚ð•Ô‚µ‚Ü‚·B
-	 * 
+	 * ã‚¢ã‚¯ã‚»ã‚¹ãƒˆãƒ¼ã‚¯ãƒ³ãŒå­˜åœ¨ã™ã‚‹å ´åˆã¯trueã‚’è¿”ã—ã¾ã™ã€‚
+	 *
 	 * @return
 	 */
 	public static boolean hasAccessToken(Context context) {
