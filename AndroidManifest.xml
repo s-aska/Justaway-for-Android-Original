@@ -6,7 +6,7 @@
 
     <uses-sdk
         android:minSdkVersion="8"
-        android:targetSdkVersion="17" />
+        android:targetSdkVersion="18" />
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -35,7 +35,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".TwitterOAuthActivity" android:launchMode="singleTask">
+        <activity android:name=".SigninActivity" android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -44,7 +44,7 @@
 
                 <data
                     android:host="twitter"
-                    android:scheme="gabu" />
+                    android:scheme="justaway" />
             </intent-filter>
         </activity>
     </application>

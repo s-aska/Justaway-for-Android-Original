@@ -49,6 +49,15 @@ public class TwitterUtils {
 		editor.commit();
 	}
 
+	public static void resetAccessToken(Context context) {
+		SharedPreferences preferences = context.getSharedPreferences(PREF_NAME,
+				Context.MODE_PRIVATE);
+		Editor editor = preferences.edit();
+		editor.remove(TOKEN);
+		editor.remove(TOKEN_SECRET);
+		editor.commit();
+	}
+	
 	/**
 	 * アクセストークンをプリファレンスから読み込みます。
 	 *

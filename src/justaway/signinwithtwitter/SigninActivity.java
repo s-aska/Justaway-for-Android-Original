@@ -12,7 +12,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 
-public class TwitterOAuthActivity extends Activity {
+public class SigninActivity extends Activity {
 
 	private String mCallbackURL;
 	private Twitter mTwitter;
@@ -21,7 +21,7 @@ public class TwitterOAuthActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_twitter_oauth);
+		setContentView(R.layout.activity_signin);
 
 		mCallbackURL = getString(R.string.twitter_callback_url);
 		mTwitter = TwitterUtils.getTwitterInstance(this);

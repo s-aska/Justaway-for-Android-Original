@@ -13,6 +13,6 @@
        android:layout_width="wrap_content"
        android:layout_height="wrap_content"
        android:layout_centerHorizontal="true"
-       android:text="@string/twitter_oauth" />
+       android:text="@string/signin_with_twitter" />
 
 </RelativeLayout>
