@@ -46,6 +46,15 @@ public class MainActivity extends Activity {
 			            finish();
 					}
 				});
+		findViewById(R.id.action_tweet).setOnClickListener(
+				new View.OnClickListener() {
+					@Override
+					public void onClick(View v) {
+			            Intent intent = new Intent(c, PostActivity.class);
+			            startActivity(intent);
+			            finish();
+					}
+				});
 	}
 
 	private class GetTimeline extends AsyncTask<String, Void, ResponseList<twitter4j.Status>> {

@@ -10,5 +10,7 @@
     <string name="twitter_consumer_key">YOUR_CONSUMER_KEY</string>
     <string name="twitter_consumer_secret">YOUR_CONSUMER_SECRET</string>
     <string name="twitter_callback_url">justaway://twitter</string>
+    <string name="action_tweet">Tweet</string>
+    <string name="tweet">投</string>
 
 </resources>

@@ -28,5 +28,13 @@
         android:layout_below="@+id/action_get_timeline"
         android:layout_centerHorizontal="true"
         android:text="@string/signout" />
+
+    <Button
+        android:id="@+id/action_tweet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/action_signout"
+        android:layout_centerHorizontal="true"
+        android:text="@string/action_tweet" />
     
 </RelativeLayout>
