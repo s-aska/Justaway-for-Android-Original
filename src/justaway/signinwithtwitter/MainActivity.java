@@ -9,16 +9,25 @@ import android.content.Context;
 import android.content.Intent;
 import android.view.Menu;
 import android.view.View;
+import android.widget.ListView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
 	private Twitter twitter;
+	private ListView listView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+
+		listView = (ListView) findViewById(R.id.list);
+		TwitterAdapter adapter = new TwitterAdapter(this, R.layout.tweet_row);
+//		ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,
+//                android.R.layout.simple_list_item_1);
+		listView.setAdapter(adapter);
+		
 		showToast("MainActivity Created.");
 		final Context c = this;
 		if (!TwitterUtils.hasAccessToken(c)) {
@@ -63,8 +72,12 @@ public class MainActivity extends Activity {
 		@Override
 		protected void onPostExecute(ResponseList<twitter4j.Status> homeTl) {
 			if (homeTl != null) {
+////				@SuppressWarnings("unchecked")
+				TwitterAdapter adapter = (TwitterAdapter) listView.getAdapter();
+				adapter.clear();
 				for (twitter4j.Status status : homeTl) {
-					showToast(status.getText());
+////					showToast(status.getText());
+					adapter.add(status);
 				}
 			} else {
 				showToast("Timelineの取得に失敗しました＞＜");

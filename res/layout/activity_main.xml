@@ -28,5 +28,11 @@
         android:layout_below="@+id/action_get_timeline"
         android:layout_centerHorizontal="true"
         android:text="@string/signout" />
-    
+
+    <ListView
+        android:id="@+id/list"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/action_signout" />
+
 </RelativeLayout>
