@@ -8,5 +8,7 @@
     <string name="signin_with_twitter">Signin with Twitter</string>
     <string name="signout">Signout</string>
     <string name="twitter_callback_url">justaway://twitter</string>
+    <string name="action_tweet">Tweet</string>
+    <string name="tweet">投</string>
 
 </resources>
