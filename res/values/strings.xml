@@ -7,8 +7,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="signin_with_twitter">Signin with Twitter</string>
     <string name="signout">Signout</string>
-    <string name="twitter_consumer_key">YOUR_CONSUMER_KEY</string>
-    <string name="twitter_consumer_secret">YOUR_CONSUMER_SECRET</string>
     <string name="twitter_callback_url">justaway://twitter</string>
 
 </resources>
