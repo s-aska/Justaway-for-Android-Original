@@ -61,6 +61,12 @@ public class TwitterAdapter extends ArrayAdapter<twitter4j.Status> {
     }
 
     @Override
+    public void clear() {
+        super.clear();
+        this.statuses.clear();
+    }
+
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         // ビューを受け取る
         View view = convertView;
