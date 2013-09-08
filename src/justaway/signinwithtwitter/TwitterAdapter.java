@@ -6,16 +6,19 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
+import android.support.v4.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class TwitterAdapter extends ArrayAdapter<twitter4j.Status> {
@@ -23,6 +26,7 @@ public class TwitterAdapter extends ArrayAdapter<twitter4j.Status> {
 	private ArrayList<twitter4j.Status> statuses = new ArrayList<twitter4j.Status>();
 	private LayoutInflater inflater;
 	private int layout;
+	private LruCache<String, Bitmap> mMemoryCache;
 
 	public TwitterAdapter(Context context, int textViewResourceId) {
 		super(context, textViewResourceId);
@@ -30,6 +34,24 @@ public class TwitterAdapter extends ArrayAdapter<twitter4j.Status> {
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		this.context = context;
 		this.layout = textViewResourceId;
+
+		// Get max available VM memory, exceeding this amount will throw an
+		// OutOfMemory exception. Stored in kilobytes as LruCache takes an
+		// int in its constructor.
+		final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+
+		// Use 1/8th of the available memory for this memory cache.
+		final int cacheSize = maxMemory / 8;
+
+		mMemoryCache = new LruCache<String, Bitmap>(cacheSize) {
+			@SuppressLint("NewApi")
+			@Override
+			protected int sizeOf(String key, Bitmap bitmap) {
+				// The cache size will be measured in kilobytes rather than
+				// number of items.
+				return bitmap.getByteCount() / 1024;
+			}
+		};
 	}
 
 	@Override
@@ -67,11 +89,21 @@ public class TwitterAdapter extends ArrayAdapter<twitter4j.Status> {
 			}
 
 			ImageView icon = (ImageView) view.findViewById(R.id.icon);
+			ProgressBar waitBar = (ProgressBar)view.findViewById(R.id.WaitBar);
+			waitBar.setVisibility(View.VISIBLE);
+			icon.setVisibility(View.GONE);
 			if (icon != null) {
 				String url = item.getUser().getOriginalProfileImageURL();
 				icon.setTag(url);
-				ImageGetTask task = new ImageGetTask(icon);
-				task.execute(url);
+				Bitmap image = mMemoryCache.get(url);
+				if (image == null) {
+					ImageGetTask task = new ImageGetTask(icon, waitBar);
+					task.execute(url);
+				} else {
+					icon.setImageBitmap(image);
+					icon.setVisibility(View.VISIBLE);
+					waitBar.setVisibility(View.GONE);
+				}
 			}
 		}
 		return view;
@@ -80,10 +112,12 @@ public class TwitterAdapter extends ArrayAdapter<twitter4j.Status> {
 	class ImageGetTask extends AsyncTask<String, Void, Bitmap> {
 		private ImageView image;
 		private String tag;
+		private ProgressBar bar;
 
-		public ImageGetTask(ImageView image) {
+		public ImageGetTask(ImageView image, ProgressBar bar) {
 			// 対象の項目を保持しておく
 			this.image = image;
+			this.bar = bar;
 			tag = image.getTag().toString();
 		}
 
@@ -92,19 +126,11 @@ public class TwitterAdapter extends ArrayAdapter<twitter4j.Status> {
 			// ここでHttp経由で画像を取得します。取得後Bitmapで返します。
 			synchronized (context) {
 				try {
-					// キャッシュより画像データを取得
-					// Bitmap image = ImageCache.getImage(params[0]);
-					Bitmap image = null;
-					if (image == null) {
-						// キャッシュにデータが存在しない場合はwebより画像データを取得
-						URL imageUrl = new URL(params[0]);
-						InputStream imageIs;
-						imageIs = imageUrl.openStream();
-						image = BitmapFactory.decodeStream(imageIs);
-						// 取得した画像データをキャッシュに保持
-						// ImageCache.setImage(params[0], image);
-					}
-					return image;
+					URL imageUrl = new URL(params[0]);
+					InputStream imageIs;
+					imageIs = imageUrl.openStream();
+					Bitmap bitmap = BitmapFactory.decodeStream(imageIs);
+					return bitmap;
 				} catch (MalformedURLException e) {
 					return null;
 				} catch (IOException e) {
@@ -114,13 +140,14 @@ public class TwitterAdapter extends ArrayAdapter<twitter4j.Status> {
 		}
 
 		@Override
-		protected void onPostExecute(Bitmap result) {
+		protected void onPostExecute(Bitmap bitmap) {
 			// Tagが同じものか確認して、同じであれば画像を設定する
 			// （Tagの設定をしないと別の行に画像が表示されてしまう）
 			if (tag.equals(image.getTag())) {
-				if (result != null) {
+				if (bitmap != null) {
 					// 画像の設定
-					image.setImageBitmap(result);
+					mMemoryCache.put(tag, bitmap);
+					image.setImageBitmap(bitmap);
 				} else {
 					// エラーの場合は×印を表示
 					// image.setImageDrawable(context.getResources().getDrawable(
@@ -128,6 +155,7 @@ public class TwitterAdapter extends ArrayAdapter<twitter4j.Status> {
 				}
 				// プログレスバーを隠し、取得した画像を表示
 				image.setVisibility(View.VISIBLE);
+				bar.setVisibility(View.GONE);
 			}
 		}
 	}
