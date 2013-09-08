@@ -2,6 +2,8 @@ package justaway.signinwithtwitter;
 
 import twitter4j.Twitter;
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -19,6 +21,8 @@ public class PostActivity extends Activity {
     private EditText mEditText;
     private TextView mTextView;
     private Button mButton;
+
+    final Context c = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +94,9 @@ public class PostActivity extends Activity {
         protected void onPostExecute(Boolean success) {
             if (success) {
                 mEditText.setText("");
+                Intent intent = new Intent(c, MainActivity.class);
+                startActivity(intent);
+                finish();
             } else {
                 showToast("残念~！もう一回！！");
             }
