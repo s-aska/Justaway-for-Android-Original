@@ -8,39 +8,41 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity" >
 
-    <TextView
-        android:id="@+id/textView1"
+    <LinearLayout
+        android:id="@+id/buttons"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/hello_world" />
+        android:layout_gravity="left"
+        android:gravity="left" >
 
-    <Button
-        android:id="@+id/action_get_timeline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:text="@string/get_timeline" />
+        <Button
+            android:id="@+id/action_get_timeline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:text="@string/get_timeline" />
 
-    <Button
-        android:id="@+id/action_signout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/action_get_timeline"
-        android:layout_centerHorizontal="true"
-        android:text="@string/signout" />
+        <Button
+            android:id="@+id/action_signout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/action_get_timeline"
+            android:layout_gravity="left"
+            android:text="@string/signout" />
 
-    <Button
-        android:id="@+id/action_tweet"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/action_signout"
-        android:layout_centerHorizontal="true"
-        android:text="@string/action_tweet" />
+        <Button
+            android:id="@+id/action_tweet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/action_signout"
+            android:layout_gravity="left"
+            android:text="@string/action_tweet" />
+    </LinearLayout>
 
     <ListView
         android:id="@+id/list"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@+id/action_tweet" />
+        android:layout_below="@+id/buttons" />
 
 </RelativeLayout>
