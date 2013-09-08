@@ -26,7 +26,6 @@
             android:id="@+id/action_signout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/action_get_timeline"
             android:layout_gravity="left"
             android:text="@string/signout" />
 
@@ -34,7 +33,6 @@
             android:id="@+id/action_tweet"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/action_signout"
             android:layout_gravity="left"
             android:text="@string/action_tweet" />
     </LinearLayout>
