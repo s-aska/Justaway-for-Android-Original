@@ -10,5 +10,6 @@
     <string name="twitter_callback_url">justaway://twitter</string>
     <string name="action_tweet">Tweet</string>
     <string name="tweet">投</string>
+    <string name="count">140</string>
 
 </resources>
