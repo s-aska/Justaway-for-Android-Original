@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.view.Menu;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -27,7 +28,21 @@ public class MainActivity extends Activity {
         // ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,
         // android.R.layout.simple_list_item_1);
         listView.setAdapter(adapter);
-
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view,
+                    int position, long id) {
+                ListView listView = (ListView) parent;
+                TwitterAdapter adapter = (TwitterAdapter) listView.getAdapter();
+                adapter.clear();
+                adapter.notifyDataSetChanged();
+                showToast("リセット");
+                // クリックされたアイテムを取得します
+                // String item = (String) listView.getItemAtPosition(position);
+                // Toast.makeText(ListViewSampleActivity.this, item,
+                // Toast.LENGTH_LONG).show();
+            }
+        });
         showToast("MainActivity Created.");
         final Context c = this;
         if (!TwitterUtils.hasAccessToken(c)) {
@@ -38,6 +53,7 @@ public class MainActivity extends Activity {
             showToast("hasAccessToken!");
             twitter = TwitterUtils.getTwitterInstance(c);
         }
+
         findViewById(R.id.action_get_timeline).setOnClickListener(
                 new View.OnClickListener() {
                     @Override
@@ -84,11 +100,11 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(ResponseList<twitter4j.Status> homeTl) {
             if (homeTl != null) {
-                // // @SuppressWarnings("unchecked")
+                showToast("Timelineの取得に成功しました＞＜");
                 TwitterAdapter adapter = (TwitterAdapter) listView.getAdapter();
                 adapter.clear();
                 for (twitter4j.Status status : homeTl) {
-                    // // showToast(status.getText());
+//                    showToast(status.getText());
                     adapter.add(status);
                 }
             } else {
