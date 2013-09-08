@@ -1,6 +1,7 @@
 package justaway.signinwithtwitter;
 
 import twitter4j.ResponseList;
+import twitter4j.Status;
 import twitter4j.Twitter;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -25,20 +26,21 @@ public class MainActivity extends Activity {
 
         listView = (ListView) findViewById(R.id.list);
         TwitterAdapter adapter = new TwitterAdapter(this, R.layout.tweet_row);
-        // ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,
-        // android.R.layout.simple_list_item_1);
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                     int position, long id) {
                 ListView listView = (ListView) parent;
-                TwitterAdapter adapter = (TwitterAdapter) listView.getAdapter();
-                adapter.clear();
-                adapter.notifyDataSetChanged();
-                showToast("リセット");
+                Status item = (Status) listView.getItemAtPosition(position);
+                
+                Long statusId = item.getId();
+                new FavoriteTask().execute(statusId.toString());
+//                TwitterAdapter adapter = (TwitterAdapter) listView.getAdapter();
+//                adapter.clear();
+//                adapter.notifyDataSetChanged();
+//                showToast("リセット");
                 // クリックされたアイテムを取得します
-                // String item = (String) listView.getItemAtPosition(position);
                 // Toast.makeText(ListViewSampleActivity.this, item,
                 // Toast.LENGTH_LONG).show();
             }
@@ -104,11 +106,34 @@ public class MainActivity extends Activity {
                 TwitterAdapter adapter = (TwitterAdapter) listView.getAdapter();
                 adapter.clear();
                 for (twitter4j.Status status : homeTl) {
-//                    showToast(status.getText());
+                    // showToast(status.getText());
                     adapter.add(status);
                 }
             } else {
                 showToast("Timelineの取得に失敗しました＞＜");
+            }
+        }
+    }
+
+    private class FavoriteTask extends AsyncTask<String, Void, Boolean> {
+
+        @Override
+        protected Boolean doInBackground(String... params) {
+            try {
+                twitter.createFavorite(Long.valueOf(params[0]).longValue());
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            if (result == true) {
+                showToast("ふぁぼに成功しました>゜))彡");
+            } else {
+                showToast("ふぁぼに失敗しました＞＜");
             }
         }
     }
