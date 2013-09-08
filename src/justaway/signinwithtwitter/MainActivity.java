@@ -36,13 +36,6 @@ public class MainActivity extends Activity {
                 
                 Long statusId = item.getId();
                 new FavoriteTask().execute(statusId.toString());
-//                TwitterAdapter adapter = (TwitterAdapter) listView.getAdapter();
-//                adapter.clear();
-//                adapter.notifyDataSetChanged();
-//                showToast("リセット");
-                // クリックされたアイテムを取得します
-                // Toast.makeText(ListViewSampleActivity.this, item,
-                // Toast.LENGTH_LONG).show();
             }
         });
         showToast("MainActivity Created.");
@@ -106,7 +99,6 @@ public class MainActivity extends Activity {
                 TwitterAdapter adapter = (TwitterAdapter) listView.getAdapter();
                 adapter.clear();
                 for (twitter4j.Status status : homeTl) {
-                    // showToast(status.getText());
                     adapter.add(status);
                 }
             } else {
