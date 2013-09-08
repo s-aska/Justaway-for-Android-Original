@@ -36,9 +36,9 @@ public class PostActivity extends Activity {
                 String super_sugoi = mEditText.getText().toString();
                 new PostTask().execute(super_sugoi);
             }
-        });
-        
-        // 文字数をカウントしてボタンを制御する
+         });
+
+         // 文字数をカウントしてボタンを制御する
         mEditText.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 int textColor;
@@ -64,7 +64,15 @@ public class PostActivity extends Activity {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
         });
+        
+       findViewById(R.id.clear).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mEditText.setText("");
+            }
+        });
     }
+
     private class PostTask extends AsyncTask<String, Void, Boolean> {
         @Override
         protected Boolean doInBackground(String... params) {
