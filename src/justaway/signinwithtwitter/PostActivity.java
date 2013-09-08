@@ -2,16 +2,23 @@ package justaway.signinwithtwitter;
 
 import twitter4j.Twitter;
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class PostActivity extends Activity {
 
     private Twitter mTwitter;
     private EditText mEditText;
+    private TextView mTextView;
+    private Button mButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,6 +26,8 @@ public class PostActivity extends Activity {
         setContentView(R.layout.activity_post);
 
         mEditText = (EditText) findViewById(R.id.status);
+        mTextView = (TextView) findViewById(R.id.count);
+        mButton = (Button) findViewById(R.id.tweet);
         mTwitter = TwitterUtils.getTwitterInstance(this);
 
         findViewById(R.id.tweet).setOnClickListener(new View.OnClickListener() {
@@ -28,8 +37,34 @@ public class PostActivity extends Activity {
                 new PostTask().execute(super_sugoi);
             }
         });
-    }
+        
+        // 文字数をカウントしてボタンを制御する
+        mEditText.addTextChangedListener(new TextWatcher() {
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                int textColor;
+                int length = 140 - s.length();
+                  // 140文字をオーバーした時は文字数を赤色に
+                if (length < 0) {
+                    textColor = Color.RED;
+                } else {
+                    textColor = Color.BLACK;
+                  }
+                mTextView.setTextColor(textColor);
+                mTextView.setText(String.valueOf(length));
 
+                  // 文字数が0文字または140文字以上の時はボタンを無効
+                if (s.length() == 0 || s.length() > 140) {
+                    mButton.setEnabled(false);
+                } else {
+                    mButton.setEnabled(true);
+                  }
+            }
+            public void afterTextChanged(Editable s) {
+            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+        });
+    }
     private class PostTask extends AsyncTask<String, Void, Boolean> {
         @Override
         protected Boolean doInBackground(String... params) {
@@ -46,8 +81,7 @@ public class PostActivity extends Activity {
         @Override
         protected void onPostExecute(Boolean success) {
             if (success) {
-                // mEditText.setText("")したいけど寝る
-                showToast("ok");
+                mEditText.setText("");
             } else {
                 showToast("残念~！もう一回！！");
             }
