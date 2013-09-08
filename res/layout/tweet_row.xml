@@ -41,9 +41,7 @@
             android:id="@+id/bottomtext"
             android:layout_width="fill_parent"
             android:layout_height="0dip"
-            android:layout_weight="1"
-            android:ellipsize="marquee"
-            android:singleLine="true" />
+            android:layout_weight="1" />
     </LinearLayout>
 
 </LinearLayout>
