@@ -13,6 +13,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.support.v4.util.LruCache;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,7 +42,7 @@ public class TwitterAdapter extends ArrayAdapter<twitter4j.Status> {
         final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
 
         // Use 1/8th of the available memory for this memory cache.
-        final int cacheSize = maxMemory / 8;
+        final int cacheSize = maxMemory / 2;
 
         mMemoryCache = new LruCache<String, Bitmap>(cacheSize) {
             @SuppressLint("NewApi")
@@ -83,7 +84,7 @@ public class TwitterAdapter extends ArrayAdapter<twitter4j.Status> {
         TextView status = (TextView) view.findViewById(R.id.status);
         TextView datetime = (TextView) view.findViewById(R.id.datetime);
         TextView via = (TextView) view.findViewById(R.id.via);
-//        screenName.setTypeface(Typeface.DEFAULT_BOLD);
+        // screenName.setTypeface(Typeface.DEFAULT_BOLD);
 
         // スクリーンネームをビューにセット
         if (item != null) {
@@ -92,6 +93,7 @@ public class TwitterAdapter extends ArrayAdapter<twitter4j.Status> {
                 displayName.setText(item.getUser().getName());
             }
 
+            String name = item.getUser().getScreenName();
             if (screenName != null) {
                 screenName.setText("@" + item.getUser().getScreenName());
             }
@@ -113,27 +115,34 @@ public class TwitterAdapter extends ArrayAdapter<twitter4j.Status> {
             waitBar.setVisibility(View.VISIBLE);
             icon.setVisibility(View.GONE);
             if (icon != null) {
-                String url = item.getUser().getOriginalProfileImageURL();
-                icon.setTag(url);
-                Bitmap image = mMemoryCache.get(url);
-                if (image == null) {
-                    ImageGetTask task = new ImageGetTask(icon, waitBar);
-                    task.execute(url);
+                String tag = (String) icon.getTag();
+                String url = item.getUser().getProfileImageURL();
+                if (tag != null && tag == url) {
+                    Log.d("Justaway", "[image] " + name + " exists.");
                 } else {
-                    icon.setImageBitmap(image);
-                    icon.setVisibility(View.VISIBLE);
-                    waitBar.setVisibility(View.GONE);
+                    icon.setTag(url);
+                    Bitmap image = mMemoryCache.get(url);
+                    if (image == null) {
+                        Log.d("Justaway", "[cache] " + name + " loading.");
+                        ImageGetTask task = new ImageGetTask(icon, waitBar);
+                        task.execute(url);
+                    } else {
+                        // Log.d("Justaway", "[cache] " + url + " loading.");
+                        icon.setImageBitmap(image);
+                        icon.setVisibility(View.VISIBLE);
+                        waitBar.setVisibility(View.GONE);
+                    }
                 }
             }
         }
         return view;
     }
 
-    private String getClientName(String source){
+    private String getClientName(String source) {
         String[] tokens = source.split("[<>]");
-        if(tokens.length > 1){
+        if (tokens.length > 1) {
             return tokens[2];
-        }else{
+        } else {
             return tokens[0];
         }
     }
@@ -147,7 +156,7 @@ public class TwitterAdapter extends ArrayAdapter<twitter4j.Status> {
             // 対象の項目を保持しておく
             this.image = image;
             this.bar = bar;
-            tag = image.getTag().toString();
+            this.tag = image.getTag().toString();
         }
 
         @Override
