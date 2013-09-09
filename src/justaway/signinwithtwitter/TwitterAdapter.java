@@ -78,20 +78,34 @@ public class TwitterAdapter extends ArrayAdapter<twitter4j.Status> {
         // 表示すべきデータの取得
         twitter4j.Status item = (twitter4j.Status) statuses.get(position);
 
-        TextView screenName = (TextView) view.findViewById(R.id.toptext);
-        screenName.setTypeface(Typeface.DEFAULT_BOLD);
+        TextView displayName = (TextView) view.findViewById(R.id.display_name);
+        TextView screenName = (TextView) view.findViewById(R.id.screen_name);
+        TextView status = (TextView) view.findViewById(R.id.status);
+        TextView datetime = (TextView) view.findViewById(R.id.datetime);
+        TextView via = (TextView) view.findViewById(R.id.via);
+//        screenName.setTypeface(Typeface.DEFAULT_BOLD);
 
         // スクリーンネームをビューにセット
         if (item != null) {
 
-            if (screenName != null) {
-                screenName.setText(item.getUser().getName());
+            if (displayName != null) {
+                displayName.setText(item.getUser().getName());
             }
 
-            // テキストをビューにセット
-            TextView text = (TextView) view.findViewById(R.id.bottomtext);
-            if (text != null) {
-                text.setText(item.getText());
+            if (screenName != null) {
+                screenName.setText("@" + item.getUser().getScreenName());
+            }
+
+            if (status != null) {
+                status.setText(item.getText());
+            }
+
+            if (datetime != null) {
+                datetime.setText(item.getCreatedAt().toString());
+            }
+
+            if (via != null) {
+                via.setText("via " + getClientName(item.getSource()));
             }
 
             ImageView icon = (ImageView) view.findViewById(R.id.icon);
@@ -113,6 +127,15 @@ public class TwitterAdapter extends ArrayAdapter<twitter4j.Status> {
             }
         }
         return view;
+    }
+
+    private String getClientName(String source){
+        String[] tokens = source.split("[<>]");
+        if(tokens.length > 1){
+            return tokens[2];
+        }else{
+            return tokens[0];
+        }
     }
 
     class ImageGetTask extends AsyncTask<String, Void, Bitmap> {
