@@ -12,5 +12,6 @@
     <string name="tweet">投</string>
     <string name="count">140</string>
     <string name="clear">消</string>
-
+    <string name="description_icon">Profile Icon</string>
+    
 </resources>
