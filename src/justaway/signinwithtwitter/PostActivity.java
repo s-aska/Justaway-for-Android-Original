@@ -2,6 +2,7 @@ package justaway.signinwithtwitter;
 
 import twitter4j.Twitter;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -22,6 +23,7 @@ public class PostActivity extends Activity {
     private EditText mEditText;
     private TextView mTextView;
     private Button mButton;
+    private ProgressDialog mProgressDialog;
 
     final Context c = this;
 
@@ -38,6 +40,7 @@ public class PostActivity extends Activity {
         findViewById(R.id.tweet).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                showProgressDialog("送信中！！１１１１１");
                 String super_sugoi = mEditText.getText().toString();
                 new PostTask().execute(super_sugoi);
              }
@@ -93,6 +96,7 @@ public class PostActivity extends Activity {
 
         @Override
         protected void onPostExecute(Boolean success) {
+            dismissProgressDialog();
             if (success) {
                 mEditText.setText("");
                 Intent intent = new Intent(c, MainActivity.class);
@@ -114,7 +118,18 @@ public class PostActivity extends Activity {
         return false;
     }
 
-    public void showToast(String text) {
+    private void showToast(String text) {
         Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
+    }
+
+    private void showProgressDialog(String message) {
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setMessage(message);
+        mProgressDialog.show();
+    }
+
+    private void dismissProgressDialog() {
+        if (mProgressDialog != null)
+            mProgressDialog.dismiss();
     }
 }
