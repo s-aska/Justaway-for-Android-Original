@@ -9,6 +9,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -39,7 +40,7 @@ public class PostActivity extends Activity {
             public void onClick(View v) {
                 String super_sugoi = mEditText.getText().toString();
                 new PostTask().execute(super_sugoi);
-            }
+             }
          });
 
          // 文字数をカウントしてボタンを制御する
@@ -101,6 +102,16 @@ public class PostActivity extends Activity {
                 showToast("残念~！もう一回！！");
             }
         }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            Intent intent = new Intent(c, MainActivity.class);
+            startActivity(intent);
+            finish();
+         }
+        return false;
     }
 
     public void showToast(String text) {
