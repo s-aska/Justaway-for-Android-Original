@@ -3,12 +3,11 @@
 
     <string name="app_name">SigninWithTwitter</string>
     <string name="action_settings">Settings</string>
-    <string name="get_timeline">Get Timeline</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="signin_with_twitter">Signin with Twitter</string>
-    <string name="signout">Signout</string>
+    <string name="get_timeline">流</string>
+    <string name="signin_with_twitter">認</string>
+    <string name="signout">出</string>
     <string name="twitter_callback_url">justaway://twitter</string>
-    <string name="action_tweet">Tweet</string>
+    <string name="action_tweet">筆</string>
     <string name="tweet">投</string>
     <string name="count">140</string>
     <string name="clear">消</string>
