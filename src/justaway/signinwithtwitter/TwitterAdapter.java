@@ -61,6 +61,12 @@ public class TwitterAdapter extends ArrayAdapter<twitter4j.Status> {
     }
 
     @Override
+    public void insert(twitter4j.Status status, int index) {
+        super.insert(status, index);
+        this.statuses.add(index, status);
+    }
+
+    @Override
     public void clear() {
         super.clear();
         this.statuses.clear();
