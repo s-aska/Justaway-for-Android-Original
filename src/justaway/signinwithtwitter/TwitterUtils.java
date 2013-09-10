@@ -5,7 +5,11 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
+import twitter4j.TwitterStream;
+import twitter4j.TwitterStreamFactory;
 import twitter4j.auth.AccessToken;
+import twitter4j.conf.Configuration;
+import twitter4j.conf.ConfigurationBuilder;
 
 public class TwitterUtils {
     private static final String TOKEN = "token";
@@ -32,6 +36,33 @@ public class TwitterUtils {
             twitter.setOAuthAccessToken(token);
         }
         return twitter;
+    }
+
+    /**
+     * TwitterStreamインスタンスを取得します。
+     * 
+     * @param context
+     * @return
+     */
+    public static TwitterStream getTwitterStreamInstance(Context context) {
+        String consumerKey = context.getString(R.string.twitter_consumer_key);
+        String consumerSecret = context
+                .getString(R.string.twitter_consumer_secret);
+
+        SharedPreferences preferences = context.getSharedPreferences(PREF_NAME,
+                Context.MODE_PRIVATE);
+
+        String token = preferences.getString(TOKEN, null);
+        String tokenSecret = preferences.getString(TOKEN_SECRET, null);
+
+        ConfigurationBuilder confbuilder = new ConfigurationBuilder();
+        Configuration conf = confbuilder.setOAuthConsumerKey(consumerKey)
+                .setOAuthConsumerSecret(consumerSecret)
+                .setOAuthAccessToken(token)
+                .setOAuthAccessTokenSecret(tokenSecret).build();
+        TwitterStream twitterStream = new TwitterStreamFactory(conf)
+                .getInstance();
+        return twitterStream;
     }
 
     /**
