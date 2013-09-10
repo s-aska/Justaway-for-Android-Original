@@ -10,7 +10,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.support.v4.util.LruCache;
 import android.util.Log;
@@ -116,7 +115,7 @@ public class TwitterAdapter extends ArrayAdapter<twitter4j.Status> {
             icon.setVisibility(View.GONE);
             if (icon != null) {
                 String tag = (String) icon.getTag();
-                String url = item.getUser().getProfileImageURL();
+                String url = item.getUser().getBiggerProfileImageURL();
                 if (tag != null && tag == url) {
                     Log.d("Justaway", "[image] " + name + " exists.");
                 } else {
