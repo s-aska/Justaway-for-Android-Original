@@ -115,12 +115,10 @@ public class PostActivity extends Activity {
         return true;
     }
 
-    // オプションメニューアイテムが選択された時に呼び出されます
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
         case R.id.tweet_clear:
-            showToast("osareta");
             mEditText.setText("");
             break;
         }
