@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -42,42 +44,36 @@ public class PostActivity extends Activity {
                 showProgressDialog("送信中！！１１１１１");
                 String super_sugoi = mEditText.getText().toString();
                 new PostTask().execute(super_sugoi);
-             }
-         });
+            }
+        });
 
-         // 文字数をカウントしてボタンを制御する
+        // 文字数をカウントしてボタンを制御する
         mEditText.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 int textColor;
                 int length = 140 - s.length();
-                  // 140文字をオーバーした時は文字数を赤色に
+                // 140文字をオーバーした時は文字数を赤色に
                 if (length < 0) {
                     textColor = Color.RED;
                 } else {
                     textColor = Color.BLACK;
-                  }
+                }
                 mTextView.setTextColor(textColor);
                 mTextView.setText(String.valueOf(length));
 
-                  // 文字数が0文字または140文字以上の時はボタンを無効
+                // 文字数が0文字または140文字以上の時はボタンを無効
                 if (s.length() == 0 || s.length() > 140) {
                     mButton.setEnabled(false);
                 } else {
                     mButton.setEnabled(true);
-                  }
+                }
             }
             public void afterTextChanged(Editable s) {
             }
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
         });
-        
-       findViewById(R.id.clear).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mEditText.setText("");
-            }
-        });
+
     }
 
     private class PostTask extends AsyncTask<String, Void, Boolean> {
@@ -109,8 +105,26 @@ public class PostActivity extends Activity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             finish();
-         }
+        }
         return false;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.post_main, menu);
+        return true;
+    }
+
+    // オプションメニューアイテムが選択された時に呼び出されます
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case R.id.tweet_clear:
+            showToast("osareta");
+            mEditText.setText("");
+            break;
+        }
+        return true;
     }
 
     private void showToast(String text) {

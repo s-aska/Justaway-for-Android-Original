@@ -27,12 +27,6 @@
             android:layout_gravity="right"
             android:gravity="right" >
 
-            <Button
-                android:id="@+id/clear"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/clear" />
-
             <TextView
                 android:id="@+id/count"
                 android:layout_width="wrap_content"
