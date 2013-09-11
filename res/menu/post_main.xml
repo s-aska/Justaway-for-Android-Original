@@ -4,6 +4,6 @@
         android:id="@+id/tweet_clear"
         android:orderInCategory="100"
         android:showAsAction="never"
-        android:title="@string/clear"/>
+        android:title="@string/tweet_clear"/>
 
 </menu>
