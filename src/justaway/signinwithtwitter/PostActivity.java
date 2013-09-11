@@ -47,6 +47,47 @@ public class PostActivity extends Activity {
             }
         });
 
+        findViewById(R.id.suddenly).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String totsuzen = mEditText.getText().toString()+"\n";
+                int i;
+                String hito="人";
+                String hunya="^Y";
+                String ue="";
+                String shita="";
+                String gen="";
+                int j = 0;
+                String gentotsu ="";
+
+                int len = totsuzen.length();
+                for(i=0;totsuzen.charAt(i)!='\n';i++) {
+                    ue += hito;
+                    shita += hunya;
+                }
+                int moji = i+5;
+                for(i=0;len>i;i++){
+                    if(totsuzen.charAt(i)=='\n'){
+                        gen = "＞ "+totsuzen.substring(j,i)+" ＜\n";
+                        i = i+1;
+                        j = i;
+                        if(moji>gen.length()){
+                            int n;
+                            String as="";
+                            int a = moji-gen.length();
+                            for(n=0;a>n;n++){
+                                as = as+"　";    
+                            }
+                            gen = gen.substring(0,gen.length()-3)+as+" ＜\n";//aの分だけgenの空白を増やす   
+                        }
+                        gentotsu = gentotsu+gen;
+                    }
+                }
+                mEditText.setText("＿"+ue+"＿\n"+gentotsu+"￣"+shita+"￣");
+
+            }
+        });
+
         // 文字数をカウントしてボタンを制御する
         mEditText.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
