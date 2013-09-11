@@ -82,7 +82,6 @@ public class MainActivity extends Activity {
                     public void onClick(View v) {
                         Intent intent = new Intent(c, PostActivity.class);
                         startActivity(intent);
-                        finish();
                     }
                 });
     }

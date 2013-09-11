@@ -4,7 +4,6 @@ import twitter4j.Twitter;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -99,8 +98,6 @@ public class PostActivity extends Activity {
             dismissProgressDialog();
             if (success) {
                 mEditText.setText("");
-                Intent intent = new Intent(c, MainActivity.class);
-                startActivity(intent);
                 finish();
             } else {
                 showToast("残念~！もう一回！！");
@@ -111,8 +108,6 @@ public class PostActivity extends Activity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            Intent intent = new Intent(c, MainActivity.class);
-            startActivity(intent);
             finish();
          }
         return false;
