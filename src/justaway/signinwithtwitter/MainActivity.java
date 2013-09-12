@@ -17,6 +17,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.view.KeyEvent;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -47,16 +48,16 @@ public class MainActivity extends Activity {
                 new FavoriteTask().execute(statusId.toString());
             }
         });
-        showToast("MainActivity Created.");
         final Context c = this;
         if (!TwitterUtils.hasAccessToken(c)) {
             Intent intent = new Intent(this, SigninActivity.class);
             startActivity(intent);
             finish();
         } else {
-            showToast("hasAccessToken!");
             twitter = TwitterUtils.getTwitterInstance(c);
             twitterStream = TwitterUtils.getTwitterStreamInstance(c);
+            new GetTimeline().execute();
+            startStreamingTimeline();
         }
 
         findViewById(R.id.action_get_timeline).setOnClickListener(
@@ -64,17 +65,9 @@ public class MainActivity extends Activity {
                     @Override
                     public void onClick(View v) {
                         new GetTimeline().execute();
-                        startStreamingTimeline();
-                    }
-                });
-        findViewById(R.id.action_signout).setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        TwitterUtils.resetAccessToken(c);
-                        Intent intent = new Intent(c, SigninActivity.class);
-                        startActivity(intent);
-                        finish();
+                        twitterStream.cleanUp();
+                        twitterStream.shutdown();
+                        twitterStream.user();
                     }
                 });
         findViewById(R.id.action_tweet).setOnClickListener(
@@ -87,14 +80,14 @@ public class MainActivity extends Activity {
                 });
     }
 
-  @Override
-  public boolean onKeyDown(int keyCode, KeyEvent event) {
-      // タイムラインを残す為にアクティビティをfinish()させずホームに戻す、ホームボタンを押した時と同じ動き
-      if (keyCode == KeyEvent.KEYCODE_BACK) {
-          moveTaskToBack(true);
-      }
-      return false;
-  }
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // タイムラインを残す為にアクティビティをfinish()させずホームに戻す、ホームボタンを押した時と同じ動き
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            moveTaskToBack(true);
+        }
+        return false;
+    }
 
     private class GetTimeline extends
             AsyncTask<String, Void, ResponseList<twitter4j.Status>> {
@@ -114,7 +107,6 @@ public class MainActivity extends Activity {
         @Override
         protected void onPostExecute(ResponseList<twitter4j.Status> homeTl) {
             if (homeTl != null) {
-                showToast("Timelineの取得に成功しました＞＜");
                 TwitterAdapter adapter = (TwitterAdapter) listView.getAdapter();
                 adapter.clear();
                 for (twitter4j.Status status : homeTl) {
@@ -284,6 +276,17 @@ public class MainActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case R.id.signout:
+            TwitterUtils.resetAccessToken(this);
+            finish();
+            break;
+        }
         return true;
     }
 
