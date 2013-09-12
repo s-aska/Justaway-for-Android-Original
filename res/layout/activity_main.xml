@@ -19,33 +19,36 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/buttons"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="left"
-        android:gravity="left"
         android:orientation="horizontal" >
 
-        <Button
-            android:id="@+id/action_tweet"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
-            android:text="@string/action_tweet" />
+            android:gravity="left"
+            android:orientation="horizontal" >
 
-        <Button
-            android:id="@+id/action_get_timeline"
-            android:layout_width="wrap_content"
+            <Button
+                android:id="@+id/action_tweet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/action_tweet" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
-            android:text="@string/get_timeline" />
+            android:gravity="right" >
 
-        <Button
-            android:id="@+id/action_signout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:text="@string/signout" />
+            <Button
+                android:id="@+id/action_get_timeline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/get_timeline" />
+        </LinearLayout>
     </LinearLayout>
 
 </LinearLayout>
