@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
@@ -85,6 +86,15 @@ public class MainActivity extends Activity {
                     }
                 });
     }
+
+  @Override
+  public boolean onKeyDown(int keyCode, KeyEvent event) {
+      // タイムラインを残す為にアクティビティをfinish()させずホームに戻す、ホームボタンを押した時と同じ動き
+      if (keyCode == KeyEvent.KEYCODE_BACK) {
+          moveTaskToBack(true);
+      }
+      return false;
+  }
 
     private class GetTimeline extends
             AsyncTask<String, Void, ResponseList<twitter4j.Status>> {
