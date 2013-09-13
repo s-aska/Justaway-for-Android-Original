@@ -161,9 +161,23 @@ public class MainActivity extends Activity {
                 listView.post(new Runnable() {
                     @Override
                     public void run() {
+
+                        // 表示している要素の位置
+                        int position = listView.getFirstVisiblePosition();
+
+                        // 縦スクロール位置
+                        View view = listView.getChildAt(0);
+                        int y = view != null ? view.getTop() : 0;
+
+                        // 要素を上に追加（ addだと下に追加されてしまう ）
                         TwitterAdapter adapter = (TwitterAdapter) listView
                                 .getAdapter();
                         adapter.insert(s, 0);
+
+                        // 少しでもスクロールさせている時は画面を動かさない様にスクロー位置を復元する
+                        if (position != 0 || y != 0) {
+                            listView.setSelectionFromTop(position + 1, y);
+                        }
                     }
                 });
             }
