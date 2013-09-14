@@ -97,7 +97,8 @@ public class MainActivity extends Activity {
 
     static final int CONTEXT_MENU_REPLY_ID = 1;
     static final int CONTEXT_MENU_RT_ID = 2;
-    static final int CONTEXT_MENU_FAVRT_ID = 3;
+    static final int CONTEXT_MENU_FAV_ID = 3;
+    static final int CONTEXT_MENU_FAVRT_ID = 4;
 
     public void onCreateContextMenu(ContextMenu menu, View view,
             ContextMenuInfo menuInfo) {
@@ -109,6 +110,7 @@ public class MainActivity extends Activity {
         menu.setHeaderTitle(item.getText());
         menu.add(0, CONTEXT_MENU_REPLY_ID, 0, "Reply");
         menu.add(0, CONTEXT_MENU_RT_ID, 0, "RT");
+        menu.add(0, CONTEXT_MENU_FAV_ID, 0, "fav");
         menu.add(0, CONTEXT_MENU_FAVRT_ID, 0, "fav&RT");
     }
 
@@ -128,6 +130,9 @@ public class MainActivity extends Activity {
             return true;
         case CONTEXT_MENU_RT_ID:
             new RetweetTask().execute(status.getId());
+            return true;
+        case CONTEXT_MENU_FAV_ID:
+            new FavoriteTask().execute(status.getId());
             return true;
         case CONTEXT_MENU_FAVRT_ID:
             new FavoriteTask().execute(status.getId());
