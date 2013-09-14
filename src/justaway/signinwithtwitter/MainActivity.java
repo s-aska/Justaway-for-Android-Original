@@ -44,7 +44,7 @@ public class MainActivity extends Activity {
 
         listView = (ListView) findViewById(R.id.list);
 
-        // ロングタップでコンテキストメニューが開く様にする
+        // コンテキストメニューが使える様になる（デフォルトでロングタップで開く）
         registerForContextMenu(listView);
 
         // Status(ツイート)をViewに変換するアダプター
@@ -56,10 +56,11 @@ public class MainActivity extends Activity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
                     int position, long id) {
-                ListView listView = (ListView) parent;
-                Status item = (Status) listView.getItemAtPosition(position);
-
-                new FavoriteTask().execute(item.getId());
+                // コンテキストメニュー
+                view.showContextMenu();
+//                ListView listView = (ListView) parent;
+//                Status item = (Status) listView.getItemAtPosition(position);
+//                new FavoriteTask().execute(item.getId());
             }
         });
         final Context c = this;
