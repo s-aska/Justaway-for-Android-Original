@@ -1,9 +1,11 @@
 package justaway.signinwithtwitter;
 
+import twitter4j.StatusUpdate;
 import twitter4j.Twitter;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -24,6 +26,7 @@ public class PostActivity extends Activity {
     private TextView mTextView;
     private Button mButton;
     private ProgressDialog mProgressDialog;
+    private Long inReplyToStatusId;
 
     final Context c = this;
 
@@ -37,11 +40,22 @@ public class PostActivity extends Activity {
         mButton = (Button) findViewById(R.id.tweet);
         mTwitter = TwitterUtils.getTwitterInstance(this);
 
+        Intent intent = getIntent();
+        String status = intent.getStringExtra("status");
+        if (status != null) {
+            mEditText.setText(status);
+            mEditText.setSelection(status.length());
+        }
+        inReplyToStatusId = intent.getLongExtra("inReplyToStatusId", 0);
+
         findViewById(R.id.tweet).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showProgressDialog("送信中！！１１１１１");
-                String super_sugoi = mEditText.getText().toString();
+                StatusUpdate super_sugoi = new StatusUpdate(mEditText.getText().toString());
+                if (inReplyToStatusId > 0) {
+                    super_sugoi.setInReplyToStatusId(inReplyToStatusId);
+              }
                 new PostTask().execute(super_sugoi);
             }
         });
@@ -116,10 +130,10 @@ public class PostActivity extends Activity {
 
     }
 
-    private class PostTask extends AsyncTask<String, Void, Boolean> {
+    private class PostTask extends AsyncTask<StatusUpdate, Void, Boolean> {
         @Override
-        protected Boolean doInBackground(String... params) {
-            String super_sugoi = params[0];
+        protected Boolean doInBackground(StatusUpdate... params) {
+            StatusUpdate super_sugoi = params[0];
             try {
                 mTwitter.updateStatus(super_sugoi);
                 return true;

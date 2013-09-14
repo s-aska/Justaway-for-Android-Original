@@ -15,12 +15,15 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -40,8 +43,15 @@ public class MainActivity extends Activity {
                 WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         listView = (ListView) findViewById(R.id.list);
+
+        // ロングタップでコンテキストメニューが開く様にする
+        registerForContextMenu(listView);
+
+        // Status(ツイート)をViewに変換するアダプター
         TwitterAdapter adapter = new TwitterAdapter(this, R.layout.tweet_row);
         listView.setAdapter(adapter);
+
+        // シングルタップ時の挙動
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view,
@@ -49,8 +59,7 @@ public class MainActivity extends Activity {
                 ListView listView = (ListView) parent;
                 Status item = (Status) listView.getItemAtPosition(position);
 
-                Long statusId = item.getId();
-                new FavoriteTask().execute(statusId.toString());
+                new FavoriteTask().execute(item.getId());
             }
         });
         final Context c = this;
@@ -83,6 +92,49 @@ public class MainActivity extends Activity {
                         startActivity(intent);
                     }
                 });
+    }
+
+    static final int CONTEXT_MENU_REPLY_ID = 1;
+    static final int CONTEXT_MENU_RT_ID = 2;
+    static final int CONTEXT_MENU_FAVRT_ID = 3;
+
+    public void onCreateContextMenu(ContextMenu menu, View view,
+            ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, view, menuInfo);
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
+        ListView listView = (ListView) view;
+
+        Status item = (Status) listView.getItemAtPosition(info.position);
+        menu.setHeaderTitle(item.getText());
+        menu.add(0, CONTEXT_MENU_REPLY_ID, 0, "Reply");
+        menu.add(0, CONTEXT_MENU_RT_ID, 0, "RT");
+        menu.add(0, CONTEXT_MENU_FAVRT_ID, 0, "fav&RT");
+    }
+
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
+                .getMenuInfo();
+
+        Status status = (Status) listView.getItemAtPosition(info.position);
+
+        switch (item.getItemId()) {
+        case CONTEXT_MENU_REPLY_ID:
+            Intent intent = new Intent(this, PostActivity.class);
+            intent.putExtra("status", "@" + status.getUser().getScreenName()
+                    + " ");
+            intent.putExtra("inReplyToStatusId", status.getId());
+            startActivity(intent);
+            return true;
+        case CONTEXT_MENU_RT_ID:
+            new RetweetTask().execute(status.getId());
+            return true;
+        case CONTEXT_MENU_FAVRT_ID:
+            new FavoriteTask().execute(status.getId());
+            new RetweetTask().execute(status.getId());
+            return true;
+        default:
+            return super.onContextItemSelected(item);
+        }
     }
 
     @Override
@@ -123,12 +175,12 @@ public class MainActivity extends Activity {
         }
     }
 
-    private class FavoriteTask extends AsyncTask<String, Void, Boolean> {
+    private class FavoriteTask extends AsyncTask<Long, Void, Boolean> {
 
         @Override
-        protected Boolean doInBackground(String... params) {
+        protected Boolean doInBackground(Long... params) {
             try {
-                twitter.createFavorite(Long.valueOf(params[0]).longValue());
+                twitter.createFavorite(params[0]);
                 return true;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -142,6 +194,29 @@ public class MainActivity extends Activity {
                 showToast("ふぁぼに成功しました>゜))彡");
             } else {
                 showToast("ふぁぼに失敗しました＞＜");
+            }
+        }
+    }
+
+    private class RetweetTask extends AsyncTask<Long, Void, Boolean> {
+        @Override
+        protected Boolean doInBackground(Long... params) {
+            Long super_sugoi = params[0];
+            try {
+                twitter.retweetStatus(super_sugoi);
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            if (success) {
+                showToast("RTに成功しました>゜))彡");
+            } else {
+                showToast("RTに失敗しました＞＜");
             }
         }
     }
