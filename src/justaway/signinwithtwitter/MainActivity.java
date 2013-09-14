@@ -36,7 +36,8 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         // Guy that does not sleep.
-        this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        this.getWindow().addFlags(
+                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         listView = (ListView) findViewById(R.id.list);
         TwitterAdapter adapter = new TwitterAdapter(this, R.layout.tweet_row);
@@ -64,16 +65,16 @@ public class MainActivity extends Activity {
             startStreamingTimeline();
         }
 
-        findViewById(R.id.action_get_timeline).setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        new GetTimeline().execute();
-                        twitterStream.cleanUp();
-                        twitterStream.shutdown();
-                        twitterStream.user();
-                    }
-                });
+        // findViewById(R.id.action_get_timeline).setOnClickListener(
+        // new View.OnClickListener() {
+        // @Override
+        // public void onClick(View v) {
+        // new GetTimeline().execute();
+        // twitterStream.cleanUp();
+        // twitterStream.shutdown();
+        // twitterStream.user();
+        // }
+        // });
         findViewById(R.id.action_tweet).setOnClickListener(
                 new View.OnClickListener() {
                     @Override
@@ -303,6 +304,12 @@ public class MainActivity extends Activity {
         case R.id.signout:
             TwitterUtils.resetAccessToken(this);
             finish();
+            break;
+        case R.id.reload:
+            new GetTimeline().execute();
+            twitterStream.cleanUp();
+            twitterStream.shutdown();
+            twitterStream.user();
             break;
         }
         return true;

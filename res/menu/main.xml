@@ -5,11 +5,15 @@
         android:orderInCategory="100"
         android:showAsAction="never"
         android:title="@string/action_settings"/>
-
+    <item
+        android:id="@+id/reload"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/reload"/>
     <item
         android:id="@+id/signout"
         android:orderInCategory="100"
         android:showAsAction="never"
         android:title="@string/signout"/>
-    
+
 </menu>
