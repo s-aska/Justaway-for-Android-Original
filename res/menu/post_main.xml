@@ -6,4 +6,9 @@
         android:showAsAction="never"
         android:title="@string/tweet_clear"/>
 
+        <item
+        android:id="@+id/tweet_battery"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/tweet_battery"/>
 </menu>
