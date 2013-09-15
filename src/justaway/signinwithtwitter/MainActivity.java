@@ -77,16 +77,13 @@ public class MainActivity extends Activity {
             startStreamingTimeline();
         }
 
-        // findViewById(R.id.action_get_timeline).setOnClickListener(
-        // new View.OnClickListener() {
-        // @Override
-        // public void onClick(View v) {
-        // new GetTimeline().execute();
-        // twitterStream.cleanUp();
-        // twitterStream.shutdown();
-        // twitterStream.user();
-        // }
-        // });
+        findViewById(R.id.action_gotop).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        listView.setSelection(0);
+                    }
+                });
         findViewById(R.id.action_tweet).setOnClickListener(
                 new View.OnClickListener() {
                     @Override
