@@ -34,6 +34,7 @@ public class MainActivity extends Activity {
     private Twitter twitter;
     private ListView listView;
     private static TwitterStream twitterStream;
+    private Status selectedStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,6 +110,8 @@ public class MainActivity extends Activity {
         ListView listView = (ListView) view;
 
         Status item = (Status) listView.getItemAtPosition(info.position);
+        selectedStatus = item;
+
         menu.setHeaderTitle(item.getText());
         URLEntity[] urls = item.getURLEntities();
         URLEntity[] medias = item.getMediaEntities();
@@ -129,10 +132,8 @@ public class MainActivity extends Activity {
     }
 
     public boolean onContextItemSelected(MenuItem item) {
-        AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
-                .getMenuInfo();
 
-        Status status = (Status) listView.getItemAtPosition(info.position);
+        Status status = selectedStatus;
         Intent intent;
 
         switch (item.getItemId()) {
@@ -172,7 +173,7 @@ public class MainActivity extends Activity {
                 intent = new Intent(
                         "com.product.kanzmrsw.tofubuster.ACTION_SHOW_TEXT");
                 intent.putExtra(Intent.EXTRA_TEXT, status.getText());
-                intent.putExtra(Intent.EXTRA_SUBJECT, "TofuBuster");
+                intent.putExtra(Intent.EXTRA_SUBJECT, "Justaway");
                 intent.putExtra("isCopyEnabled", true);
                 // インストールされていない場合、startActivityで落ちる
                 startActivity(intent);
