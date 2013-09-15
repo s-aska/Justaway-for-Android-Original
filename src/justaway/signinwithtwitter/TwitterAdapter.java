@@ -6,6 +6,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
+import twitter4j.Status;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -82,65 +84,80 @@ public class TwitterAdapter extends ArrayAdapter<twitter4j.Status> {
         }
 
         // 表示すべきデータの取得
-        twitter4j.Status item = (twitter4j.Status) statuses.get(position);
+        Status status = (Status) statuses.get(position);
+        if (status == null) {
+            return view;
+        }
 
-        TextView displayName = (TextView) view.findViewById(R.id.display_name);
-        TextView screenName = (TextView) view.findViewById(R.id.screen_name);
-        TextView status = (TextView) view.findViewById(R.id.status);
-        TextView datetime = (TextView) view.findViewById(R.id.datetime);
-        TextView via = (TextView) view.findViewById(R.id.via);
-        // screenName.setTypeface(Typeface.DEFAULT_BOLD);
+        Status retweet = status.getRetweetedStatus();
+        if (retweet == null) {
+            renderStatus(view, status, null);
+        } else {
+            renderStatus(view, retweet, status);
+        }
 
-        // スクリーンネームをビューにセット
-        if (item != null) {
+        return view;
+    }
 
-            if (displayName != null) {
-                displayName.setText(item.getUser().getName());
+    private void renderStatus(View view, Status status, Status original) {
+        ((TextView) view.findViewById(R.id.display_name)).setText(status
+                .getUser().getName());
+        ((TextView) view.findViewById(R.id.screen_name)).setText("@"
+                + status.getUser().getScreenName());
+        ((TextView) view.findViewById(R.id.status)).setText(status.getText());
+        ((TextView) view.findViewById(R.id.datetime)).setText(status
+                .getCreatedAt().toString());
+        ((TextView) view.findViewById(R.id.via)).setText("via "
+                + getClientName(status.getSource()));
+
+        // RTの場合
+        if (original != null) {
+            ((TextView) view.findViewById(R.id.retweet_by))
+                    .setText("Retweet By " + original.getUser().getScreenName()
+                            + "(" + original.getUser().getName() + ") and "
+                            + String.valueOf(original.getRetweetCount())
+                            + " others");
+            ImageView icon = (ImageView) view.findViewById(R.id.retweet_icon);
+            ProgressBar wait = (ProgressBar) view
+                    .findViewById(R.id.retweet_wait);
+            renderIcon(wait, icon, original.getUser().getMiniProfileImageURL());
+            view.findViewById(R.id.retweet).setVisibility(View.VISIBLE);
+        } else {
+            view.findViewById(R.id.retweet).setVisibility(View.GONE);
+        }
+
+        ImageView icon = (ImageView) view.findViewById(R.id.icon);
+        ProgressBar wait = (ProgressBar) view.findViewById(R.id.WaitBar);
+        renderIcon(wait, icon, status.getUser().getBiggerProfileImageURL());
+        icon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // TODO: UserProfileActivityへ
+                System.out.println("icon touch!");
             }
+        });
+    }
 
-            String name = item.getUser().getScreenName();
-            if (screenName != null) {
-                screenName.setText("@" + item.getUser().getScreenName());
-            }
-
-            if (status != null) {
-                status.setText(item.getText());
-            }
-
-            if (datetime != null) {
-                datetime.setText(item.getCreatedAt().toString());
-            }
-
-            if (via != null) {
-                via.setText("via " + getClientName(item.getSource()));
-            }
-
-            ImageView icon = (ImageView) view.findViewById(R.id.icon);
-            ProgressBar waitBar = (ProgressBar) view.findViewById(R.id.WaitBar);
-            waitBar.setVisibility(View.VISIBLE);
-            icon.setVisibility(View.GONE);
-            if (icon != null) {
-                String tag = (String) icon.getTag();
-                String url = item.getUser().getBiggerProfileImageURL();
-                if (tag != null && tag == url) {
-                    Log.d("Justaway", "[image] " + name + " exists.");
-                } else {
-                    icon.setTag(url);
-                    Bitmap image = mMemoryCache.get(url);
-                    if (image == null) {
-                        Log.d("Justaway", "[cache] " + name + " loading.");
-                        ImageGetTask task = new ImageGetTask(icon, waitBar);
-                        task.execute(url);
-                    } else {
-                        // Log.d("Justaway", "[cache] " + url + " loading.");
-                        icon.setImageBitmap(image);
-                        icon.setVisibility(View.VISIBLE);
-                        waitBar.setVisibility(View.GONE);
-                    }
-                }
+    // アイコンを読み込む
+    private void renderIcon(ProgressBar wait, ImageView icon, String url) {
+        wait.setVisibility(View.VISIBLE);
+        icon.setVisibility(View.GONE);
+        String tag = (String) icon.getTag();
+        if (tag != null && tag == url) {
+            Log.d("Justaway", "[image] " + url + " exists.");
+        } else {
+            icon.setTag(url);
+            Bitmap image = mMemoryCache.get(url);
+            if (image == null) {
+                Log.d("Justaway", "[cache] " + url + " loading.");
+                ImageGetTask task = new ImageGetTask(icon, wait);
+                task.execute(url);
+            } else {
+                icon.setImageBitmap(image);
+                icon.setVisibility(View.VISIBLE);
+                wait.setVisibility(View.GONE);
             }
         }
-        return view;
     }
 
     private String getClientName(String source) {
