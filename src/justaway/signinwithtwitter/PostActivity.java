@@ -6,8 +6,11 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.os.BatteryManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -55,7 +58,7 @@ public class PostActivity extends Activity {
                 StatusUpdate super_sugoi = new StatusUpdate(mEditText.getText().toString());
                 if (inReplyToStatusId > 0) {
                     super_sugoi.setInReplyToStatusId(inReplyToStatusId);
-              }
+                }
                 new PostTask().execute(super_sugoi);
             }
         });
@@ -166,6 +169,31 @@ public class PostActivity extends Activity {
         switch (item.getItemId()) {
         case R.id.tweet_clear:
             mEditText.setText("");
+            break;
+        case R.id.tweet_battery:
+            Intent batteryIntent = getApplicationContext().registerReceiver(null,
+                    new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+            int level = batteryIntent.getIntExtra("level", 0);
+            int scale = batteryIntent.getIntExtra("scale", 100);
+            int status = batteryIntent.getIntExtra("status", 0);
+            int battery = level * 100 / scale;
+            String model = Build.MODEL;
+
+            switch (status) {
+            case BatteryManager.BATTERY_STATUS_FULL:
+                mEditText.setText(model+" のバッテリー残量:" +battery+ "% (0゜・◡・♥​​)");
+                break;
+            case BatteryManager.BATTERY_STATUS_CHARGING:
+                mEditText.setText(model+" のバッテリー残量:" +battery+ "% 充電なう(・◡・♥​​)");
+                break;
+            default:
+                if(level <= 10) {
+                    mEditText.setText(model+" のバッテリー残量:" +battery+ "% (◞‸◟)");
+                }else {
+                    mEditText.setText(model+" のバッテリー残量:" +battery+ "% (・◡・♥​​)");
+                }
+                break;
+            }
             break;
         }
         return true;

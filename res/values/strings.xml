@@ -13,6 +13,7 @@
     <string name="tweet_count">140</string>
     <string name="tweet_clear">消</string>
     <string name="tweet_suddenly">突</string>
+    <string name="tweet_battery">残</string>
     <string name="description_icon">Profile Icon</string>
     
 </resources>
