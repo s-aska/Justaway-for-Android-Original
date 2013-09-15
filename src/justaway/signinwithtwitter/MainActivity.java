@@ -100,6 +100,7 @@ public class MainActivity extends Activity {
     static final int CONTEXT_MENU_RT_ID = 4;
     static final int CONTEXT_MENU_QT_ID = 5;
     static final int CONTEXT_MENU_LINK_ID = 6;
+    static final int CONTEXT_MENU_TOFU_ID = 7;
 
     public void onCreateContextMenu(ContextMenu menu, View view,
             ContextMenuInfo menuInfo) {
@@ -124,6 +125,7 @@ public class MainActivity extends Activity {
             menu.add(0, CONTEXT_MENU_LINK_ID, 0, url.getExpandedURL()
                     .toString());
         }
+        menu.add(0, CONTEXT_MENU_TOFU_ID, 0, "TofuBuster");
     }
 
     public boolean onContextItemSelected(MenuItem item) {
@@ -164,7 +166,22 @@ public class MainActivity extends Activity {
             intent = new Intent(Intent.ACTION_VIEW, Uri.parse(item.getTitle()
                     .toString()));
             startActivity(intent);
-
+            return true;
+        case CONTEXT_MENU_TOFU_ID:
+            try {
+                intent = new Intent(
+                        "com.product.kanzmrsw.tofubuster.ACTION_SHOW_TEXT");
+                intent.putExtra(Intent.EXTRA_TEXT, status.getText());
+                intent.putExtra(Intent.EXTRA_SUBJECT, "TofuBuster");
+                intent.putExtra("isCopyEnabled", true);
+                // インストールされていない場合、startActivityで落ちる
+                startActivity(intent);
+            } catch (Exception e) {
+                intent = new Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("https://market.android.com/details?id=com.product.kanzmrsw.tofubuster"));
+                startActivity(intent);
+            }
             return true;
         default:
             return super.onContextItemSelected(item);
