@@ -44,7 +44,10 @@ public class PostActivity extends Activity {
         String status = intent.getStringExtra("status");
         if (status != null) {
             mEditText.setText(status);
-            mEditText.setSelection(status.length());
+        }
+        int selection = intent.getIntExtra("selection", 0);
+        if (selection > 0) {
+            mEditText.setSelection(selection);
         }
         inReplyToStatusId = intent.getLongExtra("inReplyToStatusId", 0);
 

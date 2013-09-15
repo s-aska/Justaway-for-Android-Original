@@ -7,9 +7,11 @@ import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
 import twitter4j.Twitter;
 import twitter4j.TwitterStream;
+import twitter4j.URLEntity;
 import twitter4j.User;
 import twitter4j.UserList;
 import twitter4j.UserStreamListener;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
@@ -58,9 +60,9 @@ public class MainActivity extends Activity {
                     int position, long id) {
                 // コンテキストメニュー
                 view.showContextMenu();
-//                ListView listView = (ListView) parent;
-//                Status item = (Status) listView.getItemAtPosition(position);
-//                new FavoriteTask().execute(item.getId());
+                // ListView listView = (ListView) parent;
+                // Status item = (Status) listView.getItemAtPosition(position);
+                // new FavoriteTask().execute(item.getId());
             }
         });
         final Context c = this;
@@ -96,9 +98,11 @@ public class MainActivity extends Activity {
     }
 
     static final int CONTEXT_MENU_REPLY_ID = 1;
-    static final int CONTEXT_MENU_RT_ID = 2;
-    static final int CONTEXT_MENU_FAV_ID = 3;
-    static final int CONTEXT_MENU_FAVRT_ID = 4;
+    static final int CONTEXT_MENU_FAV_ID = 2;
+    static final int CONTEXT_MENU_FAVRT_ID = 3;
+    static final int CONTEXT_MENU_RT_ID = 4;
+    static final int CONTEXT_MENU_QT_ID = 5;
+    static final int CONTEXT_MENU_LINK_ID = 6;
 
     public void onCreateContextMenu(ContextMenu menu, View view,
             ContextMenuInfo menuInfo) {
@@ -108,10 +112,21 @@ public class MainActivity extends Activity {
 
         Status item = (Status) listView.getItemAtPosition(info.position);
         menu.setHeaderTitle(item.getText());
-        menu.add(0, CONTEXT_MENU_REPLY_ID, 0, "Reply");
-        menu.add(0, CONTEXT_MENU_RT_ID, 0, "RT");
-        menu.add(0, CONTEXT_MENU_FAV_ID, 0, "fav");
-        menu.add(0, CONTEXT_MENU_FAVRT_ID, 0, "fav&RT");
+        URLEntity[] urls = item.getURLEntities();
+        URLEntity[] medias = item.getMediaEntities();
+        menu.add(0, CONTEXT_MENU_REPLY_ID, 0, "リプ");
+        menu.add(0, CONTEXT_MENU_QT_ID, 0, "引用");
+        menu.add(0, CONTEXT_MENU_FAV_ID, 0, "ふぁぼ");
+        menu.add(0, CONTEXT_MENU_FAVRT_ID, 0, "ふぁぼ＆公式RT");
+        menu.add(0, CONTEXT_MENU_RT_ID, 0, "公式RT");
+        for (URLEntity url : urls) {
+            menu.add(0, CONTEXT_MENU_LINK_ID, 0, url.getExpandedURL()
+                    .toString());
+        }
+        for (URLEntity url : medias) {
+            menu.add(0, CONTEXT_MENU_LINK_ID, 0, url.getExpandedURL()
+                    .toString());
+        }
     }
 
     public boolean onContextItemSelected(MenuItem item) {
@@ -119,12 +134,22 @@ public class MainActivity extends Activity {
                 .getMenuInfo();
 
         Status status = (Status) listView.getItemAtPosition(info.position);
+        Intent intent;
 
         switch (item.getItemId()) {
         case CONTEXT_MENU_REPLY_ID:
-            Intent intent = new Intent(this, PostActivity.class);
-            intent.putExtra("status", "@" + status.getUser().getScreenName()
-                    + " ");
+            intent = new Intent(this, PostActivity.class);
+            String text = "@" + status.getUser().getScreenName() + " ";
+            intent.putExtra("status", text);
+            intent.putExtra("selection", text.length());
+            intent.putExtra("inReplyToStatusId", status.getId());
+            startActivity(intent);
+            return true;
+        case CONTEXT_MENU_QT_ID:
+            intent = new Intent(this, PostActivity.class);
+            intent.putExtra("status",
+                    " https://twitter.com/" + status.getUser().getScreenName()
+                            + "/status/" + String.valueOf(status.getId()));
             intent.putExtra("inReplyToStatusId", status.getId());
             startActivity(intent);
             return true;
@@ -137,6 +162,12 @@ public class MainActivity extends Activity {
         case CONTEXT_MENU_FAVRT_ID:
             new FavoriteTask().execute(status.getId());
             new RetweetTask().execute(status.getId());
+            return true;
+        case CONTEXT_MENU_LINK_ID:
+            intent = new Intent(Intent.ACTION_VIEW, Uri.parse(item.getTitle()
+                    .toString()));
+            startActivity(intent);
+
             return true;
         default:
             return super.onContextItemSelected(item);
