@@ -99,7 +99,7 @@ public class TwitterAdapter extends ArrayAdapter<twitter4j.Status> {
         return view;
     }
 
-    private void renderStatus(View view, Status status, Status original) {
+    private void renderStatus(View view, Status status, Status retweet) {
         ((TextView) view.findViewById(R.id.display_name)).setText(status
                 .getUser().getName());
         ((TextView) view.findViewById(R.id.screen_name)).setText("@"
@@ -111,16 +111,16 @@ public class TwitterAdapter extends ArrayAdapter<twitter4j.Status> {
                 + getClientName(status.getSource()));
 
         // RTの場合
-        if (original != null) {
+        if (retweet != null) {
             ((TextView) view.findViewById(R.id.retweet_by))
-                    .setText("Retweet By " + original.getUser().getScreenName()
-                            + "(" + original.getUser().getName() + ") and "
-                            + String.valueOf(original.getRetweetCount())
+                    .setText("Retweet By " + retweet.getUser().getScreenName()
+                            + "(" + retweet.getUser().getName() + ") and "
+                            + String.valueOf(status.getRetweetCount())
                             + " others");
             ImageView icon = (ImageView) view.findViewById(R.id.retweet_icon);
             ProgressBar wait = (ProgressBar) view
                     .findViewById(R.id.retweet_wait);
-            renderIcon(wait, icon, original.getUser().getMiniProfileImageURL());
+            renderIcon(wait, icon, retweet.getUser().getMiniProfileImageURL());
             view.findViewById(R.id.retweet).setVisibility(View.VISIBLE);
         } else {
             view.findViewById(R.id.retweet).setVisibility(View.GONE);
