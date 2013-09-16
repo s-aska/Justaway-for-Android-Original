@@ -111,10 +111,11 @@ public class MainActivity extends Activity {
 
         Status item = (Status) listView.getItemAtPosition(info.position);
         selectedStatus = item;
+        Status retweet = item.getRetweetedStatus();
 
         menu.setHeaderTitle(item.getText());
-        URLEntity[] urls = item.getURLEntities();
-        URLEntity[] medias = item.getMediaEntities();
+        URLEntity[] urls = retweet != null ? retweet.getURLEntities() : item.getURLEntities();
+        URLEntity[] medias = retweet != null ? retweet.getMediaEntities() : item.getMediaEntities();
         menu.add(0, CONTEXT_MENU_REPLY_ID, 0, "リプ");
         menu.add(0, CONTEXT_MENU_QT_ID, 0, "引用");
         menu.add(0, CONTEXT_MENU_FAV_ID, 0, "ふぁぼ");
