@@ -116,7 +116,7 @@ public class PostActivity extends Activity {
                 if (length < 0) {
                     textColor = Color.RED;
                 } else {
-                    textColor = Color.BLACK;
+                    textColor = Color.WHITE;
                 }
                 mTextView.setTextColor(textColor);
                 mTextView.setText(String.valueOf(length));
