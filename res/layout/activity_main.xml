@@ -31,19 +31,27 @@
             android:orientation="horizontal" >
 
             <Button
-                android:id="@+id/action_tweet"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/action_tweet" />
-
-            <Button
                 android:id="@+id/action_gotop"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/action_gotop" />
-            </LinearLayout>
+        </LinearLayout>
 
-        <!-- <LinearLayout
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:gravity="right"
+            android:orientation="horizontal" >
+            
+            <Button
+                android:id="@+id/action_tweet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/action_tweet" />
+        </LinearLayout>
+        <!--
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
@@ -54,7 +62,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/get_timeline" />
-        </LinearLayout> -->
+        </LinearLayout>
+        -->
     </LinearLayout>
 
 </LinearLayout>
