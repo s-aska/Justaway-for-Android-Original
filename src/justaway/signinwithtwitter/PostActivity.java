@@ -1,17 +1,22 @@
 package justaway.signinwithtwitter;
 
+import java.io.File;
 import twitter4j.StatusUpdate;
 import twitter4j.Twitter;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
@@ -30,6 +35,7 @@ public class PostActivity extends Activity {
     private Button mButton;
     private ProgressDialog mProgressDialog;
     private Long inReplyToStatusId;
+    private File path;
 
     final Context c = this;
 
@@ -61,6 +67,9 @@ public class PostActivity extends Activity {
                 StatusUpdate super_sugoi = new StatusUpdate(mEditText.getText().toString());
                 if (inReplyToStatusId > 0) {
                     super_sugoi.setInReplyToStatusId(inReplyToStatusId);
+                }
+                if (path!=null){
+                    super_sugoi.setMedia(path);
                 }
                 new PostTask().execute(super_sugoi);
             }
@@ -106,6 +115,32 @@ public class PostActivity extends Activity {
 
             }
         });
+        findViewById(R.id.img).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                
+                Intent intent = new Intent(Intent.ACTION_PICK);
+                intent.setType("image/*");
+                startActivityForResult(intent, 1);
+            }
+        });
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            Uri uri = data.getData();
+            ContentResolver cr = getContentResolver();
+            String[] columns = { MediaStore.Images.Media.DATA };
+            Cursor c = cr.query(uri, columns, null, null, null);
+            c.moveToFirst();
+            File path = new File(c.getString(0));
+            if (!path.exists()){
+                return;
+            }
+            this.path = path;
+            showToast("画像セットok");
+        }
 
         // 文字数をカウントしてボタンを制御する
         mEditText.addTextChangedListener(new TextWatcher() {
