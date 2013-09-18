@@ -50,20 +50,6 @@
                 android:layout_height="wrap_content"
                 android:text="@string/action_tweet" />
         </LinearLayout>
-        <!--
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:gravity="right" >
-
-            <Button
-                android:id="@+id/action_get_timeline"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/get_timeline" />
-        </LinearLayout>
-        -->
     </LinearLayout>
 
 </LinearLayout>
