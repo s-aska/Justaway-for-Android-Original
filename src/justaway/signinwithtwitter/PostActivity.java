@@ -32,10 +32,11 @@ public class PostActivity extends Activity {
     private Twitter mTwitter;
     private EditText mEditText;
     private TextView mTextView;
-    private Button mButton;
+    private Button mTweetButton;
+    private Button mImgButton;
     private ProgressDialog mProgressDialog;
     private Long inReplyToStatusId;
-    private File path;
+    private File imgPath;
 
     final Context c = this;
 
@@ -46,7 +47,8 @@ public class PostActivity extends Activity {
 
         mEditText = (EditText) findViewById(R.id.status);
         mTextView = (TextView) findViewById(R.id.count);
-        mButton = (Button) findViewById(R.id.tweet);
+        mTweetButton = (Button) findViewById(R.id.tweet);
+        mImgButton = (Button) findViewById(R.id.img);
         mTwitter = TwitterUtils.getTwitterInstance(this);
 
         Intent intent = getIntent();
@@ -68,8 +70,8 @@ public class PostActivity extends Activity {
                 if (inReplyToStatusId > 0) {
                     super_sugoi.setInReplyToStatusId(inReplyToStatusId);
                 }
-                if (path!=null){
-                    super_sugoi.setMedia(path);
+                if (imgPath!=null){
+                    super_sugoi.setMedia(imgPath);
                 }
                 new PostTask().execute(super_sugoi);
             }
@@ -118,7 +120,6 @@ public class PostActivity extends Activity {
         findViewById(R.id.img).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                
                 Intent intent = new Intent(Intent.ACTION_PICK);
                 intent.setType("image/*");
                 startActivityForResult(intent, 1);
@@ -138,8 +139,9 @@ public class PostActivity extends Activity {
             if (!path.exists()){
                 return;
             }
-            this.path = path;
+            this.imgPath = path;
             showToast("画像セットok");
+            mImgButton.setBackgroundColor(Color.RED);
         }
 
         // 文字数をカウントしてボタンを制御する
@@ -158,9 +160,9 @@ public class PostActivity extends Activity {
 
                 // 文字数が0文字または140文字以上の時はボタンを無効
                 if (s.length() == 0 || s.length() > 140) {
-                    mButton.setEnabled(false);
+                    mTweetButton.setEnabled(false);
                 } else {
-                    mButton.setEnabled(true);
+                    mTweetButton.setEnabled(true);
                 }
             }
             public void afterTextChanged(Editable s) {
