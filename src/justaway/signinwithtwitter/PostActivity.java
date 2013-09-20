@@ -1,6 +1,8 @@
 package justaway.signinwithtwitter;
 
 import java.io.File;
+import java.util.Set;
+
 import twitter4j.StatusUpdate;
 import twitter4j.Twitter;
 import android.app.Activity;
@@ -19,6 +21,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,6 +39,7 @@ public class PostActivity extends Activity {
     private Button mImgButton;
     private ProgressDialog mProgressDialog;
     private Long inReplyToStatusId;
+    private String text;
     private File imgPath;
 
     final Context c = this;
@@ -61,6 +65,24 @@ public class PostActivity extends Activity {
             mEditText.setSelection(selection);
         }
         inReplyToStatusId = intent.getLongExtra("inReplyToStatusId", 0);
+
+        if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+
+            Set<String> parameterNames = intent.getData().getQueryParameterNames();
+            for (String parameterName : parameterNames){
+                text += intent.getData().getQueryParameter(parameterName)+" ";
+//                switch(parameterName){
+//                case "hashtags":
+//                    text += "#"+intent.getData().getQueryParameter(parameterName);
+//                    break;
+//                default:
+//                    text += intent.getData().getQueryParameter(parameterName)+" ";
+//                }
+            }
+            if(text != null){
+                mEditText.setText(text);
+            }
+        }
 
         findViewById(R.id.tweet).setOnClickListener(new View.OnClickListener() {
             @Override
