@@ -96,6 +96,10 @@ public class TwitterAdapter extends ArrayAdapter<twitter4j.Status> {
             renderStatus(view, retweet, status);
         }
 
+        if (position == 0) {
+            ((MainActivity) context).showTopView();
+        }
+
         return view;
     }
 

@@ -3,7 +3,10 @@
     android:layout_width="fill_parent"
     android:layout_height="?android:attr/listPreferredItemHeight"
     android:baselineAligned="false"
-    android:padding="6dip" >
+    android:paddingTop="6dip"
+    android:paddingRight="6dip"
+    android:paddingBottom="6dip"
+    android:paddingLeft="5dip" >
 
     <LinearLayout
         android:id="@+id/viewWait"
