@@ -137,11 +137,14 @@ public class MainActivity extends FragmentActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        BaseFragment f = mSectionsPagerAdapter.getItem(0);
                         int id = viewPager.getCurrentItem();
                         if (id != 0) {
                             viewPager.setCurrentItem(0);
+                            if (f.isTop()) {
+                                showTopView();
+                            }
                         } else {
-                            BaseFragment f = mSectionsPagerAdapter.getItem(0);
                             f.goToTop();
                         }
                     }
@@ -151,11 +154,14 @@ public class MainActivity extends FragmentActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        BaseFragment f = mSectionsPagerAdapter.getItem(1);
                         int id = viewPager.getCurrentItem();
                         if (id != 1) {
                             viewPager.setCurrentItem(1);
+                            if (f.isTop()) {
+                                showTopView();
+                            }
                         } else {
-                            BaseFragment f = mSectionsPagerAdapter.getItem(1);
                             f.goToTop();
                         }
                     }
