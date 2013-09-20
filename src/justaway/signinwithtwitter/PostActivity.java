@@ -139,6 +139,7 @@ public class PostActivity extends Activity {
 
             }
         });
+
         findViewById(R.id.img).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -147,24 +148,6 @@ public class PostActivity extends Activity {
                 startActivityForResult(intent, 1);
             }
         });
-    }
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            Uri uri = data.getData();
-            ContentResolver cr = getContentResolver();
-            String[] columns = { MediaStore.Images.Media.DATA };
-            Cursor c = cr.query(uri, columns, null, null, null);
-            c.moveToFirst();
-            File path = new File(c.getString(0));
-            if (!path.exists()){
-                return;
-            }
-            this.imgPath = path;
-            showToast("画像セットok");
-            mImgButton.setBackgroundColor(Color.RED);
-        }
 
         // 文字数をカウントしてボタンを制御する
         mEditText.addTextChangedListener(new TextWatcher() {
@@ -192,7 +175,25 @@ public class PostActivity extends Activity {
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
         });
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            Uri uri = data.getData();
+            ContentResolver cr = getContentResolver();
+            String[] columns = { MediaStore.Images.Media.DATA };
+            Cursor c = cr.query(uri, columns, null, null, null);
+            c.moveToFirst();
+            File path = new File(c.getString(0));
+            if (!path.exists()){
+                return;
+            }
+            this.imgPath = path;
+            showToast("画像セットok");
+            mImgButton.setBackgroundColor(Color.RED);
+        }
     }
 
     private class PostTask extends AsyncTask<StatusUpdate, Void, Boolean> {
