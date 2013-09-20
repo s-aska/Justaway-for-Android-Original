@@ -88,6 +88,14 @@ public abstract class BaseFragment extends Fragment {
         }
     }
 
+    public Boolean isTop() {
+        ListView listView = getListView();
+        if (listView != null) {
+            return listView.getFirstVisiblePosition() == 0 ? true : false;
+        }
+        return false;
+    }
+
     /**
      * UserStreamでonStatusを受信した時の挙動
      * @param status
