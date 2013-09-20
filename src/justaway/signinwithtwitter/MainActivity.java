@@ -1,213 +1,382 @@
 package justaway.signinwithtwitter;
 
-import twitter4j.DirectMessage;
-import twitter4j.ResponseList;
-import twitter4j.StallWarning;
 import twitter4j.Status;
-import twitter4j.StatusDeletionNotice;
 import twitter4j.Twitter;
 import twitter4j.TwitterStream;
-import twitter4j.URLEntity;
 import twitter4j.User;
-import twitter4j.UserList;
-import twitter4j.UserStreamListener;
-import android.net.Uri;
+import twitter4j.UserStreamAdapter;
+import android.R.color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.util.SparseArray;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.AdapterView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.ListView;
+import android.widget.Button;
 import android.widget.Toast;
 
-public class MainActivity extends Activity {
+public class MainActivity extends FragmentActivity {
 
     private Twitter twitter;
-    private ListView listView;
-    private static TwitterStream twitterStream;
+    private TwitterStream twitterStream;
+    private SectionsPagerAdapter mSectionsPagerAdapter;
+    private ViewPager viewPager;
     private Status selectedStatus;
+    private User user;
+
+    /**
+     * 自分自身のUserオブジェクト(Twitter) リプのタブでツイートが自分に対してのリプかどうかの判定などで使用している
+     */
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    /**
+     * Twitter REST API用のインスタンス
+     */
+    public Twitter getTwitter() {
+        return twitter;
+    }
+
+    public void setTwitter(Twitter twitter) {
+        this.twitter = twitter;
+    }
+
+    /**
+     * Twitter Streaming API用のインスタンス
+     */
+    public TwitterStream getTwitterStream() {
+        return twitterStream;
+    }
+
+    public void setTwitterStream(TwitterStream twitterStream) {
+        this.twitterStream = twitterStream;
+    }
+
+    /**
+     * タブビューを実現するためのもの、とても大事 サポートパッケージv4から、2系でも使えるパッケージを使用
+     */
+    public ViewPager getViewPager() {
+        return viewPager;
+    }
+
+    public void setViewPager(ViewPager viewPager) {
+        this.viewPager = viewPager;
+    }
+
+    /**
+     * コンテキストメニュー表示時の選択したツイートをセットしている Streaming API対応で勝手に画面がスクロールされる為、
+     * positionから取得されるitemが変わってしまい、どこかに保存する必要があった
+     */
+    public Status getSelectedStatus() {
+        return selectedStatus;
+    }
+
+    public void setSelectedStatus(Status selectedStatus) {
+        this.selectedStatus = selectedStatus;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Guy that does not sleep.
-        this.getWindow().addFlags(
-                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        // スリープさせない指定
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        listView = (ListView) findViewById(R.id.list);
-
-        // コンテキストメニューが使える様になる（デフォルトでロングタップで開く）
-        registerForContextMenu(listView);
-
-        // Status(ツイート)をViewに変換するアダプター
-        TwitterAdapter adapter = new TwitterAdapter(this, R.layout.tweet_row);
-        listView.setAdapter(adapter);
-
-        // シングルタップ時の挙動
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                    int position, long id) {
-                // コンテキストメニュー
-                view.showContextMenu();
-                // ListView listView = (ListView) parent;
-                // Status item = (Status) listView.getItemAtPosition(position);
-                // new FavoriteTask().execute(item.getId());
-            }
-        });
-        final Context c = this;
-        if (!TwitterUtils.hasAccessToken(c)) {
+        // アクセストークンがない場合に認証用のアクティビティを起動する
+        if (!TwitterUtils.hasAccessToken(this)) {
             Intent intent = new Intent(this, SigninActivity.class);
             startActivity(intent);
             finish();
         } else {
-            twitter = TwitterUtils.getTwitterInstance(c);
-            twitterStream = TwitterUtils.getTwitterStreamInstance(c);
-            new GetTimeline().execute();
-            startStreamingTimeline();
+
+            // とりあえず勝手にストリーミング開始するようにしている
+            twitter = TwitterUtils.getTwitterInstance(this);
+            twitterStream = TwitterUtils.getTwitterStreamInstance(this);
+            twitterStream.addListener(getUserStreamAdapter());
+            twitterStream.user();
+
+            // 自分の user_id, screen_name を取得、頻繁に変える人もいるのでSharedPreferenceには保存しない
+            new ProfileTask().execute();
         }
 
-        findViewById(R.id.action_gotop).setOnClickListener(
+        /**
+         * スワイプで動かせるタブを実装するのに最低限必要な実装
+         */
+        mSectionsPagerAdapter = new SectionsPagerAdapter(
+                getSupportFragmentManager());
+        final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+        setViewPager(viewPager);
+        viewPager.setAdapter(mSectionsPagerAdapter);
+
+        /**
+         * タブは前後タブまでは状態が保持されるがそれ以上離れるとViewが破棄されてしまう、
+         * あまりに使いづらいの上限を増やしている、指定値＋前後のタブまでが保持されるようになる
+         * デフォルト値は1（表示しているタブの前後までしか保持されない）
+         */
+        viewPager.setOffscreenPageLimit(3);
+
+        /**
+         * 違うタブだったら移動、同じタブだったら最上部にスクロールという美しい実装
+         * ActionBarのタブに頼っていない為、自力でsetCurrentItemでタブを動かしている
+         * タブの切替がスワイプだけで良い場合はこの処理すら不要
+         */
+        findViewById(R.id.action_timeline).setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        listView.setSelection(0);
+                        int id = viewPager.getCurrentItem();
+                        if (id != 0) {
+                            viewPager.setCurrentItem(0);
+                        } else {
+                            BaseFragment f = mSectionsPagerAdapter.getItem(0);
+                            f.goToTop();
+                        }
                     }
                 });
+
+        findViewById(R.id.action_interactions).setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        int id = viewPager.getCurrentItem();
+                        if (id != 1) {
+                            viewPager.setCurrentItem(1);
+                        } else {
+                            BaseFragment f = mSectionsPagerAdapter.getItem(1);
+                            f.goToTop();
+                        }
+                    }
+                });
+
         findViewById(R.id.action_tweet).setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent intent = new Intent(c, PostActivity.class);
+                        Intent intent = new Intent(v.getContext(),
+                                PostActivity.class);
                         startActivity(intent);
                     }
                 });
     }
 
-    static final int CONTEXT_MENU_REPLY_ID = 1;
-    static final int CONTEXT_MENU_FAV_ID = 2;
-    static final int CONTEXT_MENU_FAVRT_ID = 3;
-    static final int CONTEXT_MENU_RT_ID = 4;
-    static final int CONTEXT_MENU_QT_ID = 5;
-    static final int CONTEXT_MENU_LINK_ID = 6;
-    static final int CONTEXT_MENU_TOFU_ID = 7;
+    @Override
+    protected void onDestroy() {
 
-    public void onCreateContextMenu(ContextMenu menu, View view,
-            ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, view, menuInfo);
-        AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
-        ListView listView = (ListView) view;
-
-        Status item = (Status) listView.getItemAtPosition(info.position);
-        selectedStatus = item;
-        Status retweet = item.getRetweetedStatus();
-
-        menu.setHeaderTitle(item.getText());
-        URLEntity[] urls = retweet != null ? retweet.getURLEntities() : item.getURLEntities();
-        URLEntity[] medias = retweet != null ? retweet.getMediaEntities() : item.getMediaEntities();
-        menu.add(0, CONTEXT_MENU_REPLY_ID, 0, "リプ");
-        menu.add(0, CONTEXT_MENU_QT_ID, 0, "引用");
-        menu.add(0, CONTEXT_MENU_FAV_ID, 0, "ふぁぼ");
-        menu.add(0, CONTEXT_MENU_FAVRT_ID, 0, "ふぁぼ＆公式RT");
-        menu.add(0, CONTEXT_MENU_RT_ID, 0, "公式RT");
-        for (URLEntity url : urls) {
-            menu.add(0, CONTEXT_MENU_LINK_ID, 0, url.getExpandedURL()
-                    .toString());
+        // ちゃんと接続を切らないとアプリが凍結されるらしい
+        if (twitterStream != null) {
+            twitterStream.cleanUp();
+            twitterStream.shutdown();
         }
-        for (URLEntity url : medias) {
-            menu.add(0, CONTEXT_MENU_LINK_ID, 0, url.getExpandedURL()
-                    .toString());
-        }
-        menu.add(0, CONTEXT_MENU_TOFU_ID, 0, "TofuBuster");
+        super.onDestroy();
     }
 
-    public boolean onContextItemSelected(MenuItem item) {
+    /**
+     * 新しいツイートが来たアピ
+     */
+    public void onNewTimeline(Boolean autoScroll) {
+        // 表示中のタブかつ自動スクロール時はハイライトしない
+        if (viewPager.getCurrentItem() == 0 && autoScroll == true) {
+            return;
+        }
+        Button button = (Button) findViewById(R.id.action_timeline);
+        button.setTextColor(getResources().getColor(color.holo_blue_bright));
+    }
 
-        Status status = selectedStatus;
-        Intent intent;
+    /**
+     * 新しいリプが来たアピ
+     */
+    public void onNewTInteractions(Boolean autoScroll) {
+        // 表示中のタブかつ自動スクロール時はハイライトしない
+        if (viewPager.getCurrentItem() == 1 && autoScroll == true) {
+            return;
+        }
+        Button button = (Button) findViewById(R.id.action_interactions);
+        button.setTextColor(getResources().getColor(color.holo_blue_bright));
+    }
 
-        switch (item.getItemId()) {
-        case CONTEXT_MENU_REPLY_ID:
-            intent = new Intent(this, PostActivity.class);
-            String text = "@" + status.getUser().getScreenName() + " ";
-            intent.putExtra("status", text);
-            intent.putExtra("selection", text.length());
-            intent.putExtra("inReplyToStatusId", status.getId());
-            startActivity(intent);
-            return true;
-        case CONTEXT_MENU_QT_ID:
-            intent = new Intent(this, PostActivity.class);
-            intent.putExtra("status",
-                    " https://twitter.com/" + status.getUser().getScreenName()
-                            + "/status/" + String.valueOf(status.getId()));
-            intent.putExtra("inReplyToStatusId", status.getId());
-            startActivity(intent);
-            return true;
-        case CONTEXT_MENU_RT_ID:
-            new RetweetTask().execute(status.getId());
-            return true;
-        case CONTEXT_MENU_FAV_ID:
-            new FavoriteTask().execute(status.getId());
-            return true;
-        case CONTEXT_MENU_FAVRT_ID:
-            new FavoriteTask().execute(status.getId());
-            new RetweetTask().execute(status.getId());
-            return true;
-        case CONTEXT_MENU_LINK_ID:
-            intent = new Intent(Intent.ACTION_VIEW, Uri.parse(item.getTitle()
-                    .toString()));
-            startActivity(intent);
-            return true;
-        case CONTEXT_MENU_TOFU_ID:
-            try {
-                intent = new Intent(
-                        "com.product.kanzmrsw.tofubuster.ACTION_SHOW_TEXT");
-                intent.putExtra(Intent.EXTRA_TEXT, status.getText());
-                intent.putExtra(Intent.EXTRA_SUBJECT, "Justaway");
-                intent.putExtra("isCopyEnabled", true);
-                // インストールされていない場合、startActivityで落ちる
-                startActivity(intent);
-            } catch (Exception e) {
-                intent = new Intent(
-                        Intent.ACTION_VIEW,
-                        Uri.parse("https://market.android.com/details?id=com.product.kanzmrsw.tofubuster"));
-                startActivity(intent);
+    /**
+     * 新しいレコードを見たアピ
+     */
+    public void showTopView() {
+        int id = viewPager.getCurrentItem() == 0 ? R.id.action_timeline
+                : R.id.action_interactions;
+        Button button = (Button) findViewById(id);
+        button.setTextColor(getResources().getColor(color.white));
+    }
+
+    /**
+     * タブの切替毎に必要なFragmentを取得するためのAdapterクラス
+     */
+    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+
+        private SparseArray<BaseFragment> fragments = new SparseArray<BaseFragment>();
+
+        public SectionsPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public BaseFragment getItem(int position) {
+            BaseFragment fragment = fragments.get(position);
+            if (fragment != null) {
+                return fragment;
             }
-            return true;
-        default:
-            return super.onContextItemSelected(item);
+            if (position == 0) {
+                fragment = (BaseFragment) new TimelineFragment();
+            } else if (position == 1) {
+                fragment = (BaseFragment) new InteractionsFragment();
+            } else {
+
+            }
+            fragments.put(position, fragment);
+            return fragment;
         }
+
+        @Override
+        public int getCount() {
+            // タブ数
+            return 2;
+        }
+
+        // @Override
+        // public CharSequence getPageTitle(int position) {
+        // switch (position) {
+        // case 0:
+        // return "Timeline";
+        // case 1:
+        // return "Interactions";
+        // case 2:
+        // return "...";
+        // }
+        // return null;
+        // }
     }
 
+    /**
+     * 弄らないとアプリをバックボタンで閉じる度にタイムラインが初期化されてしまう（アクティビティがfinishされる）
+     * moveTaskToBackはホームボタンを押した時と同じ動き
+     */
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        // タイムラインを残す為にアクティビティをfinish()させずホームに戻す、ホームボタンを押した時と同じ動き
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             moveTaskToBack(true);
         }
         return false;
     }
 
-    private class GetTimeline extends
-            AsyncTask<String, Void, ResponseList<twitter4j.Status>> {
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+        System.out.println(itemId);
+        if (itemId == R.id.signout) {
+            TwitterUtils.resetAccessToken(this);
+            finish();
+        } else if (itemId == R.id.reload) {
+            if (twitterStream != null) {
+                twitterStream.cleanUp();
+                twitterStream.shutdown();
+                twitterStream.user();
+            }
+        }
+        return true;
+    }
+
+    public void showToast(String text) {
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * ストリーミング受信時の処理
+     */
+    private UserStreamAdapter getUserStreamAdapter() {
+        final View view = findViewById(R.id.action_interactions);
+        return new UserStreamAdapter() {
+
+            @Override
+            public void onStatus(Status status) {
+
+                /**
+                 * 自分宛のリプかどうかで渡すタブをスイッチ
+                 */
+                int id = getUser().getId() == status.getInReplyToUserId() ? 1
+                        : 0;
+                BaseFragment fragmen = (BaseFragment) mSectionsPagerAdapter
+                        .getItem(id);
+                if (fragmen != null) {
+                    fragmen.onStatus(status);
+                }
+            }
+
+            @Override
+            public void onFavorite(User arg0, User arg1, Status arg2) {
+
+                final User source = arg0;
+                final Status status = arg2;
+
+                // 自分の fav に反応しない
+                if (source.getId() == getUser().getId()) {
+                    return;
+                }
+
+                // FIXME: 「つながり」的なタブができたらちゃんと実装する
+                view.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        showToast(source.getScreenName() + " fav "
+                                + status.getText());
+                    }
+                });
+            }
+
+            @Override
+            public void onUnfavorite(User arg0, User arg1, Status arg2) {
+
+                final User source = arg0;
+                final Status status = arg2;
+
+                // 自分の unfav に反応しない
+                if (source.getId() == getUser().getId()) {
+                    return;
+                }
+
+                // FIXME: 「つながり」的なタブができたらちゃんと実装する
+                view.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        showToast(source.getScreenName() + " unfav "
+                                + status.getText());
+                    }
+                });
+            }
+        };
+    }
+
+    private class ProfileTask extends AsyncTask<Void, Void, User> {
+
         @Override
-        protected ResponseList<twitter4j.Status> doInBackground(
-                String... params) {
+        protected User doInBackground(Void... params) {
             try {
-                ResponseList<twitter4j.Status> homeTl = twitter
-                        .getHomeTimeline();
-                return homeTl;
+                User user = getTwitter().verifyCredentials();
+                return user;
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -215,17 +384,19 @@ public class MainActivity extends Activity {
         }
 
         @Override
-        protected void onPostExecute(ResponseList<twitter4j.Status> homeTl) {
-            if (homeTl != null) {
-                TwitterAdapter adapter = (TwitterAdapter) listView.getAdapter();
-                adapter.clear();
-                for (twitter4j.Status status : homeTl) {
-                    adapter.add(status);
-                }
-            } else {
-                showToast("Timelineの取得に失敗しました＞＜");
+        protected void onPostExecute(User user) {
+            if (user != null) {
+                setUser(user);
             }
         }
+    }
+
+    public void doFavorite(Long id) {
+        new FavoriteTask().execute(id);
+    }
+
+    public void doRetweet(Long id) {
+        new RetweetTask().execute(id);
     }
 
     private class FavoriteTask extends AsyncTask<Long, Void, Boolean> {
@@ -233,7 +404,7 @@ public class MainActivity extends Activity {
         @Override
         protected Boolean doInBackground(Long... params) {
             try {
-                twitter.createFavorite(params[0]);
+                getTwitter().createFavorite(params[0]);
                 return true;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -256,7 +427,7 @@ public class MainActivity extends Activity {
         protected Boolean doInBackground(Long... params) {
             Long super_sugoi = params[0];
             try {
-                twitter.retweetStatus(super_sugoi);
+                getTwitter().retweetStatus(super_sugoi);
                 return true;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -272,178 +443,5 @@ public class MainActivity extends Activity {
                 showToast("RTに失敗しました＞＜");
             }
         }
-    }
-
-    public void startStreamingTimeline() {
-        UserStreamListener listener = new UserStreamListener() {
-
-            @Override
-            public void onDeletionNotice(StatusDeletionNotice arg0) {
-                System.out.println("deletionnotice");
-            }
-
-            @Override
-            public void onScrubGeo(long arg0, long arg1) {
-                System.out.println("scrubget");
-            }
-
-            @Override
-            public void onStatus(Status status) {
-                // FIXME もうちょっとカッコよく書けそう
-                final Status s = status;
-                listView.post(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        // 表示している要素の位置
-                        int position = listView.getFirstVisiblePosition();
-
-                        // 縦スクロール位置
-                        View view = listView.getChildAt(0);
-                        int y = view != null ? view.getTop() : 0;
-
-                        // 要素を上に追加（ addだと下に追加されてしまう ）
-                        TwitterAdapter adapter = (TwitterAdapter) listView
-                                .getAdapter();
-                        adapter.insert(s, 0);
-
-                        // 少しでもスクロールさせている時は画面を動かさない様にスクロー位置を復元する
-                        if (position != 0 || y != 0) {
-                            listView.setSelectionFromTop(position + 1, y);
-                        }
-                    }
-                });
-            }
-
-            @Override
-            public void onTrackLimitationNotice(int arg0) {
-                System.out.println("trackLimitation");
-            }
-
-            @Override
-            public void onException(Exception arg0) {
-                // TODO Auto-generated method stub
-            }
-
-            @Override
-            public void onBlock(User arg0, User arg1) {
-                // TODO Auto-generated method stub
-            }
-
-            @Override
-            public void onDeletionNotice(long arg0, long arg1) {
-                // TODO Auto-generated method stub
-            }
-
-            @Override
-            public void onDirectMessage(DirectMessage arg0) {
-                // TODO Auto-generated method stub
-            }
-
-            @Override
-            public void onFavorite(User arg0, User arg1, Status arg2) {
-                // TODO Auto-generated method stub
-            }
-
-            @Override
-            public void onFollow(User arg0, User arg1) {
-                // TODO Auto-generated method stub
-            }
-
-            @Override
-            public void onFriendList(long[] arg0) {
-                // TODO Auto-generated method stub
-            }
-
-            @Override
-            public void onUnblock(User arg0, User arg1) {
-                // TODO Auto-generated method stub
-            }
-
-            @Override
-            public void onUnfavorite(User arg0, User arg1, Status arg2) {
-                // TODO Auto-generated method stub
-            }
-
-            @Override
-            public void onUserListCreation(User arg0, UserList arg1) {
-                // TODO Auto-generated method stub
-            }
-
-            @Override
-            public void onUserListDeletion(User arg0, UserList arg1) {
-                // TODO Auto-generated method stub
-            }
-
-            @Override
-            public void onUserListMemberAddition(User arg0, User arg1,
-                    UserList arg2) {
-                // TODO Auto-generated method stub
-            }
-
-            @Override
-            public void onUserListMemberDeletion(User arg0, User arg1,
-                    UserList arg2) {
-                // TODO Auto-generated method stub
-            }
-
-            @Override
-            public void onUserListSubscription(User arg0, User arg1,
-                    UserList arg2) {
-                // TODO Auto-generated method stub
-            }
-
-            @Override
-            public void onUserListUnsubscription(User arg0, User arg1,
-                    UserList arg2) {
-                // TODO Auto-generated method stub
-            }
-
-            @Override
-            public void onUserListUpdate(User arg0, UserList arg1) {
-                // TODO Auto-generated method stub
-            }
-
-            @Override
-            public void onUserProfileUpdate(User arg0) {
-                // TODO Auto-generated method stub
-            }
-
-            @Override
-            public void onStallWarning(StallWarning arg0) {
-                // TODO Auto-generated method stub
-
-            }
-        };
-        twitterStream.addListener(listener);
-        twitterStream.user();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-        case R.id.signout:
-            TwitterUtils.resetAccessToken(this);
-            finish();
-            break;
-        case R.id.reload:
-            new GetTimeline().execute();
-            twitterStream.cleanUp();
-            twitterStream.shutdown();
-            twitterStream.user();
-            break;
-        }
-        return true;
-    }
-
-    private void showToast(String text) {
-        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
 }

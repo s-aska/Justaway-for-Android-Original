@@ -12,10 +12,11 @@
         android:gravity="center_vertical"
         android:orientation="horizontal" >
 
-        <ListView
-            android:id="@+id/list"
+        <android.support.v4.view.ViewPager
+            android:id="@+id/pager"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="fill_parent" >
+        </android.support.v4.view.ViewPager>
     </LinearLayout>
 
     <LinearLayout
@@ -31,10 +32,16 @@
             android:orientation="horizontal" >
 
             <Button
-                android:id="@+id/action_gotop"
+                android:id="@+id/action_timeline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/action_gotop" />
+                android:text="@string/action_timeline" />
+
+            <Button
+                android:id="@+id/action_interactions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/action_interactions" />
         </LinearLayout>
 
         <LinearLayout
@@ -43,7 +50,7 @@
             android:layout_gravity="right"
             android:gravity="right"
             android:orientation="horizontal" >
-            
+
             <Button
                 android:id="@+id/action_tweet"
                 android:layout_width="wrap_content"
