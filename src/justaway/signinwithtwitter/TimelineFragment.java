@@ -1,7 +1,6 @@
 package justaway.signinwithtwitter;
 
 import twitter4j.ResponseList;
-import twitter4j.Status;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
