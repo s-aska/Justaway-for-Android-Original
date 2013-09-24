@@ -2,16 +2,13 @@ package justaway.signinwithtwitter;
 
 import twitter4j.Status;
 import twitter4j.URLEntity;
-import twitter4j.UserStreamAdapter;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.ListFragment;
 import android.view.ContextMenu;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -20,39 +17,15 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 /**
  * タブのベースクラス
  */
-public abstract class BaseFragment extends Fragment {
-
-    private UserStreamAdapter userStreamAdapter;
-    private ListView listView;
-
-    public ListView getListView() {
-        return listView;
-    }
-
-    public void setListView(ListView listView) {
-        this.listView = listView;
-    }
-
-    public UserStreamAdapter getUserStreamAdapter() {
-        return userStreamAdapter;
-    }
-
-    public void setUserStreamAdapter(UserStreamAdapter userStreamAdapter) {
-        this.userStreamAdapter = userStreamAdapter;
-    }
+public class BaseFragment extends ListFragment {
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
-
-        View view = inflater.inflate(R.layout.fragment, container, false);
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
         MainActivity activity = (MainActivity) getActivity();
 
-        ListView listView = (ListView) view.findViewById(R.id.list);
-
-        // onStatusなどから簡単にlistViewが引いてこれるようにセットしておく
-        setListView(listView);
+        ListView listView = getListView();
 
         // コンテキストメニューを使える様にする為の指定、但しデフォルトではロングタップで開く
         registerForContextMenu(listView);
@@ -60,7 +33,7 @@ public abstract class BaseFragment extends Fragment {
         // Status(ツイート)をViewに描写するアダプター
         TwitterAdapter adapter = new TwitterAdapter(activity,
                 R.layout.tweet_row);
-        listView.setAdapter(adapter);
+        setListAdapter(adapter);
 
         /**
          * シングルタップでコンテキストメニューを開くための指定
@@ -72,36 +45,32 @@ public abstract class BaseFragment extends Fragment {
                 view.showContextMenu();
             }
         });
-
-        return view;
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
     }
 
     public void goToTop() {
         ListView listView = getListView();
-        if (listView != null) {
-            listView.setSelection(0);
+        if (listView == null) {
+            getActivity().finish();
+            return;
         }
+        listView.setSelection(0);
     }
 
     public Boolean isTop() {
         ListView listView = getListView();
-        if (listView != null) {
-            return listView.getFirstVisiblePosition() == 0 ? true : false;
+        if (listView == null) {
+            return false;
         }
-        return false;
+        return listView.getFirstVisiblePosition() == 0 ? true : false;
     }
 
     /**
      * UserStreamでonStatusを受信した時の挙動
+     * 
      * @param status
      */
     public void onStatus(Status status) {
-        
+
     };
 
     static final int CONTEXT_MENU_REPLY_ID = 1;
@@ -188,10 +157,9 @@ public abstract class BaseFragment extends Fragment {
             activity.doRetweet(status.getId());
             return true;
         case CONTEXT_MENU_LINK_ID:
-            
+
             /**
-             * 現在は全てIntentでブラウザなどに飛ばしているが、
-             * 画像やツイートは自アプリで参照できるように対応する予定
+             * 現在は全てIntentでブラウザなどに飛ばしているが、 画像やツイートは自アプリで参照できるように対応する予定
              */
             intent = new Intent(Intent.ACTION_VIEW, Uri.parse(item.getTitle()
                     .toString()));
