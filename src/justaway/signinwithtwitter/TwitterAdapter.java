@@ -6,6 +6,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
+import twitter4j.MediaEntity;
 import twitter4j.Status;
 
 import android.annotation.SuppressLint;
@@ -19,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -139,11 +141,31 @@ public class TwitterAdapter extends ArrayAdapter<twitter4j.Status> {
                 System.out.println("icon touch!");
             }
         });
+
+        MediaEntity[] medias = retweet != null ? retweet.getMediaEntities()
+                : status.getMediaEntities();
+        LinearLayout images = (LinearLayout) view.findViewById(R.id.images);
+        images.removeAllViews();
+        if (medias.length > 0) {
+            for (MediaEntity url : medias) {
+                ImageView image = new ImageView(context);
+                image.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                images.addView(image, new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT));
+                renderIcon(null, image, url.getMediaURL());
+            }
+            images.setVisibility(View.VISIBLE);
+        } else {
+            images.setVisibility(View.GONE);
+        }
     }
 
     // アイコンを読み込む
     private void renderIcon(ProgressBar wait, ImageView icon, String url) {
-        wait.setVisibility(View.VISIBLE);
+        if (wait != null) {
+            wait.setVisibility(View.VISIBLE);
+        }
         icon.setVisibility(View.GONE);
         String tag = (String) icon.getTag();
         if (tag != null && tag == url) {
@@ -156,7 +178,9 @@ public class TwitterAdapter extends ArrayAdapter<twitter4j.Status> {
             } else {
                 icon.setImageBitmap(image);
                 icon.setVisibility(View.VISIBLE);
-                wait.setVisibility(View.GONE);
+                if (wait != null) {
+                    wait.setVisibility(View.GONE);
+                }
             }
         }
     }
@@ -215,8 +239,11 @@ public class TwitterAdapter extends ArrayAdapter<twitter4j.Status> {
                     // R.drawable.x));
                 }
                 // プログレスバーを隠し、取得した画像を表示
+                System.out.println(tag);
                 image.setVisibility(View.VISIBLE);
-                bar.setVisibility(View.GONE);
+                if (bar != null) {
+                    bar.setVisibility(View.GONE);
+                }
             }
         }
     }

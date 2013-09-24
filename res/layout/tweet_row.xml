@@ -3,10 +3,10 @@
     android:layout_width="fill_parent"
     android:layout_height="?android:attr/listPreferredItemHeight"
     android:baselineAligned="false"
-    android:paddingTop="6dip"
-    android:paddingRight="6dip"
     android:paddingBottom="6dip"
-    android:paddingLeft="5dip" >
+    android:paddingLeft="5dip"
+    android:paddingRight="6dip"
+    android:paddingTop="6dip" >
 
     <LinearLayout
         android:id="@+id/viewWait"
@@ -76,10 +76,20 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/images"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="4dp"
+            android:gravity="top"
+            android:orientation="vertical" >
+        </LinearLayout>
+
+        <LinearLayout
             android:id="@+id/retweet"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
+            android:layout_marginTop="2dp"
             android:gravity="left" >
 
             <LinearLayout
