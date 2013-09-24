@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import twitter4j.MediaEntity;
 import twitter4j.Status;
@@ -115,16 +117,18 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         ((TextView) view.findViewById(R.id.screen_name)).setText("@"
                 + status.getUser().getScreenName());
         ((TextView) view.findViewById(R.id.status)).setText(status.getText());
-        ((TextView) view.findViewById(R.id.datetime)).setText(status
-                .getCreatedAt().toString());
+        SimpleDateFormat date_format = new SimpleDateFormat(
+                "MM'/'dd' 'hh':'mm':'ss", Locale.ENGLISH);
+        ((TextView) view.findViewById(R.id.datetime)).setText(date_format
+                .format(status.getCreatedAt()));
         ((TextView) view.findViewById(R.id.via)).setText("via "
                 + getClientName(status.getSource()));
 
         // favの場合
         if (favorite != null) {
             ((TextView) view.findViewById(R.id.retweet_by))
-                    .setText("favorited by " + favorite.getScreenName()
-                            + "(" + favorite.getName() + ")");
+                    .setText("favorited by " + favorite.getScreenName() + "("
+                            + favorite.getName() + ")");
             ImageView icon = (ImageView) view.findViewById(R.id.retweet_icon);
             ProgressBar wait = (ProgressBar) view
                     .findViewById(R.id.retweet_wait);
@@ -134,8 +138,9 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         // RTの場合
         else if (retweet != null) {
             ((TextView) view.findViewById(R.id.retweet_by))
-                    .setText("retweeted by " + retweet.getUser().getScreenName()
-                            + "(" + retweet.getUser().getName() + ") and "
+                    .setText("retweeted by "
+                            + retweet.getUser().getScreenName() + "("
+                            + retweet.getUser().getName() + ") and "
                             + String.valueOf(status.getRetweetCount())
                             + " others");
             ImageView icon = (ImageView) view.findViewById(R.id.retweet_icon);
