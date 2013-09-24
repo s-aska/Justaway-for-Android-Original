@@ -239,7 +239,6 @@ public class TwitterAdapter extends ArrayAdapter<twitter4j.Status> {
                     // R.drawable.x));
                 }
                 // プログレスバーを隠し、取得した画像を表示
-                System.out.println(tag);
                 image.setVisibility(View.VISIBLE);
                 if (bar != null) {
                     bar.setVisibility(View.GONE);
