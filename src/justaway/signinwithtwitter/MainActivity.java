@@ -308,36 +308,46 @@ public class MainActivity extends FragmentActivity {
             public void onStatus(Status status) {
 
                 /**
-                 * 自分宛のリプかどうかで渡すタブをスイッチ
+                 * 自分宛のリプまたは自分のツイートのRTは別タブ
                  */
-                int id = getUser().getId() == status.getInReplyToUserId() ? 1
-                        : 0;
+                int id = 0;
+                if (getUser().getId() == status.getInReplyToUserId()) {
+                    id = 1;
+                } else {
+                    Status retweet = status.getRetweetedStatus();
+                    if (retweet != null && getUser().getId() == retweet.getUser().getId()) {
+                        id = 1;
+                    }
+                }
                 BaseFragment fragmen = (BaseFragment) mSectionsPagerAdapter
                         .findFragmentByPosition(id);
                 if (fragmen != null) {
-                    fragmen.onStatus(status);
+                    fragmen.add(Row.newStatus(status));
                 }
             }
 
             @Override
-            public void onFavorite(User arg0, User arg1, Status arg2) {
-
-                final User source = arg0;
-                final Status status = arg2;
+            public void onFavorite(User source, User target, Status status) {
 
                 // 自分の fav に反応しない
                 if (source.getId() == getUser().getId()) {
                     return;
                 }
 
+                final Row row = Row.newFavorite(source, target, status);
+
                 // FIXME: 「つながり」的なタブができたらちゃんと実装する
                 view.post(new Runnable() {
                     @Override
                     public void run() {
-                        showToast(source.getScreenName() + " fav "
-                                + status.getText());
+                        showToast(row.getSource().getScreenName() + " fav "
+                                + row.getStatus().getText());
                     }
                 });
+
+                BaseFragment fragmen = (BaseFragment) mSectionsPagerAdapter
+                        .findFragmentByPosition(1);
+                fragmen.add(row);
             }
 
             @Override
