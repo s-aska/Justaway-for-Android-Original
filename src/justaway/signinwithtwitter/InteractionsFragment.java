@@ -4,27 +4,22 @@ import twitter4j.ResponseList;
 import twitter4j.Status;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ListView;
 
 /**
  * 将来「つながり」タブ予定のタブ、現在はリプしか表示されない
  */
-public class InteractionsFragment extends TimelineFragment {
+public class InteractionsFragment extends BaseFragment {
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
-        View view = super.onCreateView(inflater, container, savedInstanceState);
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
         /**
          * Streamingだけだと淋しいので、初期化時にMeationsTimelineを読み込む
          */
         new LoadMeationsTimeline().execute();
-
-        return view;
     }
 
     /**

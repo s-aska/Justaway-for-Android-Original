@@ -13,7 +13,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.SparseArray;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -137,7 +136,8 @@ public class MainActivity extends FragmentActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        BaseFragment f = mSectionsPagerAdapter.getItem(0);
+                        BaseFragment f = mSectionsPagerAdapter
+                                .findFragmentByPosition(0);
                         int id = viewPager.getCurrentItem();
                         if (id != 0) {
                             viewPager.setCurrentItem(0);
@@ -154,7 +154,8 @@ public class MainActivity extends FragmentActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        BaseFragment f = mSectionsPagerAdapter.getItem(1);
+                        BaseFragment f = mSectionsPagerAdapter
+                                .findFragmentByPosition(1);
                         int id = viewPager.getCurrentItem();
                         if (id != 1) {
                             viewPager.setCurrentItem(1);
@@ -186,6 +187,7 @@ public class MainActivity extends FragmentActivity {
             twitterStream.cleanUp();
             twitterStream.shutdown();
         }
+
         super.onDestroy();
     }
 
@@ -228,27 +230,26 @@ public class MainActivity extends FragmentActivity {
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        private SparseArray<BaseFragment> fragments = new SparseArray<BaseFragment>();
-
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
         @Override
         public BaseFragment getItem(int position) {
-            BaseFragment fragment = fragments.get(position);
-            if (fragment != null) {
-                return fragment;
-            }
-            if (position == 0) {
+            BaseFragment fragment = null;
+            switch (position) {
+            case 0:
                 fragment = (BaseFragment) new TimelineFragment();
-            } else if (position == 1) {
+                break;
+            case 1:
                 fragment = (BaseFragment) new InteractionsFragment();
-            } else {
-
+                break;
             }
-            fragments.put(position, fragment);
             return fragment;
+        }
+
+        public BaseFragment findFragmentByPosition(int position) {
+             return (BaseFragment) instantiateItem(getViewPager(), position);
         }
 
         @Override
@@ -256,19 +257,6 @@ public class MainActivity extends FragmentActivity {
             // タブ数
             return 2;
         }
-
-        // @Override
-        // public CharSequence getPageTitle(int position) {
-        // switch (position) {
-        // case 0:
-        // return "Timeline";
-        // case 1:
-        // return "Interactions";
-        // case 2:
-        // return "...";
-        // }
-        // return null;
-        // }
     }
 
     /**
@@ -292,7 +280,6 @@ public class MainActivity extends FragmentActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
-        System.out.println(itemId);
         if (itemId == R.id.signout) {
             TwitterUtils.resetAccessToken(this);
             finish();
@@ -326,7 +313,7 @@ public class MainActivity extends FragmentActivity {
                 int id = getUser().getId() == status.getInReplyToUserId() ? 1
                         : 0;
                 BaseFragment fragmen = (BaseFragment) mSectionsPagerAdapter
-                        .getItem(id);
+                        .findFragmentByPosition(id);
                 if (fragmen != null) {
                     fragmen.onStatus(status);
                 }

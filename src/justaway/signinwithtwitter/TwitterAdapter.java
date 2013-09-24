@@ -14,7 +14,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.support.v4.util.LruCache;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -148,12 +147,10 @@ public class TwitterAdapter extends ArrayAdapter<twitter4j.Status> {
         icon.setVisibility(View.GONE);
         String tag = (String) icon.getTag();
         if (tag != null && tag == url) {
-            Log.d("Justaway", "[image] " + url + " exists.");
         } else {
             icon.setTag(url);
             Bitmap image = mMemoryCache.get(url);
             if (image == null) {
-                Log.d("Justaway", "[cache] " + url + " loading.");
                 ImageGetTask task = new ImageGetTask(icon, wait);
                 task.execute(url);
             } else {

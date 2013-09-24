@@ -5,9 +5,7 @@ import twitter4j.Status;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ListView;
 
 /**
@@ -16,16 +14,13 @@ import android.widget.ListView;
 public class TimelineFragment extends BaseFragment {
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
-        View view = super.onCreateView(inflater, container, savedInstanceState);
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
         /**
          * Streamingだけだと淋しいので、初期化時にHomeTimelineを読み込む
          */
         new LoadHomeTimeline().execute();
-
-        return view;
     }
 
     /**
