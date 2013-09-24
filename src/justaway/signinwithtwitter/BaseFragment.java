@@ -17,7 +17,7 @@ import android.widget.AdapterView.AdapterContextMenuInfo;
 /**
  * タブのベースクラス
  */
-public class BaseFragment extends ListFragment {
+public abstract class BaseFragment extends ListFragment {
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -69,9 +69,7 @@ public class BaseFragment extends ListFragment {
      * 
      * @param status
      */
-    public void onStatus(Status status) {
-
-    };
+    public abstract void add(Row row);
 
     static final int CONTEXT_MENU_REPLY_ID = 1;
     static final int CONTEXT_MENU_FAV_ID = 2;
@@ -87,7 +85,8 @@ public class BaseFragment extends ListFragment {
 
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
         ListView listView = (ListView) view;
-        Status status = (Status) listView.getItemAtPosition(info.position);
+        Row row = (Row) listView.getItemAtPosition(info.position);
+        Status status = row.getStatus();
 
         /*
          * statusの保持はActivityで行わないとなぜか2タブ目以降の値が保持できない..

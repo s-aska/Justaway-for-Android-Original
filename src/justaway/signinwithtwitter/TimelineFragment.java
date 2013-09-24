@@ -26,9 +26,8 @@ public class TimelineFragment extends BaseFragment {
     /**
      * ページ最上部だと自動的に読み込まれ、スクロールしていると動かないという美しい挙動
      */
-    public void onStatus(Status status) {
+    public void add(final Row row) {
         final ListView listView = getListView();
-        final Status s = status;
         if (listView == null) {
             return;
         }
@@ -45,7 +44,7 @@ public class TimelineFragment extends BaseFragment {
 
                 // 要素を上に追加（ addだと下に追加されてしまう ）
                 TwitterAdapter adapter = (TwitterAdapter) listView.getAdapter();
-                adapter.insert(s, 0);
+                adapter.insert(row, 0);
 
                 // 少しでもスクロールさせている時は画面を動かさない様にスクロー位置を復元する
                 MainActivity activity = (MainActivity) getActivity();
@@ -83,7 +82,7 @@ public class TimelineFragment extends BaseFragment {
                 TwitterAdapter adapter = (TwitterAdapter) listView.getAdapter();
                 adapter.clear();
                 for (twitter4j.Status status : statuses) {
-                    adapter.add(status);
+                    adapter.add(Row.newStatus(status));
                 }
             } else {
                 MainActivity activity = (MainActivity) getActivity();

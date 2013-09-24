@@ -8,6 +8,7 @@ import java.util.ArrayList;
 
 import twitter4j.MediaEntity;
 import twitter4j.Status;
+import twitter4j.User;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -24,9 +25,9 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-public class TwitterAdapter extends ArrayAdapter<twitter4j.Status> {
+public class TwitterAdapter extends ArrayAdapter<Row> {
     private Context context;
-    private ArrayList<twitter4j.Status> statuses = new ArrayList<twitter4j.Status>();
+    private ArrayList<Row> statuses = new ArrayList<Row>();
     private LayoutInflater inflater;
     private int layout;
     private LruCache<String, Bitmap> mMemoryCache;
@@ -58,15 +59,15 @@ public class TwitterAdapter extends ArrayAdapter<twitter4j.Status> {
     }
 
     @Override
-    public void add(twitter4j.Status status) {
-        super.add(status);
-        this.statuses.add(status);
+    public void add(Row row) {
+        super.add(row);
+        this.statuses.add(row);
     }
 
     @Override
-    public void insert(twitter4j.Status status, int index) {
-        super.insert(status, index);
-        this.statuses.add(index, status);
+    public void insert(Row row, int index) {
+        super.insert(row, index);
+        this.statuses.add(index, row);
     }
 
     @Override
@@ -85,16 +86,19 @@ public class TwitterAdapter extends ArrayAdapter<twitter4j.Status> {
         }
 
         // 表示すべきデータの取得
-        Status status = (Status) statuses.get(position);
+        Row row = (Row) statuses.get(position);
+        Status status = row.getStatus();
         if (status == null) {
             return view;
         }
 
         Status retweet = status.getRetweetedStatus();
-        if (retweet == null) {
-            renderStatus(view, status, null);
+        if (row.isFavorite()) {
+            renderStatus(view, status, null, row.getSource());
+        } else if (retweet == null) {
+            renderStatus(view, status, null, null);
         } else {
-            renderStatus(view, retweet, status);
+            renderStatus(view, retweet, status, null);
         }
 
         if (position == 0) {
@@ -104,7 +108,8 @@ public class TwitterAdapter extends ArrayAdapter<twitter4j.Status> {
         return view;
     }
 
-    private void renderStatus(View view, Status status, Status retweet) {
+    private void renderStatus(View view, Status status, Status retweet,
+            User favorite) {
         ((TextView) view.findViewById(R.id.display_name)).setText(status
                 .getUser().getName());
         ((TextView) view.findViewById(R.id.screen_name)).setText("@"
@@ -115,10 +120,21 @@ public class TwitterAdapter extends ArrayAdapter<twitter4j.Status> {
         ((TextView) view.findViewById(R.id.via)).setText("via "
                 + getClientName(status.getSource()));
 
-        // RTの場合
-        if (retweet != null) {
+        // favの場合
+        if (favorite != null) {
             ((TextView) view.findViewById(R.id.retweet_by))
-                    .setText("Retweet By " + retweet.getUser().getScreenName()
+                    .setText("favorited by " + favorite.getScreenName()
+                            + "(" + favorite.getName() + ")");
+            ImageView icon = (ImageView) view.findViewById(R.id.retweet_icon);
+            ProgressBar wait = (ProgressBar) view
+                    .findViewById(R.id.retweet_wait);
+            renderIcon(wait, icon, favorite.getMiniProfileImageURL());
+            view.findViewById(R.id.retweet).setVisibility(View.VISIBLE);
+        }
+        // RTの場合
+        else if (retweet != null) {
+            ((TextView) view.findViewById(R.id.retweet_by))
+                    .setText("retweeted by " + retweet.getUser().getScreenName()
                             + "(" + retweet.getUser().getName() + ") and "
                             + String.valueOf(status.getRetweetCount())
                             + " others");
