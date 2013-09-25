@@ -67,20 +67,19 @@ public class PostActivity extends Activity {
         inReplyToStatusId = intent.getLongExtra("inReplyToStatusId", 0);
 
         if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+            String text = "";
+            String url = "";
+            String hashtags = "";
             Set<String> parameterNames = intent.getData().getQueryParameterNames();
             for (String parameterName : parameterNames){
-                text += intent.getData().getQueryParameter(parameterName)+" ";
-//                switch(parameterName){
-//                case "hashtags":
-//                    text += "#"+intent.getData().getQueryParameter(parameterName);
-//                    break;
-//                default:
-//                    text += intent.getData().getQueryParameter(parameterName)+" ";
-//                }
+                if (parameterName.equals("text"))
+                    text = intent.getData().getQueryParameter(parameterName)+" ";
+                if (parameterName.equals("url"))
+                    url = intent.getData().getQueryParameter(parameterName)+" ";
+                if (parameterName.equals("hashtags"))
+                    hashtags = "#"+intent.getData().getQueryParameter(parameterName);
             }
-            if (text != null) {
-                mEditText.setText(text);
-            }
+            mEditText.setText(text+url+hashtags);
         }
 
         if (Intent.ACTION_SEND.equals(intent.getAction())) {
