@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import twitter4j.DirectMessage;
 import twitter4j.MediaEntity;
 import twitter4j.Status;
 import twitter4j.User;
@@ -102,18 +103,27 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
 
         // 表示すべきデータの取得
         Row row = (Row) statuses.get(position);
-        Status status = row.getStatus();
-        if (status == null) {
-            return view;
-        }
 
-        Status retweet = status.getRetweetedStatus();
-        if (row.isFavorite()) {
-            renderStatus(view, status, null, row.getSource());
-        } else if (retweet == null) {
-            renderStatus(view, status, null, null);
+        if (row.isDirectMessage()) {
+            DirectMessage message = row.getMessage();
+            if (message == null) {
+                return view;
+            }
+            renderMessage(view, message);
         } else {
-            renderStatus(view, retweet, status, null);
+            Status status = row.getStatus();
+            if (status == null) {
+                return view;
+            }
+
+            Status retweet = status.getRetweetedStatus();
+            if (row.isFavorite()) {
+                renderStatus(view, status, null, row.getSource());
+            } else if (retweet == null) {
+                renderStatus(view, status, null, null);
+            } else {
+                renderStatus(view, retweet, status, null);
+            }
         }
 
         if (position == 0) {
@@ -121,6 +131,24 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         }
 
         return view;
+    }
+
+    private void renderMessage(View view, DirectMessage message) {
+        ((TextView) view.findViewById(R.id.display_name)).setText(message
+                .getSender().getName());
+        ((TextView) view.findViewById(R.id.screen_name)).setText("@"
+                + message.getSender().getScreenName());
+        ((TextView) view.findViewById(R.id.status)).setText("D " + message.getRecipientScreenName() + " " + message.getText());
+        SimpleDateFormat date_format = new SimpleDateFormat(
+                "MM'/'dd' 'hh':'mm':'ss", Locale.ENGLISH);
+        ((TextView) view.findViewById(R.id.datetime)).setText(date_format
+                .format(message.getCreatedAt()));
+        view.findViewById(R.id.via).setVisibility(View.GONE);
+        view.findViewById(R.id.retweet).setVisibility(View.GONE);
+        view.findViewById(R.id.images).setVisibility(View.GONE);
+        ImageView icon = (ImageView) view.findViewById(R.id.icon);
+        ProgressBar wait = (ProgressBar) view.findViewById(R.id.WaitBar);
+        renderIcon(wait, icon, message.getSender().getBiggerProfileImageURL());
     }
 
     private void renderStatus(View view, Status status, Status retweet,
@@ -136,6 +164,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                 .format(status.getCreatedAt()));
         ((TextView) view.findViewById(R.id.via)).setText("via "
                 + getClientName(status.getSource()));
+        view.findViewById(R.id.via).setVisibility(View.VISIBLE);
 
         // favの場合
         if (favorite != null) {
@@ -185,8 +214,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                 ImageView image = new ImageView(context);
                 image.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 images.addView(image, new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT));
+                        ViewGroup.LayoutParams.WRAP_CONTENT, 120));
                 renderIcon(null, image, url.getMediaURL());
             }
             images.setVisibility(View.VISIBLE);
