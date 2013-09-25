@@ -61,9 +61,11 @@
 
                 <data
                     android:host="twitter.com"
+                    android:pathPrefix="/intent/tweet"
                     android:scheme="https" />
                 <data
                     android:host="twitter.com"
+                    android:pathPrefix="/intent/tweet"
                     android:scheme="http" />
             </intent-filter>
             <intent-filter>
