@@ -33,6 +33,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     private LayoutInflater inflater;
     private int layout;
     private LruCache<String, Bitmap> mMemoryCache;
+    private static int limit = 500;
 
     public TwitterAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId);
@@ -64,12 +65,24 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     public void add(Row row) {
         super.add(row);
         this.statuses.add(row);
+        this.limitation();
     }
 
     @Override
     public void insert(Row row, int index) {
         super.insert(row, index);
         this.statuses.add(index, row);
+        this.limitation();
+    }
+
+    public void limitation() {
+        int size = this.statuses.size();
+        if (size > limit) {
+            int count = size - limit;
+            for (int i = 0; i < count; i++) {
+                super.remove(this.statuses.remove(size - i - 1));
+            }
+        }
     }
 
     @Override
