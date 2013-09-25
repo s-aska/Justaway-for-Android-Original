@@ -5,6 +5,7 @@ import java.util.Set;
 
 import twitter4j.StatusUpdate;
 import twitter4j.Twitter;
+import android.R.color;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
@@ -21,7 +22,6 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -67,7 +67,6 @@ public class PostActivity extends Activity {
         inReplyToStatusId = intent.getLongExtra("inReplyToStatusId", 0);
 
         if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-
             Set<String> parameterNames = intent.getData().getQueryParameterNames();
             for (String parameterName : parameterNames){
                 text += intent.getData().getQueryParameter(parameterName)+" ";
@@ -79,9 +78,14 @@ public class PostActivity extends Activity {
 //                    text += intent.getData().getQueryParameter(parameterName)+" ";
 //                }
             }
-            if(text != null){
+            if (text != null) {
                 mEditText.setText(text);
             }
+        }
+
+        if (Intent.ACTION_SEND.equals(intent.getAction())) {
+            Uri uri = (Uri) intent.getExtras().get(Intent.EXTRA_STREAM);
+            uriToFile(uri);
         }
 
         findViewById(R.id.tweet).setOnClickListener(new View.OnClickListener() {
@@ -182,18 +186,22 @@ public class PostActivity extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             Uri uri = data.getData();
-            ContentResolver cr = getContentResolver();
-            String[] columns = { MediaStore.Images.Media.DATA };
-            Cursor c = cr.query(uri, columns, null, null, null);
-            c.moveToFirst();
-            File path = new File(c.getString(0));
-            if (!path.exists()){
-                return;
-            }
-            this.imgPath = path;
-            showToast("画像セットok");
-            mImgButton.setBackgroundColor(Color.RED);
+            uriToFile(uri);
         }
+    }
+
+    private void uriToFile(Uri uri) {
+        ContentResolver cr = getContentResolver();
+        String[] columns = { MediaStore.Images.Media.DATA };
+        Cursor c = cr.query(uri, columns, null, null, null);
+        c.moveToFirst();
+        File path = new File(c.getString(0));
+        if (!path.exists()){
+            return;
+        }
+        this.imgPath = path;
+        showToast("画像セットok");
+        mImgButton.setTextColor(getResources().getColor(color.holo_blue_bright));
     }
 
     private class PostTask extends AsyncTask<StatusUpdate, Void, Boolean> {
