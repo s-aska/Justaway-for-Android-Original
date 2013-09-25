@@ -1,5 +1,6 @@
 package justaway.signinwithtwitter;
 
+import twitter4j.DirectMessage;
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterStream;
@@ -27,7 +28,7 @@ public class MainActivity extends FragmentActivity {
     private TwitterStream twitterStream;
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager viewPager;
-    private Status selectedStatus;
+    private Row selectedRow;
     private User user;
 
     /**
@@ -78,12 +79,12 @@ public class MainActivity extends FragmentActivity {
      * コンテキストメニュー表示時の選択したツイートをセットしている Streaming API対応で勝手に画面がスクロールされる為、
      * positionから取得されるitemが変わってしまい、どこかに保存する必要があった
      */
-    public Status getSelectedStatus() {
-        return selectedStatus;
+    public Row getSelectedRow() {
+        return selectedRow;
     }
 
-    public void setSelectedStatus(Status selectedStatus) {
-        this.selectedStatus = selectedStatus;
+    public void setSelectedRow(Row selectedRow) {
+        this.selectedRow = selectedRow;
     }
 
     @Override
@@ -134,13 +135,15 @@ public class MainActivity extends FragmentActivity {
          */
         findViewById(R.id.action_timeline).setOnClickListener(
                 new View.OnClickListener() {
+                    int pageId = 0;
+
                     @Override
                     public void onClick(View v) {
                         BaseFragment f = mSectionsPagerAdapter
-                                .findFragmentByPosition(0);
+                                .findFragmentByPosition(pageId);
                         int id = viewPager.getCurrentItem();
-                        if (id != 0) {
-                            viewPager.setCurrentItem(0);
+                        if (id != pageId) {
+                            viewPager.setCurrentItem(pageId);
                             if (f.isTop()) {
                                 showTopView();
                             }
@@ -152,13 +155,35 @@ public class MainActivity extends FragmentActivity {
 
         findViewById(R.id.action_interactions).setOnClickListener(
                 new View.OnClickListener() {
+                    int pageId = 1;
+
                     @Override
                     public void onClick(View v) {
                         BaseFragment f = mSectionsPagerAdapter
-                                .findFragmentByPosition(1);
+                                .findFragmentByPosition(pageId);
                         int id = viewPager.getCurrentItem();
-                        if (id != 1) {
-                            viewPager.setCurrentItem(1);
+                        if (id != pageId) {
+                            viewPager.setCurrentItem(pageId);
+                            if (f.isTop()) {
+                                showTopView();
+                            }
+                        } else {
+                            f.goToTop();
+                        }
+                    }
+                });
+
+        findViewById(R.id.action_directmessage).setOnClickListener(
+                new View.OnClickListener() {
+                    int pageId = 2;
+
+                    @Override
+                    public void onClick(View v) {
+                        BaseFragment f = mSectionsPagerAdapter
+                                .findFragmentByPosition(pageId);
+                        int id = viewPager.getCurrentItem();
+                        if (id != pageId) {
+                            viewPager.setCurrentItem(pageId);
                             if (f.isTop()) {
                                 showTopView();
                             }
@@ -206,7 +231,7 @@ public class MainActivity extends FragmentActivity {
     /**
      * 新しいリプが来たアピ
      */
-    public void onNewTInteractions(Boolean autoScroll) {
+    public void onNewInteractions(Boolean autoScroll) {
         // 表示中のタブかつ自動スクロール時はハイライトしない
         if (viewPager.getCurrentItem() == 1 && autoScroll == true) {
             return;
@@ -216,11 +241,24 @@ public class MainActivity extends FragmentActivity {
     }
 
     /**
+     * 新しいDMが来たアピ
+     */
+    public void onNewDirectMessage(Boolean autoScroll) {
+        // 表示中のタブかつ自動スクロール時はハイライトしない
+        if (viewPager.getCurrentItem() == 1 && autoScroll == true) {
+            return;
+        }
+        Button button = (Button) findViewById(R.id.action_directmessage);
+        button.setTextColor(getResources().getColor(color.holo_blue_bright));
+    }
+
+    /**
      * 新しいレコードを見たアピ
      */
     public void showTopView() {
         int id = viewPager.getCurrentItem() == 0 ? R.id.action_timeline
-                : R.id.action_interactions;
+                : viewPager.getCurrentItem() == 1 ? R.id.action_interactions
+                        : R.id.action_directmessage;
         Button button = (Button) findViewById(id);
         button.setTextColor(getResources().getColor(color.white));
     }
@@ -244,18 +282,21 @@ public class MainActivity extends FragmentActivity {
             case 1:
                 fragment = (BaseFragment) new InteractionsFragment();
                 break;
+            case 2:
+                fragment = (BaseFragment) new DirectMessageFragment();
+                break;
             }
             return fragment;
         }
 
         public BaseFragment findFragmentByPosition(int position) {
-             return (BaseFragment) instantiateItem(getViewPager(), position);
+            return (BaseFragment) instantiateItem(getViewPager(), position);
         }
 
         @Override
         public int getCount() {
             // タブ数
-            return 2;
+            return 3;
         }
     }
 
@@ -315,7 +356,8 @@ public class MainActivity extends FragmentActivity {
                     id = 1;
                 } else {
                     Status retweet = status.getRetweetedStatus();
-                    if (retweet != null && getUser().getId() == retweet.getUser().getId()) {
+                    if (retweet != null
+                            && getUser().getId() == retweet.getUser().getId()) {
                         id = 1;
                     }
                 }
@@ -369,6 +411,17 @@ public class MainActivity extends FragmentActivity {
                                 + status.getText());
                     }
                 });
+            }
+
+            @Override
+            public void onDirectMessage(DirectMessage directMessage) {
+                // TODO Auto-generated method stub
+                super.onDirectMessage(directMessage);
+                BaseFragment fragmen = (BaseFragment) mSectionsPagerAdapter
+                        .findFragmentByPosition(2);
+                if (fragmen != null) {
+                    fragmen.add(Row.newDirectMessage(directMessage));
+                }
             }
         };
     }

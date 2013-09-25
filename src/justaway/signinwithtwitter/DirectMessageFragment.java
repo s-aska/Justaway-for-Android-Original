@@ -1,15 +1,16 @@
 package justaway.signinwithtwitter;
 
+import java.util.Collections;
+import java.util.Comparator;
+
+import twitter4j.DirectMessage;
 import twitter4j.ResponseList;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
 
-/**
- * 将来「つながり」タブ予定のタブ、現在はリプしか表示されない
- */
-public class InteractionsFragment extends BaseFragment {
+public class DirectMessageFragment extends BaseFragment {
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -18,7 +19,7 @@ public class InteractionsFragment extends BaseFragment {
         /**
          * Streamingだけだと淋しいので、初期化時にMeationsTimelineを読み込む
          */
-        new LoadMeationsTimeline().execute();
+        new LoadDirectMessages().execute();
     }
 
     /**
@@ -49,24 +50,32 @@ public class InteractionsFragment extends BaseFragment {
                 MainActivity activity = (MainActivity) getActivity();
                 if (position != 0 || y != 0) {
                     listView.setSelectionFromTop(position + 1, y);
-                    activity.onNewInteractions(false);
+                    activity.onNewDirectMessage(false);
                 } else {
-                    activity.onNewInteractions(true);
+                    activity.onNewDirectMessage(true);
                 }
             }
         });
     }
 
-    private class LoadMeationsTimeline extends
-            AsyncTask<String, Void, ResponseList<twitter4j.Status>> {
+    private class LoadDirectMessages extends
+            AsyncTask<String, Void, ResponseList<DirectMessage>> {
 
         @Override
-        protected ResponseList<twitter4j.Status> doInBackground(
-                String... params) {
+        protected ResponseList<DirectMessage> doInBackground(String... params) {
             try {
                 MainActivity activity = (MainActivity) getActivity();
-                ResponseList<twitter4j.Status> statuses = activity.getTwitter()
-                        .getMentionsTimeline();
+                ResponseList<DirectMessage> statuses = activity.getTwitter()
+                        .getDirectMessages();
+                statuses.addAll(activity.getTwitter().getSentDirectMessages());
+                Collections.sort(statuses, new Comparator<DirectMessage>() {
+
+                    @Override
+                    public int compare(DirectMessage arg0, DirectMessage arg1) {
+                        return ((DirectMessage) arg1).getCreatedAt().compareTo(
+                                ((DirectMessage) arg0).getCreatedAt());
+                    }
+                });
                 return statuses;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -75,17 +84,17 @@ public class InteractionsFragment extends BaseFragment {
         }
 
         @Override
-        protected void onPostExecute(ResponseList<twitter4j.Status> statuses) {
+        protected void onPostExecute(ResponseList<DirectMessage> statuses) {
             if (statuses != null) {
                 ListView listView = getListView();
                 TwitterAdapter adapter = (TwitterAdapter) listView.getAdapter();
                 adapter.clear();
-                for (twitter4j.Status status : statuses) {
-                    adapter.add(Row.newStatus(status));
+                for (DirectMessage status : statuses) {
+                    adapter.add(Row.newDirectMessage(status));
                 }
             } else {
                 MainActivity activity = (MainActivity) getActivity();
-                activity.showToast("Meationsの取得に失敗しました＞＜");
+                activity.showToast("DirectMessagesの取得に失敗しました＞＜");
             }
         }
     }

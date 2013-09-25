@@ -78,6 +78,7 @@ public abstract class BaseFragment extends ListFragment {
     static final int CONTEXT_MENU_QT_ID = 5;
     static final int CONTEXT_MENU_LINK_ID = 6;
     static final int CONTEXT_MENU_TOFU_ID = 7;
+    static final int CONTEXT_MENU_DM_ID = 8;
 
     public void onCreateContextMenu(ContextMenu menu, View view,
             ContextMenuInfo menuInfo) {
@@ -85,15 +86,22 @@ public abstract class BaseFragment extends ListFragment {
 
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
         ListView listView = (ListView) view;
+        MainActivity activity = (MainActivity) getActivity();
         Row row = (Row) listView.getItemAtPosition(info.position);
-        Status status = row.getStatus();
+        activity.setSelectedRow(row);
+
+        if (row.isDirectMessage()) {
+            menu.setHeaderTitle(row.getMessage().getSenderScreenName());
+            menu.add(0, CONTEXT_MENU_DM_ID, 0, "返信(DM)");
+            return;
+        }
+
 
         /*
          * statusの保持はActivityで行わないとなぜか2タブ目以降の値が保持できない..
          */
-        MainActivity activity = (MainActivity) getActivity();
-        activity.setSelectedStatus(status);
 
+        Status status = row.getStatus();
         Status retweet = status.getRetweetedStatus();
 
         menu.setHeaderTitle(status.getText());
@@ -125,7 +133,8 @@ public abstract class BaseFragment extends ListFragment {
     public boolean onContextItemSelected(MenuItem item) {
 
         MainActivity activity = (MainActivity) getActivity();
-        Status status = activity.getSelectedStatus();
+        Row row = activity.getSelectedRow();
+        Status status = row.getStatus();
         Intent intent;
 
         switch (item.getItemId()) {
@@ -143,6 +152,13 @@ public abstract class BaseFragment extends ListFragment {
                     " https://twitter.com/" + status.getUser().getScreenName()
                             + "/status/" + String.valueOf(status.getId()));
             intent.putExtra("inReplyToStatusId", status.getId());
+            startActivity(intent);
+            return true;
+        case CONTEXT_MENU_DM_ID:
+            String msg = "D " + row.getMessage().getSenderScreenName() + " ";
+            intent = new Intent(activity, PostActivity.class);
+            intent.putExtra("status", msg);
+            intent.putExtra("selection", msg.length());
             startActivity(intent);
             return true;
         case CONTEXT_MENU_RT_ID:
