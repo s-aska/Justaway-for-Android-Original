@@ -14,6 +14,7 @@ import twitter4j.Status;
 import twitter4j.User;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -22,6 +23,7 @@ import android.support.v4.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -138,7 +140,8 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                 .getSender().getName());
         ((TextView) view.findViewById(R.id.screen_name)).setText("@"
                 + message.getSender().getScreenName());
-        ((TextView) view.findViewById(R.id.status)).setText("D " + message.getRecipientScreenName() + " " + message.getText());
+        ((TextView) view.findViewById(R.id.status)).setText("D "
+                + message.getRecipientScreenName() + " " + message.getText());
         SimpleDateFormat date_format = new SimpleDateFormat(
                 "MM'/'dd' 'hh':'mm':'ss", Locale.ENGLISH);
         ((TextView) view.findViewById(R.id.datetime)).setText(date_format
@@ -210,12 +213,24 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         LinearLayout images = (LinearLayout) view.findViewById(R.id.images);
         images.removeAllViews();
         if (medias.length > 0) {
-            for (MediaEntity url : medias) {
+            for (final MediaEntity url : medias) {
                 ImageView image = new ImageView(context);
                 image.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 images.addView(image, new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, 120));
                 renderIcon(null, image, url.getMediaURL());
+                // 画像タップで拡大表示（ピンチイン・ピンチアウト非対応の簡易版）
+                image.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ImageView imageView = new ImageView(context); 
+                        Dialog dialog = new Dialog(context);
+                        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                        dialog.setContentView(imageView);
+                        renderIcon(null, imageView, url.getMediaURL());
+                        dialog.show();
+                    }
+                });
             }
             images.setVisibility(View.VISIBLE);
         } else {
