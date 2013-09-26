@@ -83,8 +83,14 @@ public class PostActivity extends Activity {
         }
 
         if (Intent.ACTION_SEND.equals(intent.getAction())) {
-            Uri uri = (Uri) intent.getExtras().get(Intent.EXTRA_STREAM);
-            uriToFile(uri);
+            if (intent.getExtras().get(Intent.EXTRA_STREAM)!=null) {
+                Uri imgUri = (Uri) intent.getExtras().get(Intent.EXTRA_STREAM);
+                uriToFile(imgUri);
+            } else {
+                String pageUri = intent.getExtras().getCharSequence(Intent.EXTRA_TEXT).toString();
+                String pageTitle = intent.getExtras().getCharSequence(Intent.EXTRA_SUBJECT).toString();
+                mEditText.setText(pageTitle+" "+pageUri);
+            }
         }
 
         findViewById(R.id.tweet).setOnClickListener(new View.OnClickListener() {
