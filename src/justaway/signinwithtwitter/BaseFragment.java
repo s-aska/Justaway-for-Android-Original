@@ -2,14 +2,23 @@ package justaway.signinwithtwitter;
 
 import twitter4j.Status;
 import twitter4j.URLEntity;
+import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.util.DisplayMetrics;
 import android.view.ContextMenu;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.WindowManager;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
@@ -96,7 +105,6 @@ public abstract class BaseFragment extends ListFragment {
             return;
         }
 
-
         /*
          * statusの保持はActivityで行わないとなぜか2タブ目以降の値が保持できない..
          */
@@ -130,6 +138,7 @@ public abstract class BaseFragment extends ListFragment {
         menu.add(0, CONTEXT_MENU_TOFU_ID, 0, "TofuBuster");
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     public boolean onContextItemSelected(MenuItem item) {
 
         MainActivity activity = (MainActivity) getActivity();
@@ -176,9 +185,37 @@ public abstract class BaseFragment extends ListFragment {
             /**
              * 現在は全てIntentでブラウザなどに飛ばしているが、 画像やツイートは自アプリで参照できるように対応する予定
              */
-            intent = new Intent(Intent.ACTION_VIEW, Uri.parse(item.getTitle()
-                    .toString()));
-            startActivity(intent);
+            // いちいちブラウザを開くのはダルイのでWebViewを開くことにする
+            // intent = new Intent(Intent.ACTION_VIEW, Uri.parse(item.getTitle()
+            // .toString()));
+            // startActivity(intent);
+            WebView webView = new WebView(getActivity());
+            webView.getSettings().setLoadWithOverviewMode(true);
+            webView.getSettings().setUseWideViewPort(true);
+            webView.getSettings().setJavaScriptEnabled(true);
+            webView.getSettings().setCacheMode(
+                    WebSettings.LOAD_CACHE_ELSE_NETWORK);
+            webView.getSettings().setBuiltInZoomControls(true);
+            // こいつをセットしないloadUrl出来ない
+            webView.setWebViewClient(new WebViewClient() {
+                @Override
+                public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                    view.loadUrl(url);
+                    return true;
+                }
+            });
+            webView.loadUrl(item.getTitle().toString());
+            Dialog dialog = new Dialog(getActivity());
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            dialog.setContentView(webView);
+            // 標準だとダイアログが大きすぎるので小さくし下に固定で最新のツイートは読めるように
+            DisplayMetrics metrics = getResources().getDisplayMetrics();
+            WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
+            lp.width = (int) (metrics.widthPixels * 1);
+            lp.height = (int) (metrics.heightPixels * 0.75);
+            dialog.getWindow().setAttributes(lp);
+            dialog.getWindow().setGravity(Gravity.BOTTOM);
+            dialog.show();
             return true;
         case CONTEXT_MENU_TOFU_ID:
             try {
