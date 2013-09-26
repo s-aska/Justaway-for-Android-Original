@@ -39,7 +39,6 @@ public class PostActivity extends Activity {
     private Button mImgButton;
     private ProgressDialog mProgressDialog;
     private Long inReplyToStatusId;
-    private String text;
     private File imgPath;
 
     final Context c = this;
@@ -72,12 +71,14 @@ public class PostActivity extends Activity {
             String hashtags = "";
             Set<String> parameterNames = intent.getData().getQueryParameterNames();
             for (String parameterName : parameterNames){
-                if (parameterName.equals("text"))
+                if (parameterName.equals("text")) {
                     text = intent.getData().getQueryParameter(parameterName)+" ";
-                if (parameterName.equals("url"))
+                } else if (parameterName.equals("url")) {
                     url = intent.getData().getQueryParameter(parameterName)+" ";
-                if (parameterName.equals("hashtags"))
+                } else if (parameterName.equals("hashtags")) {
                     hashtags = "#"+intent.getData().getQueryParameter(parameterName);
+                } else {
+                }
             }
             mEditText.setText(text+url+hashtags);
         }
@@ -137,15 +138,14 @@ public class PostActivity extends Activity {
                             String as="";
                             int a = moji-gen.length();
                             for(n=0;a>n;n++){
-                                as = as+"　";    
+                                as = as+"　";
                             }
-                            gen = gen.substring(0,gen.length()-3)+as+" ＜\n";//aの分だけgenの空白を増やす   
+                            gen = gen.substring(0,gen.length()-3)+as+" ＜\n";
                         }
                         gentotsu = gentotsu+gen;
                     }
                 }
                 mEditText.setText("＿"+ue+"＿\n"+gentotsu+"￣"+shita+"￣");
-
             }
         });
 
