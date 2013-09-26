@@ -20,6 +20,8 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
@@ -186,10 +188,7 @@ public abstract class BaseFragment extends ListFragment {
              * 現在は全てIntentでブラウザなどに飛ばしているが、 画像やツイートは自アプリで参照できるように対応する予定
              */
             // いちいちブラウザを開くのはダルイのでWebViewを開くことにする
-            // intent = new Intent(Intent.ACTION_VIEW, Uri.parse(item.getTitle()
-            // .toString()));
-            // startActivity(intent);
-            WebView webView = new WebView(getActivity());
+            WebView webView = new WebView(activity);
             webView.getSettings().setLoadWithOverviewMode(true);
             webView.getSettings().setUseWideViewPort(true);
             webView.getSettings().setJavaScriptEnabled(true);
@@ -204,15 +203,28 @@ public abstract class BaseFragment extends ListFragment {
                     return true;
                 }
             });
-            webView.loadUrl(item.getTitle().toString());
-            Dialog dialog = new Dialog(getActivity());
+            final String url = item.getTitle().toString();
+            webView.loadUrl(url);
+            Dialog dialog = new Dialog(activity);
+            LinearLayout l = new LinearLayout(activity);
+            l.setOrientation(LinearLayout.VERTICAL);
+            Button button = new Button(activity);
+            button.setText("開");
+            button.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                }
+            });
+            l.addView(button);
+            l.addView(webView);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            dialog.setContentView(webView);
+            dialog.setContentView(l);
             // 標準だとダイアログが大きすぎるので小さくし下に固定で最新のツイートは読めるように
             DisplayMetrics metrics = getResources().getDisplayMetrics();
             WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
             lp.width = (int) (metrics.widthPixels * 1);
-            lp.height = (int) (metrics.heightPixels * 0.75);
+            lp.height = (int) (metrics.heightPixels * 0.8);
             dialog.getWindow().setAttributes(lp);
             dialog.getWindow().setGravity(Gravity.BOTTOM);
             dialog.show();
