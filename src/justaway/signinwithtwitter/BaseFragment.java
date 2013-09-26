@@ -2,27 +2,15 @@ package justaway.signinwithtwitter;
 
 import twitter4j.Status;
 import twitter4j.URLEntity;
-import android.app.Dialog;
 import android.content.Intent;
 import android.net.Uri;
-import android.net.http.SslError;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
-import android.util.DisplayMetrics;
 import android.view.ContextMenu;
-import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.view.ContextMenu.ContextMenuInfo;
-import android.view.WindowManager;
-import android.webkit.SslErrorHandler;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
@@ -187,54 +175,9 @@ public abstract class BaseFragment extends ListFragment {
             /**
              * 現在は全てIntentでブラウザなどに飛ばしているが、 画像やツイートは自アプリで参照できるように対応する予定
              */
-            // いちいちブラウザを開くのはダルイのでWebViewを開くことにする
-            WebView webView = new WebView(activity);
-            webView.getSettings().setLoadWithOverviewMode(true);
-            webView.getSettings().setUseWideViewPort(true);
-            webView.getSettings().setAllowFileAccess(false); // deny file://
-            webView.getSettings().setJavaScriptEnabled(false); // deny JavaScript
-            webView.getSettings().setCacheMode(
-                    WebSettings.LOAD_CACHE_ELSE_NETWORK);
-            webView.getSettings().setBuiltInZoomControls(true);
-            // こいつをセットしないloadUrl出来ない
-            webView.setWebViewClient(new WebViewClient() {
-                @Override
-                public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                    view.loadUrl(url);
-                    return true;
-                }
-
-                @Override
-                public void onReceivedSslError(WebView view,
-                        SslErrorHandler handler, SslError error) {
-                    handler.cancel(); // deny ssl error
-                }
-            });
-            final String url = item.getTitle().toString();
-            webView.loadUrl(url);
-            Dialog dialog = new Dialog(activity);
-            LinearLayout l = new LinearLayout(activity);
-            l.setOrientation(LinearLayout.VERTICAL);
-            Button button = new Button(activity);
-            button.setText("開");
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-                }
-            });
-            l.addView(button);
-            l.addView(webView);
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-            dialog.setContentView(l);
-            // 標準だとダイアログが大きすぎるので小さくし下に固定で最新のツイートは読めるように
-            DisplayMetrics metrics = getResources().getDisplayMetrics();
-            WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
-            lp.width = (int) (metrics.widthPixels * 1);
-            lp.height = (int) (metrics.heightPixels * 0.8);
-            dialog.getWindow().setAttributes(lp);
-            dialog.getWindow().setGravity(Gravity.BOTTOM);
-            dialog.show();
+            intent = new Intent(Intent.ACTION_VIEW, Uri.parse(item.getTitle()
+                    .toString()));
+            startActivity(intent);
             return true;
         case CONTEXT_MENU_TOFU_ID:
             try {
