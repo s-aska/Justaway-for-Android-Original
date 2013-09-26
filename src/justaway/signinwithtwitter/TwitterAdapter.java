@@ -24,6 +24,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.webkit.WebView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -219,15 +220,17 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                 images.addView(image, new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, 120));
                 renderIcon(null, image, url.getMediaURL());
-                // 画像タップで拡大表示（ピンチイン・ピンチアウト非対応の簡易版）
+                // 画像タップで拡大表示（ピンチイン・ピンチアウトをWebViewにやらせる）
                 image.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        ImageView imageView = new ImageView(context); 
+                        WebView webView = new WebView(context);
+                        String htmlData = "<style>html,body {margin:0;padding:0}</style><img src=\"" + url.getMediaURL() + "\">";
+                        webView.loadDataWithBaseURL("file:///android_asset/", htmlData, "text/html", "utf-8", null);
+                        webView.getSettings().setBuiltInZoomControls(true);
                         Dialog dialog = new Dialog(context);
                         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                        dialog.setContentView(imageView);
-                        renderIcon(null, imageView, url.getMediaURL());
+                        dialog.setContentView(webView);
                         dialog.show();
                     }
                 });
