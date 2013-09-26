@@ -225,9 +225,11 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                     @Override
                     public void onClick(View v) {
                         WebView webView = new WebView(context);
-                        String htmlData = "<style>html,body {margin:0;padding:0}</style><img src=\"" + url.getMediaURL() + "\">";
-                        webView.loadDataWithBaseURL("file:///android_asset/", htmlData, "text/html", "utf-8", null);
+                        webView.getSettings().setLoadWithOverviewMode(true);
+                        webView.getSettings().setUseWideViewPort(true);
                         webView.getSettings().setBuiltInZoomControls(true);
+                        String htmlData = "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><style>html,body {margin:0;padding:0}img {max-width:100%}</style><img src=\"" + url.getMediaURL() + "\">";
+                        webView.loadDataWithBaseURL("file:///android_asset/", htmlData, "text/html", "utf-8", null);
                         Dialog dialog = new Dialog(context);
                         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                         dialog.setContentView(webView);
