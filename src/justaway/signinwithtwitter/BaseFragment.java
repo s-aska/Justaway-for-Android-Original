@@ -2,10 +2,10 @@ package justaway.signinwithtwitter;
 
 import twitter4j.Status;
 import twitter4j.URLEntity;
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Intent;
 import android.net.Uri;
+import android.net.http.SslError;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.DisplayMetrics;
@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.Window;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.WindowManager;
+import android.webkit.SslErrorHandler;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -140,7 +141,6 @@ public abstract class BaseFragment extends ListFragment {
         menu.add(0, CONTEXT_MENU_TOFU_ID, 0, "TofuBuster");
     }
 
-    @SuppressLint("SetJavaScriptEnabled")
     public boolean onContextItemSelected(MenuItem item) {
 
         MainActivity activity = (MainActivity) getActivity();
@@ -191,7 +191,8 @@ public abstract class BaseFragment extends ListFragment {
             WebView webView = new WebView(activity);
             webView.getSettings().setLoadWithOverviewMode(true);
             webView.getSettings().setUseWideViewPort(true);
-            webView.getSettings().setJavaScriptEnabled(true);
+            webView.getSettings().setAllowFileAccess(false); // deny file://
+            webView.getSettings().setJavaScriptEnabled(false); // deny JavaScript
             webView.getSettings().setCacheMode(
                     WebSettings.LOAD_CACHE_ELSE_NETWORK);
             webView.getSettings().setBuiltInZoomControls(true);
@@ -201,6 +202,12 @@ public abstract class BaseFragment extends ListFragment {
                 public boolean shouldOverrideUrlLoading(WebView view, String url) {
                     view.loadUrl(url);
                     return true;
+                }
+
+                @Override
+                public void onReceivedSslError(WebView view,
+                        SslErrorHandler handler, SslError error) {
+                    handler.cancel(); // deny ssl error
                 }
             });
             final String url = item.getTitle().toString();
