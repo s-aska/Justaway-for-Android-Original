@@ -23,6 +23,7 @@ import android.support.v4.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
@@ -223,11 +224,13 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                 image.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        ImageView image = new ImageView(context);
+                        ScaleImageView image = new ScaleImageView(context);
                         renderIcon(null, image, url.getMediaURL());
                         Dialog dialog = new Dialog(context);
                         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
                         dialog.setContentView(image);
+                        dialog.getWindow().setLayout(LayoutParams.WRAP_CONTENT,
+                                LayoutParams.WRAP_CONTENT);
                         dialog.show();
                     }
                 });
