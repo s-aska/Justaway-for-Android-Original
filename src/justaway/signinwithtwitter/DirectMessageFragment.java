@@ -58,6 +58,22 @@ public class DirectMessageFragment extends BaseFragment {
         });
     }
 
+    public void remove(final long directMessageId) {
+        final ListView listView = getListView();
+        if (listView == null) {
+            return;
+        }
+
+        listView.post(new Runnable() {
+            @Override
+            public void run() {
+
+                TwitterAdapter adapter = (TwitterAdapter) listView.getAdapter();
+                adapter.removeDirectMessage(directMessageId);
+            }
+        });
+    }
+
     private class LoadDirectMessages extends
             AsyncTask<String, Void, ResponseList<DirectMessage>> {
 

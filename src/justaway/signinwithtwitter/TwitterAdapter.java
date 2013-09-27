@@ -79,6 +79,30 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         this.limitation();
     }
 
+    @Override
+    public void remove(Row row) {
+        super.remove(row);
+        this.statuses.remove(row);
+    }
+
+    public void removeStatus(long statusId) {
+        for (Row row: statuses) {
+            if (row.isDirectMessage() != true && row.getStatus().getId() == statusId) {
+                remove(row);
+                break;
+            }
+        }
+    }
+
+    public void removeDirectMessage(long directMessageId) {
+        for (Row row: statuses) {
+            if (row.isDirectMessage() && row.getMessage().getId() == directMessageId) {
+                remove(row);
+                break;
+            }
+        }
+    }
+
     public void limitation() {
         int size = this.statuses.size();
         if (size > limit) {

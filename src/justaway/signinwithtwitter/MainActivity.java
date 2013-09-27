@@ -2,6 +2,7 @@ package justaway.signinwithtwitter;
 
 import twitter4j.DirectMessage;
 import twitter4j.Status;
+import twitter4j.StatusDeletionNotice;
 import twitter4j.Twitter;
 import twitter4j.TwitterStream;
 import twitter4j.User;
@@ -369,6 +370,19 @@ public class MainActivity extends FragmentActivity {
             }
 
             @Override
+            public void onDeletionNotice(
+                    StatusDeletionNotice statusDeletionNotice) {
+                super.onDeletionNotice(statusDeletionNotice);
+                for (int id = 0; id < 2; id++) {
+                    BaseFragment fragmen = (BaseFragment) mSectionsPagerAdapter
+                            .findFragmentByPosition(id);
+                    if (fragmen != null) {
+                        fragmen.removeStatus(statusDeletionNotice.getStatusId());
+                    }
+                }
+            }
+
+            @Override
             public void onFavorite(User source, User target, Status status) {
 
                 // 自分の fav に反応しない
@@ -423,6 +437,16 @@ public class MainActivity extends FragmentActivity {
                     fragmen.add(Row.newDirectMessage(directMessage));
                 }
             }
+
+            @Override
+            public void onDeletionNotice(long directMessageId, long userId) {
+                super.onDeletionNotice(directMessageId, userId);
+                DirectMessageFragment fragmen = (DirectMessageFragment) mSectionsPagerAdapter
+                        .findFragmentByPosition(2);
+                if (fragmen != null) {
+                    fragmen.remove(directMessageId);
+                }
+            }
         };
     }
 
@@ -453,6 +477,14 @@ public class MainActivity extends FragmentActivity {
 
     public void doRetweet(Long id) {
         new RetweetTask().execute(id);
+    }
+
+    public void doDestroyStatus(long id) {
+        new DestroyStatusTask().execute(id);
+    }
+
+    public void doDestroyDirectMessage(Long id) {
+        new DestroyDirectMessageTask().execute(id);
     }
 
     private class FavoriteTask extends AsyncTask<Long, Void, Boolean> {
@@ -497,6 +529,56 @@ public class MainActivity extends FragmentActivity {
                 showToast("RTに成功しました>゜))彡");
             } else {
                 showToast("RTに失敗しました＞＜");
+            }
+        }
+    }
+
+    private class DestroyStatusTask extends AsyncTask<Long, Void, Boolean> {
+        @Override
+        protected Boolean doInBackground(Long... params) {
+            try {
+                getTwitter().destroyStatus(params[0]);
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            if (success) {
+                showToast("ツイ消しに成功しました>゜))彡");
+            } else {
+                showToast("ツイ消しに失敗しました＞＜");
+            }
+        }
+    }
+
+    private class DestroyDirectMessageTask extends AsyncTask<Long, Void, Long> {
+        @Override
+        protected Long doInBackground(Long... params) {
+            try {
+                getTwitter().destroyDirectMessage(params[0]);
+                return params[0];
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Long directMessageId) {
+            if (directMessageId != null) {
+                showToast("DM削除に成功しました>゜))彡");
+                // 自分宛のDMを消してもStreaming APIで拾えないで自力で消す
+                DirectMessageFragment fragmen = (DirectMessageFragment) mSectionsPagerAdapter
+                        .findFragmentByPosition(2);
+                if (fragmen != null) {
+                    fragmen.remove(directMessageId);
+                }
+            } else {
+                showToast("DM削除に失敗しました＞＜");
             }
         }
     }

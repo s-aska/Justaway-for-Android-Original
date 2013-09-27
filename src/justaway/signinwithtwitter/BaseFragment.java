@@ -1,5 +1,6 @@
 package justaway.signinwithtwitter;
 
+import justaway.signinwithtwitter.MainActivity.SectionsPagerAdapter;
 import twitter4j.Status;
 import twitter4j.URLEntity;
 import android.content.Intent;
@@ -70,6 +71,21 @@ public abstract class BaseFragment extends ListFragment {
      * @param status
      */
     public abstract void add(Row row);
+    public void removeStatus(final long statusId) {
+        final ListView listView = getListView();
+        if (listView == null) {
+            return;
+        }
+
+        listView.post(new Runnable() {
+            @Override
+            public void run() {
+
+                TwitterAdapter adapter = (TwitterAdapter) listView.getAdapter();
+                adapter.removeStatus(statusId);
+            }
+        });
+    }
 
     static final int CONTEXT_MENU_REPLY_ID = 1;
     static final int CONTEXT_MENU_FAV_ID = 2;
@@ -79,6 +95,8 @@ public abstract class BaseFragment extends ListFragment {
     static final int CONTEXT_MENU_LINK_ID = 6;
     static final int CONTEXT_MENU_TOFU_ID = 7;
     static final int CONTEXT_MENU_DM_ID = 8;
+    static final int CONTEXT_MENU_RM_DM_ID = 9;
+    static final int CONTEXT_MENU_RM_ID = 10;
 
     public void onCreateContextMenu(ContextMenu menu, View view,
             ContextMenuInfo menuInfo) {
@@ -93,6 +111,7 @@ public abstract class BaseFragment extends ListFragment {
         if (row.isDirectMessage()) {
             menu.setHeaderTitle(row.getMessage().getSenderScreenName());
             menu.add(0, CONTEXT_MENU_DM_ID, 0, "返信(DM)");
+            menu.add(0, CONTEXT_MENU_RM_DM_ID, 0, "ツイ消し(DM)");
             return;
         }
 
@@ -109,6 +128,10 @@ public abstract class BaseFragment extends ListFragment {
         menu.add(0, CONTEXT_MENU_FAV_ID, 0, "ふぁぼ");
         menu.add(0, CONTEXT_MENU_FAVRT_ID, 0, "ふぁぼ＆公式RT");
         menu.add(0, CONTEXT_MENU_RT_ID, 0, "公式RT");
+
+        if (status.getUser().getId() == activity.getUser().getId()) {
+            menu.add(0, CONTEXT_MENU_RM_ID, 0, "ツイ消し");
+        }
 
         // ツイート内のURLへアクセスできるようにメニューに展開する
         URLEntity[] urls = retweet != null ? retweet.getURLEntities() : status
@@ -159,6 +182,12 @@ public abstract class BaseFragment extends ListFragment {
             intent.putExtra("status", msg);
             intent.putExtra("selection", msg.length());
             startActivity(intent);
+            return true;
+        case CONTEXT_MENU_RM_DM_ID:
+            activity.doDestroyDirectMessage(row.getMessage().getId());
+            return true;
+        case CONTEXT_MENU_RM_ID:
+            activity.doDestroyStatus(row.getStatus().getId());
             return true;
         case CONTEXT_MENU_RT_ID:
             activity.doRetweet(status.getId());
