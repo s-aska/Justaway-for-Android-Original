@@ -12,10 +12,10 @@ import twitter4j.DirectMessage;
 import twitter4j.MediaEntity;
 import twitter4j.Status;
 import twitter4j.User;
-
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -177,7 +177,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         renderIcon(wait, icon, message.getSender().getBiggerProfileImageURL());
     }
 
-    private void renderStatus(View view, Status status, Status retweet, User favorite) {
+    private void renderStatus(View view, final Status status, Status retweet, User favorite) {
         ((TextView) view.findViewById(R.id.display_name)).setText(status.getUser().getName());
         ((TextView) view.findViewById(R.id.screen_name)).setText("@"
                 + status.getUser().getScreenName());
@@ -218,7 +218,9 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: UserProfileActivityへ
+                Intent intent = new Intent(v.getContext(), ProfileActivity.class);
+                intent.putExtra("userId", status.getUser().getId());
+                context.startActivity(intent);
                 System.out.println("icon touch!");
             }
         });
