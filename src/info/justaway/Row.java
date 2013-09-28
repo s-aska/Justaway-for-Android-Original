@@ -58,13 +58,15 @@ public class Row {
     public Status getStatus() {
         return status;
     }
+
     public void setStatus(Status status) {
         this.status = status;
     }
-    
+
     public DirectMessage getMessage() {
         return message;
     }
+
     public void setMessage(DirectMessage message) {
         this.message = message;
     }
@@ -72,18 +74,23 @@ public class Row {
     public User getSource() {
         return source;
     }
+
     public void setSource(User source) {
         this.source = source;
     }
+
     public User getTarget() {
         return target;
     }
+
     public void setTarget(User target) {
         this.target = target;
     }
+
     public int getType() {
         return type;
     }
+
     public void setType(int type) {
         this.type = type;
     }

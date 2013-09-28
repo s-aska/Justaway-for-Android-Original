@@ -31,8 +31,7 @@ public abstract class BaseFragment extends ListFragment {
         registerForContextMenu(listView);
 
         // Status(ツイート)をViewに描写するアダプター
-        TwitterAdapter adapter = new TwitterAdapter(activity,
-                R.layout.tweet_row);
+        TwitterAdapter adapter = new TwitterAdapter(activity, R.layout.tweet_row);
         setListAdapter(adapter);
 
         /**
@@ -40,8 +39,7 @@ public abstract class BaseFragment extends ListFragment {
          */
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                    int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 view.showContextMenu();
             }
         });
@@ -70,6 +68,7 @@ public abstract class BaseFragment extends ListFragment {
      * @param status
      */
     public abstract void add(Row row);
+
     public void removeStatus(final long statusId) {
         final ListView listView = getListView();
         if (listView == null) {
@@ -97,8 +96,7 @@ public abstract class BaseFragment extends ListFragment {
     static final int CONTEXT_MENU_RM_DM_ID = 9;
     static final int CONTEXT_MENU_RM_ID = 10;
 
-    public void onCreateContextMenu(ContextMenu menu, View view,
-            ContextMenuInfo menuInfo) {
+    public void onCreateContextMenu(ContextMenu menu, View view, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, view, menuInfo);
 
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
@@ -133,19 +131,16 @@ public abstract class BaseFragment extends ListFragment {
         }
 
         // ツイート内のURLへアクセスできるようにメニューに展開する
-        URLEntity[] urls = retweet != null ? retweet.getURLEntities() : status
-                .getURLEntities();
+        URLEntity[] urls = retweet != null ? retweet.getURLEntities() : status.getURLEntities();
         for (URLEntity url : urls) {
-            menu.add(0, CONTEXT_MENU_LINK_ID, 0, url.getExpandedURL()
-                    .toString());
+            menu.add(0, CONTEXT_MENU_LINK_ID, 0, url.getExpandedURL().toString());
         }
 
         // ツイート内のURL(画像)へアクセスできるようにメニューに展開する
-        URLEntity[] medias = retweet != null ? retweet.getMediaEntities()
-                : status.getMediaEntities();
+        URLEntity[] medias = retweet != null ? retweet.getMediaEntities() : status
+                .getMediaEntities();
         for (URLEntity url : medias) {
-            menu.add(0, CONTEXT_MENU_LINK_ID, 0, url.getExpandedURL()
-                    .toString());
+            menu.add(0, CONTEXT_MENU_LINK_ID, 0, url.getExpandedURL().toString());
         }
 
         menu.add(0, CONTEXT_MENU_TOFU_ID, 0, "TofuBuster");
@@ -169,9 +164,8 @@ public abstract class BaseFragment extends ListFragment {
             return true;
         case CONTEXT_MENU_QT_ID:
             intent = new Intent(activity, PostActivity.class);
-            intent.putExtra("status",
-                    " https://twitter.com/" + status.getUser().getScreenName()
-                            + "/status/" + String.valueOf(status.getId()));
+            intent.putExtra("status", " https://twitter.com/" + status.getUser().getScreenName()
+                    + "/status/" + String.valueOf(status.getId()));
             intent.putExtra("inReplyToStatusId", status.getId());
             startActivity(intent);
             return true;
@@ -203,14 +197,12 @@ public abstract class BaseFragment extends ListFragment {
             /**
              * 現在は全てIntentでブラウザなどに飛ばしているが、 画像やツイートは自アプリで参照できるように対応する予定
              */
-            intent = new Intent(Intent.ACTION_VIEW, Uri.parse(item.getTitle()
-                    .toString()));
+            intent = new Intent(Intent.ACTION_VIEW, Uri.parse(item.getTitle().toString()));
             startActivity(intent);
             return true;
         case CONTEXT_MENU_TOFU_ID:
             try {
-                intent = new Intent(
-                        "com.product.kanzmrsw.tofubuster.ACTION_SHOW_TEXT");
+                intent = new Intent("com.product.kanzmrsw.tofubuster.ACTION_SHOW_TEXT");
                 intent.putExtra(Intent.EXTRA_TEXT, status.getText());
                 intent.putExtra(Intent.EXTRA_SUBJECT, "Justaway");
                 intent.putExtra("isCopyEnabled", true);

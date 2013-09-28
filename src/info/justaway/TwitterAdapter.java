@@ -41,8 +41,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
 
     public TwitterAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId);
-        this.inflater = (LayoutInflater) context
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.context = context;
         this.layout = textViewResourceId;
 
@@ -86,7 +85,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     }
 
     public void removeStatus(long statusId) {
-        for (Row row: statuses) {
+        for (Row row : statuses) {
             if (row.isDirectMessage() != true && row.getStatus().getId() == statusId) {
                 remove(row);
                 break;
@@ -95,7 +94,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     }
 
     public void removeDirectMessage(long directMessageId) {
-        for (Row row: statuses) {
+        for (Row row : statuses) {
             if (row.isDirectMessage() && row.getMessage().getId() == directMessageId) {
                 remove(row);
                 break;
@@ -161,16 +160,15 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     }
 
     private void renderMessage(View view, DirectMessage message) {
-        ((TextView) view.findViewById(R.id.display_name)).setText(message
-                .getSender().getName());
+        ((TextView) view.findViewById(R.id.display_name)).setText(message.getSender().getName());
         ((TextView) view.findViewById(R.id.screen_name)).setText("@"
                 + message.getSender().getScreenName());
-        ((TextView) view.findViewById(R.id.status)).setText("D "
-                + message.getRecipientScreenName() + " " + message.getText());
-        SimpleDateFormat date_format = new SimpleDateFormat(
-                "MM'/'dd' 'hh':'mm':'ss", Locale.ENGLISH);
-        ((TextView) view.findViewById(R.id.datetime)).setText(date_format
-                .format(message.getCreatedAt()));
+        ((TextView) view.findViewById(R.id.status)).setText("D " + message.getRecipientScreenName()
+                + " " + message.getText());
+        SimpleDateFormat date_format = new SimpleDateFormat("MM'/'dd' 'hh':'mm':'ss",
+                Locale.ENGLISH);
+        ((TextView) view.findViewById(R.id.datetime)).setText(date_format.format(message
+                .getCreatedAt()));
         view.findViewById(R.id.via).setVisibility(View.GONE);
         view.findViewById(R.id.retweet).setVisibility(View.GONE);
         view.findViewById(R.id.images).setVisibility(View.GONE);
@@ -179,43 +177,35 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         renderIcon(wait, icon, message.getSender().getBiggerProfileImageURL());
     }
 
-    private void renderStatus(View view, Status status, Status retweet,
-            User favorite) {
-        ((TextView) view.findViewById(R.id.display_name)).setText(status
-                .getUser().getName());
+    private void renderStatus(View view, Status status, Status retweet, User favorite) {
+        ((TextView) view.findViewById(R.id.display_name)).setText(status.getUser().getName());
         ((TextView) view.findViewById(R.id.screen_name)).setText("@"
                 + status.getUser().getScreenName());
         ((TextView) view.findViewById(R.id.status)).setText(status.getText());
-        SimpleDateFormat date_format = new SimpleDateFormat(
-                "MM'/'dd' 'hh':'mm':'ss", Locale.ENGLISH);
-        ((TextView) view.findViewById(R.id.datetime)).setText(date_format
-                .format(status.getCreatedAt()));
-        ((TextView) view.findViewById(R.id.via)).setText("via "
-                + getClientName(status.getSource()));
+        SimpleDateFormat date_format = new SimpleDateFormat("MM'/'dd' 'hh':'mm':'ss",
+                Locale.ENGLISH);
+        ((TextView) view.findViewById(R.id.datetime)).setText(date_format.format(status
+                .getCreatedAt()));
+        ((TextView) view.findViewById(R.id.via))
+                .setText("via " + getClientName(status.getSource()));
         view.findViewById(R.id.via).setVisibility(View.VISIBLE);
 
         // favの場合
         if (favorite != null) {
-            ((TextView) view.findViewById(R.id.retweet_by))
-                    .setText("favorited by " + favorite.getScreenName() + "("
-                            + favorite.getName() + ")");
+            ((TextView) view.findViewById(R.id.retweet_by)).setText("favorited by "
+                    + favorite.getScreenName() + "(" + favorite.getName() + ")");
             ImageView icon = (ImageView) view.findViewById(R.id.retweet_icon);
-            ProgressBar wait = (ProgressBar) view
-                    .findViewById(R.id.retweet_wait);
+            ProgressBar wait = (ProgressBar) view.findViewById(R.id.retweet_wait);
             renderIcon(wait, icon, favorite.getMiniProfileImageURL());
             view.findViewById(R.id.retweet).setVisibility(View.VISIBLE);
         }
         // RTの場合
         else if (retweet != null) {
-            ((TextView) view.findViewById(R.id.retweet_by))
-                    .setText("retweeted by "
-                            + retweet.getUser().getScreenName() + "("
-                            + retweet.getUser().getName() + ") and "
-                            + String.valueOf(status.getRetweetCount())
-                            + " others");
+            ((TextView) view.findViewById(R.id.retweet_by)).setText("retweeted by "
+                    + retweet.getUser().getScreenName() + "(" + retweet.getUser().getName()
+                    + ") and " + String.valueOf(status.getRetweetCount()) + " others");
             ImageView icon = (ImageView) view.findViewById(R.id.retweet_icon);
-            ProgressBar wait = (ProgressBar) view
-                    .findViewById(R.id.retweet_wait);
+            ProgressBar wait = (ProgressBar) view.findViewById(R.id.retweet_wait);
             renderIcon(wait, icon, retweet.getUser().getMiniProfileImageURL());
             view.findViewById(R.id.retweet).setVisibility(View.VISIBLE);
         } else {
@@ -233,8 +223,8 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             }
         });
 
-        MediaEntity[] medias = retweet != null ? retweet.getMediaEntities()
-                : status.getMediaEntities();
+        MediaEntity[] medias = retweet != null ? retweet.getMediaEntities() : status
+                .getMediaEntities();
         LinearLayout images = (LinearLayout) view.findViewById(R.id.images);
         images.removeAllViews();
         if (medias.length > 0) {

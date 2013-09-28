@@ -204,7 +204,8 @@ public class ScaleImageView extends ImageView implements OnTouchListener {
         case MotionEvent.ACTION_POINTER_1_DOWN:
         case MotionEvent.ACTION_POINTER_2_DOWN:
             if (touchCount >= 2) {
-                float distance = distance(event.getX(0), event.getX(1), event.getY(0), event.getY(1));
+                float distance = distance(event.getX(0), event.getX(1), event.getY(0),
+                        event.getY(1));
                 mPrevDistance = distance;
                 isScaling = true;
             } else {
