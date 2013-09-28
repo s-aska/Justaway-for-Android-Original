@@ -95,6 +95,7 @@ public abstract class BaseFragment extends ListFragment {
     static final int CONTEXT_MENU_DM_ID = 8;
     static final int CONTEXT_MENU_RM_DM_ID = 9;
     static final int CONTEXT_MENU_RM_ID = 10;
+    static final int CONTEXT_MENU_TALK_ID = 11;
 
     public void onCreateContextMenu(ContextMenu menu, View view, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, view, menuInfo);
@@ -118,6 +119,7 @@ public abstract class BaseFragment extends ListFragment {
 
         Status status = row.getStatus();
         Status retweet = status.getRetweetedStatus();
+        Status soruce = retweet != null ? retweet : status;
 
         menu.setHeaderTitle(status.getText());
         menu.add(0, CONTEXT_MENU_REPLY_ID, 0, "リプ");
@@ -130,15 +132,18 @@ public abstract class BaseFragment extends ListFragment {
             menu.add(0, CONTEXT_MENU_RM_ID, 0, "ツイ消し");
         }
 
+        if (soruce.getInReplyToStatusId() > 0) {
+            menu.add(0, CONTEXT_MENU_TALK_ID, 0, "会話を表示");
+        }
+
         // ツイート内のURLへアクセスできるようにメニューに展開する
-        URLEntity[] urls = retweet != null ? retweet.getURLEntities() : status.getURLEntities();
+        URLEntity[] urls = soruce.getURLEntities();
         for (URLEntity url : urls) {
             menu.add(0, CONTEXT_MENU_LINK_ID, 0, url.getExpandedURL().toString());
         }
 
         // ツイート内のURL(画像)へアクセスできるようにメニューに展開する
-        URLEntity[] medias = retweet != null ? retweet.getMediaEntities() : status
-                .getMediaEntities();
+        URLEntity[] medias = soruce.getMediaEntities();
         for (URLEntity url : medias) {
             menu.add(0, CONTEXT_MENU_LINK_ID, 0, url.getExpandedURL().toString());
         }
@@ -191,6 +196,13 @@ public abstract class BaseFragment extends ListFragment {
         case CONTEXT_MENU_FAVRT_ID:
             activity.doFavorite(status.getId());
             activity.doRetweet(status.getId());
+            return true;
+        case CONTEXT_MENU_TALK_ID:
+            TalkFragment dialog = new TalkFragment();
+            Bundle args = new Bundle();  
+            args.putLong("statusId", status.getInReplyToStatusId());  
+            dialog.setArguments(args);
+            dialog.show(getActivity().getSupportFragmentManager(),"dialog");
             return true;
         case CONTEXT_MENU_LINK_ID:
 
