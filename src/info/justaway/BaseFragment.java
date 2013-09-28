@@ -156,7 +156,7 @@ public abstract class BaseFragment extends ListFragment {
         MainActivity activity = (MainActivity) getActivity();
         Row row = activity.getSelectedRow();
         Status status = row.getStatus();
-        Status retweet = status.getRetweetedStatus();
+        Status retweet = status != null ? status.getRetweetedStatus() : null;
         Status soruce = retweet != null ? retweet : status;
         Intent intent;
 
