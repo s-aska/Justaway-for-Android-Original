@@ -1,7 +1,9 @@
-package justaway.signinwithtwitter;
+package info.justaway;
 
 import java.io.File;
 import java.util.Set;
+
+import justaway.signinwithtwitter.R;
 
 import twitter4j.StatusUpdate;
 import twitter4j.Twitter;

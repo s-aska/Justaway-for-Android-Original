@@ -1,4 +1,4 @@
-package justaway.signinwithtwitter;
+package info.justaway;
 
 import android.content.Context;
 import android.graphics.Bitmap;

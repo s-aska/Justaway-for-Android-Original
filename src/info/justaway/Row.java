@@ -1,4 +1,4 @@
-package justaway.signinwithtwitter;
+package info.justaway;
 
 import twitter4j.DirectMessage;
 import twitter4j.Status;
