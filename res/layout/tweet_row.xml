@@ -39,7 +39,7 @@
             android:id="@+id/display_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="10sp" />
+            android:textSize="12sp" />
 
         <TextView
             android:id="@+id/screen_name"
@@ -47,14 +47,14 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="2dp"
             android:gravity="center_vertical"
-            android:textSize="8sp" />
+            android:textSize="10sp" />
 
         <TextView
             android:id="@+id/status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="2dp"
-            android:textSize="10sp" />
+            android:textSize="12sp" />
 
         <LinearLayout
             android:id="@+id/images"
