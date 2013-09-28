@@ -156,6 +156,8 @@ public abstract class BaseFragment extends ListFragment {
         MainActivity activity = (MainActivity) getActivity();
         Row row = activity.getSelectedRow();
         Status status = row.getStatus();
+        Status retweet = status.getRetweetedStatus();
+        Status soruce = retweet != null ? retweet : status;
         Intent intent;
 
         switch (item.getItemId()) {
@@ -200,7 +202,7 @@ public abstract class BaseFragment extends ListFragment {
         case CONTEXT_MENU_TALK_ID:
             TalkFragment dialog = new TalkFragment();
             Bundle args = new Bundle();  
-            args.putLong("statusId", status.getInReplyToStatusId());  
+            args.putLong("statusId", soruce.getId());  
             dialog.setArguments(args);
             dialog.show(getActivity().getSupportFragmentManager(),"dialog");
             return true;
