@@ -71,10 +71,10 @@ public class PostActivity extends Activity {
             if (text == null) {
                 text = "";
             }
-            if (url == null) {
+            if (url != null) {
                 text += " " + url;
             }
-            if (hashtags == null) {
+            if (hashtags != null) {
                 text += " #" + hashtags;
             }
             mEditText.setText(text);
@@ -85,10 +85,15 @@ public class PostActivity extends Activity {
                 Uri imgUri = (Uri) intent.getExtras().get(Intent.EXTRA_STREAM);
                 uriToFile(imgUri);
             } else {
-                String pageUri = intent.getExtras().getCharSequence(Intent.EXTRA_TEXT).toString();
-                String pageTitle = intent.getExtras().getCharSequence(Intent.EXTRA_SUBJECT)
-                        .toString();
-                mEditText.setText(pageTitle + " " + pageUri);
+                String pageUri = intent.getExtras().getString(Intent.EXTRA_TEXT);
+                String pageTitle = intent.getExtras().getString(Intent.EXTRA_SUBJECT);
+                if (pageTitle == null) {
+                    pageTitle = ""; 
+                }
+                if (pageUri != null) {
+                    pageTitle += " " + pageUri;
+                }
+                mEditText.setText(pageTitle);
             }
         }
 
