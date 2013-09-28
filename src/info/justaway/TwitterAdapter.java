@@ -8,8 +8,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import justaway.signinwithtwitter.R;
-
 import twitter4j.DirectMessage;
 import twitter4j.MediaEntity;
 import twitter4j.Status;
