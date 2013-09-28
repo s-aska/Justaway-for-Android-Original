@@ -26,13 +26,12 @@ public class SigninActivity extends Activity {
         mCallbackURL = getString(R.string.twitter_callback_url);
         mTwitter = TwitterUtils.getTwitterInstance(this);
 
-        findViewById(R.id.action_start_oauth).setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        startAuthorize();
-                    }
-                });
+        findViewById(R.id.action_start_oauth).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startAuthorize();
+            }
+        });
 
     }
 
@@ -57,8 +56,7 @@ public class SigninActivity extends Activity {
             @Override
             protected void onPostExecute(String url) {
                 if (url != null) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW,
-                            Uri.parse(url));
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                     startActivity(intent);
                 } else {
                     // 失敗
@@ -83,8 +81,7 @@ public class SigninActivity extends Activity {
         protected Boolean doInBackground(String... params) {
             String verifier = params[0];
             try {
-                AccessToken accessToken = mTwitter.getOAuthAccessToken(
-                        mRequestToken, verifier);
+                AccessToken accessToken = mTwitter.getOAuthAccessToken(mRequestToken, verifier);
                 successOAuth(accessToken);
                 return true;
             } catch (Exception e) {

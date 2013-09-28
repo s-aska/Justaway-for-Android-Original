@@ -57,16 +57,13 @@ public class TimelineFragment extends BaseFragment {
         });
     }
 
-    private class LoadHomeTimeline extends
-            AsyncTask<String, Void, ResponseList<twitter4j.Status>> {
+    private class LoadHomeTimeline extends AsyncTask<String, Void, ResponseList<twitter4j.Status>> {
 
         @Override
-        protected ResponseList<twitter4j.Status> doInBackground(
-                String... params) {
+        protected ResponseList<twitter4j.Status> doInBackground(String... params) {
             try {
                 MainActivity activity = (MainActivity) getActivity();
-                ResponseList<twitter4j.Status> statuses = activity.getTwitter()
-                        .getHomeTimeline();
+                ResponseList<twitter4j.Status> statuses = activity.getTwitter().getHomeTimeline();
                 return statuses;
             } catch (Exception e) {
                 e.printStackTrace();

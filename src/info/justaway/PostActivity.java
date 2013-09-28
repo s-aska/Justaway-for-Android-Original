@@ -1,7 +1,6 @@
 package info.justaway;
 
 import java.io.File;
-import java.util.Set;
 
 import twitter4j.StatusUpdate;
 import twitter4j.Twitter;
@@ -66,31 +65,30 @@ public class PostActivity extends Activity {
         inReplyToStatusId = intent.getLongExtra("inReplyToStatusId", 0);
 
         if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-            String text = "";
-            String url = "";
-            String hashtags = "";
-            Set<String> parameterNames = intent.getData().getQueryParameterNames();
-            for (String parameterName : parameterNames){
-                if (parameterName.equals("text")) {
-                    text = intent.getData().getQueryParameter(parameterName)+" ";
-                } else if (parameterName.equals("url")) {
-                    url = intent.getData().getQueryParameter(parameterName)+" ";
-                } else if (parameterName.equals("hashtags")) {
-                    hashtags = "#"+intent.getData().getQueryParameter(parameterName);
-                } else {
-                }
+            String text = intent.getData().getQueryParameter("text");
+            String url = intent.getData().getQueryParameter("url");
+            String hashtags = intent.getData().getQueryParameter("hashtags");
+            if (text == null) {
+                text = "";
             }
-            mEditText.setText(text+url+hashtags);
+            if (url == null) {
+                text += " " + url;
+            }
+            if (hashtags == null) {
+                text += " #" + hashtags;
+            }
+            mEditText.setText(text);
         }
 
         if (Intent.ACTION_SEND.equals(intent.getAction())) {
-            if (intent.getExtras().get(Intent.EXTRA_STREAM)!=null) {
+            if (intent.getExtras().get(Intent.EXTRA_STREAM) != null) {
                 Uri imgUri = (Uri) intent.getExtras().get(Intent.EXTRA_STREAM);
                 uriToFile(imgUri);
             } else {
                 String pageUri = intent.getExtras().getCharSequence(Intent.EXTRA_TEXT).toString();
-                String pageTitle = intent.getExtras().getCharSequence(Intent.EXTRA_SUBJECT).toString();
-                mEditText.setText(pageTitle+" "+pageUri);
+                String pageTitle = intent.getExtras().getCharSequence(Intent.EXTRA_SUBJECT)
+                        .toString();
+                mEditText.setText(pageTitle + " " + pageUri);
             }
         }
 
@@ -102,7 +100,7 @@ public class PostActivity extends Activity {
                 if (inReplyToStatusId > 0) {
                     super_sugoi.setInReplyToStatusId(inReplyToStatusId);
                 }
-                if (imgPath!=null){
+                if (imgPath != null) {
                     super_sugoi.setMedia(imgPath);
                 }
                 new PostTask().execute(super_sugoi);
@@ -112,40 +110,40 @@ public class PostActivity extends Activity {
         findViewById(R.id.suddenly).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String totsuzen = mEditText.getText().toString()+"\n";
+                String totsuzen = mEditText.getText().toString() + "\n";
                 int i;
-                String hito="人";
-                String hunya="^Y";
-                String ue="";
-                String shita="";
-                String gen="";
+                String hito = "人";
+                String hunya = "^Y";
+                String ue = "";
+                String shita = "";
+                String gen = "";
                 int j = 0;
-                String gentotsu ="";
+                String gentotsu = "";
 
                 int len = totsuzen.length();
-                for(i=0;totsuzen.charAt(i)!='\n';i++) {
+                for (i = 0; totsuzen.charAt(i) != '\n'; i++) {
                     ue += hito;
                     shita += hunya;
                 }
-                int moji = i+5;
-                for(i=0;len>i;i++){
-                    if(totsuzen.charAt(i)=='\n'){
-                        gen = "＞ "+totsuzen.substring(j,i)+" ＜\n";
-                        i = i+1;
+                int moji = i + 5;
+                for (i = 0; len > i; i++) {
+                    if (totsuzen.charAt(i) == '\n') {
+                        gen = "＞ " + totsuzen.substring(j, i) + " ＜\n";
+                        i = i + 1;
                         j = i;
-                        if(moji>gen.length()){
+                        if (moji > gen.length()) {
                             int n;
-                            String as="";
-                            int a = moji-gen.length();
-                            for(n=0;a>n;n++){
-                                as = as+"　";
+                            String as = "";
+                            int a = moji - gen.length();
+                            for (n = 0; a > n; n++) {
+                                as = as + "　";
                             }
-                            gen = gen.substring(0,gen.length()-3)+as+" ＜\n";
+                            gen = gen.substring(0, gen.length() - 3) + as + " ＜\n";
                         }
-                        gentotsu = gentotsu+gen;
+                        gentotsu = gentotsu + gen;
                     }
                 }
-                mEditText.setText("＿"+ue+"＿\n"+gentotsu+"￣"+shita+"￣");
+                mEditText.setText("＿" + ue + "＿\n" + gentotsu + "￣" + shita + "￣");
             }
         });
 
@@ -179,8 +177,10 @@ public class PostActivity extends Activity {
                     mTweetButton.setEnabled(true);
                 }
             }
+
             public void afterTextChanged(Editable s) {
             }
+
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
         });
@@ -201,7 +201,7 @@ public class PostActivity extends Activity {
         Cursor c = cr.query(uri, columns, null, null, null);
         c.moveToFirst();
         File path = new File(c.getString(0));
-        if (!path.exists()){
+        if (!path.exists()) {
             return;
         }
         this.imgPath = path;
@@ -257,16 +257,16 @@ public class PostActivity extends Activity {
 
             switch (status) {
             case BatteryManager.BATTERY_STATUS_FULL:
-                mEditText.setText(model+" のバッテリー残量:" +battery+ "% (0゜・◡・♥​​)");
+                mEditText.setText(model + " のバッテリー残量:" + battery + "% (0゜・◡・♥​​)");
                 break;
             case BatteryManager.BATTERY_STATUS_CHARGING:
-                mEditText.setText(model+" のバッテリー残量:" +battery+ "% 充電なう(・◡・♥​​)");
+                mEditText.setText(model + " のバッテリー残量:" + battery + "% 充電なう(・◡・♥​​)");
                 break;
             default:
-                if(level <= 10) {
-                    mEditText.setText(model+" のバッテリー残量:" +battery+ "% (◞‸◟)");
-                }else {
-                    mEditText.setText(model+" のバッテリー残量:" +battery+ "% (・◡・♥​​)");
+                if (level <= 10) {
+                    mEditText.setText(model + " のバッテリー残量:" + battery + "% (◞‸◟)");
+                } else {
+                    mEditText.setText(model + " のバッテリー残量:" + battery + "% (・◡・♥​​)");
                 }
                 break;
             }

@@ -116,8 +116,7 @@ public class MainActivity extends FragmentActivity {
         /**
          * スワイプで動かせるタブを実装するのに最低限必要な実装
          */
-        mSectionsPagerAdapter = new SectionsPagerAdapter(
-                getSupportFragmentManager());
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         setViewPager(viewPager);
         viewPager.setAdapter(mSectionsPagerAdapter);
@@ -134,75 +133,67 @@ public class MainActivity extends FragmentActivity {
          * ActionBarのタブに頼っていない為、自力でsetCurrentItemでタブを動かしている
          * タブの切替がスワイプだけで良い場合はこの処理すら不要
          */
-        findViewById(R.id.action_timeline).setOnClickListener(
-                new View.OnClickListener() {
-                    int pageId = 0;
+        findViewById(R.id.action_timeline).setOnClickListener(new View.OnClickListener() {
+            int pageId = 0;
 
-                    @Override
-                    public void onClick(View v) {
-                        BaseFragment f = mSectionsPagerAdapter
-                                .findFragmentByPosition(pageId);
-                        int id = viewPager.getCurrentItem();
-                        if (id != pageId) {
-                            viewPager.setCurrentItem(pageId);
-                            if (f.isTop()) {
-                                showTopView();
-                            }
-                        } else {
-                            f.goToTop();
-                        }
+            @Override
+            public void onClick(View v) {
+                BaseFragment f = mSectionsPagerAdapter.findFragmentByPosition(pageId);
+                int id = viewPager.getCurrentItem();
+                if (id != pageId) {
+                    viewPager.setCurrentItem(pageId);
+                    if (f.isTop()) {
+                        showTopView();
                     }
-                });
+                } else {
+                    f.goToTop();
+                }
+            }
+        });
 
-        findViewById(R.id.action_interactions).setOnClickListener(
-                new View.OnClickListener() {
-                    int pageId = 1;
+        findViewById(R.id.action_interactions).setOnClickListener(new View.OnClickListener() {
+            int pageId = 1;
 
-                    @Override
-                    public void onClick(View v) {
-                        BaseFragment f = mSectionsPagerAdapter
-                                .findFragmentByPosition(pageId);
-                        int id = viewPager.getCurrentItem();
-                        if (id != pageId) {
-                            viewPager.setCurrentItem(pageId);
-                            if (f.isTop()) {
-                                showTopView();
-                            }
-                        } else {
-                            f.goToTop();
-                        }
+            @Override
+            public void onClick(View v) {
+                BaseFragment f = mSectionsPagerAdapter.findFragmentByPosition(pageId);
+                int id = viewPager.getCurrentItem();
+                if (id != pageId) {
+                    viewPager.setCurrentItem(pageId);
+                    if (f.isTop()) {
+                        showTopView();
                     }
-                });
+                } else {
+                    f.goToTop();
+                }
+            }
+        });
 
-        findViewById(R.id.action_directmessage).setOnClickListener(
-                new View.OnClickListener() {
-                    int pageId = 2;
+        findViewById(R.id.action_directmessage).setOnClickListener(new View.OnClickListener() {
+            int pageId = 2;
 
-                    @Override
-                    public void onClick(View v) {
-                        BaseFragment f = mSectionsPagerAdapter
-                                .findFragmentByPosition(pageId);
-                        int id = viewPager.getCurrentItem();
-                        if (id != pageId) {
-                            viewPager.setCurrentItem(pageId);
-                            if (f.isTop()) {
-                                showTopView();
-                            }
-                        } else {
-                            f.goToTop();
-                        }
+            @Override
+            public void onClick(View v) {
+                BaseFragment f = mSectionsPagerAdapter.findFragmentByPosition(pageId);
+                int id = viewPager.getCurrentItem();
+                if (id != pageId) {
+                    viewPager.setCurrentItem(pageId);
+                    if (f.isTop()) {
+                        showTopView();
                     }
-                });
+                } else {
+                    f.goToTop();
+                }
+            }
+        });
 
-        findViewById(R.id.action_tweet).setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(v.getContext(),
-                                PostActivity.class);
-                        startActivity(intent);
-                    }
-                });
+        findViewById(R.id.action_tweet).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), PostActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -257,9 +248,8 @@ public class MainActivity extends FragmentActivity {
      * 新しいレコードを見たアピ
      */
     public void showTopView() {
-        int id = viewPager.getCurrentItem() == 0 ? R.id.action_timeline
-                : viewPager.getCurrentItem() == 1 ? R.id.action_interactions
-                        : R.id.action_directmessage;
+        int id = viewPager.getCurrentItem() == 0 ? R.id.action_timeline : viewPager
+                .getCurrentItem() == 1 ? R.id.action_interactions : R.id.action_directmessage;
         Button button = (Button) findViewById(id);
         button.setTextColor(getResources().getColor(color.white));
     }
@@ -357,8 +347,7 @@ public class MainActivity extends FragmentActivity {
                     id = 1;
                 } else {
                     Status retweet = status.getRetweetedStatus();
-                    if (retweet != null
-                            && getUser().getId() == retweet.getUser().getId()) {
+                    if (retweet != null && getUser().getId() == retweet.getUser().getId()) {
                         id = 1;
                     }
                 }
@@ -370,8 +359,7 @@ public class MainActivity extends FragmentActivity {
             }
 
             @Override
-            public void onDeletionNotice(
-                    StatusDeletionNotice statusDeletionNotice) {
+            public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
                 super.onDeletionNotice(statusDeletionNotice);
                 for (int id = 0; id < 2; id++) {
                     BaseFragment fragmen = (BaseFragment) mSectionsPagerAdapter
@@ -421,8 +409,7 @@ public class MainActivity extends FragmentActivity {
                 view.post(new Runnable() {
                     @Override
                     public void run() {
-                        showToast(source.getScreenName() + " unfav "
-                                + status.getText());
+                        showToast(source.getScreenName() + " unfav " + status.getText());
                     }
                 });
             }

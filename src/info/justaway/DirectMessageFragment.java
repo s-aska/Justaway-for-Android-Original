@@ -74,15 +74,13 @@ public class DirectMessageFragment extends BaseFragment {
         });
     }
 
-    private class LoadDirectMessages extends
-            AsyncTask<String, Void, ResponseList<DirectMessage>> {
+    private class LoadDirectMessages extends AsyncTask<String, Void, ResponseList<DirectMessage>> {
 
         @Override
         protected ResponseList<DirectMessage> doInBackground(String... params) {
             try {
                 MainActivity activity = (MainActivity) getActivity();
-                ResponseList<DirectMessage> statuses = activity.getTwitter()
-                        .getDirectMessages();
+                ResponseList<DirectMessage> statuses = activity.getTwitter().getDirectMessages();
                 statuses.addAll(activity.getTwitter().getSentDirectMessages());
                 Collections.sort(statuses, new Comparator<DirectMessage>() {
 

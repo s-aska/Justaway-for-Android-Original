@@ -24,8 +24,7 @@ public class TwitterUtils {
      */
     public static Twitter getTwitterInstance(Context context) {
         String consumerKey = context.getString(R.string.twitter_consumer_key);
-        String consumerSecret = context
-                .getString(R.string.twitter_consumer_secret);
+        String consumerSecret = context.getString(R.string.twitter_consumer_secret);
 
         TwitterFactory factory = new TwitterFactory();
         Twitter twitter = factory.getInstance();
@@ -46,8 +45,7 @@ public class TwitterUtils {
      */
     public static TwitterStream getTwitterStreamInstance(Context context) {
         String consumerKey = context.getString(R.string.twitter_consumer_key);
-        String consumerSecret = context
-                .getString(R.string.twitter_consumer_secret);
+        String consumerSecret = context.getString(R.string.twitter_consumer_secret);
 
         SharedPreferences preferences = context.getSharedPreferences(PREF_NAME,
                 Context.MODE_PRIVATE);
@@ -57,11 +55,9 @@ public class TwitterUtils {
 
         ConfigurationBuilder confbuilder = new ConfigurationBuilder();
         Configuration conf = confbuilder.setOAuthConsumerKey(consumerKey)
-                .setOAuthConsumerSecret(consumerSecret)
-                .setOAuthAccessToken(token)
+                .setOAuthConsumerSecret(consumerSecret).setOAuthAccessToken(token)
                 .setOAuthAccessTokenSecret(tokenSecret).build();
-        TwitterStream twitterStream = new TwitterStreamFactory(conf)
-                .getInstance();
+        TwitterStream twitterStream = new TwitterStreamFactory(conf).getInstance();
         return twitterStream;
     }
 
