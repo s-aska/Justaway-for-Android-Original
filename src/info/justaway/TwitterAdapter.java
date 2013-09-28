@@ -1,4 +1,4 @@
-package justaway.signinwithtwitter;
+package info.justaway;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,6 +7,8 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
+
+import justaway.signinwithtwitter.R;
 
 import twitter4j.DirectMessage;
 import twitter4j.MediaEntity;

@@ -1,4 +1,4 @@
-package justaway.signinwithtwitter;
+package info.justaway;
 
 import java.util.Collections;
 import java.util.Comparator;

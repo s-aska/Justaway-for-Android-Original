@@ -1,6 +1,7 @@
-package justaway.signinwithtwitter;
+package info.justaway;
 
-import justaway.signinwithtwitter.MainActivity.SectionsPagerAdapter;
+import info.justaway.MainActivity.SectionsPagerAdapter;
+import justaway.signinwithtwitter.R;
 import twitter4j.Status;
 import twitter4j.URLEntity;
 import android.content.Intent;

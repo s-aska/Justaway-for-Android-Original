@@ -1,4 +1,4 @@
-package justaway.signinwithtwitter;
+package info.justaway;
 
 import twitter4j.ResponseList;
 
