@@ -1,6 +1,5 @@
 package info.justaway;
 
-import justaway.signinwithtwitter.R;
 import twitter4j.DirectMessage;
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
