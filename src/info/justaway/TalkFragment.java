@@ -65,7 +65,6 @@ public class TalkFragment extends DialogFragment {
         @Override
         protected twitter4j.Status doInBackground(Long... params) {
             try {
-                System.out.println(params[0]);
                 return twitter.showStatus(params[0]);
             } catch (Exception e) {
                 e.printStackTrace();
