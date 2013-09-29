@@ -21,10 +21,22 @@ import android.widget.TextView;
 
 public class ProfileActivity extends Activity {
 
-    private Twitter twitter;
-    private TextView mTextVIew;
-    private ImageView icon;
     private Context context;
+    private Twitter twitter;
+    private TextView screenName;
+    private ImageView icon;
+    private TextView name;
+    private TextView location;
+    private TextView url;
+    private TextView description;
+    private TextView statusesCount;
+    private TextView favouritesCount;
+    private TextView friendsCount;
+    private TextView followersCount;
+    private TextView listedCount;
+    private TextView createdAt;
+
+    // private TextView addedToTwitter;
 
     /**
      * Twitter REST API用のインスタンス
@@ -44,7 +56,17 @@ public class ProfileActivity extends Activity {
         context = this;
 
         twitter = TwitterUtils.getTwitterInstance(this);
-        mTextVIew =  (TextView) findViewById(R.id.userId);
+        screenName = (TextView) findViewById(R.id.screenName);
+        name = (TextView) findViewById(R.id.name);
+        location = (TextView) findViewById(R.id.location);
+        url = (TextView) findViewById(R.id.url);
+        description = (TextView) findViewById(R.id.description);
+        statusesCount = (TextView) findViewById(R.id.statusesCount);
+        favouritesCount = (TextView) findViewById(R.id.favouritesCount);
+        friendsCount = (TextView) findViewById(R.id.friendsCount);
+        followersCount = (TextView) findViewById(R.id.followersCount);
+        listedCount = (TextView) findViewById(R.id.listedCount);
+        createdAt = (TextView) findViewById(R.id.createdAt);
         icon = (ImageView) findViewById(R.id.icon);
 
         Intent intent = getIntent();
@@ -69,12 +91,33 @@ public class ProfileActivity extends Activity {
         @Override
         protected void onPostExecute(User user) {
             if (user != null) {
-                mTextVIew.setText(user.getScreenName());
+                screenName.setText("@" + user.getScreenName());
+                name.setText(user.getName());
+                if (user.getLocation() != null) {
+                    location.setText(user.getLocation());
+                } else {
+                    location.setText("");
+                }
+                if (user.getURL() != null) {
+                    url.setText(String.valueOf(user.getURL()));
+                } else {
+                    url.setText("");
+                }
+                if (user.getDescription() != null) {
+                    description.setText(user.getDescription());
+                } else {
+                    description.setText("");
+                }
+                favouritesCount.setText(String.valueOf(user.getFavouritesCount()));
+                statusesCount.setText(String.valueOf(user.getStatusesCount()));
+                friendsCount.setText(String.valueOf(user.getFriendsCount()));
+                followersCount.setText(String.valueOf(user.getFollowersCount()));
+                listedCount.setText(String.valueOf(user.getListedCount()));
+                createdAt.setText(user.getCreatedAt().toString());
                 String iconUrl = user.getBiggerProfileImageURL();
                 icon.setTag(iconUrl);
-                ProgressBar wait =  (ProgressBar) findViewById(R.id.WaitBar);
+                ProgressBar wait = (ProgressBar) findViewById(R.id.WaitBar);
                 new ImageGetTask(icon, wait).execute(iconUrl);
-
             }
         }
     }
