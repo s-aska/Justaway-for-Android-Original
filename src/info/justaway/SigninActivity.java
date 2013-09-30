@@ -1,6 +1,5 @@
 package info.justaway;
 
-import info.justaway.util.TwitterUtils;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.auth.AccessToken;
@@ -24,8 +23,10 @@ public class SigninActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signin);
 
+        JustawayApplication application = JustawayApplication.getApplication();
+        
         mCallbackURL = getString(R.string.twitter_callback_url);
-        mTwitter = TwitterUtils.getTwitterInstance(this);
+        mTwitter = application.getTwitter();
 
         findViewById(R.id.action_start_oauth).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -102,7 +103,8 @@ public class SigninActivity extends Activity {
     }
 
     private void successOAuth(AccessToken accessToken) {
-        TwitterUtils.storeAccessToken(this, accessToken);
+        JustawayApplication application = JustawayApplication.getApplication();
+        application.setAccessToken(accessToken);
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();
