@@ -1,16 +1,18 @@
-package info.justaway;
+package info.justaway.fragment;
 
-import java.util.Collections;
-import java.util.Comparator;
-
-import twitter4j.DirectMessage;
+import info.justaway.MainActivity;
+import info.justaway.adapter.TwitterAdapter;
+import info.justaway.model.Row;
 import twitter4j.ResponseList;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
 
-public class DirectMessageFragment extends BaseFragment {
+/**
+ * 将来「つながり」タブ予定のタブ、現在はリプしか表示されない
+ */
+public class InteractionsFragment extends BaseFragment {
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -19,7 +21,7 @@ public class DirectMessageFragment extends BaseFragment {
         /**
          * Streamingだけだと淋しいので、初期化時にMeationsTimelineを読み込む
          */
-        new LoadDirectMessages().execute();
+        new LoadMeationsTimeline().execute();
     }
 
     /**
@@ -50,46 +52,23 @@ public class DirectMessageFragment extends BaseFragment {
                 MainActivity activity = (MainActivity) getActivity();
                 if (position != 0 || y != 0) {
                     listView.setSelectionFromTop(position + 1, y);
-                    activity.onNewDirectMessage(false);
+                    activity.onNewInteractions(false);
                 } else {
-                    activity.onNewDirectMessage(true);
+                    activity.onNewInteractions(true);
                 }
             }
         });
     }
 
-    public void remove(final long directMessageId) {
-        final ListView listView = getListView();
-        if (listView == null) {
-            return;
-        }
-
-        listView.post(new Runnable() {
-            @Override
-            public void run() {
-
-                TwitterAdapter adapter = (TwitterAdapter) listView.getAdapter();
-                adapter.removeDirectMessage(directMessageId);
-            }
-        });
-    }
-
-    private class LoadDirectMessages extends AsyncTask<String, Void, ResponseList<DirectMessage>> {
+    private class LoadMeationsTimeline extends
+            AsyncTask<String, Void, ResponseList<twitter4j.Status>> {
 
         @Override
-        protected ResponseList<DirectMessage> doInBackground(String... params) {
+        protected ResponseList<twitter4j.Status> doInBackground(String... params) {
             try {
                 MainActivity activity = (MainActivity) getActivity();
-                ResponseList<DirectMessage> statuses = activity.getTwitter().getDirectMessages();
-                statuses.addAll(activity.getTwitter().getSentDirectMessages());
-                Collections.sort(statuses, new Comparator<DirectMessage>() {
-
-                    @Override
-                    public int compare(DirectMessage arg0, DirectMessage arg1) {
-                        return ((DirectMessage) arg1).getCreatedAt().compareTo(
-                                ((DirectMessage) arg0).getCreatedAt());
-                    }
-                });
+                ResponseList<twitter4j.Status> statuses = activity.getTwitter()
+                        .getMentionsTimeline();
                 return statuses;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -98,17 +77,17 @@ public class DirectMessageFragment extends BaseFragment {
         }
 
         @Override
-        protected void onPostExecute(ResponseList<DirectMessage> statuses) {
+        protected void onPostExecute(ResponseList<twitter4j.Status> statuses) {
             if (statuses != null) {
                 ListView listView = getListView();
                 TwitterAdapter adapter = (TwitterAdapter) listView.getAdapter();
                 adapter.clear();
-                for (DirectMessage status : statuses) {
-                    adapter.add(Row.newDirectMessage(status));
+                for (twitter4j.Status status : statuses) {
+                    adapter.add(Row.newStatus(status));
                 }
             } else {
                 MainActivity activity = (MainActivity) getActivity();
-                activity.showToast("DirectMessagesの取得に失敗しました＞＜");
+                activity.showToast("Meationsの取得に失敗しました＞＜");
             }
         }
     }

@@ -1,25 +1,29 @@
-package info.justaway;
+package info.justaway.fragment;
 
+import info.justaway.MainActivity;
+import info.justaway.adapter.TwitterAdapter;
+import info.justaway.model.Row;
+
+import java.util.Collections;
+import java.util.Comparator;
+
+import twitter4j.DirectMessage;
 import twitter4j.ResponseList;
-
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
 
-/**
- * タイムライン、すべての始まり
- */
-public class TimelineFragment extends BaseFragment {
+public class DirectMessageFragment extends BaseFragment {
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
         /**
-         * Streamingだけだと淋しいので、初期化時にHomeTimelineを読み込む
+         * Streamingだけだと淋しいので、初期化時にMeationsTimelineを読み込む
          */
-        new LoadHomeTimeline().execute();
+        new LoadDirectMessages().execute();
     }
 
     /**
@@ -30,6 +34,7 @@ public class TimelineFragment extends BaseFragment {
         if (listView == null) {
             return;
         }
+
         listView.post(new Runnable() {
             @Override
             public void run() {
@@ -49,21 +54,46 @@ public class TimelineFragment extends BaseFragment {
                 MainActivity activity = (MainActivity) getActivity();
                 if (position != 0 || y != 0) {
                     listView.setSelectionFromTop(position + 1, y);
-                    activity.onNewTimeline(false);
+                    activity.onNewDirectMessage(false);
                 } else {
-                    activity.onNewTimeline(true);
+                    activity.onNewDirectMessage(true);
                 }
             }
         });
     }
 
-    private class LoadHomeTimeline extends AsyncTask<String, Void, ResponseList<twitter4j.Status>> {
+    public void remove(final long directMessageId) {
+        final ListView listView = getListView();
+        if (listView == null) {
+            return;
+        }
+
+        listView.post(new Runnable() {
+            @Override
+            public void run() {
+
+                TwitterAdapter adapter = (TwitterAdapter) listView.getAdapter();
+                adapter.removeDirectMessage(directMessageId);
+            }
+        });
+    }
+
+    private class LoadDirectMessages extends AsyncTask<String, Void, ResponseList<DirectMessage>> {
 
         @Override
-        protected ResponseList<twitter4j.Status> doInBackground(String... params) {
+        protected ResponseList<DirectMessage> doInBackground(String... params) {
             try {
                 MainActivity activity = (MainActivity) getActivity();
-                ResponseList<twitter4j.Status> statuses = activity.getTwitter().getHomeTimeline();
+                ResponseList<DirectMessage> statuses = activity.getTwitter().getDirectMessages();
+                statuses.addAll(activity.getTwitter().getSentDirectMessages());
+                Collections.sort(statuses, new Comparator<DirectMessage>() {
+
+                    @Override
+                    public int compare(DirectMessage arg0, DirectMessage arg1) {
+                        return ((DirectMessage) arg1).getCreatedAt().compareTo(
+                                ((DirectMessage) arg0).getCreatedAt());
+                    }
+                });
                 return statuses;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -72,17 +102,17 @@ public class TimelineFragment extends BaseFragment {
         }
 
         @Override
-        protected void onPostExecute(ResponseList<twitter4j.Status> statuses) {
+        protected void onPostExecute(ResponseList<DirectMessage> statuses) {
             if (statuses != null) {
                 ListView listView = getListView();
                 TwitterAdapter adapter = (TwitterAdapter) listView.getAdapter();
                 adapter.clear();
-                for (twitter4j.Status status : statuses) {
-                    adapter.add(Row.newStatus(status));
+                for (DirectMessage status : statuses) {
+                    adapter.add(Row.newDirectMessage(status));
                 }
             } else {
                 MainActivity activity = (MainActivity) getActivity();
-                activity.showToast("Timelineの取得に失敗しました＞＜");
+                activity.showToast("DirectMessagesの取得に失敗しました＞＜");
             }
         }
     }

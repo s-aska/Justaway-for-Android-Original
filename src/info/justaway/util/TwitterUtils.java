@@ -1,5 +1,6 @@
-package info.justaway;
+package info.justaway.util;
 
+import info.justaway.R;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;

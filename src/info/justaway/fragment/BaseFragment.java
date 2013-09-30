@@ -1,5 +1,10 @@
-package info.justaway;
+package info.justaway.fragment;
 
+import info.justaway.MainActivity;
+import info.justaway.PostActivity;
+import info.justaway.R;
+import info.justaway.adapter.TwitterAdapter;
+import info.justaway.model.Row;
 import twitter4j.Status;
 import twitter4j.URLEntity;
 import android.content.Intent;

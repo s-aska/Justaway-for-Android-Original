@@ -1,5 +1,7 @@
 package info.justaway;
 
+import info.justaway.util.TwitterUtils;
+
 import java.io.File;
 
 import twitter4j.StatusUpdate;

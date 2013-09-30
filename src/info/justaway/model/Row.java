@@ -1,4 +1,4 @@
-package info.justaway;
+package info.justaway.model;
 
 import twitter4j.DirectMessage;
 import twitter4j.Status;
