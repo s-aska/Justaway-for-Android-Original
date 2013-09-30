@@ -1,4 +1,10 @@
-package info.justaway;
+package info.justaway.adapter;
+
+import info.justaway.MainActivity;
+import info.justaway.ProfileActivity;
+import info.justaway.R;
+import info.justaway.model.Row;
+import info.justaway.view.ScaleImageView;
 
 import java.io.IOException;
 import java.io.InputStream;

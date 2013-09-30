@@ -1,5 +1,11 @@
 package info.justaway;
 
+import info.justaway.fragment.BaseFragment;
+import info.justaway.fragment.DirectMessageFragment;
+import info.justaway.fragment.InteractionsFragment;
+import info.justaway.fragment.TimelineFragment;
+import info.justaway.model.Row;
+import info.justaway.util.TwitterUtils;
 import twitter4j.DirectMessage;
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;

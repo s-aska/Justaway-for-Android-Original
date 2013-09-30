@@ -1,5 +1,7 @@
 package info.justaway;
 
+import info.justaway.util.TwitterUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;

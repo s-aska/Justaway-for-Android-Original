@@ -1,24 +1,28 @@
-package info.justaway;
+package info.justaway.fragment;
 
+import info.justaway.MainActivity;
+import info.justaway.adapter.TwitterAdapter;
+import info.justaway.model.Row;
 import twitter4j.ResponseList;
+
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ListView;
 
 /**
- * 将来「つながり」タブ予定のタブ、現在はリプしか表示されない
+ * タイムライン、すべての始まり
  */
-public class InteractionsFragment extends BaseFragment {
+public class TimelineFragment extends BaseFragment {
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
         /**
-         * Streamingだけだと淋しいので、初期化時にMeationsTimelineを読み込む
+         * Streamingだけだと淋しいので、初期化時にHomeTimelineを読み込む
          */
-        new LoadMeationsTimeline().execute();
+        new LoadHomeTimeline().execute();
     }
 
     /**
@@ -29,7 +33,6 @@ public class InteractionsFragment extends BaseFragment {
         if (listView == null) {
             return;
         }
-
         listView.post(new Runnable() {
             @Override
             public void run() {
@@ -49,23 +52,21 @@ public class InteractionsFragment extends BaseFragment {
                 MainActivity activity = (MainActivity) getActivity();
                 if (position != 0 || y != 0) {
                     listView.setSelectionFromTop(position + 1, y);
-                    activity.onNewInteractions(false);
+                    activity.onNewTimeline(false);
                 } else {
-                    activity.onNewInteractions(true);
+                    activity.onNewTimeline(true);
                 }
             }
         });
     }
 
-    private class LoadMeationsTimeline extends
-            AsyncTask<String, Void, ResponseList<twitter4j.Status>> {
+    private class LoadHomeTimeline extends AsyncTask<String, Void, ResponseList<twitter4j.Status>> {
 
         @Override
         protected ResponseList<twitter4j.Status> doInBackground(String... params) {
             try {
                 MainActivity activity = (MainActivity) getActivity();
-                ResponseList<twitter4j.Status> statuses = activity.getTwitter()
-                        .getMentionsTimeline();
+                ResponseList<twitter4j.Status> statuses = activity.getTwitter().getHomeTimeline();
                 return statuses;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -84,7 +85,7 @@ public class InteractionsFragment extends BaseFragment {
                 }
             } else {
                 MainActivity activity = (MainActivity) getActivity();
-                activity.showToast("Meationsの取得に失敗しました＞＜");
+                activity.showToast("Timelineの取得に失敗しました＞＜");
             }
         }
     }

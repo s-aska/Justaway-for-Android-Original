@@ -1,5 +1,9 @@
-package info.justaway;
+package info.justaway.fragment;
 
+import info.justaway.MainActivity;
+import info.justaway.R;
+import info.justaway.adapter.TwitterAdapter;
+import info.justaway.model.Row;
 import twitter4j.Twitter;
 
 import android.app.Dialog;

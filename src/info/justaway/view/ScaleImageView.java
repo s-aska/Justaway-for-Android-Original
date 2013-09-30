@@ -1,4 +1,4 @@
-package info.justaway;
+package info.justaway.view;
 
 import android.content.Context;
 import android.graphics.Bitmap;
