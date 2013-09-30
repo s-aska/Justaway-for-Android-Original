@@ -1,6 +1,5 @@
 package info.justaway;
 
-import info.justaway.util.TwitterUtils;
 
 import java.io.File;
 
@@ -49,11 +48,13 @@ public class PostActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post);
 
+        JustawayApplication application = JustawayApplication.getApplication();
+
         mEditText = (EditText) findViewById(R.id.status);
         mTextView = (TextView) findViewById(R.id.count);
         mTweetButton = (Button) findViewById(R.id.tweet);
         mImgButton = (Button) findViewById(R.id.img);
-        mTwitter = TwitterUtils.getTwitterInstance(this);
+        mTwitter = application.getTwitter();
 
         Intent intent = getIntent();
         String status = intent.getStringExtra("status");

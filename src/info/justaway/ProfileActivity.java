@@ -1,6 +1,5 @@
 package info.justaway;
 
-import info.justaway.util.TwitterUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -57,7 +56,9 @@ public class ProfileActivity extends Activity {
         setContentView(R.layout.activity_profile);
         context = this;
 
-        twitter = TwitterUtils.getTwitterInstance(this);
+        JustawayApplication application = JustawayApplication.getApplication();
+
+        twitter = application.getTwitter();
         screenName = (TextView) findViewById(R.id.screenName);
         name = (TextView) findViewById(R.id.name);
         location = (TextView) findViewById(R.id.location);
