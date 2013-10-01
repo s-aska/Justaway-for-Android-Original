@@ -206,10 +206,10 @@ public abstract class BaseFragment extends ListFragment {
             return true;
         case CONTEXT_MENU_TALK_ID:
             TalkFragment dialog = new TalkFragment();
-            Bundle args = new Bundle();  
-            args.putLong("statusId", soruce.getId());  
+            Bundle args = new Bundle();
+            args.putLong("statusId", soruce.getId());
             dialog.setArguments(args);
-            dialog.show(getActivity().getSupportFragmentManager(),"dialog");
+            dialog.show(getActivity().getSupportFragmentManager(), "dialog");
             return true;
         case CONTEXT_MENU_LINK_ID:
 

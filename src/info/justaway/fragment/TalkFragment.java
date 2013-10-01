@@ -1,5 +1,6 @@
 package info.justaway.fragment;
 
+import info.justaway.JustawayApplication;
 import info.justaway.MainActivity;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
@@ -16,6 +17,7 @@ import android.widget.ListView;
 
 /**
  * 会話を表示
+ * 
  * @author aska
  */
 public class TalkFragment extends DialogFragment {
@@ -47,9 +49,10 @@ public class TalkFragment extends DialogFragment {
 
         Long statusId = getArguments().getLong("statusId");
         if (statusId > 0) {
-            new LoadTalk(activity.getTwitter(), adapter).execute(statusId);
+            Twitter twitter = JustawayApplication.getApplication().getTwitter();
+            new LoadTalk(twitter, adapter).execute(statusId);
         } else {
-            activity.showToast("statusIdがありません");
+            JustawayApplication.showToast("statusIdがありません");
         }
 
         return dialog;
@@ -79,12 +82,11 @@ public class TalkFragment extends DialogFragment {
         @Override
         protected void onPostExecute(twitter4j.Status status) {
             if (status != null) {
-                System.out.println(status);
                 adapter.add(Row.newStatus(status));
                 adapter.notifyDataSetChanged();
                 Long inReplyToStatusId = status.getInReplyToStatusId();
                 if (inReplyToStatusId > 0) {
-                    new LoadTalk(this.twitter, this.adapter).execute(inReplyToStatusId);
+                    new LoadTalk(twitter, adapter).execute(inReplyToStatusId);
                 }
             }
         }

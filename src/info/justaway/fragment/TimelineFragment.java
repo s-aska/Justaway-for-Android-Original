@@ -1,28 +1,29 @@
 package info.justaway.fragment;
 
+import info.justaway.JustawayApplication;
 import info.justaway.MainActivity;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.model.Row;
+import info.justaway.task.TimelineLoader;
 import twitter4j.ResponseList;
+import twitter4j.Status;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.view.View;
 import android.widget.ListView;
 
 /**
  * タイムライン、すべての始まり
  */
-public class TimelineFragment extends BaseFragment {
+public class TimelineFragment extends BaseFragment implements
+        LoaderManager.LoaderCallbacks<ResponseList<Status>> {
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        /**
-         * Streamingだけだと淋しいので、初期化時にHomeTimelineを読み込む
-         */
-        new LoadHomeTimeline().execute();
+        getLoaderManager().initLoader(0, null, this);
     }
 
     /**
@@ -60,33 +61,25 @@ public class TimelineFragment extends BaseFragment {
         });
     }
 
-    private class LoadHomeTimeline extends AsyncTask<String, Void, ResponseList<twitter4j.Status>> {
+    @Override
+    public Loader<ResponseList<Status>> onCreateLoader(int arg0, Bundle arg1) {
+        return new TimelineLoader(getActivity());
+    }
 
-        @Override
-        protected ResponseList<twitter4j.Status> doInBackground(String... params) {
-            try {
-                MainActivity activity = (MainActivity) getActivity();
-                ResponseList<twitter4j.Status> statuses = activity.getTwitter().getHomeTimeline();
-                return statuses;
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
+    @Override
+    public void onLoadFinished(Loader<ResponseList<Status>> arg0, ResponseList<Status> statuses) {
+        if (statuses != null) {
+            TwitterAdapter adapter = (TwitterAdapter) getListAdapter();
+            adapter.clear();
+            for (twitter4j.Status status : statuses) {
+                adapter.add(Row.newStatus(status));
             }
+        } else {
+            JustawayApplication.showToast("Timelineの取得に失敗しました＞＜");
         }
+    }
 
-        @Override
-        protected void onPostExecute(ResponseList<twitter4j.Status> statuses) {
-            if (statuses != null) {
-                ListView listView = getListView();
-                TwitterAdapter adapter = (TwitterAdapter) listView.getAdapter();
-                adapter.clear();
-                for (twitter4j.Status status : statuses) {
-                    adapter.add(Row.newStatus(status));
-                }
-            } else {
-                MainActivity activity = (MainActivity) getActivity();
-                activity.showToast("Timelineの取得に失敗しました＞＜");
-            }
-        }
+    @Override
+    public void onLoaderReset(Loader<ResponseList<Status>> arg0) {
     }
 }
