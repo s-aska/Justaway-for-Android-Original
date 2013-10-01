@@ -5,7 +5,6 @@ import info.justaway.fragment.DirectMessageFragment;
 import info.justaway.fragment.InteractionsFragment;
 import info.justaway.fragment.TimelineFragment;
 import info.justaway.model.Row;
-import info.justaway.util.TwitterUtils;
 import twitter4j.DirectMessage;
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
@@ -99,19 +98,21 @@ public class MainActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        JustawayApplication application = JustawayApplication.getApplication();
+
         // スリープさせない指定
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         // アクセストークンがない場合に認証用のアクティビティを起動する
-        if (!TwitterUtils.hasAccessToken(this)) {
+        if (!application.hasAccessToken()) {
             Intent intent = new Intent(this, SigninActivity.class);
             startActivity(intent);
             finish();
         } else {
 
             // とりあえず勝手にストリーミング開始するようにしている
-            twitter = TwitterUtils.getTwitterInstance(this);
-            twitterStream = TwitterUtils.getTwitterStreamInstance(this);
+            twitter = application.getTwitter();
+            twitterStream = application.getTwitterStream();
             twitterStream.addListener(getUserStreamAdapter());
             twitterStream.user();
 
@@ -319,7 +320,7 @@ public class MainActivity extends FragmentActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
         if (itemId == R.id.signout) {
-            TwitterUtils.resetAccessToken(this);
+            JustawayApplication.getApplication().resetAccessToken();
             finish();
         } else if (itemId == R.id.reload) {
             if (twitterStream != null) {
