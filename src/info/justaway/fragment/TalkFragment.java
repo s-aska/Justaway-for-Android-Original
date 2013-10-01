@@ -35,7 +35,6 @@ public class TalkFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        Twitter twitter = JustawayApplication.getApplication().getTwitter();
         MainActivity activity = (MainActivity) getActivity();
         Dialog dialog = new Dialog(activity);
         dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
@@ -50,6 +49,7 @@ public class TalkFragment extends DialogFragment {
 
         Long statusId = getArguments().getLong("statusId");
         if (statusId > 0) {
+            Twitter twitter = JustawayApplication.getApplication().getTwitter();
             new LoadTalk(twitter, adapter).execute(statusId);
         } else {
             JustawayApplication.showToast("statusIdがありません");
@@ -82,12 +82,11 @@ public class TalkFragment extends DialogFragment {
         @Override
         protected void onPostExecute(twitter4j.Status status) {
             if (status != null) {
-                System.out.println(status);
                 adapter.add(Row.newStatus(status));
                 adapter.notifyDataSetChanged();
                 Long inReplyToStatusId = status.getInReplyToStatusId();
                 if (inReplyToStatusId > 0) {
-                    new LoadTalk(this.twitter, this.adapter).execute(inReplyToStatusId);
+                    new LoadTalk(twitter, adapter).execute(inReplyToStatusId);
                 }
             }
         }
