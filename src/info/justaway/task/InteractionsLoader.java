@@ -10,7 +10,6 @@ import android.content.Context;
 
 public class InteractionsLoader extends AbstractAsyncTaskLoader<ResponseList<Status>> {
 
-    
     public InteractionsLoader(Context context) {
         super(context);
     }

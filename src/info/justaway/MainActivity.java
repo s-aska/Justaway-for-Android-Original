@@ -217,7 +217,6 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
 
     @Override
     public void onLoaderReset(Loader<User> arg0) {
-        
 
     }
 

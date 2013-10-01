@@ -10,7 +10,6 @@ import android.content.Context;
 
 public class TimelineLoader extends AbstractAsyncTaskLoader<ResponseList<Status>> {
 
-    
     public TimelineLoader(Context context) {
         super(context);
     }

@@ -5,6 +5,7 @@ import android.support.v4.content.AsyncTaskLoader;
 
 /**
  * 一般的な AsyncTaskLoader の処理を全てに書くのは冗長なのでこれを継承して使う
+ * 
  * @author aska
  * @param <D>
  */
@@ -27,7 +28,6 @@ public abstract class AbstractAsyncTaskLoader<D> extends AsyncTaskLoader<D> {
 
         super.deliverResult(data);
     }
-
 
     @Override
     protected void onStartLoading() {
