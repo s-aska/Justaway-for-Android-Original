@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
+import android.widget.Toast;
 
 /**
  * アプリケーション、アクティビティ間でのデータの共有などに利用
@@ -20,9 +21,10 @@ import android.content.res.Configuration;
 public class JustawayApplication extends Application {
 
     private static JustawayApplication sApplication;
-    
+
     /**
      * 毎回キャストしなくて良いように
+     * 
      * @return アプリケーションのインスタンス
      */
     public static JustawayApplication getApplication() {
@@ -48,6 +50,12 @@ public class JustawayApplication extends Application {
     @Override
     public void onTerminate() {
         super.onTerminate();
+
+        // ちゃんと接続を切らないとアプリが凍結されるらしい
+        if (twitterStream != null) {
+            twitterStream.cleanUp();
+            twitterStream.shutdown();
+        }
     }
 
     /*
@@ -71,6 +79,16 @@ public class JustawayApplication extends Application {
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
+    }
+
+    /**
+     * あると便利な簡易通知
+     * 
+     * @param text
+     *            表示するメッセージ
+     */
+    public static void showToast(String text) {
+        Toast.makeText(sApplication, text, Toast.LENGTH_SHORT).show();
     }
 
     /**

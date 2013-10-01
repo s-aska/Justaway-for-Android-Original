@@ -1,9 +1,11 @@
 package info.justaway.fragment;
 
+import info.justaway.JustawayApplication;
 import info.justaway.MainActivity;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.model.Row;
 import twitter4j.ResponseList;
+import twitter4j.Twitter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -66,9 +68,8 @@ public class InteractionsFragment extends BaseFragment {
         @Override
         protected ResponseList<twitter4j.Status> doInBackground(String... params) {
             try {
-                MainActivity activity = (MainActivity) getActivity();
-                ResponseList<twitter4j.Status> statuses = activity.getTwitter()
-                        .getMentionsTimeline();
+                Twitter twitter = JustawayApplication.getApplication().getTwitter();
+                ResponseList<twitter4j.Status> statuses = twitter.getMentionsTimeline();
                 return statuses;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -86,8 +87,7 @@ public class InteractionsFragment extends BaseFragment {
                     adapter.add(Row.newStatus(status));
                 }
             } else {
-                MainActivity activity = (MainActivity) getActivity();
-                activity.showToast("Meationsの取得に失敗しました＞＜");
+                JustawayApplication.showToast("Meationsの取得に失敗しました＞＜");
             }
         }
     }

@@ -5,20 +5,25 @@ import info.justaway.fragment.DirectMessageFragment;
 import info.justaway.fragment.InteractionsFragment;
 import info.justaway.fragment.TimelineFragment;
 import info.justaway.model.Row;
+import info.justaway.task.DestroyDirectMessageTask;
+import info.justaway.task.DestroyStatusTask;
+import info.justaway.task.FavoriteTask;
+import info.justaway.task.RetweetTask;
+import info.justaway.task.VerifyCredentialsLoader;
 import twitter4j.DirectMessage;
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
-import twitter4j.Twitter;
 import twitter4j.TwitterStream;
 import twitter4j.User;
 import twitter4j.UserStreamAdapter;
 import android.R.color;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -26,12 +31,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.Toast;
 
-public class MainActivity extends FragmentActivity {
+/**
+ * @author aska
+ * 
+ */
+public class MainActivity extends FragmentActivity implements LoaderManager.LoaderCallbacks<User> {
 
-    private Twitter twitter;
-    private TwitterStream twitterStream;
+    private JustawayApplication app;
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager viewPager;
     private Row selectedRow;
@@ -46,28 +53,6 @@ public class MainActivity extends FragmentActivity {
 
     public void setUser(User user) {
         this.user = user;
-    }
-
-    /**
-     * Twitter REST API用のインスタンス
-     */
-    public Twitter getTwitter() {
-        return twitter;
-    }
-
-    public void setTwitter(Twitter twitter) {
-        this.twitter = twitter;
-    }
-
-    /**
-     * Twitter Streaming API用のインスタンス
-     */
-    public TwitterStream getTwitterStream() {
-        return twitterStream;
-    }
-
-    public void setTwitterStream(TwitterStream twitterStream) {
-        this.twitterStream = twitterStream;
     }
 
     /**
@@ -93,31 +78,35 @@ public class MainActivity extends FragmentActivity {
         this.selectedRow = selectedRow;
     }
 
+    /**
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        JustawayApplication application = JustawayApplication.getApplication();
+        app = JustawayApplication.getApplication();
 
         // スリープさせない指定
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         // アクセストークンがない場合に認証用のアクティビティを起動する
-        if (!application.hasAccessToken()) {
+        if (!app.hasAccessToken()) {
             Intent intent = new Intent(this, SigninActivity.class);
             startActivity(intent);
             finish();
         } else {
 
             // とりあえず勝手にストリーミング開始するようにしている
-            twitter = application.getTwitter();
-            twitterStream = application.getTwitterStream();
+            TwitterStream twitterStream = app.getTwitterStream();
             twitterStream.addListener(getUserStreamAdapter());
             twitterStream.user();
 
-            // 自分の user_id, screen_name を取得、頻繁に変える人もいるのでSharedPreferenceには保存しない
-            new ProfileTask().execute();
+            /**
+             * onCreateLoader => onLoadFinished と繋がる
+             */
+            getSupportLoaderManager().initLoader(0, null, this);
         }
 
         /**
@@ -205,14 +194,31 @@ public class MainActivity extends FragmentActivity {
 
     @Override
     protected void onDestroy() {
-
-        // ちゃんと接続を切らないとアプリが凍結されるらしい
-        if (twitterStream != null) {
-            twitterStream.cleanUp();
-            twitterStream.shutdown();
-        }
-
         super.onDestroy();
+    }
+
+    /**
+     * 認証済みのユーザーアカウントを取得
+     * 
+     * @param id
+     * @param args
+     * @return User 認証済みのユーザー
+     */
+    @Override
+    public Loader<User> onCreateLoader(int id, Bundle args) {
+        return new VerifyCredentialsLoader(this);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<User> loader, User user) {
+        setUser(user);
+        JustawayApplication.showToast(user.getScreenName() + " さんこんにちわ！！！！");
+    }
+
+    @Override
+    public void onLoaderReset(Loader<User> arg0) {
+        
+
     }
 
     /**
@@ -323,6 +329,7 @@ public class MainActivity extends FragmentActivity {
             JustawayApplication.getApplication().resetAccessToken();
             finish();
         } else if (itemId == R.id.reload) {
+            TwitterStream twitterStream = JustawayApplication.getApplication().getTwitterStream();
             if (twitterStream != null) {
                 twitterStream.cleanUp();
                 twitterStream.shutdown();
@@ -330,10 +337,6 @@ public class MainActivity extends FragmentActivity {
             }
         }
         return true;
-    }
-
-    public void showToast(String text) {
-        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -391,7 +394,7 @@ public class MainActivity extends FragmentActivity {
                 view.post(new Runnable() {
                     @Override
                     public void run() {
-                        showToast(row.getSource().getScreenName() + " fav "
+                        JustawayApplication.showToast(row.getSource().getScreenName() + " fav "
                                 + row.getStatus().getText());
                     }
                 });
@@ -416,7 +419,8 @@ public class MainActivity extends FragmentActivity {
                 view.post(new Runnable() {
                     @Override
                     public void run() {
-                        showToast(source.getScreenName() + " unfav " + status.getText());
+                        JustawayApplication.showToast(source.getScreenName() + " unfav "
+                                + status.getText());
                     }
                 });
             }
@@ -444,27 +448,6 @@ public class MainActivity extends FragmentActivity {
         };
     }
 
-    private class ProfileTask extends AsyncTask<Void, Void, User> {
-
-        @Override
-        protected User doInBackground(Void... params) {
-            try {
-                User user = getTwitter().verifyCredentials();
-                return user;
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(User user) {
-            if (user != null) {
-                setUser(user);
-            }
-        }
-    }
-
     public void doFavorite(Long id) {
         new FavoriteTask().execute(id);
     }
@@ -479,101 +462,11 @@ public class MainActivity extends FragmentActivity {
 
     public void doDestroyDirectMessage(Long id) {
         new DestroyDirectMessageTask().execute(id);
-    }
-
-    private class FavoriteTask extends AsyncTask<Long, Void, Boolean> {
-
-        @Override
-        protected Boolean doInBackground(Long... params) {
-            try {
-                getTwitter().createFavorite(params[0]);
-                return true;
-            } catch (Exception e) {
-                e.printStackTrace();
-                return false;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(Boolean result) {
-            if (result == true) {
-                showToast("ふぁぼに成功しました>゜))彡");
-            } else {
-                showToast("ふぁぼに失敗しました＞＜");
-            }
-        }
-    }
-
-    private class RetweetTask extends AsyncTask<Long, Void, Boolean> {
-        @Override
-        protected Boolean doInBackground(Long... params) {
-            Long super_sugoi = params[0];
-            try {
-                getTwitter().retweetStatus(super_sugoi);
-                return true;
-            } catch (Exception e) {
-                e.printStackTrace();
-                return false;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(Boolean success) {
-            if (success) {
-                showToast("RTに成功しました>゜))彡");
-            } else {
-                showToast("RTに失敗しました＞＜");
-            }
-        }
-    }
-
-    private class DestroyStatusTask extends AsyncTask<Long, Void, Boolean> {
-        @Override
-        protected Boolean doInBackground(Long... params) {
-            try {
-                getTwitter().destroyStatus(params[0]);
-                return true;
-            } catch (Exception e) {
-                e.printStackTrace();
-                return false;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(Boolean success) {
-            if (success) {
-                showToast("ツイ消しに成功しました>゜))彡");
-            } else {
-                showToast("ツイ消しに失敗しました＞＜");
-            }
-        }
-    }
-
-    private class DestroyDirectMessageTask extends AsyncTask<Long, Void, Long> {
-        @Override
-        protected Long doInBackground(Long... params) {
-            try {
-                getTwitter().destroyDirectMessage(params[0]);
-                return params[0];
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(Long directMessageId) {
-            if (directMessageId != null) {
-                showToast("DM削除に成功しました>゜))彡");
-                // 自分宛のDMを消してもStreaming APIで拾えないで自力で消す
-                DirectMessageFragment fragmen = (DirectMessageFragment) mSectionsPagerAdapter
-                        .findFragmentByPosition(2);
-                if (fragmen != null) {
-                    fragmen.remove(directMessageId);
-                }
-            } else {
-                showToast("DM削除に失敗しました＞＜");
-            }
+        // 自分宛のDMを消してもStreaming APIで拾えないで自力で消す
+        DirectMessageFragment fragmen = (DirectMessageFragment) mSectionsPagerAdapter
+                .findFragmentByPosition(2);
+        if (fragmen != null) {
+            fragmen.remove(id);
         }
     }
 }

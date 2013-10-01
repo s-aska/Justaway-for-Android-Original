@@ -1,5 +1,6 @@
 package info.justaway.fragment;
 
+import info.justaway.JustawayApplication;
 import info.justaway.MainActivity;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.model.Row;
@@ -9,6 +10,7 @@ import java.util.Comparator;
 
 import twitter4j.DirectMessage;
 import twitter4j.ResponseList;
+import twitter4j.Twitter;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -83,9 +85,9 @@ public class DirectMessageFragment extends BaseFragment {
         @Override
         protected ResponseList<DirectMessage> doInBackground(String... params) {
             try {
-                MainActivity activity = (MainActivity) getActivity();
-                ResponseList<DirectMessage> statuses = activity.getTwitter().getDirectMessages();
-                statuses.addAll(activity.getTwitter().getSentDirectMessages());
+                Twitter twitter = JustawayApplication.getApplication().getTwitter();
+                ResponseList<DirectMessage> statuses = twitter.getDirectMessages();
+                statuses.addAll(twitter.getSentDirectMessages());
                 Collections.sort(statuses, new Comparator<DirectMessage>() {
 
                     @Override
@@ -111,8 +113,7 @@ public class DirectMessageFragment extends BaseFragment {
                     adapter.add(Row.newDirectMessage(status));
                 }
             } else {
-                MainActivity activity = (MainActivity) getActivity();
-                activity.showToast("DirectMessagesの取得に失敗しました＞＜");
+                JustawayApplication.showToast("DirectMessagesの取得に失敗しました＞＜");
             }
         }
     }
