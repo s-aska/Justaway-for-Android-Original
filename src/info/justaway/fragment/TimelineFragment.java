@@ -18,7 +18,7 @@ import android.widget.ListView;
  * タイムライン、すべての始まり
  */
 public class TimelineFragment extends BaseFragment implements
-LoaderManager.LoaderCallbacks<ResponseList<Status>> {
+        LoaderManager.LoaderCallbacks<ResponseList<Status>> {
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
