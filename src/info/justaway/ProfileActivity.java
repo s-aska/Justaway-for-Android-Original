@@ -27,6 +27,7 @@ public class ProfileActivity extends Activity {
     private Twitter twitter;
     private TextView screenName;
     private ImageView icon;
+    private ImageView banner;
     private TextView name;
     private TextView location;
     private TextView url;
@@ -70,6 +71,7 @@ public class ProfileActivity extends Activity {
         listedCount = (TextView) findViewById(R.id.listedCount);
         createdAt = (TextView) findViewById(R.id.createdAt);
         icon = (ImageView) findViewById(R.id.icon);
+        banner = (ImageView) findViewById(R.id.banner);
 
         Intent intent = getIntent();
         Long userId = intent.getLongExtra("userId", 0);
@@ -116,10 +118,15 @@ public class ProfileActivity extends Activity {
                 followersCount.setText(String.valueOf(user.getFollowersCount()));
                 listedCount.setText(String.valueOf(user.getListedCount()));
                 createdAt.setText(user.getCreatedAt().toString());
-                String iconUrl = user.getBiggerProfileImageURL();
-                icon.setTag(iconUrl);
                 ProgressBar wait = (ProgressBar) findViewById(R.id.WaitBar);
+                String iconUrl = user.getBiggerProfileImageURL();
+                String bannerUrl = user.getProfileBannerMobileRetinaURL();
+                icon.setTag(iconUrl);
+                banner.setTag(bannerUrl);
                 new ImageGetTask(icon, wait).execute(iconUrl);
+                if (bannerUrl != null) {
+                    new ImageGetTask(banner, wait).execute(bannerUrl);
+                }
             }
         }
     }
