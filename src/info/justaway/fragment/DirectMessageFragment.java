@@ -1,29 +1,26 @@
 package info.justaway.fragment;
 
+import info.justaway.JustawayApplication;
 import info.justaway.MainActivity;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.model.Row;
-
-import java.util.Collections;
-import java.util.Comparator;
+import info.justaway.task.DirectMessageLoader;
 
 import twitter4j.DirectMessage;
 import twitter4j.ResponseList;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.view.View;
 import android.widget.ListView;
 
-public class DirectMessageFragment extends BaseFragment {
+public class DirectMessageFragment extends BaseFragment implements
+        LoaderManager.LoaderCallbacks<ResponseList<DirectMessage>> {
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        /**
-         * Streamingだけだと淋しいので、初期化時にMeationsTimelineを読み込む
-         */
-        new LoadDirectMessages().execute();
+        getLoaderManager().initLoader(0, null, this);
     }
 
     /**
@@ -35,6 +32,7 @@ public class DirectMessageFragment extends BaseFragment {
             return;
         }
 
+        final TwitterAdapter adapter = (TwitterAdapter) listView.getAdapter();
         listView.post(new Runnable() {
             @Override
             public void run() {
@@ -47,7 +45,6 @@ public class DirectMessageFragment extends BaseFragment {
                 int y = view != null ? view.getTop() : 0;
 
                 // 要素を上に追加（ addだと下に追加されてしまう ）
-                TwitterAdapter adapter = (TwitterAdapter) listView.getAdapter();
                 adapter.insert(row, 0);
 
                 // 少しでもスクロールさせている時は画面を動かさない様にスクロー位置を復元する
@@ -63,57 +60,40 @@ public class DirectMessageFragment extends BaseFragment {
     }
 
     public void remove(final long directMessageId) {
-        final ListView listView = getListView();
+        ListView listView = getListView();
         if (listView == null) {
             return;
         }
 
+        final TwitterAdapter adapter = (TwitterAdapter) listView.getAdapter();
         listView.post(new Runnable() {
             @Override
             public void run() {
-
-                TwitterAdapter adapter = (TwitterAdapter) listView.getAdapter();
                 adapter.removeDirectMessage(directMessageId);
             }
         });
     }
 
-    private class LoadDirectMessages extends AsyncTask<String, Void, ResponseList<DirectMessage>> {
+    @Override
+    public Loader<ResponseList<DirectMessage>> onCreateLoader(int arg0, Bundle arg1) {
+        return new DirectMessageLoader(getActivity());
+    }
 
-        @Override
-        protected ResponseList<DirectMessage> doInBackground(String... params) {
-            try {
-                MainActivity activity = (MainActivity) getActivity();
-                ResponseList<DirectMessage> statuses = activity.getTwitter().getDirectMessages();
-                statuses.addAll(activity.getTwitter().getSentDirectMessages());
-                Collections.sort(statuses, new Comparator<DirectMessage>() {
-
-                    @Override
-                    public int compare(DirectMessage arg0, DirectMessage arg1) {
-                        return ((DirectMessage) arg1).getCreatedAt().compareTo(
-                                ((DirectMessage) arg0).getCreatedAt());
-                    }
-                });
-                return statuses;
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
+    @Override
+    public void onLoadFinished(Loader<ResponseList<DirectMessage>> arg0,
+            ResponseList<DirectMessage> statuses) {
+        if (statuses != null) {
+            TwitterAdapter adapter = (TwitterAdapter) getListAdapter();
+            adapter.clear();
+            for (DirectMessage status : statuses) {
+                adapter.add(Row.newDirectMessage(status));
             }
+        } else {
+            JustawayApplication.showToast("DirectMessagesの取得に失敗しました＞＜");
         }
+    }
 
-        @Override
-        protected void onPostExecute(ResponseList<DirectMessage> statuses) {
-            if (statuses != null) {
-                ListView listView = getListView();
-                TwitterAdapter adapter = (TwitterAdapter) listView.getAdapter();
-                adapter.clear();
-                for (DirectMessage status : statuses) {
-                    adapter.add(Row.newDirectMessage(status));
-                }
-            } else {
-                MainActivity activity = (MainActivity) getActivity();
-                activity.showToast("DirectMessagesの取得に失敗しました＞＜");
-            }
-        }
+    @Override
+    public void onLoaderReset(Loader<ResponseList<DirectMessage>> arg0) {
     }
 }
