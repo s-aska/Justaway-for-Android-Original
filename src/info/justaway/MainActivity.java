@@ -212,7 +212,12 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
     @Override
     public void onLoadFinished(Loader<User> loader, User user) {
         // VerifyCredentialsLoaderが失敗する場合も考慮
-        if (user != null) {
+        if (user == null) {
+            JustawayApplication.getApplication().resetAccessToken();
+            Intent intent = new Intent(this, SigninActivity.class);
+            startActivity(intent);
+            finish();
+        } else {
             setUser(user);
             JustawayApplication.showToast(user.getScreenName() + " さんこんにちわ！！！！");
         }
