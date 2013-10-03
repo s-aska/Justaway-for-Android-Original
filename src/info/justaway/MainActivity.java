@@ -211,8 +211,11 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
 
     @Override
     public void onLoadFinished(Loader<User> loader, User user) {
-        setUser(user);
-        JustawayApplication.showToast(user.getScreenName() + " さんこんにちわ！！！！");
+        // VerifyCredentialsLoaderが失敗する場合も考慮
+        if (user != null) {
+            setUser(user);
+            JustawayApplication.showToast(user.getScreenName() + " さんこんにちわ！！！！");
+        }
     }
 
     @Override
