@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Date;
 
-import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
 import info.justaway.view.ScaleImageView;
@@ -32,17 +31,9 @@ public class ScaleImageActivity extends Activity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         imageView = new ScaleImageView(this);
+        imageView.setActivity(this);
         String url = getIntent().getExtras().getString("url");
-        Picasso.with(this).load(url).into(imageView, new Callback() {
-            @Override
-            public void onSuccess() {
-                openOptionsMenu();
-            }
-
-            @Override
-            public void onError() {
-            }
-        });
+        Picasso.with(this).load(url).into(imageView);
         setContentView(imageView);
     }
 
