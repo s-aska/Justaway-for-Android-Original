@@ -57,6 +57,12 @@ public class ScaleImageView extends ImageView implements OnTouchListener {
     }
 
     @Override
+    public void setImageDrawable(Drawable drawable) {
+        super.setImageDrawable(drawable);
+        this.initialize();
+    }
+
+    @Override
     public void setImageResource(int resId) {
         super.setImageResource(resId);
         this.initialize();

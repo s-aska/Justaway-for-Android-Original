@@ -86,9 +86,11 @@
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
+        <activity android:name=".ProfileActivity" >
+        </activity>
         <activity
-            android:name=".ProfileActivity"
-             >
+            android:name=".ScaleImageActivity"
+            android:theme="@android:style/Theme.Translucent" >
         </activity>
     </application>
 
