@@ -1,10 +1,10 @@
 package info.justaway.adapter;
 
+import info.justaway.ScaleImageActivity;
 import info.justaway.MainActivity;
 import info.justaway.ProfileActivity;
 import info.justaway.R;
 import info.justaway.model.Row;
-import info.justaway.view.ScaleImageView;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,7 +19,6 @@ import twitter4j.MediaEntity;
 import twitter4j.Status;
 import twitter4j.User;
 import android.annotation.SuppressLint;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -29,8 +28,6 @@ import android.support.v4.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
-import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -246,14 +243,9 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                 image.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        ScaleImageView image = new ScaleImageView(context);
-                        renderIcon(null, image, url.getMediaURL());
-                        Dialog dialog = new Dialog(context);
-                        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                        dialog.setContentView(image);
-                        dialog.getWindow().setLayout(LayoutParams.WRAP_CONTENT,
-                                LayoutParams.WRAP_CONTENT);
-                        dialog.show();
+                        Intent intent = new Intent(v.getContext(), ScaleImageActivity.class);
+                        intent.putExtra("url", url.getMediaURL());
+                        context.startActivity(intent);
                     }
                 });
             }
