@@ -50,8 +50,8 @@
             android:id="@+id/icon"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:layout_marginRight="5dp"
             android:layout_marginBottom="2dp"
+            android:layout_marginRight="5dp"
             android:contentDescription="@string/description_icon"
             android:paddingTop="2dip" />
 
@@ -64,29 +64,30 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="2dp"
+                android:layout_marginBottom="6dp"
                 android:gravity="left" >
 
                 <TextView
                     android:id="@+id/display_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/screen_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="4dp"
-                    android:textSize="10sp"
-                    android:textColor="#666666" />
+                    android:textColor="#666666"
+                    android:textSize="10sp" />
             </LinearLayout>
 
             <TextView
                 android:id="@+id/status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="2dp"
+                android:layout_marginBottom="6dp"
                 android:textSize="12sp" />
 
             <LinearLayout
