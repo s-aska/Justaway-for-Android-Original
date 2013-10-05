@@ -42,17 +42,16 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager viewPager;
     private Row selectedRow;
-    private User user;
 
     /**
      * 自分自身のUserオブジェクト(Twitter) リプのタブでツイートが自分に対してのリプかどうかの判定などで使用している
      */
     public User getUser() {
-        return user;
+        return JustawayApplication.getApplication().getUser();
     }
 
     public void setUser(User user) {
-        this.user = user;
+        JustawayApplication.getApplication().setUser(user);
     }
 
     /**
