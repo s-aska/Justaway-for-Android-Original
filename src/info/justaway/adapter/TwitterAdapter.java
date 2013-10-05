@@ -1,5 +1,6 @@
 package info.justaway.adapter;
 
+import info.justaway.JustawayApplication;
 import info.justaway.ScaleImageActivity;
 import info.justaway.MainActivity;
 import info.justaway.ProfileActivity;
@@ -16,8 +17,11 @@ import twitter4j.DirectMessage;
 import twitter4j.MediaEntity;
 import twitter4j.Status;
 import twitter4j.User;
+import android.R.color;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,6 +36,9 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     private LayoutInflater inflater;
     private int layout;
     private static int limit = 500;
+    private final static String fontello_star = "";
+    private final static String fontello_retweet = "";
+    private final static String fontello_at = "";
 
     public TwitterAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId);
@@ -165,24 +172,54 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                 .setText("via " + getClientName(status.getSource()));
         view.findViewById(R.id.via).setVisibility(View.VISIBLE);
 
+        TextView actionIcon = (TextView) view.findViewById(R.id.action_icon);
+        actionIcon.setTypeface(Typeface.createFromAsset(context.getAssets(), "fontello.ttf"));
+        actionIcon.setText("");
+        TextView actionBy = (TextView) view.findViewById(R.id.action_by);
+        TextView actionName = (TextView) view.findViewById(R.id.action_name);
+
+        User user = JustawayApplication.getApplication().getUser();
         // favの場合
         if (favorite != null) {
-            ((TextView) view.findViewById(R.id.retweet_by)).setText("favorited by "
-                    + favorite.getScreenName() + "(" + favorite.getName() + ")");
-            ImageView icon = (ImageView) view.findViewById(R.id.retweet_icon);
-            Picasso.with(context).load(favorite.getMiniProfileImageURL()).into(icon);
-            view.findViewById(R.id.retweet).setVisibility(View.VISIBLE);
+            actionIcon.setText(fontello_star);
+            actionIcon.setTextColor(context.getResources().getColor(color.holo_orange_light));
+            actionBy.setText(favorite.getName());
+            actionName.setText("favorited");
+            view.findViewById(R.id.action).setVisibility(View.VISIBLE);
+            view.findViewById(R.id.retweet).setVisibility(View.GONE);
         }
         // RTの場合
         else if (retweet != null) {
-            ((TextView) view.findViewById(R.id.retweet_by)).setText("retweeted by "
-                    + retweet.getUser().getScreenName() + "(" + retweet.getUser().getName()
-                    + ") and " + String.valueOf(status.getRetweetCount()) + " others");
-            ImageView icon = (ImageView) view.findViewById(R.id.retweet_icon);
-            Picasso.with(context).load(retweet.getUser().getMiniProfileImageURL()).into(icon);
-            view.findViewById(R.id.retweet).setVisibility(View.VISIBLE);
+            // 自分のツイート
+            if (user.getId() == status.getUser().getId()) {
+                actionIcon.setText(fontello_retweet);
+                actionIcon.setTextColor(context.getResources().getColor(color.holo_green_light));
+                actionBy.setText(retweet.getUser().getName());
+                actionName.setText("retweeted");
+                view.findViewById(R.id.action).setVisibility(View.VISIBLE);
+                view.findViewById(R.id.retweet).setVisibility(View.GONE);
+            } else {
+                ((TextView) view.findViewById(R.id.retweet_by)).setText("retweeted by "
+                        + retweet.getUser().getScreenName() + "(" + retweet.getUser().getName()
+                        + ") and " + String.valueOf(status.getRetweetCount()) + " others");
+                ImageView icon = (ImageView) view.findViewById(R.id.retweet_icon);
+                Picasso.with(context).load(retweet.getUser().getMiniProfileImageURL()).into(icon);
+                view.findViewById(R.id.retweet).setVisibility(View.VISIBLE);
+                view.findViewById(R.id.action).setVisibility(View.GONE);
+            }
         } else {
-            view.findViewById(R.id.retweet).setVisibility(View.GONE);
+            // 自分へのリプ
+            if (user.getId() == status.getInReplyToUserId()) {
+                actionIcon.setText(fontello_at);
+                actionIcon.setTextColor(context.getResources().getColor(color.holo_red_light));
+                actionBy.setText(status.getUser().getName());
+                actionName.setText("mentioned you");
+                view.findViewById(R.id.action).setVisibility(View.VISIBLE);
+                view.findViewById(R.id.retweet).setVisibility(View.GONE);
+            } else {
+                view.findViewById(R.id.action).setVisibility(View.GONE);
+                view.findViewById(R.id.retweet).setVisibility(View.GONE);
+            }
         }
 
         ImageView icon = (ImageView) view.findViewById(R.id.icon);
