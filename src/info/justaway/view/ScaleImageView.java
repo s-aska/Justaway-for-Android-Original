@@ -1,5 +1,6 @@
 package info.justaway.view;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
@@ -13,6 +14,7 @@ import android.view.View.OnTouchListener;
 import android.widget.ImageView;
 
 public class ScaleImageView extends ImageView implements OnTouchListener {
+    private Activity mActivity;
     private Context mContext;
     private float MAX_SCALE = 2f;
 
@@ -42,6 +44,10 @@ public class ScaleImageView extends ImageView implements OnTouchListener {
         super(context, attr);
         this.mContext = context;
         initialize();
+    }
+
+    public void setActivity(Activity activity) {
+        this.mActivity = activity;
     }
 
     public ScaleImageView(Context context) {
@@ -83,6 +89,14 @@ public class ScaleImageView extends ImageView implements OnTouchListener {
                 maxZoomTo((int) e.getX(), (int) e.getY());
                 cutting();
                 return super.onDoubleTap(e);
+            }
+
+            @Override
+            public void onLongPress(MotionEvent e) {
+                if (mActivity != null) {
+                    mActivity.openOptionsMenu();
+                }
+                super.onLongPress(e);
             }
         });
 
