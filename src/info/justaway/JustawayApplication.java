@@ -4,6 +4,7 @@ import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
 import twitter4j.TwitterStream;
 import twitter4j.TwitterStreamFactory;
+import twitter4j.User;
 import twitter4j.auth.AccessToken;
 import twitter4j.conf.ConfigurationBuilder;
 import android.app.Application;
@@ -100,6 +101,21 @@ public class JustawayApplication extends Application {
     private AccessToken accessToken;
     private Twitter twitter;
     private TwitterStream twitterStream;
+    private User user;
+
+    /**
+     * @return the user
+     */
+    public User getUser() {
+        return user;
+    }
+
+    /**
+     * @param user the user to set
+     */
+    public void setUser(User user) {
+        this.user = user;
+    }
 
     private String getConsumerKey() {
         return getString(R.string.twitter_consumer_key);

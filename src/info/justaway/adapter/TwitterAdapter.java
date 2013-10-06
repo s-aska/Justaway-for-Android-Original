@@ -1,37 +1,33 @@
 package info.justaway.adapter;
 
+import info.justaway.JustawayApplication;
 import info.justaway.ScaleImageActivity;
 import info.justaway.MainActivity;
 import info.justaway.ProfileActivity;
 import info.justaway.R;
 import info.justaway.model.Row;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
+
+import com.squareup.picasso.Picasso;
 
 import twitter4j.DirectMessage;
 import twitter4j.MediaEntity;
 import twitter4j.Status;
 import twitter4j.User;
-import android.annotation.SuppressLint;
+import android.R.color;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
-import android.support.v4.util.LruCache;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class TwitterAdapter extends ArrayAdapter<Row> {
@@ -39,32 +35,16 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     private ArrayList<Row> statuses = new ArrayList<Row>();
     private LayoutInflater inflater;
     private int layout;
-    private LruCache<String, Bitmap> mMemoryCache;
     private static int limit = 500;
+    private final static String fontello_star = "";
+    private final static String fontello_retweet = "";
+    private final static String fontello_at = "";
 
     public TwitterAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId);
         this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.context = context;
         this.layout = textViewResourceId;
-
-        // Get max available VM memory, exceeding this amount will throw an
-        // OutOfMemory exception. Stored in kilobytes as LruCache takes an
-        // int in its constructor.
-        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
-
-        // Use 1/8th of the available memory for this memory cache.
-        final int cacheSize = maxMemory / 2;
-
-        mMemoryCache = new LruCache<String, Bitmap>(cacheSize) {
-            @SuppressLint("NewApi")
-            @Override
-            protected int sizeOf(String key, Bitmap bitmap) {
-                // The cache size will be measured in kilobytes rather than
-                // number of items.
-                return bitmap.getByteCount() / 1024;
-            }
-        };
     }
 
     @Override
@@ -176,8 +156,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         view.findViewById(R.id.retweet).setVisibility(View.GONE);
         view.findViewById(R.id.images).setVisibility(View.GONE);
         ImageView icon = (ImageView) view.findViewById(R.id.icon);
-        ProgressBar wait = (ProgressBar) view.findViewById(R.id.WaitBar);
-        renderIcon(wait, icon, message.getSender().getBiggerProfileImageURL());
+        Picasso.with(context).load(message.getSender().getBiggerProfileImageURL()).into(icon);
     }
 
     private void renderStatus(View view, final Status status, Status retweet, User favorite) {
@@ -193,31 +172,58 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                 .setText("via " + getClientName(status.getSource()));
         view.findViewById(R.id.via).setVisibility(View.VISIBLE);
 
+        TextView actionIcon = (TextView) view.findViewById(R.id.action_icon);
+        actionIcon.setTypeface(Typeface.createFromAsset(context.getAssets(), "fontello.ttf"));
+        actionIcon.setText("");
+        TextView actionBy = (TextView) view.findViewById(R.id.action_by);
+        TextView actionName = (TextView) view.findViewById(R.id.action_name);
+
+        User user = JustawayApplication.getApplication().getUser();
         // favの場合
         if (favorite != null) {
-            ((TextView) view.findViewById(R.id.retweet_by)).setText("favorited by "
-                    + favorite.getScreenName() + "(" + favorite.getName() + ")");
-            ImageView icon = (ImageView) view.findViewById(R.id.retweet_icon);
-            ProgressBar wait = (ProgressBar) view.findViewById(R.id.retweet_wait);
-            renderIcon(wait, icon, favorite.getMiniProfileImageURL());
-            view.findViewById(R.id.retweet).setVisibility(View.VISIBLE);
+            actionIcon.setText(fontello_star);
+            actionIcon.setTextColor(context.getResources().getColor(color.holo_orange_light));
+            actionBy.setText(favorite.getName());
+            actionName.setText("favorited");
+            view.findViewById(R.id.action).setVisibility(View.VISIBLE);
+            view.findViewById(R.id.retweet).setVisibility(View.GONE);
         }
         // RTの場合
         else if (retweet != null) {
-            ((TextView) view.findViewById(R.id.retweet_by)).setText("retweeted by "
-                    + retweet.getUser().getScreenName() + "(" + retweet.getUser().getName()
-                    + ") and " + String.valueOf(status.getRetweetCount()) + " others");
-            ImageView icon = (ImageView) view.findViewById(R.id.retweet_icon);
-            ProgressBar wait = (ProgressBar) view.findViewById(R.id.retweet_wait);
-            renderIcon(wait, icon, retweet.getUser().getMiniProfileImageURL());
-            view.findViewById(R.id.retweet).setVisibility(View.VISIBLE);
+            // 自分のツイート
+            if (user.getId() == status.getUser().getId()) {
+                actionIcon.setText(fontello_retweet);
+                actionIcon.setTextColor(context.getResources().getColor(color.holo_green_light));
+                actionBy.setText(retweet.getUser().getName());
+                actionName.setText("retweeted");
+                view.findViewById(R.id.action).setVisibility(View.VISIBLE);
+                view.findViewById(R.id.retweet).setVisibility(View.GONE);
+            } else {
+                ((TextView) view.findViewById(R.id.retweet_by)).setText("retweeted by "
+                        + retweet.getUser().getScreenName() + "(" + retweet.getUser().getName()
+                        + ") and " + String.valueOf(status.getRetweetCount()) + " others");
+                ImageView icon = (ImageView) view.findViewById(R.id.retweet_icon);
+                Picasso.with(context).load(retweet.getUser().getMiniProfileImageURL()).into(icon);
+                view.findViewById(R.id.retweet).setVisibility(View.VISIBLE);
+                view.findViewById(R.id.action).setVisibility(View.GONE);
+            }
         } else {
-            view.findViewById(R.id.retweet).setVisibility(View.GONE);
+            // 自分へのリプ
+            if (user.getId() == status.getInReplyToUserId()) {
+                actionIcon.setText(fontello_at);
+                actionIcon.setTextColor(context.getResources().getColor(color.holo_red_light));
+                actionBy.setText(status.getUser().getName());
+                actionName.setText("mentioned you");
+                view.findViewById(R.id.action).setVisibility(View.VISIBLE);
+                view.findViewById(R.id.retweet).setVisibility(View.GONE);
+            } else {
+                view.findViewById(R.id.action).setVisibility(View.GONE);
+                view.findViewById(R.id.retweet).setVisibility(View.GONE);
+            }
         }
 
         ImageView icon = (ImageView) view.findViewById(R.id.icon);
-        ProgressBar wait = (ProgressBar) view.findViewById(R.id.WaitBar);
-        renderIcon(wait, icon, status.getUser().getBiggerProfileImageURL());
+        Picasso.with(context).load(status.getUser().getBiggerProfileImageURL()).into(icon);
         icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -238,7 +244,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                 image.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 images.addView(image, new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, 120));
-                renderIcon(null, image, url.getMediaURL());
+                Picasso.with(context).load(url.getMediaURL()).into(image);
                 // 画像タップで拡大表示（ピンチイン・ピンチアウトいつかちゃんとやる）
                 image.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -255,89 +261,12 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         }
     }
 
-    // アイコンを読み込む
-    private void renderIcon(ProgressBar wait, ImageView icon, String url) {
-        if (wait != null) {
-            wait.setVisibility(View.VISIBLE);
-        }
-        icon.setVisibility(View.GONE);
-        String tag = (String) icon.getTag();
-        if (tag != null && tag == url) {
-        } else {
-            icon.setTag(url);
-            Bitmap image = mMemoryCache.get(url);
-            if (image == null) {
-                ImageGetTask task = new ImageGetTask(icon, wait);
-                task.execute(url);
-            } else {
-                icon.setImageBitmap(image);
-                icon.setVisibility(View.VISIBLE);
-                if (wait != null) {
-                    wait.setVisibility(View.GONE);
-                }
-            }
-        }
-    }
-
     private String getClientName(String source) {
         String[] tokens = source.split("[<>]");
         if (tokens.length > 1) {
             return tokens[2];
         } else {
             return tokens[0];
-        }
-    }
-
-    class ImageGetTask extends AsyncTask<String, Void, Bitmap> {
-        private ImageView image;
-        private String tag;
-        private ProgressBar bar;
-
-        public ImageGetTask(ImageView image, ProgressBar bar) {
-            // 対象の項目を保持しておく
-            this.image = image;
-            this.bar = bar;
-            this.tag = image.getTag().toString();
-        }
-
-        @Override
-        protected Bitmap doInBackground(String... params) {
-            // ここでHttp経由で画像を取得します。取得後Bitmapで返します。
-            synchronized (context) {
-                try {
-                    URL imageUrl = new URL(params[0]);
-                    InputStream imageIs;
-                    imageIs = imageUrl.openStream();
-                    Bitmap bitmap = BitmapFactory.decodeStream(imageIs);
-                    return bitmap;
-                } catch (MalformedURLException e) {
-                    return null;
-                } catch (IOException e) {
-                    return null;
-                }
-            }
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap bitmap) {
-            // Tagが同じものか確認して、同じであれば画像を設定する
-            // （Tagの設定をしないと別の行に画像が表示されてしまう）
-            if (tag.equals(image.getTag())) {
-                if (bitmap != null) {
-                    // 画像の設定
-                    mMemoryCache.put(tag, bitmap);
-                    image.setImageBitmap(bitmap);
-                } else {
-                    // エラーの場合は×印を表示
-                    // image.setImageDrawable(context.getResources().getDrawable(
-                    // R.drawable.x));
-                }
-                // プログレスバーを隠し、取得した画像を表示
-                image.setVisibility(View.VISIBLE);
-                if (bar != null) {
-                    bar.setVisibility(View.GONE);
-                }
-            }
         }
     }
 }
