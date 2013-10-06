@@ -157,6 +157,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         view.findViewById(R.id.images).setVisibility(View.GONE);
         ImageView icon = (ImageView) view.findViewById(R.id.icon);
         Picasso.with(context).load(message.getSender().getBiggerProfileImageURL()).into(icon);
+        view.findViewById(R.id.action).setVisibility(View.GONE);
     }
 
     private void renderStatus(View view, final Status status, Status retweet, User favorite) {
