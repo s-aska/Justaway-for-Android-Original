@@ -24,8 +24,8 @@
 
             <LinearLayout
                 android:id="@+id/viewWait"
-                android:layout_width="70dp"
-                android:layout_height="70dp"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
                 android:layout_gravity="center"
                 android:layout_marginRight="6dp" >
 
@@ -49,11 +49,11 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:shadowColor="@android:color/black"
-                android:shadowDx="5.0"
-                android:shadowDy="5.0"
+                android:shadowDx="3.0"
+                android:shadowDy="3.0"
                 android:shadowRadius="10.0"
                 android:textColor="@android:color/white"
-                android:textSize="25sp" />
+                android:textSize="23sp" />
 
             <TextView
                 android:id="@+id/screenName"
@@ -74,23 +74,6 @@
         android:layout_height="wrap_content" >
 
         <ImageView
-            android:id="@+id/ic_menu_mylocation"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:contentDescription="@string/description_icon"
-            android:src="@android:drawable/ic_menu_mylocation" />
-
-        <TextView
-            android:id="@+id/location"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
-
-        <ImageView
             android:id="@+id/ic_menu_info_details"
             android:layout_width="20dp"
             android:layout_height="20dp"
@@ -103,13 +86,25 @@
             android:layout_height="wrap_content" />
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/description"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <ImageView
+            android:id="@+id/ic_menu_mylocation"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:contentDescription="@string/description_icon"
+            android:src="@android:drawable/ic_menu_mylocation" />
+
+        <TextView
+            android:id="@+id/location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 
     <TextView
-        android:id="@+id/statusesCount"
+        android:id="@+id/description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
@@ -129,6 +124,23 @@
             android:orientation="vertical" >
 
             <TextView
+                android:id="@+id/statusesCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/statusesCountLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tweets" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
                 android:id="@+id/friendsCount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
@@ -137,7 +149,7 @@
                 android:id="@+id/friendsCountLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/friendsCount" />
+                android:text="@string/following" />
         </LinearLayout>
 
         <LinearLayout
@@ -154,14 +166,26 @@
                 android:id="@+id/followersCountLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/followersCount" />
+                android:text="@string/followers" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/listedCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/listedCountLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/listed" />
         </LinearLayout>
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/listedCount"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
 
     <TextView
         android:id="@+id/createdAt"

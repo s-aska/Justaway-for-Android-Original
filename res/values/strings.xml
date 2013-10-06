@@ -17,8 +17,10 @@
     <string name="tweet_suddenly">突</string>
     <string name="tweet_battery">残</string>
     <string name="tweet_img">画</string>
-    <string name="friendsCount">フォロー</string>
-    <string name="followersCount">フォロワー</string>
+    <string name="tweets">TWEETS</string>
+    <string name="following">FOLLOWING</string>
+    <string name="followers">FOLLOWERS</string>
+    <string name="listed">LISTED</string>
     <string name="description_icon">Profile Icon</string>
     
 </resources>
