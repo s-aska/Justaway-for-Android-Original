@@ -20,7 +20,6 @@ import twitter4j.User;
 import android.R.color;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,9 +35,6 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     private LayoutInflater inflater;
     private int layout;
     private static int limit = 500;
-    private final static String fontello_star = "";
-    private final static String fontello_retweet = "";
-    private final static String fontello_at = "";
 
     public TwitterAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId);
@@ -182,7 +178,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         User user = JustawayApplication.getApplication().getUser();
         // favの場合
         if (favorite != null) {
-            actionIcon.setText(fontello_star);
+            actionIcon.setText(R.string.fontello_star);
             actionIcon.setTextColor(context.getResources().getColor(color.holo_orange_light));
             actionBy.setText(favorite.getName());
             actionName.setText("favorited");
@@ -193,7 +189,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         else if (retweet != null) {
             // 自分のツイート
             if (user.getId() == status.getUser().getId()) {
-                actionIcon.setText(fontello_retweet);
+                actionIcon.setText(R.string.fontello_retweet);
                 actionIcon.setTextColor(context.getResources().getColor(color.holo_green_light));
                 actionBy.setText(retweet.getUser().getName());
                 actionName.setText("retweeted");
@@ -211,7 +207,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         } else {
             // 自分へのリプ
             if (user.getId() == status.getInReplyToUserId()) {
-                actionIcon.setText(fontello_at);
+                actionIcon.setText(R.string.fontello_at);
                 actionIcon.setTextColor(context.getResources().getColor(color.holo_red_light));
                 actionBy.setText(status.getUser().getName());
                 actionName.setText("mentioned you");
