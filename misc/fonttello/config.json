@@ -5,6 +5,8 @@
   "hinting": true,
   "units_per_em": 1000,
   "ascent": 850,
+  "copyright": "undefined",
+  "fullname": "undefined",
   "glyphs": [
     {
       "uid": "474656633f79ea2f1dad59ff63f6bf07",
@@ -23,6 +25,18 @@
       "css": "at",
       "code": 59394,
       "src": "typicons"
+    },
+    {
+      "uid": "08a23ea96a596b1b5f12f6abbbc8f5f9",
+      "css": "location",
+      "code": 59395,
+      "src": "iconic"
+    },
+    {
+      "uid": "3c4a596e8ee3584c4c9e7002371db19f",
+      "css": "sdd",
+      "code": 59396,
+      "src": "websymbols"
     }
   ]
 }

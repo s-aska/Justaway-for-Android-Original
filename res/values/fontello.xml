@@ -4,5 +4,7 @@
     <string name="fontello_star"></string>
     <string name="fontello_retweet"></string>
     <string name="fontello_at"></string>
+    <string name="fontello_location"></string>
+    <string name="fontello_sdd"></string>
 
 </resources>

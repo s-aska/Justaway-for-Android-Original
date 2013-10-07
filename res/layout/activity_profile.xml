@@ -72,12 +72,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
 
-        <ImageView
-            android:id="@+id/ic_menu_info_details"
+        <TextView
+            android:id="@+id/url_icon"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:contentDescription="@string/description_icon"
-            android:src="@android:drawable/ic_menu_info_details" />
+            android:contentDescription="@string/description_icon" />
 
         <TextView
             android:id="@+id/url"
@@ -89,12 +88,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" >
 
-        <ImageView
-            android:id="@+id/ic_menu_mylocation"
+        <TextView
+            android:id="@+id/location_icon"
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:contentDescription="@string/description_icon"
-            android:src="@android:drawable/ic_menu_mylocation" />
+            android:contentDescription="@string/description_icon" />
 
         <TextView
             android:id="@+id/location"
