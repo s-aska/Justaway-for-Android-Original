@@ -61,27 +61,37 @@
             android:layout_weight="1"
             android:orientation="vertical" >
 
-            <LinearLayout
+            <TableLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="6dp"
-                android:gravity="left" >
+                android:stretchColumns="1" >
 
-                <TextView
-                    android:id="@+id/display_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
+                <TableRow>
 
-                <TextView
-                    android:id="@+id/screen_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="4dp"
-                    android:textColor="#666666"
-                    android:textSize="10sp" />
-            </LinearLayout>
+                    <TextView
+                        android:id="@+id/display_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/screen_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="4dp"
+                        android:textColor="#666666"
+                        android:textSize="10sp" />
+
+                    <TextView
+                        android:id="@+id/is_favorited"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/fontello_star"
+                        android:textSize="12sp" />
+                </TableRow>
+            </TableLayout>
 
             <TextView
                 android:id="@+id/status"

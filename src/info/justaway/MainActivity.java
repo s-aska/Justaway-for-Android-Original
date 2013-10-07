@@ -9,6 +9,7 @@ import info.justaway.task.DestroyDirectMessageTask;
 import info.justaway.task.DestroyStatusTask;
 import info.justaway.task.FavoriteTask;
 import info.justaway.task.RetweetTask;
+import info.justaway.task.UnFavoriteTask;
 import info.justaway.task.VerifyCredentialsLoader;
 import twitter4j.DirectMessage;
 import twitter4j.Status;
@@ -389,8 +390,11 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
             @Override
             public void onFavorite(User source, User target, Status status) {
 
-                // 自分の fav に反応しない
+                // 自分の fav をタイムラインに反映
                 if (source.getId() == getUser().getId()) {
+                    BaseFragment fragmen = (BaseFragment) mSectionsPagerAdapter
+                            .findFragmentByPosition(0);
+                    fragmen.replaceStatus(status);
                     return;
                 }
 
@@ -416,8 +420,11 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                 final User source = arg0;
                 final Status status = arg2;
 
-                // 自分の unfav に反応しない
+                // 自分の unfav をタイムラインに反映
                 if (source.getId() == getUser().getId()) {
+                    BaseFragment fragmen = (BaseFragment) mSectionsPagerAdapter
+                            .findFragmentByPosition(0);
+                    fragmen.replaceStatus(status);
                     return;
                 }
 
@@ -456,6 +463,10 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
 
     public void doFavorite(Long id) {
         new FavoriteTask().execute(id);
+    }
+
+    public void doDestroyFavorite(Long id) {
+        new UnFavoriteTask().execute(id);
     }
 
     public void doRetweet(Long id) {

@@ -90,6 +90,22 @@ public abstract class BaseFragment extends ListFragment {
         });
     }
 
+    public void replaceStatus(final Status status) {
+        final ListView listView = getListView();
+        if (listView == null) {
+            return;
+        }
+
+        listView.post(new Runnable() {
+            @Override
+            public void run() {
+
+                TwitterAdapter adapter = (TwitterAdapter) listView.getAdapter();
+                adapter.replaceStatus(status);
+            }
+        });
+    }
+
     static final int CONTEXT_MENU_REPLY_ID = 1;
     static final int CONTEXT_MENU_FAV_ID = 2;
     static final int CONTEXT_MENU_FAVRT_ID = 3;
@@ -101,6 +117,7 @@ public abstract class BaseFragment extends ListFragment {
     static final int CONTEXT_MENU_RM_DM_ID = 9;
     static final int CONTEXT_MENU_RM_ID = 10;
     static final int CONTEXT_MENU_TALK_ID = 11;
+    static final int CONTEXT_MENU_RM_FAV_ID = 12;
 
     public void onCreateContextMenu(ContextMenu menu, View view, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, view, menuInfo);
@@ -129,12 +146,22 @@ public abstract class BaseFragment extends ListFragment {
         menu.setHeaderTitle(status.getText());
         menu.add(0, CONTEXT_MENU_REPLY_ID, 0, "リプ");
         menu.add(0, CONTEXT_MENU_QT_ID, 0, "引用");
-        menu.add(0, CONTEXT_MENU_FAV_ID, 0, "ふぁぼ");
-        menu.add(0, CONTEXT_MENU_FAVRT_ID, 0, "ふぁぼ＆公式RT");
-        menu.add(0, CONTEXT_MENU_RT_ID, 0, "公式RT");
+
+        if (status.isFavorited()) {
+            menu.add(0, CONTEXT_MENU_RM_FAV_ID, 0, "ふぁぼを解除");
+        } else {
+            menu.add(0, CONTEXT_MENU_FAV_ID, 0, "ふぁぼ");
+        }
 
         if (status.getUser().getId() == activity.getUser().getId()) {
-            menu.add(0, CONTEXT_MENU_RM_ID, 0, "ツイ消し");
+            if (retweet != null) {
+                menu.add(0, CONTEXT_MENU_RM_ID, 0, "公式RTを解除");
+            } else {
+                menu.add(0, CONTEXT_MENU_RM_ID, 0, "ツイ消し");
+            }
+        } else {
+            menu.add(0, CONTEXT_MENU_FAVRT_ID, 0, "ふぁぼ＆公式RT");
+            menu.add(0, CONTEXT_MENU_RT_ID, 0, "公式RT");
         }
 
         if (soruce.getInReplyToStatusId() > 0) {
@@ -196,6 +223,9 @@ public abstract class BaseFragment extends ListFragment {
             return true;
         case CONTEXT_MENU_RT_ID:
             activity.doRetweet(status.getId());
+            return true;
+        case CONTEXT_MENU_RM_FAV_ID:
+            activity.doDestroyFavorite(status.getId());
             return true;
         case CONTEXT_MENU_FAV_ID:
             activity.doFavorite(status.getId());
