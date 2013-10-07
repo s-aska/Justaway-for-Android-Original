@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
@@ -37,6 +38,8 @@ public class ProfileActivity extends Activity {
     private TextView followersCount;
     private TextView listedCount;
     private TextView createdAt;
+    private TextView urlIcon;
+    private TextView locationIcon;
 
     // private TextView addedToTwitter;
 
@@ -73,6 +76,13 @@ public class ProfileActivity extends Activity {
         createdAt = (TextView) findViewById(R.id.createdAt);
         icon = (ImageView) findViewById(R.id.icon);
         banner = (ImageView) findViewById(R.id.banner);
+
+        urlIcon = (TextView) findViewById(R.id.url_icon);
+        urlIcon.setTypeface(Typeface.createFromAsset(context.getAssets(), "fontello.ttf"));
+        urlIcon.setText(R.string.fontello_sdd);
+        locationIcon = (TextView) findViewById(R.id.location_icon);
+        locationIcon.setTypeface(Typeface.createFromAsset(context.getAssets(), "fontello.ttf"));
+        locationIcon.setText(R.string.fontello_location);
 
         Intent intent = getIntent();
         Long userId = intent.getLongExtra("userId", 0);
