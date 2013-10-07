@@ -63,6 +63,16 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         this.statuses.remove(row);
     }
 
+    public void replaceStatus(Status status) {
+        for (Row row : statuses) {
+            if (row.isDirectMessage() != true && row.getStatus().getId() == status.getId()) {
+                row.setStatus(status);
+                notifyDataSetChanged();
+                break;
+            }
+        }
+    }
+
     public void removeStatus(long statusId) {
         for (Row row : statuses) {
             if (row.isDirectMessage() != true && row.getStatus().getId() == statusId) {
@@ -174,8 +184,17 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         actionIcon.setText("");
         TextView actionBy = (TextView) view.findViewById(R.id.action_by);
         TextView actionName = (TextView) view.findViewById(R.id.action_name);
-
         User user = JustawayApplication.getApplication().getUser();
+
+        if (status.isFavorited() && user.getId() != status.getUser().getId()) {
+            TextView isFavorited = (TextView) view.findViewById(R.id.is_favorited);
+            isFavorited.setTextColor(context.getResources().getColor(color.holo_orange_light));
+            isFavorited.setTypeface(Typeface.createFromAsset(context.getAssets(), "fontello.ttf"));
+            isFavorited.setVisibility(View.VISIBLE);
+        } else {
+            view.findViewById(R.id.is_favorited).setVisibility(View.GONE);
+        }
+ 
         // favの場合
         if (favorite != null) {
             actionIcon.setText(R.string.fontello_star);
