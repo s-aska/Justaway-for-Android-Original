@@ -1,25 +1,18 @@
 package info.justaway;
 
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import twitter4j.Twitter;
 import twitter4j.User;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 public class ProfileActivity extends Activity {
 
@@ -129,69 +122,17 @@ public class ProfileActivity extends Activity {
                 followersCount.setText(String.valueOf(user.getFollowersCount()));
                 listedCount.setText(String.valueOf(user.getListedCount()));
                 createdAt.setText(user.getCreatedAt().toString());
-                ProgressBar wait = (ProgressBar) findViewById(R.id.WaitBar);
                 String iconUrl = user.getBiggerProfileImageURL();
                 String bannerUrl = user.getProfileBannerMobileRetinaURL();
                 icon.setTag(iconUrl);
                 banner.setTag(bannerUrl);
-                new ImageGetTask(icon, wait).execute(iconUrl);
+                Picasso.with(context).load(iconUrl).into(icon);
                 if (bannerUrl != null) {
-                    new ImageGetTask(banner, wait).execute(bannerUrl);
-                }
-            }
-        }
-    }
-
-    class ImageGetTask extends AsyncTask<String, Void, Bitmap> {
-        private ImageView image;
-        private String tag;
-        private ProgressBar bar;
-
-        public ImageGetTask(ImageView image, ProgressBar bar) {
-            // 対象の項目を保持しておく
-            this.image = image;
-            this.bar = bar;
-            this.tag = image.getTag().toString();
-        }
-
-        @Override
-        protected Bitmap doInBackground(String... params) {
-            // ここでHttp経由で画像を取得します。取得後Bitmapで返します。
-            synchronized (context) {
-                try {
-                    URL imageUrl = new URL(params[0]);
-                    InputStream imageIs;
-                    imageIs = imageUrl.openStream();
-                    Bitmap bitmap = BitmapFactory.decodeStream(imageIs);
-                    return bitmap;
-                } catch (MalformedURLException e) {
-                    return null;
-                } catch (IOException e) {
-                    return null;
-                }
-            }
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap bitmap) {
-            // Tagが同じものか確認して、同じであれば画像を設定する
-            // （Tagの設定をしないと別の行に画像が表示されてしまう）
-            if (tag.equals(image.getTag())) {
-                if (bitmap != null) {
-                    // 画像の設定
-                    image.setImageBitmap(bitmap);
+                    Picasso.with(context).load(bannerUrl).placeholder(R.drawable.suzuri).into(banner);
                 } else {
-                    // エラーの場合は×印を表示
-                    // image.setImageDrawable(context.getResources().getDrawable(
-                    // R.drawable.x));
-                }
-                // プログレスバーを隠し、取得した画像を表示
-                image.setVisibility(View.VISIBLE);
-                if (bar != null) {
-                    bar.setVisibility(View.GONE);
+                    banner.setImageResource(R.drawable.suzuri);
                 }
             }
         }
     }
-
 }
