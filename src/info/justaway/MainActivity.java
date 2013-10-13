@@ -342,6 +342,10 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                 twitterStream.shutdown();
                 twitterStream.user();
             }
+        } else if (itemId == R.id.onore) {
+            Intent intent = new Intent(this, ProfileActivity.class);
+            intent.putExtra("userId", getUser().getId());
+            startActivity(intent);
         }
         return true;
     }
