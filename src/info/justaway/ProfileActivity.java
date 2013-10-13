@@ -1,20 +1,22 @@
 package info.justaway;
 
 
+import info.justaway.task.ShowUserLoader;
 import twitter4j.Twitter;
 import twitter4j.User;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-public class ProfileActivity extends Activity {
+public class ProfileActivity extends FragmentActivity implements LoaderManager.LoaderCallbacks<User> {
 
     private Context context;
     private Twitter twitter;
@@ -69,7 +71,6 @@ public class ProfileActivity extends Activity {
         createdAt = (TextView) findViewById(R.id.createdAt);
         icon = (ImageView) findViewById(R.id.icon);
         banner = (ImageView) findViewById(R.id.banner);
-
         urlIcon = (TextView) findViewById(R.id.url_icon);
         urlIcon.setTypeface(Typeface.createFromAsset(context.getAssets(), "fontello.ttf"));
         urlIcon.setText(R.string.fontello_sdd);
@@ -79,60 +80,57 @@ public class ProfileActivity extends Activity {
 
         Intent intent = getIntent();
         Long userId = intent.getLongExtra("userId", 0);
-        new ProfileTask().execute(userId);
-
+        Bundle args = new Bundle(1);
+        args.putLong("userId", userId);
+        getSupportLoaderManager().initLoader(0, args, this);
     }
 
-    private class ProfileTask extends AsyncTask<Long, Void, User> {
+    @Override
+    public Loader<User> onCreateLoader(int arg0, Bundle args) {
+        Long userId = args.getLong("userId");
+        return new ShowUserLoader(this, userId);
+    }
 
-        @Override
-        protected User doInBackground(Long... params) {
-            try {
-                User user = getTwitter().showUser(params[0]);
-                return user;
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
+    @Override
+    public void onLoadFinished(Loader<User> arg0, User user) {
+        if (user != null) {
+            screenName.setText("@" + user.getScreenName());
+            name.setText(user.getName());
+            if (user.getLocation() != null) {
+                location.setText(user.getLocation());
+            } else {
+                location.setText("");
+            }
+            if (user.getURL() != null) {
+                url.setText(String.valueOf(user.getURL()));
+            } else {
+                url.setText("");
+            }
+            if (user.getDescription() != null) {
+                description.setText(user.getDescription());
+            } else {
+                description.setText("");
+            }
+            favouritesCount.setText(String.valueOf(user.getFavouritesCount()));
+            statusesCount.setText(String.valueOf(user.getStatusesCount()));
+            friendsCount.setText(String.valueOf(user.getFriendsCount()));
+            followersCount.setText(String.valueOf(user.getFollowersCount()));
+            listedCount.setText(String.valueOf(user.getListedCount()));
+            createdAt.setText(user.getCreatedAt().toString());
+            String iconUrl = user.getBiggerProfileImageURL();
+            String bannerUrl = user.getProfileBannerMobileRetinaURL();
+            icon.setTag(iconUrl);
+            banner.setTag(bannerUrl);
+            Picasso.with(context).load(iconUrl).into(icon);
+            if (bannerUrl != null) {
+                Picasso.with(context).load(bannerUrl).placeholder(R.drawable.suzuri).into(banner);
+            } else {
+                banner.setImageResource(R.drawable.suzuri);
             }
         }
+    }
 
-        @Override
-        protected void onPostExecute(User user) {
-            if (user != null) {
-                screenName.setText("@" + user.getScreenName());
-                name.setText(user.getName());
-                if (user.getLocation() != null) {
-                    location.setText(user.getLocation());
-                } else {
-                    location.setText("");
-                }
-                if (user.getURL() != null) {
-                    url.setText(String.valueOf(user.getURL()));
-                } else {
-                    url.setText("");
-                }
-                if (user.getDescription() != null) {
-                    description.setText(user.getDescription());
-                } else {
-                    description.setText("");
-                }
-                favouritesCount.setText(String.valueOf(user.getFavouritesCount()));
-                statusesCount.setText(String.valueOf(user.getStatusesCount()));
-                friendsCount.setText(String.valueOf(user.getFriendsCount()));
-                followersCount.setText(String.valueOf(user.getFollowersCount()));
-                listedCount.setText(String.valueOf(user.getListedCount()));
-                createdAt.setText(user.getCreatedAt().toString());
-                String iconUrl = user.getBiggerProfileImageURL();
-                String bannerUrl = user.getProfileBannerMobileRetinaURL();
-                icon.setTag(iconUrl);
-                banner.setTag(bannerUrl);
-                Picasso.with(context).load(iconUrl).into(icon);
-                if (bannerUrl != null) {
-                    Picasso.with(context).load(bannerUrl).placeholder(R.drawable.suzuri).into(banner);
-                } else {
-                    banner.setImageResource(R.drawable.suzuri);
-                }
-            }
-        }
+    @Override
+    public void onLoaderReset(Loader<User> arg0) {
     }
 }
