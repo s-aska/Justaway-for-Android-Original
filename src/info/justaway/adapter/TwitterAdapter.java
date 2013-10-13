@@ -194,7 +194,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         } else {
             view.findViewById(R.id.is_favorited).setVisibility(View.GONE);
         }
- 
+
         // favの場合
         if (favorite != null) {
             actionIcon.setText(R.string.fontello_star);
@@ -202,7 +202,12 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             actionBy.setText(favorite.getName());
             actionName.setText("favorited");
             view.findViewById(R.id.action).setVisibility(View.VISIBLE);
-            view.findViewById(R.id.retweet).setVisibility(View.GONE);
+            ((TextView) view.findViewById(R.id.retweet_by)).setText("favorited by "
+                    + favorite.getScreenName() + "(" + favorite.getName() + ") and "
+                    + String.valueOf(status.getFavoriteCount()) + " others");
+            ImageView icon = (ImageView) view.findViewById(R.id.retweet_icon);
+            Picasso.with(context).load(favorite.getMiniProfileImageURL()).into(icon);
+            view.findViewById(R.id.retweet).setVisibility(View.VISIBLE);
         }
         // RTの場合
         else if (retweet != null) {
@@ -213,16 +218,15 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                 actionBy.setText(retweet.getUser().getName());
                 actionName.setText("retweeted");
                 view.findViewById(R.id.action).setVisibility(View.VISIBLE);
-                view.findViewById(R.id.retweet).setVisibility(View.GONE);
             } else {
-                ((TextView) view.findViewById(R.id.retweet_by)).setText("retweeted by "
-                        + retweet.getUser().getScreenName() + "(" + retweet.getUser().getName()
-                        + ") and " + String.valueOf(status.getRetweetCount()) + " others");
-                ImageView icon = (ImageView) view.findViewById(R.id.retweet_icon);
-                Picasso.with(context).load(retweet.getUser().getMiniProfileImageURL()).into(icon);
-                view.findViewById(R.id.retweet).setVisibility(View.VISIBLE);
                 view.findViewById(R.id.action).setVisibility(View.GONE);
             }
+            ((TextView) view.findViewById(R.id.retweet_by)).setText("retweeted by "
+                    + retweet.getUser().getScreenName() + "(" + retweet.getUser().getName()
+                    + ") and " + String.valueOf(status.getRetweetCount()) + " others");
+            ImageView icon = (ImageView) view.findViewById(R.id.retweet_icon);
+            Picasso.with(context).load(retweet.getUser().getMiniProfileImageURL()).into(icon);
+            view.findViewById(R.id.retweet).setVisibility(View.VISIBLE);
         } else {
             // 自分へのリプ
             if (user.getId() == status.getInReplyToUserId()) {
