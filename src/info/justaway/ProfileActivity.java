@@ -1,7 +1,7 @@
 package info.justaway;
 
-
 import info.justaway.model.Profile;
+import info.justaway.task.FollowTask;
 import info.justaway.task.ShowUserLoader;
 import twitter4j.Relationship;
 import twitter4j.Twitter;
@@ -13,12 +13,14 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-public class ProfileActivity extends FragmentActivity implements LoaderManager.LoaderCallbacks<Profile> {
+public class ProfileActivity extends FragmentActivity implements
+        LoaderManager.LoaderCallbacks<Profile> {
 
     private Context context;
     private Twitter twitter;
@@ -79,7 +81,7 @@ public class ProfileActivity extends FragmentActivity implements LoaderManager.L
         locationIcon = (TextView) findViewById(R.id.location_icon);
         locationIcon.setTypeface(Typeface.createFromAsset(context.getAssets(), "fontello.ttf"));
         locationIcon.setText(R.string.fontello_location);
-        
+
         Intent intent = getIntent();
         Long userId = intent.getLongExtra("userId", 0);
         Bundle args = new Bundle(1);
@@ -95,7 +97,7 @@ public class ProfileActivity extends FragmentActivity implements LoaderManager.L
 
     @Override
     public void onLoadFinished(Loader<Profile> arg0, Profile profile) {
-        User user = profile.getUser();
+        final User user = profile.getUser();
         if (user != null) {
             screenName.setText("@" + user.getScreenName());
             name.setText(user.getName());
@@ -131,14 +133,24 @@ public class ProfileActivity extends FragmentActivity implements LoaderManager.L
                 banner.setImageResource(R.drawable.suzuri);
             }
             Relationship relationship = profile.getRelationship();
-            if (relationship.isSourceFollowedByTarget()){
-                ((TextView) findViewById(R.id.followedBy)).setText("フォロワーされています"); 
+            if (relationship.isSourceFollowedByTarget()) {
+                ((TextView) findViewById(R.id.followedBy)).setText("フォロワーされています");
+            }
+            if (relationship.isSourceFollowingTarget()) {
+                ((TextView) findViewById(R.id.follow)).setText("フォローを解除");
+            } else {
+                ((TextView) findViewById(R.id.follow)).setText("フォローする");
+                findViewById(R.id.follow).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        new FollowTask().execute(user.getId());
+                    }
+                });
             }
         }
     }
 
     @Override
     public void onLoaderReset(Loader<Profile> arg0) {
-        
-    } 
+    }
 }
