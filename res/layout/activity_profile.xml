@@ -58,6 +58,18 @@
                 android:shadowRadius="10.0"
                 android:textColor="@android:color/white"
                 android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/followedBy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:shadowColor="@android:color/black"
+                android:shadowDx="5.0"
+                android:shadowDy="5.0"
+                android:shadowRadius="10.0"
+                android:textColor="@android:color/white"
+                android:textSize="12sp" />
         </LinearLayout>
     </FrameLayout>
 

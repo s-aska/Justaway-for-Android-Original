@@ -1,7 +1,9 @@
 package info.justaway;
 
 
+import info.justaway.model.Profile;
 import info.justaway.task.ShowUserLoader;
+import twitter4j.Relationship;
 import twitter4j.Twitter;
 import twitter4j.User;
 import android.content.Context;
@@ -16,7 +18,7 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-public class ProfileActivity extends FragmentActivity implements LoaderManager.LoaderCallbacks<User> {
+public class ProfileActivity extends FragmentActivity implements LoaderManager.LoaderCallbacks<Profile> {
 
     private Context context;
     private Twitter twitter;
@@ -77,7 +79,7 @@ public class ProfileActivity extends FragmentActivity implements LoaderManager.L
         locationIcon = (TextView) findViewById(R.id.location_icon);
         locationIcon.setTypeface(Typeface.createFromAsset(context.getAssets(), "fontello.ttf"));
         locationIcon.setText(R.string.fontello_location);
-
+        
         Intent intent = getIntent();
         Long userId = intent.getLongExtra("userId", 0);
         Bundle args = new Bundle(1);
@@ -86,13 +88,14 @@ public class ProfileActivity extends FragmentActivity implements LoaderManager.L
     }
 
     @Override
-    public Loader<User> onCreateLoader(int arg0, Bundle args) {
+    public Loader<Profile> onCreateLoader(int arg0, Bundle args) {
         Long userId = args.getLong("userId");
         return new ShowUserLoader(this, userId);
     }
 
     @Override
-    public void onLoadFinished(Loader<User> arg0, User user) {
+    public void onLoadFinished(Loader<Profile> arg0, Profile profile) {
+        User user = profile.getUser();
         if (user != null) {
             screenName.setText("@" + user.getScreenName());
             name.setText(user.getName());
@@ -127,10 +130,15 @@ public class ProfileActivity extends FragmentActivity implements LoaderManager.L
             } else {
                 banner.setImageResource(R.drawable.suzuri);
             }
+            Relationship relationship = profile.getRelationship();
+            if (relationship.isSourceFollowedByTarget()){
+                ((TextView) findViewById(R.id.followedBy)).setText("フォロワーされています"); 
+            }
         }
     }
 
     @Override
-    public void onLoaderReset(Loader<User> arg0) {
-    }
+    public void onLoaderReset(Loader<Profile> arg0) {
+        
+    } 
 }
