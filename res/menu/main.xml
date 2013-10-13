@@ -1,6 +1,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
+        android:id="@+id/onore"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/onore"/>
+    <item
         android:id="@+id/reload"
         android:orderInCategory="100"
         android:showAsAction="never"
