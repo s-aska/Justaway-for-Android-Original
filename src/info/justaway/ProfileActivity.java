@@ -3,6 +3,7 @@ package info.justaway;
 import info.justaway.model.Profile;
 import info.justaway.task.FollowTask;
 import info.justaway.task.ShowUserLoader;
+import info.justaway.task.UnfollowTask;
 import twitter4j.Relationship;
 import twitter4j.Twitter;
 import twitter4j.User;
@@ -138,6 +139,12 @@ public class ProfileActivity extends FragmentActivity implements
             }
             if (relationship.isSourceFollowingTarget()) {
                 ((TextView) findViewById(R.id.follow)).setText("フォローを解除");
+                findViewById(R.id.follow).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        new UnfollowTask().execute(user.getId());
+                    }
+                });
             } else {
                 ((TextView) findViewById(R.id.follow)).setText("フォローする");
                 findViewById(R.id.follow).setOnClickListener(new View.OnClickListener() {

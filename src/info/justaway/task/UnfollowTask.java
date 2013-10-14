@@ -3,12 +3,12 @@ package info.justaway.task;
 import info.justaway.JustawayApplication;
 import android.os.AsyncTask;
 
-public class FollowTask extends AsyncTask<Long, Void, Boolean> {
+public class UnfollowTask extends AsyncTask<Long, Void, Boolean> {
 
     @Override
     protected Boolean doInBackground(Long... params) {
         try {
-            JustawayApplication.getApplication().getTwitter().createFriendship(params[0]);
+            JustawayApplication.getApplication().getTwitter().destroyFriendship(params[0]);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -19,7 +19,7 @@ public class FollowTask extends AsyncTask<Long, Void, Boolean> {
     @Override
     protected void onPostExecute(Boolean success) {
         if (success == true) {
-            JustawayApplication.showToast("フォローしました");
+            JustawayApplication.showToast("フォローを解除しました");
         }
     }
 }
