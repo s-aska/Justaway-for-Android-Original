@@ -25,19 +25,8 @@ public class ProfileActivity extends FragmentActivity implements
 
     private Context context;
     private Twitter twitter;
-    private TextView screenName;
     private ImageView icon;
     private ImageView banner;
-    private TextView name;
-    private TextView location;
-    private TextView url;
-    private TextView description;
-    private TextView statusesCount;
-    private TextView favouritesCount;
-    private TextView friendsCount;
-    private TextView followersCount;
-    private TextView listedCount;
-    private TextView createdAt;
     private TextView urlIcon;
     private TextView locationIcon;
 
@@ -63,17 +52,6 @@ public class ProfileActivity extends FragmentActivity implements
         JustawayApplication application = JustawayApplication.getApplication();
 
         twitter = application.getTwitter();
-        screenName = (TextView) findViewById(R.id.screenName);
-        name = (TextView) findViewById(R.id.name);
-        location = (TextView) findViewById(R.id.location);
-        url = (TextView) findViewById(R.id.url);
-        description = (TextView) findViewById(R.id.description);
-        statusesCount = (TextView) findViewById(R.id.statusesCount);
-        favouritesCount = (TextView) findViewById(R.id.favouritesCount);
-        friendsCount = (TextView) findViewById(R.id.friendsCount);
-        followersCount = (TextView) findViewById(R.id.followersCount);
-        listedCount = (TextView) findViewById(R.id.listedCount);
-        createdAt = (TextView) findViewById(R.id.createdAt);
         icon = (ImageView) findViewById(R.id.icon);
         banner = (ImageView) findViewById(R.id.banner);
         urlIcon = (TextView) findViewById(R.id.url_icon);
@@ -100,29 +78,34 @@ public class ProfileActivity extends FragmentActivity implements
     public void onLoadFinished(Loader<Profile> arg0, Profile profile) {
         final User user = profile.getUser();
         if (user != null) {
-            screenName.setText("@" + user.getScreenName());
-            name.setText(user.getName());
+            ((TextView) findViewById(R.id.screenName)).setText("@" + user.getScreenName());
+            ((TextView) findViewById(R.id.name)).setText(user.getName());
             if (user.getLocation() != null) {
-                location.setText(user.getLocation());
+                ((TextView) findViewById(R.id.location)).setText(user.getLocation());
             } else {
-                location.setText("");
+                ((TextView) findViewById(R.id.location)).setText("");
             }
             if (user.getURL() != null) {
-                url.setText(String.valueOf(user.getURL()));
+                ((TextView) findViewById(R.id.url)).setText(String.valueOf(user.getURL()));
             } else {
-                url.setText("");
+                ((TextView) findViewById(R.id.url)).setText("");
             }
             if (user.getDescription() != null) {
-                description.setText(user.getDescription());
+                ((TextView) findViewById(R.id.description)).setText(user.getDescription());
             } else {
-                description.setText("");
+                ((TextView) findViewById(R.id.description)).setText("");
             }
-            favouritesCount.setText(String.valueOf(user.getFavouritesCount()));
-            statusesCount.setText(String.valueOf(user.getStatusesCount()));
-            friendsCount.setText(String.valueOf(user.getFriendsCount()));
-            followersCount.setText(String.valueOf(user.getFollowersCount()));
-            listedCount.setText(String.valueOf(user.getListedCount()));
-            createdAt.setText(user.getCreatedAt().toString());
+            ((TextView) findViewById(R.id.favouritesCount)).setText(String.valueOf(user
+                    .getFavouritesCount()));
+            ((TextView) findViewById(R.id.statusesCount)).setText(String.valueOf(user
+                    .getStatusesCount()));
+            ((TextView) findViewById(R.id.friendsCount)).setText(String.valueOf(user
+                    .getFriendsCount()));
+            ((TextView) findViewById(R.id.followersCount)).setText(String.valueOf(user
+                    .getFollowersCount()));
+            ((TextView) findViewById(R.id.listedCount)).setText(String.valueOf(user
+                    .getListedCount()));
+            ((TextView) findViewById(R.id.createdAt)).setText(user.getCreatedAt().toString());
             String iconUrl = user.getBiggerProfileImageURL();
             String bannerUrl = user.getProfileBannerMobileRetinaURL();
             icon.setTag(iconUrl);
@@ -135,7 +118,7 @@ public class ProfileActivity extends FragmentActivity implements
             }
             Relationship relationship = profile.getRelationship();
             if (relationship.isSourceFollowedByTarget()) {
-                ((TextView) findViewById(R.id.followedBy)).setText("フォロワーされています");
+                ((TextView) findViewById(R.id.followedBy)).setText("フォローされています");
             }
             if (relationship.isSourceFollowingTarget()) {
                 ((TextView) findViewById(R.id.follow)).setText("フォローを解除");
