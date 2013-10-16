@@ -36,7 +36,7 @@ public abstract class BaseFragment extends ListFragment {
         registerForContextMenu(listView);
 
         // Status(ツイート)をViewに描写するアダプター
-        TwitterAdapter adapter = new TwitterAdapter(activity, R.layout.tweet_row);
+        TwitterAdapter adapter = new TwitterAdapter(activity, R.layout.row_tweet);
         setListAdapter(adapter);
 
         /**

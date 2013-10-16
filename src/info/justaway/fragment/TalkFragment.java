@@ -44,7 +44,7 @@ public class TalkFragment extends DialogFragment {
 
         setListView((ListView) dialog.findViewById(R.id.list));
 
-        TwitterAdapter adapter = new TwitterAdapter(activity, R.layout.tweet_row);
+        TwitterAdapter adapter = new TwitterAdapter(activity, R.layout.row_tweet);
         getListView().setAdapter(adapter);
 
         Long statusId = getArguments().getLong("statusId");

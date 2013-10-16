@@ -346,6 +346,9 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
             Intent intent = new Intent(this, ProfileActivity.class);
             intent.putExtra("userId", getUser().getId());
             startActivity(intent);
+        } else if (itemId == R.id.user_list) {
+            Intent intent = new Intent(this, ChooseUserListsActivity.class);
+            startActivity(intent);
         }
         return true;
     }
@@ -393,7 +396,6 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
 
             @Override
             public void onFavorite(User source, User target, Status status) {
-
                 // 自分の fav をタイムラインに反映
                 if (source.getId() == getUser().getId()) {
                     BaseFragment fragmen = (BaseFragment) mSectionsPagerAdapter
@@ -401,7 +403,6 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                     fragmen.replaceStatus(status);
                     return;
                 }
-
                 final Row row = Row.newFavorite(source, target, status);
 
                 // FIXME: 「つながり」的なタブができたらちゃんと実装する

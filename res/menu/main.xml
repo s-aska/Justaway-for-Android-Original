@@ -1,6 +1,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
+        android:id="@+id/user_list"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/user_list"/>
+    <item
         android:id="@+id/onore"
         android:orderInCategory="100"
         android:showAsAction="never"
