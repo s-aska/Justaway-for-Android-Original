@@ -1,5 +1,7 @@
 package info.justaway;
 
+import java.util.ArrayList;
+
 import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
 import twitter4j.TwitterStream;
@@ -22,6 +24,7 @@ import android.widget.Toast;
 public class JustawayApplication extends Application {
 
     private static JustawayApplication sApplication;
+    private ArrayList<Integer> lists = new ArrayList<Integer>();
 
     /**
      * 毎回キャストしなくて良いように
@@ -30,6 +33,10 @@ public class JustawayApplication extends Application {
      */
     public static JustawayApplication getApplication() {
         return sApplication;
+    }
+
+    public ArrayList<Integer> getLists() {
+        return lists;
     }
 
     /*

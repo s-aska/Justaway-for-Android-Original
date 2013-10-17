@@ -52,7 +52,6 @@ public class ChooseUserListsActivity extends FragmentActivity implements
     public void onLoadFinished(Loader<ResponseList<UserList>> arg0, ResponseList<UserList> userLists) {
         if (userLists != null && adapter != null) {
             for (UserList userList : userLists) {
-                System.out.println(userList.getName());
                 adapter.add(userList);
             }
         }
@@ -70,8 +69,8 @@ public class ChooseUserListsActivity extends FragmentActivity implements
         UserList userList = (UserList) listView.getItemAtPosition(info.position);
 
         int id = userList.getId();
-        System.out.println(id);
 
-        JustawayApplication.showToast("すまない。。。まだなんだ。。。(id:" + id + ")");
+        JustawayApplication.getApplication().getLists().add(id);
+        JustawayApplication.showToast("戻ったら沢山スワイプしてみよう。(id:" + id + ")");
     }
 }
