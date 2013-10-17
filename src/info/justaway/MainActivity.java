@@ -1,9 +1,12 @@
 package info.justaway;
 
+import java.util.ArrayList;
+
 import info.justaway.fragment.BaseFragment;
 import info.justaway.fragment.DirectMessageFragment;
 import info.justaway.fragment.InteractionsFragment;
 import info.justaway.fragment.TimelineFragment;
+import info.justaway.fragment.UserListFragment;
 import info.justaway.model.Row;
 import info.justaway.task.DestroyDirectMessageTask;
 import info.justaway.task.DestroyStatusTask;
@@ -110,21 +113,6 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
         }
 
         /**
-         * スワイプで動かせるタブを実装するのに最低限必要な実装
-         */
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-        final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-        setViewPager(viewPager);
-        viewPager.setAdapter(mSectionsPagerAdapter);
-
-        /**
-         * タブは前後タブまでは状態が保持されるがそれ以上離れるとViewが破棄されてしまう、
-         * あまりに使いづらいの上限を増やしている、指定値＋前後のタブまでが保持されるようになる
-         * デフォルト値は1（表示しているタブの前後までしか保持されない）
-         */
-        viewPager.setOffscreenPageLimit(3);
-
-        /**
          * 違うタブだったら移動、同じタブだったら最上部にスクロールという美しい実装
          * ActionBarのタブに頼っていない為、自力でsetCurrentItemでタブを動かしている
          * タブの切替がスワイプだけで良い場合はこの処理すら不要
@@ -193,6 +181,14 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if (mSectionsPagerAdapter != null) {
+            mSectionsPagerAdapter.setPageCount(app.getLists().size());
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
     }
@@ -220,6 +216,21 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
         } else {
             setUser(user);
             JustawayApplication.showToast(user.getScreenName() + " さんこんにちわ！！！！");
+
+            /**
+             * スワイプで動かせるタブを実装するのに最低限必要な実装
+             */
+            mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+            final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+            setViewPager(viewPager);
+            viewPager.setAdapter(mSectionsPagerAdapter);
+
+            /**
+             * タブは前後タブまでは状態が保持されるがそれ以上離れるとViewが破棄されてしまう、
+             * あまりに使いづらいの上限を増やしている、指定値＋前後のタブまでが保持されるようになる
+             * デフォルト値は1（表示しているタブの前後までしか保持されない）
+             */
+            viewPager.setOffscreenPageLimit(3);
         }
     }
 
@@ -279,6 +290,8 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
+        private int pageCount = 0;
+
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
@@ -297,6 +310,12 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                 fragment = (BaseFragment) new DirectMessageFragment();
                 break;
             }
+            if (position > 2) {
+                Bundle data = new Bundle();
+                data.putInt("position", position - 3);
+                fragment = (BaseFragment) new UserListFragment();
+                fragment.setArguments(data);
+            }
             return fragment;
         }
 
@@ -304,10 +323,15 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
             return (BaseFragment) instantiateItem(getViewPager(), position);
         }
 
+        public void setPageCount(int pageCount) {
+            this.pageCount = pageCount;
+            notifyDataSetChanged();
+        }
+
         @Override
         public int getCount() {
             // タブ数
-            return 3;
+            return 3 + pageCount;
         }
     }
 
