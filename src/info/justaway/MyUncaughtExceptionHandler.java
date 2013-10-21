@@ -36,7 +36,7 @@ public class MyUncaughtExceptionHandler implements UncaughtExceptionHandler {
 
     public MyUncaughtExceptionHandler(Context context) {
         sContext = context;
-        sFILE = new File(sContext.getFilesDir(), BUG_REPORT_FILENAME);
+        sFILE = sContext.getFileStreamPath(BUG_REPORT_FILENAME);
         try {
             // パッケージ情報
             sPackInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
