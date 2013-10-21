@@ -367,6 +367,10 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
         if (itemId == R.id.signout) {
             JustawayApplication.getApplication().resetAccessToken();
             finish();
+        } else if (itemId == R.id.death) {
+            int index = 5;
+            String[] strs = new String[index];
+            String str = strs[index];//ここでIndexOutOfBoundsException
         } else if (itemId == R.id.reload) {
             TwitterStream twitterStream = JustawayApplication.getApplication().getTwitterStream();
             if (twitterStream != null) {

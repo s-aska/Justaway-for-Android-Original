@@ -3,9 +3,8 @@ package info.justaway;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
@@ -25,21 +24,19 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
-import android.os.Environment;
 
 public class MyUncaughtExceptionHandler implements UncaughtExceptionHandler {
 
-    private static File BUG_REPORT_FILE = null;
-    static {
-        String sdcard = Environment.getExternalStorageDirectory().getPath();
-        String path = sdcard + File.separator + "bug.txt";
-        BUG_REPORT_FILE = new File(path);
-    }
+    private static String BUG_REPORT_FILENAME = "bug.txt";
 
+    private static File sFILE = null;
+    private static Context sContext;
     private static PackageInfo sPackInfo;
     private UncaughtExceptionHandler mDefaultUEH;
 
     public MyUncaughtExceptionHandler(Context context) {
+        sContext = context;
+        sFILE = new File(sContext.getFilesDir(), BUG_REPORT_FILENAME);
         try {
             // パッケージ情報
             sPackInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
@@ -60,9 +57,8 @@ public class MyUncaughtExceptionHandler implements UncaughtExceptionHandler {
 
     private void saveState(Throwable e) throws FileNotFoundException {
         StackTraceElement[] stacks = e.getStackTrace();
-        File file = BUG_REPORT_FILE;
         PrintWriter pw = null;
-        pw = new PrintWriter(new FileOutputStream(file));
+        pw = new PrintWriter(sContext.openFileOutput(BUG_REPORT_FILENAME, Context.MODE_PRIVATE));
         StringBuilder sb = new StringBuilder();
         int len = stacks.length;
         for (int i = 0; i < len; i++) {
@@ -77,7 +73,7 @@ public class MyUncaughtExceptionHandler implements UncaughtExceptionHandler {
     }
 
     public static final void showBugReportDialogIfExist(Context context) {
-        File file = BUG_REPORT_FILE;
+        File file = sFILE;
         if (file != null & file.exists()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
             builder.setTitle("バグレポート");
@@ -102,9 +98,9 @@ public class MyUncaughtExceptionHandler implements UncaughtExceptionHandler {
         new Thread(new Runnable() {
             public void run() {
                 postBugReport();
-                File file = BUG_REPORT_FILE;
+                File file = sFILE;
                 if (file != null && file.exists()) {
-                    file.delete();
+                    sContext.deleteFile(BUG_REPORT_FILENAME);
                 }
             }
         }).start();
@@ -112,7 +108,7 @@ public class MyUncaughtExceptionHandler implements UncaughtExceptionHandler {
 
     private static void postBugReport() {
         List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-        String bug = getFileBody(BUG_REPORT_FILE);
+        String bug = getFileBody();
         nvps.add(new BasicNameValuePair("dev", Build.DEVICE));
         nvps.add(new BasicNameValuePair("mod", Build.MODEL));
         nvps.add(new BasicNameValuePair("sdk", String.valueOf(Build.VERSION.SDK_INT)));
@@ -128,10 +124,11 @@ public class MyUncaughtExceptionHandler implements UncaughtExceptionHandler {
         }
     }
 
-    private static String getFileBody(File file) {
+    private static String getFileBody() {
         StringBuilder sb = new StringBuilder();
         try {
-            BufferedReader br = new BufferedReader(new FileReader(file));
+            BufferedReader br = new BufferedReader(new InputStreamReader(
+                    sContext.openFileInput(BUG_REPORT_FILENAME)));
             String line;
             while ((line = br.readLine()) != null) {
                 sb.append(line).append("\r\n");
@@ -144,9 +141,9 @@ public class MyUncaughtExceptionHandler implements UncaughtExceptionHandler {
     }
 
     private static void finish(DialogInterface dialog) {
-        File file = BUG_REPORT_FILE;
+        File file = sFILE;
         if (file.exists()) {
-            file.delete();
+            sContext.deleteFile(BUG_REPORT_FILENAME);
         }
         dialog.dismiss();
     }
