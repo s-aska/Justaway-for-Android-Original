@@ -48,6 +48,9 @@ public class JustawayApplication extends Application {
     public void onCreate() {
         super.onCreate();
         sApplication = this;
+
+        // 例外発生時の処理を指定（SDカードにスタックトレースを保存）
+        Thread.setDefaultUncaughtExceptionHandler(new MyUncaughtExceptionHandler(sApplication));
     }
 
     /*
@@ -118,7 +121,8 @@ public class JustawayApplication extends Application {
     }
 
     /**
-     * @param user the user to set
+     * @param user
+     *            the user to set
      */
     public void setUser(User user) {
         this.user = user;
