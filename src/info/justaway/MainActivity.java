@@ -1,7 +1,5 @@
 package info.justaway;
 
-import java.util.ArrayList;
-
 import info.justaway.fragment.BaseFragment;
 import info.justaway.fragment.DirectMessageFragment;
 import info.justaway.fragment.InteractionsFragment;
@@ -181,6 +179,14 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+
+        // 前回バグで強制終了した場合はダイアログ表示、Yesでレポート送信
+        MyUncaughtExceptionHandler.showBugReportDialogIfExist(this);
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         if (mSectionsPagerAdapter != null) {
@@ -324,8 +330,10 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
         }
 
         public void setPageCount(int pageCount) {
-            this.pageCount = pageCount;
-            notifyDataSetChanged();
+            if (this.pageCount != pageCount) {
+                this.pageCount = pageCount;
+                notifyDataSetChanged();
+            }
         }
 
         @Override
