@@ -12,6 +12,7 @@
     <string name="user_list">覧</string>
     <string name="signin_with_twitter">認</string>
     <string name="signout">出</string>
+    <string name="death">死</string>
     <string name="twitter_callback_url">justaway://twitter</string>
     <string name="action_tweet">筆</string>
     <string name="tweet">投</string>
