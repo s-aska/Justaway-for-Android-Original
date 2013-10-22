@@ -39,6 +39,10 @@ public class JustawayApplication extends Application {
         return lists;
     }
 
+    public void setLists(ArrayList<Integer> lists) {
+        this.lists = lists;
+    }
+
     /*
      * 起動時
      * 
