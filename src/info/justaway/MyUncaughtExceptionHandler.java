@@ -56,19 +56,9 @@ public class MyUncaughtExceptionHandler implements UncaughtExceptionHandler {
     }
 
     private void saveState(Throwable e) throws FileNotFoundException {
-        StackTraceElement[] stacks = e.getStackTrace();
-        PrintWriter pw = null;
-        pw = new PrintWriter(sContext.openFileOutput(BUG_REPORT_FILENAME, Context.MODE_PRIVATE));
-        StringBuilder sb = new StringBuilder();
-        int len = stacks.length;
-        for (int i = 0; i < len; i++) {
-            StackTraceElement stack = stacks[i];
-            sb.setLength(0);
-            sb.append(stack.getClassName()).append("#");
-            sb.append(stack.getMethodName()).append(":");
-            sb.append(stack.getLineNumber());
-            pw.println(sb.toString());
-        }
+        PrintWriter pw = new PrintWriter(sContext.openFileOutput(BUG_REPORT_FILENAME,
+                Context.MODE_PRIVATE));
+        e.printStackTrace(pw);
         pw.close();
     }
 
