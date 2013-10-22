@@ -17,9 +17,7 @@ public class UserListFragment extends BaseFragment implements
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         Bundle args = new Bundle();
-        int position = getArguments().getInt("position");
-        int id = JustawayApplication.getApplication().getLists().get(position);
-        args.putInt("userListId", id);
+        args.putInt("userListId", getArguments().getInt("userListId"));
         getLoaderManager().initLoader(0, args, this);
     }
 
