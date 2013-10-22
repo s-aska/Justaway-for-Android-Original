@@ -8,9 +8,9 @@
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="0dip"
-        android:layout_weight="1"
-        android:layout_marginTop="1dp"
         android:layout_marginBottom="1dp"
+        android:layout_marginTop="1dp"
+        android:layout_weight="1"
         android:gravity="center_vertical"
         android:orientation="horizontal" >
 
@@ -21,50 +21,54 @@
         </android.support.v4.view.ViewPager>
     </LinearLayout>
 
-    <LinearLayout
+    <TableLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal" >
+        android:layout_height="wrap_content" >
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:gravity="left"
-            android:orientation="horizontal" >
+        <!-- TableRow 無いと2段になる(◞‸◟) -->
 
-            <Button
-                android:id="@+id/action_timeline"
+        <TableRow>
+
+            <HorizontalScrollView
+                android:id="@+id/ScrollView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/action_timeline" />
+                android:layout_weight="1" >
 
-            <Button
-                android:id="@+id/action_interactions"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/action_interactions" />
+                <LinearLayout
+                    android:id="@+id/tab_menus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:gravity="left"
+                    android:orientation="horizontal" >
 
-            <Button
-                android:id="@+id/action_directmessage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/action_directmessage" />
-            </LinearLayout>
+                    <Button
+                        android:id="@+id/action_timeline"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/action_timeline" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:gravity="right"
-            android:orientation="horizontal" >
+                    <Button
+                        android:id="@+id/action_interactions"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/action_interactions" />
+
+                    <Button
+                        android:id="@+id/action_directmessage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/action_directmessage" />
+                </LinearLayout>
+            </HorizontalScrollView>
 
             <Button
                 android:id="@+id/action_tweet"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/action_tweet" />
-        </LinearLayout>
-    </LinearLayout>
+        </TableRow>
+    </TableLayout>
 
 </LinearLayout>

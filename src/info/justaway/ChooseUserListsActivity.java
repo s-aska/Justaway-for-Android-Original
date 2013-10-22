@@ -1,14 +1,18 @@
 package info.justaway;
 
+import java.util.ArrayList;
+
 import info.justaway.adapter.UserListAdapter;
 import info.justaway.task.UserListsLoader;
 import twitter4j.ResponseList;
 import twitter4j.UserList;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.view.ContextMenu;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
@@ -19,6 +23,7 @@ public class ChooseUserListsActivity extends FragmentActivity implements
         LoaderManager.LoaderCallbacks<ResponseList<UserList>> {
 
     private UserListAdapter adapter;
+    private ArrayList<Integer> lists = new ArrayList<Integer>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +75,28 @@ public class ChooseUserListsActivity extends FragmentActivity implements
 
         int id = userList.getId();
 
-        JustawayApplication.getApplication().getLists().add(id);
+        lists.add(id);
+
         JustawayApplication.showToast("戻ったら沢山スワイプしてみよう。(id:" + id + ")");
+    }
+
+    /**
+     * finish前に色々セットしておく、ここでセットした値は onActivityResult で取れる
+     */
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (lists.size() > 0) {
+                Intent data = new Intent();
+                Bundle bundle = new Bundle();
+                bundle.putIntegerArrayList("lists", lists);
+                data.putExtras(bundle);
+                setResult(RESULT_OK, data);
+            } else {
+                setResult(RESULT_CANCELED);
+            }
+            finish();
+        }
+        return false;
     }
 }

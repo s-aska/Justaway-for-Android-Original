@@ -1,5 +1,7 @@
 package info.justaway;
 
+import java.util.ArrayList;
+
 import info.justaway.fragment.BaseFragment;
 import info.justaway.fragment.DirectMessageFragment;
 import info.justaway.fragment.InteractionsFragment;
@@ -33,6 +35,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.LinearLayout;
 
 /**
  * @author aska
@@ -44,6 +47,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager viewPager;
     private Row selectedRow;
+    private final int REQUEST_CHOOSE_USER_LIST = 100;
 
     /**
      * 自分自身のUserオブジェクト(Twitter) リプのタブでツイートが自分に対してのリプかどうかの判定などで使用している
@@ -189,14 +193,58 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
     @Override
     protected void onResume() {
         super.onResume();
-        if (mSectionsPagerAdapter != null) {
-            mSectionsPagerAdapter.setPageCount(app.getLists().size());
-        }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Bundle bundle = data.getExtras();
+        switch (requestCode) {
+        case REQUEST_CHOOSE_USER_LIST:
+            if (resultCode == RESULT_OK) {
+                ArrayList<Integer> lists = bundle.getIntegerArrayList("lists");
+                LinearLayout tab_menus = (LinearLayout) findViewById(R.id.tab_menus);
+                int position = 2;
+                for (Integer list: lists) {
+                    JustawayApplication.showToast("新しいリスト" + list);
+                    Button button = new Button(this);
+                    button.setText("欄");
+                    button.setOnClickListener(tabMenuOnClickListener(++position));
+                    tab_menus.addView(button);
+                }
+                app.setLists(lists);
+                if (mSectionsPagerAdapter != null) {
+                    mSectionsPagerAdapter.setPageCount(lists.size());
+                }
+            } else if (resultCode == RESULT_CANCELED) {
+            }
+            break;
+        default:
+            break;
+        }
+    }
+
+    private View.OnClickListener tabMenuOnClickListener(final int position) {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                BaseFragment f = mSectionsPagerAdapter.findFragmentByPosition(position);
+                int id = viewPager.getCurrentItem();
+                if (id != position) {
+                    viewPager.setCurrentItem(position);
+                    if (f.isTop()) {
+                        showTopView();
+                    }
+                } else {
+                    f.goToTop();
+                }
+            }
+        };
     }
 
     /**
@@ -402,7 +450,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
             startActivity(intent);
         } else if (itemId == R.id.user_list) {
             Intent intent = new Intent(this, ChooseUserListsActivity.class);
-            startActivity(intent);
+            startActivityForResult(intent, REQUEST_CHOOSE_USER_LIST);
         }
         return true;
     }
