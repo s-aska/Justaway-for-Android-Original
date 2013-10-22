@@ -227,7 +227,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
              * スワイプで動かせるタブを実装するのに最低限必要な実装
              */
             mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-            final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+            ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
             setViewPager(viewPager);
             viewPager.setAdapter(mSectionsPagerAdapter);
 
@@ -237,6 +237,19 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
              * デフォルト値は1（表示しているタブの前後までしか保持されない）
              */
             viewPager.setOffscreenPageLimit(3);
+
+            /**
+             * スワイプ移動でも移動先が未読アプしている場合、アピ解除判定を行う
+             */
+            viewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+                @Override
+                public void onPageSelected(int position) {
+                    BaseFragment f = mSectionsPagerAdapter.findFragmentByPosition(position);
+                    if (f.isTop()) {
+                        showTopView();
+                    }
+                }
+            });
         }
     }
 
@@ -317,10 +330,15 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                 break;
             }
             if (position > 2) {
-                Bundle data = new Bundle();
-                data.putInt("position", position - 3);
+                if (JustawayApplication.getApplication().getLists().size() == 0) {
+                    JustawayApplication.showToast("missing lists...");
+                    return null;
+                }
+                Bundle args = new Bundle();
+                int id = JustawayApplication.getApplication().getLists().get(position - 3);
+                args.putInt("userListId", id);
                 fragment = (BaseFragment) new UserListFragment();
-                fragment.setArguments(data);
+                fragment.setArguments(args);
             }
             return fragment;
         }
@@ -370,7 +388,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
         } else if (itemId == R.id.death) {
             int index = 5;
             String[] strs = new String[index];
-            String str = strs[index];//ここでIndexOutOfBoundsException
+            String str = strs[index];// ここでIndexOutOfBoundsException
         } else if (itemId == R.id.reload) {
             TwitterStream twitterStream = JustawayApplication.getApplication().getTwitterStream();
             if (twitterStream != null) {
