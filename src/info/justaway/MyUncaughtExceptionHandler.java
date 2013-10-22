@@ -2,44 +2,36 @@ package info.justaway;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.FileReader;
 import java.io.PrintWriter;
 import java.lang.Thread.UncaughtExceptionHandler;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
-
+import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.net.Uri;
 import android.os.Build;
 
 public class MyUncaughtExceptionHandler implements UncaughtExceptionHandler {
 
-    private static String BUG_REPORT_FILENAME = "bug.txt";
+    private static final String BUG_FILE = "BUG";
+    private static final String MAIL_TO = "mailto:s.aska.org@gmail.com";
 
-    private static File sFILE = null;
     private static Context sContext;
-    private static PackageInfo sPackInfo;
+    private static PackageInfo sPackageInfo;
+    private static ActivityManager.MemoryInfo sMemoryInfo = new ActivityManager.MemoryInfo();
     private UncaughtExceptionHandler mDefaultUEH;
 
     public MyUncaughtExceptionHandler(Context context) {
         sContext = context;
-        sFILE = sContext.getFileStreamPath(BUG_REPORT_FILENAME);
         try {
             // パッケージ情報
-            sPackInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+            sPackageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
         } catch (NameNotFoundException e) {
             e.printStackTrace();
         }
@@ -47,94 +39,84 @@ public class MyUncaughtExceptionHandler implements UncaughtExceptionHandler {
     }
 
     public void uncaughtException(Thread th, Throwable t) {
-        try {
-            saveState(t);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        saveState(t);
         mDefaultUEH.uncaughtException(th, t);
     }
 
-    private void saveState(Throwable e) throws FileNotFoundException {
-        PrintWriter pw = new PrintWriter(sContext.openFileOutput(BUG_REPORT_FILENAME,
-                Context.MODE_PRIVATE));
-        e.printStackTrace(pw);
-        pw.close();
-    }
-
-    public static final void showBugReportDialogIfExist(Context context) {
-        File file = sFILE;
-        if (file != null & file.exists()) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            builder.setTitle("バグレポート");
-            builder.setMessage("バグ発生状況を開発者に送信しますか？");
-            builder.setNegativeButton("キャンセル", new OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    finish(dialog);
-                }
-            });
-            builder.setPositiveButton("送信", new OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    postBugReportInBackground();// バグ報告
-                    dialog.dismiss();
-                }
-            });
-            AlertDialog dialog = builder.create();
-            dialog.show();
-        }
-    }
-
-    private static void postBugReportInBackground() {
-        new Thread(new Runnable() {
-            public void run() {
-                postBugReport();
-                File file = sFILE;
-                if (file != null && file.exists()) {
-                    sContext.deleteFile(BUG_REPORT_FILENAME);
-                }
-            }
-        }).start();
-    }
-
-    private static void postBugReport() {
-        List<NameValuePair> nvps = new ArrayList<NameValuePair>();
-        String bug = getFileBody();
-        nvps.add(new BasicNameValuePair("dev", Build.DEVICE));
-        nvps.add(new BasicNameValuePair("mod", Build.MODEL));
-        nvps.add(new BasicNameValuePair("sdk", String.valueOf(Build.VERSION.SDK_INT)));
-        nvps.add(new BasicNameValuePair("ver", sPackInfo.versionName));
-        nvps.add(new BasicNameValuePair("bug", bug));
+    private void saveState(Throwable error) {
         try {
-            HttpPost httpPost = new HttpPost("http://justaway.info/bug");
-            httpPost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
-            DefaultHttpClient httpClient = new DefaultHttpClient();
-            httpClient.execute(httpPost);
-        } catch (IOException e) {
+            PrintWriter writer = new PrintWriter(sContext.openFileOutput(BUG_FILE,
+                Context.MODE_PRIVATE));
+            if (sPackageInfo != null) {
+                writer.printf("[BUG][%s] versionName:%s, versionCode:%d\n",
+                    sPackageInfo.packageName, sPackageInfo.versionName, sPackageInfo.versionCode);
+            } else {
+                writer.printf("[BUG][Unkown]\n");
+            }
+            try {
+                writer
+                    .printf("Runtime Memory: total: %dKB, free: %dKB, used: %dKB\n", Runtime
+                        .getRuntime().totalMemory() / 1024,
+                        Runtime.getRuntime().freeMemory() / 1024, (Runtime.getRuntime()
+                            .totalMemory() - Runtime.getRuntime().freeMemory()) / 1024);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            try {
+                ((ActivityManager) sContext.getSystemService(Context.ACTIVITY_SERVICE))
+                    .getMemoryInfo(sMemoryInfo);
+                writer.printf("availMem: %dKB, lowMemory: %b\n", sMemoryInfo.availMem / 1024,
+                    sMemoryInfo.lowMemory);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            writer.printf("DEVICE: %s\n", Build.DEVICE);
+            writer.printf("MODEL: %s\n", Build.MODEL);
+            writer.printf("VERSION.SDK: %s\n", Build.VERSION.SDK_INT);
+            writer.println("");
+            error.printStackTrace(writer);
+            writer.close();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private static String getFileBody() {
-        StringBuilder sb = new StringBuilder();
+    public static final void showBugReportDialogIfExist(final Activity activity) {
+        File bugfile = activity.getFileStreamPath(BUG_FILE);
+        if (!bugfile.exists())
+            return;
+
+        File dstfile = activity.getFileStreamPath(BUG_FILE + ".txt");
+        bugfile.renameTo(dstfile);
+
+        final StringBuilder body = new StringBuilder();
+        String firstLine = null;
         try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(
-                    sContext.openFileInput(BUG_REPORT_FILENAME)));
+            BufferedReader br = new BufferedReader(new FileReader(dstfile));
             String line;
             while ((line = br.readLine()) != null) {
-                sb.append(line).append("\r\n");
+                if (firstLine == null) {
+                    firstLine = line;
+                } else {
+                    body.append(line).append("\n");
+                }
             }
             br.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return sb.toString();
-    }
 
-    private static void finish(DialogInterface dialog) {
-        File file = sFILE;
-        if (file.exists()) {
-            sContext.deleteFile(BUG_REPORT_FILENAME);
-        }
-        dialog.dismiss();
+        final String subject = firstLine;
+        new AlertDialog.Builder(activity).setTitle("バグレポート").setMessage("バグ発生状況を開発者に送信しますか？")
+            .setPositiveButton("送信", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    activity.startActivity(new Intent(Intent.ACTION_SENDTO, Uri.parse(MAIL_TO))
+                        .putExtra(Intent.EXTRA_SUBJECT, subject).putExtra(Intent.EXTRA_TEXT,
+                            body.toString()));
+                }
+            }).setNegativeButton("キャンセル", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                }
+            }).show();
     }
 }
