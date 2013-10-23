@@ -120,60 +120,9 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
          * ActionBarのタブに頼っていない為、自力でsetCurrentItemでタブを動かしている
          * タブの切替がスワイプだけで良い場合はこの処理すら不要
          */
-        findViewById(R.id.action_timeline).setOnClickListener(new View.OnClickListener() {
-            int pageId = 0;
-
-            @Override
-            public void onClick(View v) {
-                BaseFragment f = mSectionsPagerAdapter.findFragmentByPosition(pageId);
-                int id = viewPager.getCurrentItem();
-                if (id != pageId) {
-                    viewPager.setCurrentItem(pageId);
-                    if (f.isTop()) {
-                        showTopView();
-                    }
-                } else {
-                    f.goToTop();
-                }
-            }
-        });
-
-        findViewById(R.id.action_interactions).setOnClickListener(new View.OnClickListener() {
-            int pageId = 1;
-
-            @Override
-            public void onClick(View v) {
-                BaseFragment f = mSectionsPagerAdapter.findFragmentByPosition(pageId);
-                int id = viewPager.getCurrentItem();
-                if (id != pageId) {
-                    viewPager.setCurrentItem(pageId);
-                    if (f.isTop()) {
-                        showTopView();
-                    }
-                } else {
-                    f.goToTop();
-                }
-            }
-        });
-
-        findViewById(R.id.action_directmessage).setOnClickListener(new View.OnClickListener() {
-            int pageId = 2;
-
-            @Override
-            public void onClick(View v) {
-                BaseFragment f = mSectionsPagerAdapter.findFragmentByPosition(pageId);
-                int id = viewPager.getCurrentItem();
-                if (id != pageId) {
-                    viewPager.setCurrentItem(pageId);
-                    if (f.isTop()) {
-                        showTopView();
-                    }
-                } else {
-                    f.goToTop();
-                }
-            }
-        });
-
+        findViewById(R.id.action_timeline).setOnClickListener(tabMenuOnClickListener(0));
+        findViewById(R.id.action_interactions).setOnClickListener(tabMenuOnClickListener(1));
+        findViewById(R.id.action_directmessage).setOnClickListener(tabMenuOnClickListener(2));
         findViewById(R.id.action_tweet).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
