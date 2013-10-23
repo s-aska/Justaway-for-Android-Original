@@ -13,7 +13,7 @@ import info.justaway.task.UserListStatusesLoader;
 public class UserListFragment extends BaseFragment implements
         LoaderManager.LoaderCallbacks<ResponseList<Status>> {
 
-    private static int userListId;
+    private int userListId;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
