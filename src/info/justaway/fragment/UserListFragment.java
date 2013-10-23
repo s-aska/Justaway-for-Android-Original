@@ -13,23 +13,26 @@ import info.justaway.task.UserListStatusesLoader;
 public class UserListFragment extends BaseFragment implements
         LoaderManager.LoaderCallbacks<ResponseList<Status>> {
 
+    private static int userListId;
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Bundle args = new Bundle();
-        args.putInt("userListId", getArguments().getInt("userListId"));
-        getLoaderManager().initLoader(0, args, this);
+        userListId = getArguments().getInt("userListId");
+        getLoaderManager().initLoader(0, null, this);
+    }
+
+    public void reload() {
+        getLoaderManager().restartLoader(0, null, this);
     }
 
     @Override
     public void add(Row row) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public Loader<ResponseList<Status>> onCreateLoader(int arg0, Bundle args) {
-        return new UserListStatusesLoader(getActivity(), args.getInt("userListId"));
+        return new UserListStatusesLoader(getActivity(), userListId);
     }
 
     @Override
