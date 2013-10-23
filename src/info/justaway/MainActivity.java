@@ -165,6 +165,18 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                     Button button = new Button(this);
                     button.setText("欄");
                     button.setOnClickListener(tabMenuOnClickListener(++position));
+                    final int fp = position;
+                    button.setOnLongClickListener(new View.OnLongClickListener() {
+
+                        @Override
+                        public boolean onLongClick(View v) {
+                            UserListFragment f = (UserListFragment) mSectionsPagerAdapter
+                                    .findFragmentByPosition(fp);
+                            f.reload();
+                            return false;
+                        }
+
+                    });
                     tab_menus.addView(button);
                     Bundle args = new Bundle();
                     args.putInt("userListId", list);
