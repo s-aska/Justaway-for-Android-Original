@@ -22,9 +22,10 @@ import twitter4j.User;
 import twitter4j.UserStreamAdapter;
 import android.R.color;
 import android.os.Bundle;
+import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -210,17 +211,17 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                 ArrayList<Integer> lists = bundle.getIntegerArrayList("lists");
                 LinearLayout tab_menus = (LinearLayout) findViewById(R.id.tab_menus);
                 int position = 2;
-                for (Integer list: lists) {
+                for (Integer list : lists) {
                     JustawayApplication.showToast("新しいリスト" + list);
                     Button button = new Button(this);
                     button.setText("欄");
                     button.setOnClickListener(tabMenuOnClickListener(++position));
                     tab_menus.addView(button);
+                    Bundle args = new Bundle();
+                    args.putInt("userListId", list);
+                    mSectionsPagerAdapter.addTab(UserListFragment.class, args, "list");
                 }
                 app.setLists(lists);
-                if (mSectionsPagerAdapter != null) {
-                    mSectionsPagerAdapter.setPageCount(lists.size());
-                }
             } else if (resultCode == RESULT_CANCELED) {
             }
             break;
@@ -274,10 +275,13 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
             /**
              * スワイプで動かせるタブを実装するのに最低限必要な実装
              */
-            mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
             ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+            mSectionsPagerAdapter = new SectionsPagerAdapter(this, viewPager);
             setViewPager(viewPager);
-            viewPager.setAdapter(mSectionsPagerAdapter);
+
+            mSectionsPagerAdapter.addTab(TimelineFragment.class, null, "Home");
+            mSectionsPagerAdapter.addTab(InteractionsFragment.class, null, "Home");
+            mSectionsPagerAdapter.addTab(DirectMessageFragment.class, null, "Home");
 
             /**
              * タブは前後タブまでは状態が保持されるがそれ以上離れるとViewが破棄されてしまう、
@@ -355,57 +359,64 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
     /**
      * タブの切替毎に必要なFragmentを取得するためのAdapterクラス
      */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+    public static class SectionsPagerAdapter extends FragmentPagerAdapter {
+        private final Context mContext;
+        private final ViewPager mViewPager;
+        private final ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
 
-        private int pageCount = 0;
+        private static final class TabInfo {
+            private final Class<?> clazz;
+            private final Bundle args;
+            private final String tabTitle;
 
-        public SectionsPagerAdapter(FragmentManager fm) {
-            super(fm);
+            /**
+             * タブ内のActivity、引数を設定する。
+             * 
+             * @param clazz タブ内のv4.Fragment
+             * @param args タブ内のv4.Fragmentに対する引数
+             * @param tabTitle タブに表示するタイトル
+             */
+            TabInfo(Class<?> clazz, Bundle args, String tabTitle) {
+                this.clazz = clazz;
+                this.args = args;
+                this.tabTitle = tabTitle;
+            }
+        }
+
+        public SectionsPagerAdapter(FragmentActivity context, ViewPager viewPager) {
+            super(context.getSupportFragmentManager());
+            viewPager.setAdapter(this);
+            mContext = context;
+            mViewPager = viewPager;
         }
 
         @Override
         public BaseFragment getItem(int position) {
-            BaseFragment fragment = null;
-            switch (position) {
-            case 0:
-                fragment = (BaseFragment) new TimelineFragment();
-                break;
-            case 1:
-                fragment = (BaseFragment) new InteractionsFragment();
-                break;
-            case 2:
-                fragment = (BaseFragment) new DirectMessageFragment();
-                break;
-            }
-            if (position > 2) {
-                if (JustawayApplication.getApplication().getLists().size() == 0) {
-                    JustawayApplication.showToast("missing lists...");
-                    return null;
-                }
-                Bundle args = new Bundle();
-                int id = JustawayApplication.getApplication().getLists().get(position - 3);
-                args.putInt("userListId", id);
-                fragment = (BaseFragment) new UserListFragment();
-                fragment.setArguments(args);
-            }
-            return fragment;
+            TabInfo info = mTabs.get(position);
+            return (BaseFragment) Fragment.instantiate(mContext, info.clazz.getName(), info.args);
         }
 
         public BaseFragment findFragmentByPosition(int position) {
-            return (BaseFragment) instantiateItem(getViewPager(), position);
+            return (BaseFragment) instantiateItem(mViewPager, position);
         }
 
-        public void setPageCount(int pageCount) {
-            if (this.pageCount != pageCount) {
-                this.pageCount = pageCount;
-                notifyDataSetChanged();
-            }
+        /**
+         * タブ内に起動するActivity、引数、タイトルを設定する
+         * 
+         * @param clazz 起動するv4.Fragmentクラス
+         * @param args v4.Fragmentに対する引数
+         * @param tabTitle タブのタイトル
+         */
+        public void addTab(Class<?> clazz, Bundle args, String tabTitle) {
+            TabInfo info = new TabInfo(clazz, args, tabTitle);
+            mTabs.add(info);
+            notifyDataSetChanged();
         }
 
         @Override
         public int getCount() {
             // タブ数
-            return 3 + pageCount;
+            return mTabs.size();
         }
     }
 
