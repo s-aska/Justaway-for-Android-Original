@@ -88,6 +88,15 @@
             </intent-filter>
         </activity>
         <activity android:name=".ProfileActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data
+                    android:host="twitter.com"
+                    android:scheme="https" />
+            </intent-filter>
         </activity>
         <activity android:name=".ChooseUserListsActivity" >
         </activity>
