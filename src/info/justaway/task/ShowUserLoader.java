@@ -9,9 +9,9 @@ import android.content.Context;
 
 public class ShowUserLoader extends AbstractAsyncTaskLoader<Profile> {
 
-    private Long userId;
+    private String userId;
 
-    public ShowUserLoader(Context context, Long userId) {
+    public ShowUserLoader(Context context, String userId) {
         super(context);
         this.userId = userId;
     }
@@ -20,7 +20,7 @@ public class ShowUserLoader extends AbstractAsyncTaskLoader<Profile> {
     public Profile loadInBackground() {
         try {
             User user = JustawayApplication.getApplication().getTwitter().showUser(userId);
-            Relationship relationship = JustawayApplication.getApplication().getTwitter().showFriendship(JustawayApplication.getApplication().getUser().getId(), userId);
+            Relationship relationship = JustawayApplication.getApplication().getTwitter().showFriendship(JustawayApplication.getApplication().getUser().getScreenName(), userId);
             Profile profile = new Profile();
             profile.setRelationship(relationship);
             profile.setUser(user);

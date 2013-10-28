@@ -249,7 +249,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), ProfileActivity.class);
-                intent.putExtra("userId", status.getUser().getId());
+                intent.putExtra("userId", status.getUser().getScreenName());
                 context.startActivity(intent);
                 System.out.println("icon touch!");
             }

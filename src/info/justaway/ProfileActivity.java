@@ -62,15 +62,15 @@ public class ProfileActivity extends FragmentActivity implements
         locationIcon.setText(R.string.fontello_location);
 
         Intent intent = getIntent();
-        Long userId = intent.getLongExtra("userId", 0);
+        String userId = intent.getStringExtra("userId");
         Bundle args = new Bundle(1);
-        args.putLong("userId", userId);
+        args.putString("userId", userId);
         getSupportLoaderManager().initLoader(0, args, this);
     }
 
     @Override
     public Loader<Profile> onCreateLoader(int arg0, Bundle args) {
-        Long userId = args.getLong("userId");
+        String userId = args.getString("userId");
         return new ShowUserLoader(this, userId);
     }
 
