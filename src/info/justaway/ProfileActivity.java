@@ -62,8 +62,13 @@ public class ProfileActivity extends FragmentActivity implements
         locationIcon.setText(R.string.fontello_location);
 
         Intent intent = getIntent();
-        String userId = intent.getStringExtra("userId");
         Bundle args = new Bundle(1);
+        String userId = null;
+        if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+            userId = intent.getData().getLastPathSegment();
+        } else {
+            userId = intent.getStringExtra("userId");
+        }
         args.putString("userId", userId);
         getSupportLoaderManager().initLoader(0, args, this);
     }
