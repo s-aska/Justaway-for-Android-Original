@@ -244,7 +244,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         }
 
         ImageView icon = (ImageView) view.findViewById(R.id.icon);
-        Picasso.with(context).load(status.getUser().getBiggerProfileImageURL()).into(icon);
+        Picasso.with(context).load(status.getUser().getBiggerProfileImageURLHttps()).into(icon);
         icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
