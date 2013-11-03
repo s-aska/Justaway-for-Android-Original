@@ -164,7 +164,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         view.findViewById(R.id.images).setVisibility(View.GONE);
         ImageView icon = (ImageView) view.findViewById(R.id.icon);
         Picasso.with(context).load(message.getSender().getBiggerProfileImageURL())
-                .transform(new RoundedTransformation(10, 0)).error(R.drawable.ic_action_error)
+                .transform(new RoundedTransformation(5, 0)).error(R.drawable.ic_action_error)
                 .into(icon);
         view.findViewById(R.id.action).setVisibility(View.GONE);
         view.findViewById(R.id.is_favorited).setVisibility(View.GONE);
@@ -248,7 +248,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
 
         ImageView icon = (ImageView) view.findViewById(R.id.icon);
         Picasso.with(context).load(status.getUser().getBiggerProfileImageURLHttps())
-                .transform(new RoundedTransformation(10, 0)).error(R.drawable.ic_action_error)
+                .transform(new RoundedTransformation(5, 0)).error(R.drawable.ic_action_error)
                 .into(icon);
         icon.setOnClickListener(new View.OnClickListener() {
             @Override
