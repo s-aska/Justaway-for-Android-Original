@@ -11,12 +11,15 @@ import info.justaway.model.Row;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.squareup.picasso.Picasso;
 
 import twitter4j.DirectMessage;
 import twitter4j.MediaEntity;
 import twitter4j.Status;
+import twitter4j.URLEntity;
 import twitter4j.User;
 import android.R.color;
 import android.content.Context;
@@ -256,27 +259,38 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                 Intent intent = new Intent(v.getContext(), ProfileActivity.class);
                 intent.putExtra("userId", status.getUser().getScreenName());
                 context.startActivity(intent);
-                System.out.println("icon touch!");
             }
         });
 
         MediaEntity[] medias = retweet != null ? retweet.getMediaEntities() : status
                 .getMediaEntities();
+        URLEntity[] urls = retweet != null ? retweet.getURLEntities() : status.getURLEntities();
+        ArrayList<String> imageUrls = new ArrayList<String>();
+        Pattern twitpic_pattern = Pattern.compile("^http://twitpic\\.com/(\\w+)$");
+        for (URLEntity url : urls) {
+            Matcher twitpic_matcher = twitpic_pattern.matcher(url.getExpandedURL());
+            if (twitpic_matcher.find()) {
+                imageUrls.add("http://twitpic.com/show/full/" + twitpic_matcher.group(1));
+            }
+        }
+        for (MediaEntity media : medias) {
+            imageUrls.add(media.getMediaURL());
+        }
         LinearLayout images = (LinearLayout) view.findViewById(R.id.images);
         images.removeAllViews();
-        if (medias.length > 0) {
-            for (final MediaEntity url : medias) {
+        if (imageUrls.size() > 0) {
+            for (final String url : imageUrls) {
                 ImageView image = new ImageView(context);
                 image.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 images.addView(image, new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, 120));
-                Picasso.with(context).load(url.getMediaURL()).into(image);
+                Picasso.with(context).load(url).into(image);
                 // 画像タップで拡大表示（ピンチイン・ピンチアウトいつかちゃんとやる）
                 image.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(v.getContext(), ScaleImageActivity.class);
-                        intent.putExtra("url", url.getMediaURL());
+                        intent.putExtra("url", url);
                         context.startActivity(intent);
                     }
                 });
