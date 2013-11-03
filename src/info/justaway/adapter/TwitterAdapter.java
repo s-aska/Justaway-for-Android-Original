@@ -5,6 +5,7 @@ import info.justaway.ScaleImageActivity;
 import info.justaway.MainActivity;
 import info.justaway.ProfileActivity;
 import info.justaway.R;
+import info.justaway.image.RoundedTransformation;
 import info.justaway.model.Row;
 
 import java.text.SimpleDateFormat;
@@ -244,7 +245,8 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         }
 
         ImageView icon = (ImageView) view.findViewById(R.id.icon);
-        Picasso.with(context).load(status.getUser().getBiggerProfileImageURLHttps()).into(icon);
+        Picasso.with(context).load(status.getUser().getBiggerProfileImageURLHttps())
+                .transform(new RoundedTransformation(10, 0)).into(icon);
         icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
