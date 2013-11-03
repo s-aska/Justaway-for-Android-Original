@@ -11,9 +11,9 @@ public class ShowUserLoader extends AbstractAsyncTaskLoader<Profile> {
 
     private String screenName;
 
-    public ShowUserLoader(Context context, String userId) {
+    public ShowUserLoader(Context context, String screenName) {
         super(context);
-        this.screenName = userId;
+        this.screenName = screenName;
     }
 
     @Override
