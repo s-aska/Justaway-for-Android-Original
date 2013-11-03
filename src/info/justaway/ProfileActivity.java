@@ -63,20 +63,20 @@ public class ProfileActivity extends FragmentActivity implements
 
         Intent intent = getIntent();
         Bundle args = new Bundle(1);
-        String userId = null;
+        String screenName = null;
         if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-            userId = intent.getData().getLastPathSegment();
+            screenName = intent.getData().getLastPathSegment();
         } else {
-            userId = intent.getStringExtra("userId");
+            screenName = intent.getStringExtra("screenName");
         }
-        args.putString("userId", userId);
+        args.putString("screenName", screenName);
         getSupportLoaderManager().initLoader(0, args, this);
     }
 
     @Override
     public Loader<Profile> onCreateLoader(int arg0, Bundle args) {
-        String userId = args.getString("userId");
-        return new ShowUserLoader(this, userId);
+        String screenName = args.getString("screenName");
+        return new ShowUserLoader(this, screenName);
     }
 
     @Override
