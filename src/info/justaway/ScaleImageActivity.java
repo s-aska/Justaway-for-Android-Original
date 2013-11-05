@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Date;
 
-import com.squareup.picasso.Picasso;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import info.justaway.view.ScaleImageView;
 import android.app.Activity;
@@ -33,7 +33,7 @@ public class ScaleImageActivity extends Activity {
         imageView = new ScaleImageView(this);
         imageView.setActivity(this);
         String url = getIntent().getExtras().getString("url");
-        Picasso.with(this).load(url).into(imageView);
+        ImageLoader.getInstance().displayImage(url, imageView);
         setContentView(imageView);
     }
 
