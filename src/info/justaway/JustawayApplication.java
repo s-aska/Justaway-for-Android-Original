@@ -2,6 +2,11 @@ package info.justaway;
 
 import java.util.ArrayList;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
+
 import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
 import twitter4j.TwitterStream;
@@ -15,6 +20,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
 import android.text.TextUtils;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 /**
@@ -26,6 +32,8 @@ public class JustawayApplication extends Application {
 
     private static JustawayApplication sApplication;
     private ArrayList<Integer> lists = new ArrayList<Integer>();
+    private ImageLoader mImageLoader;
+    private DisplayImageOptions mRoundedDisplayImageOptions;
 
     /**
      * 毎回キャストしなくて良いように
@@ -54,8 +62,26 @@ public class JustawayApplication extends Application {
         super.onCreate();
         sApplication = this;
 
+        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder().cacheInMemory(true)
+                .cacheOnDisc(true).build();
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
+                .defaultDisplayImageOptions(defaultOptions).build();
+        ImageLoader.getInstance().init(config);
+        mImageLoader = ImageLoader.getInstance();
+        mRoundedDisplayImageOptions = new DisplayImageOptions.Builder().cacheInMemory(true)
+                .cacheOnDisc(true).resetViewBeforeLoading(true)
+                .displayer(new RoundedBitmapDisplayer(5)).build();
+
         // 例外発生時の処理を指定（スタックトレースを保存）
         Thread.setDefaultUncaughtExceptionHandler(new MyUncaughtExceptionHandler(sApplication));
+    }
+
+    public void displayImage(String url, ImageView view) {
+        mImageLoader.displayImage(url, view);
+    }
+
+    public void displayRoundedImage(String url, ImageView view) {
+        mImageLoader.displayImage(url, view, mRoundedDisplayImageOptions);
     }
 
     /*
@@ -100,8 +126,7 @@ public class JustawayApplication extends Application {
     /**
      * あると便利な簡易通知
      * 
-     * @param text
-     *            表示するメッセージ
+     * @param text 表示するメッセージ
      */
     public static void showToast(String text) {
         Toast.makeText(sApplication, text, Toast.LENGTH_SHORT).show();
@@ -111,19 +136,21 @@ public class JustawayApplication extends Application {
      * タブ管理
      */
     private static final String TABS = "tabs";
+
     public ArrayList<Integer> loadTabs() {
         SharedPreferences preferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
         String tabs_string = preferences.getString(TABS, "-1,-2,-3");
         String[] tabs_strings = tabs_string.split(",");
         ArrayList<Integer> tabs = new ArrayList<Integer>();
-        for (String tab_string: tabs_strings) {
+        for (String tab_string : tabs_strings) {
             tabs.add(Integer.valueOf(tab_string));
         }
         return tabs;
     }
+
     public void saveTabs(ArrayList<Integer> tabs) {
         ArrayList<String> tabs_strings = new ArrayList<String>();
-        for (Integer tab: tabs) {
+        for (Integer tab : tabs) {
             tabs_strings.add(String.valueOf(tab));
         }
         SharedPreferences preferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
@@ -151,8 +178,7 @@ public class JustawayApplication extends Application {
     }
 
     /**
-     * @param user
-     *            the user to set
+     * @param user the user to set
      */
     public void setUser(User user) {
         this.user = user;
@@ -199,8 +225,7 @@ public class JustawayApplication extends Application {
     /**
      * Twitterアクセストークン保存
      * 
-     * @param accessToken
-     *            Twitterアクセストークン
+     * @param accessToken Twitterアクセストークン
      */
     public void setAccessToken(AccessToken accessToken) {
         SharedPreferences preferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);

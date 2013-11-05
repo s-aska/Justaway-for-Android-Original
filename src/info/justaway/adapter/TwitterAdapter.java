@@ -5,7 +5,6 @@ import info.justaway.ScaleImageActivity;
 import info.justaway.MainActivity;
 import info.justaway.ProfileActivity;
 import info.justaway.R;
-import info.justaway.image.RoundedTransformation;
 import info.justaway.model.Row;
 
 import java.text.SimpleDateFormat;
@@ -13,8 +12,6 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.squareup.picasso.Picasso;
 
 import twitter4j.DirectMessage;
 import twitter4j.MediaEntity;
@@ -34,6 +31,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class TwitterAdapter extends ArrayAdapter<Row> {
+    private JustawayApplication app;
     private Context context;
     private ArrayList<Row> statuses = new ArrayList<Row>();
     private LayoutInflater inflater;
@@ -45,6 +43,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.context = context;
         this.layout = textViewResourceId;
+        this.app = (JustawayApplication) context.getApplicationContext();
     }
 
     @Override
@@ -166,9 +165,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         view.findViewById(R.id.retweet).setVisibility(View.GONE);
         view.findViewById(R.id.images).setVisibility(View.GONE);
         ImageView icon = (ImageView) view.findViewById(R.id.icon);
-        Picasso.with(context).load(message.getSender().getBiggerProfileImageURL())
-                .transform(new RoundedTransformation(5, 0)).error(R.drawable.ic_action_error)
-                .into(icon);
+        app.displayRoundedImage(message.getSender().getBiggerProfileImageURL(), icon);
         view.findViewById(R.id.action).setVisibility(View.GONE);
         view.findViewById(R.id.is_favorited).setVisibility(View.GONE);
     }
@@ -213,7 +210,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                     + favorite.getScreenName() + "(" + favorite.getName() + ") and "
                     + String.valueOf(status.getFavoriteCount()) + " others");
             ImageView icon = (ImageView) view.findViewById(R.id.retweet_icon);
-            Picasso.with(context).load(favorite.getMiniProfileImageURL()).into(icon);
+            app.displayRoundedImage(favorite.getMiniProfileImageURL(), icon);
             view.findViewById(R.id.retweet).setVisibility(View.VISIBLE);
         }
         // RTの場合
@@ -232,7 +229,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                     + retweet.getUser().getScreenName() + "(" + retweet.getUser().getName()
                     + ") and " + String.valueOf(status.getRetweetCount()) + " others");
             ImageView icon = (ImageView) view.findViewById(R.id.retweet_icon);
-            Picasso.with(context).load(retweet.getUser().getMiniProfileImageURL()).into(icon);
+            app.displayRoundedImage(retweet.getUser().getMiniProfileImageURL(), icon);
             view.findViewById(R.id.retweet).setVisibility(View.VISIBLE);
         } else {
             // 自分へのリプ
@@ -250,9 +247,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         }
 
         ImageView icon = (ImageView) view.findViewById(R.id.icon);
-        Picasso.with(context).load(status.getUser().getBiggerProfileImageURLHttps())
-                .transform(new RoundedTransformation(5, 0)).error(R.drawable.ic_action_error)
-                .into(icon);
+        app.displayRoundedImage(status.getUser().getBiggerProfileImageURL(), icon);
         icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -284,7 +279,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                 image.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 images.addView(image, new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, 120));
-                Picasso.with(context).load(url).into(image);
+                app.displayRoundedImage(url, image);
                 // 画像タップで拡大表示（ピンチイン・ピンチアウトいつかちゃんとやる）
                 image.setOnClickListener(new View.OnClickListener() {
                     @Override

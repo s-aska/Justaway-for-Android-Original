@@ -18,8 +18,6 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
-
 public class ProfileActivity extends FragmentActivity implements
         LoaderManager.LoaderCallbacks<Profile> {
 
@@ -54,6 +52,7 @@ public class ProfileActivity extends FragmentActivity implements
         twitter = application.getTwitter();
         icon = (ImageView) findViewById(R.id.icon);
         banner = (ImageView) findViewById(R.id.banner);
+        banner.setImageResource(R.drawable.suzuri);
         urlIcon = (TextView) findViewById(R.id.url_icon);
         urlIcon.setTypeface(Typeface.createFromAsset(context.getAssets(), "fontello.ttf"));
         urlIcon.setText(R.string.fontello_sdd);
@@ -113,13 +112,9 @@ public class ProfileActivity extends FragmentActivity implements
             ((TextView) findViewById(R.id.createdAt)).setText(user.getCreatedAt().toString());
             String iconUrl = user.getBiggerProfileImageURL();
             String bannerUrl = user.getProfileBannerMobileRetinaURL();
-            icon.setTag(iconUrl);
-            banner.setTag(bannerUrl);
-            Picasso.with(context).load(iconUrl).into(icon);
+            JustawayApplication.getApplication().displayRoundedImage(iconUrl, icon);
             if (bannerUrl != null) {
-                Picasso.with(context).load(bannerUrl).placeholder(R.drawable.suzuri).into(banner);
-            } else {
-                banner.setImageResource(R.drawable.suzuri);
+                JustawayApplication.getApplication().displayImage(bannerUrl, banner);
             }
             Relationship relationship = profile.getRelationship();
             if (relationship.isSourceFollowedByTarget()) {
