@@ -14,6 +14,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 /**
@@ -104,6 +105,31 @@ public class JustawayApplication extends Application {
      */
     public static void showToast(String text) {
         Toast.makeText(sApplication, text, Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * タブ管理
+     */
+    private static final String TABS = "tabs";
+    public ArrayList<Integer> loadTabs() {
+        SharedPreferences preferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
+        String tabs_string = preferences.getString(TABS, "-1,-2,-3");
+        String[] tabs_strings = tabs_string.split(",");
+        ArrayList<Integer> tabs = new ArrayList<Integer>();
+        for (String tab_string: tabs_strings) {
+            tabs.add(Integer.valueOf(tab_string));
+        }
+        return tabs;
+    }
+    public void saveTabs(ArrayList<Integer> tabs) {
+        ArrayList<String> tabs_strings = new ArrayList<String>();
+        for (Integer tab: tabs) {
+            tabs_strings.add(String.valueOf(tab));
+        }
+        SharedPreferences preferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
+        Editor editor = preferences.edit();
+        editor.putString(TABS, TextUtils.join(",", tabs_strings));
+        editor.commit();
     }
 
     /**
