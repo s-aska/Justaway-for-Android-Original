@@ -132,6 +132,54 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
         });
     }
 
+    public void initTab() {
+        LinearLayout tab_menus = (LinearLayout) findViewById(R.id.tab_menus);
+
+        int count = tab_menus.getChildCount();
+        // 4つめ以降のタブを消す
+        if (count > 3) {
+            for (int position = count - 1; position > 2; position--) {
+                tab_menus.removeView(tab_menus.getChildAt(position));
+                mSectionsPagerAdapter.removeTab(position);
+            }
+            mSectionsPagerAdapter.notifyDataSetChanged();
+        }
+
+        ArrayList<Integer> tabs = app.loadTabs();
+        int position = 2;
+        for (Integer tab : tabs) {
+            // 標準のタブを動的に生成する時に実装する
+            if (tab == -1) {
+
+            } else if (tab == -2) {
+
+            } else if (tab == -3) {
+
+            } else if (tab > 0) {
+                Button button = new Button(this);
+                button.setText("欄");
+                button.setOnClickListener(tabMenuOnClickListener(++position));
+                final int fp = position;
+                button.setOnLongClickListener(new View.OnLongClickListener() {
+
+                    @Override
+                    public boolean onLongClick(View v) {
+                        UserListFragment f = (UserListFragment) mSectionsPagerAdapter
+                                .findFragmentByPosition(fp);
+                        f.reload();
+                        return false;
+                    }
+
+                });
+                tab_menus.addView(button);
+                Bundle args = new Bundle();
+                args.putInt("userListId", tab);
+                mSectionsPagerAdapter.addTab(UserListFragment.class, args, "list", tab);
+            }
+        }
+        mSectionsPagerAdapter.notifyDataSetChanged();
+    }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -153,37 +201,30 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        Bundle bundle = data.getExtras();
         switch (requestCode) {
         case REQUEST_CHOOSE_USER_LIST:
             if (resultCode == RESULT_OK) {
+                Bundle bundle = data.getExtras();
                 ArrayList<Integer> lists = bundle.getIntegerArrayList("lists");
-                LinearLayout tab_menus = (LinearLayout) findViewById(R.id.tab_menus);
-                int position = 2;
-                for (Integer list : lists) {
-                    JustawayApplication.showToast("新しいリスト" + list);
-                    Button button = new Button(this);
-                    button.setText("欄");
-                    button.setOnClickListener(tabMenuOnClickListener(++position));
-                    final int fp = position;
-                    button.setOnLongClickListener(new View.OnLongClickListener() {
-
-                        @Override
-                        public boolean onLongClick(View v) {
-                            UserListFragment f = (UserListFragment) mSectionsPagerAdapter
-                                    .findFragmentByPosition(fp);
-                            f.reload();
-                            return false;
-                        }
-
-                    });
-                    tab_menus.addView(button);
-                    Bundle args = new Bundle();
-                    args.putInt("userListId", list);
-                    mSectionsPagerAdapter.addTab(UserListFragment.class, args, "list");
-                }
+                ArrayList<Integer> tabs = new ArrayList<Integer>();
+                // 後々タブ設定画面に標準のタブを含める
+                tabs.add(-1);
+                tabs.add(-2);
+                tabs.add(-3);
+                tabs.addAll(lists);
+                app.saveTabs(tabs);
                 app.setLists(lists);
+                initTab();
             } else if (resultCode == RESULT_CANCELED) {
+                ArrayList<Integer> lists = new ArrayList<Integer>();
+                ArrayList<Integer> tabs = new ArrayList<Integer>();
+                // 後々タブ設定画面に標準のタブを含める
+                tabs.add(-1);
+                tabs.add(-2);
+                tabs.add(-3);
+                app.saveTabs(tabs);
+                app.setLists(lists);
+                initTab();
             }
             break;
         default:
@@ -196,6 +237,9 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
             @Override
             public void onClick(View v) {
                 BaseFragment f = mSectionsPagerAdapter.findFragmentByPosition(position);
+                if (f == null) {
+                    return;
+                }
                 int id = viewPager.getCurrentItem();
                 if (id != position) {
                     viewPager.setCurrentItem(position);
@@ -240,9 +284,11 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
             mSectionsPagerAdapter = new SectionsPagerAdapter(this, viewPager);
             setViewPager(viewPager);
 
-            mSectionsPagerAdapter.addTab(TimelineFragment.class, null, "Home");
-            mSectionsPagerAdapter.addTab(InteractionsFragment.class, null, "Home");
-            mSectionsPagerAdapter.addTab(DirectMessageFragment.class, null, "Home");
+            mSectionsPagerAdapter.addTab(TimelineFragment.class, null, "Home", -1);
+            mSectionsPagerAdapter.addTab(InteractionsFragment.class, null, "Home", -2);
+            mSectionsPagerAdapter.addTab(DirectMessageFragment.class, null, "Home", -3);
+            initTab();
+//            mSectionsPagerAdapter.notifyDataSetChanged();
 
             /**
              * タブは前後タブまでは状態が保持されるがそれ以上離れるとViewが破棄されてしまう、
@@ -329,6 +375,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
             private final Class<?> clazz;
             private final Bundle args;
             private final String tabTitle;
+            private final Integer id;
 
             /**
              * タブ内のActivity、引数を設定する。
@@ -337,10 +384,11 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
              * @param args タブ内のv4.Fragmentに対する引数
              * @param tabTitle タブに表示するタイトル
              */
-            TabInfo(Class<?> clazz, Bundle args, String tabTitle) {
+            TabInfo(Class<?> clazz, Bundle args, String tabTitle, Integer id) {
                 this.clazz = clazz;
                 this.args = args;
                 this.tabTitle = tabTitle;
+                this.id = id;
             }
         }
 
@@ -357,6 +405,16 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
             return (BaseFragment) Fragment.instantiate(mContext, info.clazz.getName(), info.args);
         }
 
+        @Override
+        public long getItemId(int position) {
+            return mTabs.get(position).id;
+        }
+
+        @Override
+        public int getItemPosition(Object object) {
+            return POSITION_NONE;
+        }
+
         public BaseFragment findFragmentByPosition(int position) {
             return (BaseFragment) instantiateItem(mViewPager, position);
         }
@@ -368,10 +426,13 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
          * @param args v4.Fragmentに対する引数
          * @param tabTitle タブのタイトル
          */
-        public void addTab(Class<?> clazz, Bundle args, String tabTitle) {
-            TabInfo info = new TabInfo(clazz, args, tabTitle);
+        public void addTab(Class<?> clazz, Bundle args, String tabTitle, Integer id) {
+            TabInfo info = new TabInfo(clazz, args, tabTitle, id);
             mTabs.add(info);
-            notifyDataSetChanged();
+        }
+
+        public void removeTab(int position) {
+            mTabs.remove(position);
         }
 
         @Override
@@ -416,6 +477,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                 twitterStream.shutdown();
                 twitterStream.user();
             }
+            initTab();
         } else if (itemId == R.id.onore) {
             Intent intent = new Intent(this, ProfileActivity.class);
             intent.putExtra("userId", getUser().getId());
