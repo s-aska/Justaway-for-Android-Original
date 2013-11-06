@@ -19,7 +19,9 @@ public class FadeInRoundedBitmapDisplayer extends RoundedBitmapDisplayer {
     @Override
     public Bitmap display(Bitmap bitmap, ImageView imageView, LoadedFrom loadedFrom) {
         imageView.setImageBitmap(super.display(bitmap, imageView, loadedFrom));
-        animate(imageView, durationMillis);
+        if (loadedFrom != LoadedFrom.MEMORY_CACHE) {
+            animate(imageView, durationMillis);
+        }
         return bitmap;
     }
 
