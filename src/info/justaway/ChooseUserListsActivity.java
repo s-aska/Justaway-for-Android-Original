@@ -16,6 +16,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
+import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 
@@ -23,7 +24,8 @@ public class ChooseUserListsActivity extends FragmentActivity implements
         LoaderManager.LoaderCallbacks<ResponseList<UserList>> {
 
     private UserListAdapter adapter;
-    private ArrayList<Integer> lists = new ArrayList<Integer>();
+
+    // private ArrayList<Integer> lists = new ArrayList<Integer>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,14 +38,16 @@ public class ChooseUserListsActivity extends FragmentActivity implements
 
         listView.setAdapter(adapter);
 
-        registerForContextMenu(listView);
+        // registerForContextMenu(listView);
 
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                view.showContextMenu();
-            }
-        });
+        // listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        // {
+        // @Override
+        // public void onItemClick(AdapterView<?> parent, View view, int
+        // position, long id) {
+        // view.showContextMenu();
+        // }
+        // });
 
         getSupportLoaderManager().initLoader(0, null, this);
     }
@@ -66,19 +70,20 @@ public class ChooseUserListsActivity extends FragmentActivity implements
     public void onLoaderReset(Loader<ResponseList<UserList>> arg0) {
     }
 
-    public void onCreateContextMenu(ContextMenu menu, View view, ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, view, menuInfo);
-
-        AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
-        ListView listView = (ListView) view;
-        UserList userList = (UserList) listView.getItemAtPosition(info.position);
-
-        int id = userList.getId();
-
-        lists.add(id);
-
-        JustawayApplication.showToast("戻ったら沢山スワイプしてみよう。(id:" + id + ")");
-    }
+    // public void onCreateContextMenu(ContextMenu menu, View view,
+    // ContextMenuInfo menuInfo) {
+    // super.onCreateContextMenu(menu, view, menuInfo);
+    //
+    // AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
+    // ListView listView = (ListView) view;
+    // UserList userList = (UserList) listView.getItemAtPosition(info.position);
+    //
+    // int id = userList.getId();
+    //
+    // lists.add(id);
+    //
+    // JustawayApplication.showToast("戻ったら沢山スワイプしてみよう。(id:" + id + ")");
+    // }
 
     /**
      * finish前に色々セットしておく、ここでセットした値は onActivityResult で取れる
@@ -86,6 +91,19 @@ public class ChooseUserListsActivity extends FragmentActivity implements
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
+
+            ArrayList<Integer> lists = new ArrayList<Integer>();
+
+            // 有効なチェックボックスからリストIDを取得
+            ListView listView = (ListView) findViewById(R.id.list);
+            int count = listView.getChildCount();
+            for (int i = 0; i < count; i++) {
+                CheckBox checkbox = (CheckBox) listView.getChildAt(i);
+                if (checkbox.isChecked()) {
+                    lists.add((Integer) checkbox.getTag());
+                }
+            }
+
             if (lists.size() > 0) {
                 Intent data = new Intent();
                 Bundle bundle = new Bundle();

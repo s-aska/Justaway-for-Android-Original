@@ -139,19 +139,21 @@ public class JustawayApplication extends Application {
      * タブ管理
      */
     private static final String TABS = "tabs";
+    private ArrayList<Integer> mTabs = new ArrayList<Integer>();
 
     public ArrayList<Integer> loadTabs() {
         SharedPreferences preferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
         String tabs_string = preferences.getString(TABS, "-1,-2,-3");
         String[] tabs_strings = tabs_string.split(",");
-        ArrayList<Integer> tabs = new ArrayList<Integer>();
+        mTabs.clear();
         for (String tab_string : tabs_strings) {
-            tabs.add(Integer.valueOf(tab_string));
+            mTabs.add(Integer.valueOf(tab_string));
         }
-        return tabs;
+        return mTabs;
     }
 
     public void saveTabs(ArrayList<Integer> tabs) {
+        mTabs = tabs;
         ArrayList<String> tabs_strings = new ArrayList<String>();
         for (Integer tab : tabs) {
             tabs_strings.add(String.valueOf(tab));
@@ -160,6 +162,15 @@ public class JustawayApplication extends Application {
         Editor editor = preferences.edit();
         editor.putString(TABS, TextUtils.join(",", tabs_strings));
         editor.commit();
+    }
+
+    public boolean existsTab(Integer findTab) {
+        for (Integer tab : mTabs) {
+            if (tab.equals(findTab)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
