@@ -1,7 +1,7 @@
 package info.justaway.adapter;
 
+import info.justaway.JustawayApplication;
 import info.justaway.R;
-import info.justaway.model.Row;
 
 import java.util.ArrayList;
 
@@ -11,7 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.TextView;
+import android.widget.CheckBox;
 
 public class UserListAdapter extends ArrayAdapter<UserList> {
 
@@ -45,9 +45,10 @@ public class UserListAdapter extends ArrayAdapter<UserList> {
 
         UserList userList = (UserList) userLists.get(position);
 
-        ((TextView) view.findViewById(R.id.name)).setText(userList.getName());
-        
-        
+        CheckBox checkbox = (CheckBox) view;
+        checkbox.setText(userList.getName());
+        checkbox.setChecked(JustawayApplication.getApplication().existsTab(userList.getId()));
+        checkbox.setTag(userList.getId());
 
         return view;
     }
