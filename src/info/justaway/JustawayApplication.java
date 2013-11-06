@@ -1,11 +1,13 @@
 package info.justaway;
 
+import info.justaway.display.FadeInRoundedBitmapDisplayer;
+
 import java.util.ArrayList;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
+import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 
 import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
@@ -63,14 +65,14 @@ public class JustawayApplication extends Application {
         sApplication = this;
 
         DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder().cacheInMemory(true)
-                .cacheOnDisc(true).build();
+            .cacheOnDisc(true).displayer(new FadeInBitmapDisplayer(150)).build();
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
-                .defaultDisplayImageOptions(defaultOptions).build();
+            .defaultDisplayImageOptions(defaultOptions).build();
         ImageLoader.getInstance().init(config);
         mImageLoader = ImageLoader.getInstance();
         mRoundedDisplayImageOptions = new DisplayImageOptions.Builder().cacheInMemory(true)
-                .cacheOnDisc(true).resetViewBeforeLoading(true)
-                .displayer(new RoundedBitmapDisplayer(5)).build();
+            .cacheOnDisc(true).resetViewBeforeLoading(true)
+            .displayer(new FadeInRoundedBitmapDisplayer(150, 5)).build();
 
         // 例外発生時の処理を指定（スタックトレースを保存）
         Thread.setDefaultUncaughtExceptionHandler(new MyUncaughtExceptionHandler(sApplication));
@@ -126,7 +128,8 @@ public class JustawayApplication extends Application {
     /**
      * あると便利な簡易通知
      * 
-     * @param text 表示するメッセージ
+     * @param text
+     *            表示するメッセージ
      */
     public static void showToast(String text) {
         Toast.makeText(sApplication, text, Toast.LENGTH_SHORT).show();
@@ -178,7 +181,8 @@ public class JustawayApplication extends Application {
     }
 
     /**
-     * @param user the user to set
+     * @param user
+     *            the user to set
      */
     public void setUser(User user) {
         this.user = user;
@@ -225,7 +229,8 @@ public class JustawayApplication extends Application {
     /**
      * Twitterアクセストークン保存
      * 
-     * @param accessToken Twitterアクセストークン
+     * @param accessToken
+     *            Twitterアクセストークン
      */
     public void setAccessToken(AccessToken accessToken) {
         SharedPreferences preferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
@@ -273,8 +278,8 @@ public class JustawayApplication extends Application {
         }
         ConfigurationBuilder confbuilder = new ConfigurationBuilder();
         twitter4j.conf.Configuration conf = confbuilder.setOAuthConsumerKey(getConsumerKey())
-                .setOAuthConsumerSecret(getConsumerSecret()).setOAuthAccessToken(token.getToken())
-                .setOAuthAccessTokenSecret(token.getTokenSecret()).build();
+            .setOAuthConsumerSecret(getConsumerSecret()).setOAuthAccessToken(token.getToken())
+            .setOAuthAccessTokenSecret(token.getTokenSecret()).build();
         TwitterStream twitterStream = new TwitterStreamFactory(conf).getInstance();
         this.twitterStream = twitterStream;
         return twitterStream;
