@@ -10,10 +10,13 @@ import twitter4j.User;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -27,6 +30,7 @@ public class ProfileActivity extends FragmentActivity implements
     private ImageView banner;
     private TextView urlIcon;
     private TextView locationIcon;
+    private User user;
 
     // private TextView addedToTwitter;
 
@@ -73,6 +77,12 @@ public class ProfileActivity extends FragmentActivity implements
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.profile, menu);
+        return true;
+    }
+
+    @Override
     public Loader<Profile> onCreateLoader(int arg0, Bundle args) {
         String screenName = args.getString("screenName");
         return new ShowUserLoader(this, screenName);
@@ -80,7 +90,7 @@ public class ProfileActivity extends FragmentActivity implements
 
     @Override
     public void onLoadFinished(Loader<Profile> arg0, Profile profile) {
-        final User user = profile.getUser();
+        user = profile.getUser();
         if (user != null) {
             ((TextView) findViewById(R.id.screenName)).setText("@" + user.getScreenName());
             ((TextView) findViewById(R.id.name)).setText(user.getName());
@@ -142,5 +152,28 @@ public class ProfileActivity extends FragmentActivity implements
 
     @Override
     public void onLoaderReset(Loader<Profile> arg0) {
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Intent intent = null;
+        switch (item.getItemId()) {
+        case R.id.open_twitter:
+            intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/"
+                    + user.getScreenName()));
+            startActivity(intent);
+            break;
+        case R.id.open_favstar:
+            intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://ja.favstar.fm/users/"
+                    + user.getScreenName() + "/recent"));
+            startActivity(intent);
+            break;
+        case R.id.open_twilog:
+            intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://twilog.org/"
+                    + user.getScreenName()));
+            startActivity(intent);
+            break;
+        }
+        return true;
     }
 }

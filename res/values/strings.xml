@@ -26,5 +26,8 @@
     <string name="followers">FOLLOWERS</string>
     <string name="listed">LISTED</string>
     <string name="description_icon">Profile Icon</string>
+    <string name="open_twitter">Twitterで開く</string>
+    <string name="open_favstar">Favstarで開く</string>
+    <string name="open_twilog">Twilogで開く</string>
 
 </resources>
