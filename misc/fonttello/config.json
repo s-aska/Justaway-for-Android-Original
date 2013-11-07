@@ -5,9 +5,13 @@
   "hinting": true,
   "units_per_em": 1000,
   "ascent": 850,
-  "copyright": "undefined",
-  "fullname": "undefined",
   "glyphs": [
+    {
+      "uid": "8ce732688587909ad0a9d8323eaca8ad",
+      "css": "marquee",
+      "code": 59404,
+      "src": "fontelico"
+    },
     {
       "uid": "474656633f79ea2f1dad59ff63f6bf07",
       "css": "star",
@@ -15,10 +19,34 @@
       "src": "fontawesome"
     },
     {
+      "uid": "381da2c2f7fd51f8de877c044d7f439d",
+      "css": "picture",
+      "code": 59401,
+      "src": "fontawesome"
+    },
+    {
       "uid": "09feb4465d9bd1364f4e301c9ddbaa92",
       "css": "retweet",
       "code": 59393,
       "src": "fontawesome"
+    },
+    {
+      "uid": "a2a74f5e7b7d9ba054897d8c795a326a",
+      "css": "list-bullet",
+      "code": 59399,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "513ac180ff85bd275f2b736720cbbf5e",
+      "css": "home",
+      "code": 59397,
+      "src": "entypo"
+    },
+    {
+      "uid": "db112402805d9dadc01ce009fbfdb914",
+      "css": "paper-plane",
+      "code": 59403,
+      "src": "entypo"
     },
     {
       "uid": "8bf56386082752a2acc88a1ddf6851a8",
@@ -31,6 +59,18 @@
       "css": "location",
       "code": 59395,
       "src": "iconic"
+    },
+    {
+      "uid": "ae3so8q0b0n2h8esv9flua2nmwswa8fd",
+      "css": "mail",
+      "code": 59398,
+      "src": "modernpics"
+    },
+    {
+      "uid": "6059b7737287728091ce7e4c600cca56",
+      "css": "edit-alt",
+      "code": 59400,
+      "src": "elusive"
     },
     {
       "uid": "3c4a596e8ee3584c4c9e7002371db19f",

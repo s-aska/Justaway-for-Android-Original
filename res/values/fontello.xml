@@ -6,5 +6,12 @@
     <string name="fontello_at"></string>
     <string name="fontello_location"></string>
     <string name="fontello_sdd"></string>
+    <string name="fontello_home"></string>
+    <string name="fontello_mail"></string>
+    <string name="fontello_list"></string>
+    <string name="fontello_edit"></string>
+    <string name="fontello_marquee"></string>
+    <string name="fontello_picture"></string>
+    <string name="fontello_paper"></string>
 
 </resources>
