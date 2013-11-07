@@ -29,15 +29,17 @@
 
                 <Button
                     android:id="@+id/suddenly"
-                    android:layout_width="wrap_content"
+                    android:layout_width="60dip"
                     android:layout_height="wrap_content"
-                    android:text="@string/tweet_suddenly" />
+                    android:background="@color/transparent"
+                    android:text="@string/fontello_marquee" />
 
                 <Button
                     android:id="@+id/img"
-                    android:layout_width="wrap_content"
+                    android:layout_width="60dip"
                     android:layout_height="wrap_content"
-                    android:text="@string/tweet_img" />
+                    android:background="@color/transparent"
+                    android:text="@string/fontello_picture" />
             </LinearLayout>
 
             <LinearLayout
@@ -50,13 +52,15 @@
                     android:id="@+id/count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginRight="10dip"
                     android:text="@string/tweet_count" />
 
                 <Button
                     android:id="@+id/tweet"
-                    android:layout_width="wrap_content"
+                    android:layout_width="60dip"
                     android:layout_height="wrap_content"
-                    android:text="@string/tweet" />
+                    android:background="@color/transparent"
+                    android:text="@string/fontello_paper" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

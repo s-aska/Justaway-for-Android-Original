@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.BatteryManager;
@@ -37,6 +38,7 @@ public class PostActivity extends Activity {
     private TextView mTextView;
     private Button mTweetButton;
     private Button mImgButton;
+    private Button mSuddenlyButton;
     private ProgressDialog mProgressDialog;
     private Long inReplyToStatusId;
     private File imgPath;
@@ -50,11 +52,18 @@ public class PostActivity extends Activity {
 
         JustawayApplication application = JustawayApplication.getApplication();
 
+        Typeface fontello = Typeface.createFromAsset(getAssets(), "fontello.ttf");
+        
         mEditText = (EditText) findViewById(R.id.status);
         mTextView = (TextView) findViewById(R.id.count);
         mTweetButton = (Button) findViewById(R.id.tweet);
         mImgButton = (Button) findViewById(R.id.img);
+        mSuddenlyButton = (Button) findViewById(R.id.suddenly);
         mTwitter = application.getTwitter();
+
+        mTweetButton.setTypeface(fontello);
+        mImgButton.setTypeface(fontello);
+        mSuddenlyButton.setTypeface(fontello);
 
         Intent intent = getIntent();
         String status = intent.getStringExtra("status");
@@ -100,7 +109,7 @@ public class PostActivity extends Activity {
             }
         }
 
-        findViewById(R.id.tweet).setOnClickListener(new View.OnClickListener() {
+        mTweetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showProgressDialog("送信中！！１１１１１");
@@ -115,7 +124,7 @@ public class PostActivity extends Activity {
             }
         });
 
-        findViewById(R.id.suddenly).setOnClickListener(new View.OnClickListener() {
+        mSuddenlyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String totsuzen = mEditText.getText().toString() + "\n";
@@ -155,7 +164,7 @@ public class PostActivity extends Activity {
             }
         });
 
-        findViewById(R.id.img).setOnClickListener(new View.OnClickListener() {
+        mImgButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Intent.ACTION_PICK);

@@ -24,6 +24,7 @@ import android.R.color;
 import android.os.Bundle;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -120,10 +121,19 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
          * ActionBarのタブに頼っていない為、自力でsetCurrentItemでタブを動かしている
          * タブの切替がスワイプだけで良い場合はこの処理すら不要
          */
-        findViewById(R.id.action_timeline).setOnClickListener(tabMenuOnClickListener(0));
-        findViewById(R.id.action_interactions).setOnClickListener(tabMenuOnClickListener(1));
-        findViewById(R.id.action_directmessage).setOnClickListener(tabMenuOnClickListener(2));
-        findViewById(R.id.action_tweet).setOnClickListener(new View.OnClickListener() {
+        Typeface fontello = Typeface.createFromAsset(getAssets(), "fontello.ttf");
+        Button home = (Button) findViewById(R.id.action_timeline);
+        Button interactions = (Button) findViewById(R.id.action_interactions);
+        Button directmessage = (Button) findViewById(R.id.action_directmessage);
+        Button tweet = (Button) findViewById(R.id.action_tweet);
+        home.setTypeface(fontello);
+        interactions.setTypeface(fontello);
+        directmessage.setTypeface(fontello);
+        tweet.setTypeface(fontello);
+        home.setOnClickListener(tabMenuOnClickListener(0));
+        interactions.setOnClickListener(tabMenuOnClickListener(1));
+        directmessage.setOnClickListener(tabMenuOnClickListener(2));
+        tweet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), PostActivity.class);
@@ -148,6 +158,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
         ArrayList<Integer> tabs = app.loadTabs();
         int position = 2;
         for (Integer tab : tabs) {
+            Typeface fontello = Typeface.createFromAsset(getAssets(), "fontello.ttf");
             // 標準のタブを動的に生成する時に実装する
             if (tab == -1) {
 
@@ -157,7 +168,10 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
 
             } else if (tab > 0) {
                 Button button = new Button(this);
-                button.setText("欄");
+                button.setWidth(60);
+                button.setTypeface(fontello);
+                button.setBackgroundColor(getResources().getColor(R.color.transparent));
+                button.setText(R.string.fontello_list);
                 button.setOnClickListener(tabMenuOnClickListener(++position));
                 final int fp = position;
                 button.setOnLongClickListener(new View.OnLongClickListener() {
