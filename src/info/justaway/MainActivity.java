@@ -494,7 +494,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
             initTab();
         } else if (itemId == R.id.onore) {
             Intent intent = new Intent(this, ProfileActivity.class);
-            intent.putExtra("userId", getUser().getId());
+            intent.putExtra("screenName", getUser().getScreenName());
             startActivity(intent);
         } else if (itemId == R.id.user_list) {
             Intent intent = new Intent(this, ChooseUserListsActivity.class);
