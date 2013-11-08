@@ -262,10 +262,17 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         URLEntity[] urls = retweet != null ? retweet.getURLEntities() : status.getURLEntities();
         ArrayList<String> imageUrls = new ArrayList<String>();
         Pattern twitpic_pattern = Pattern.compile("^http://twitpic\\.com/(\\w+)$");
+        Pattern twipple_pattern = Pattern.compile("^http://p\\.twipple\\.jp/(\\w+)$");
         for (URLEntity url : urls) {
             Matcher twitpic_matcher = twitpic_pattern.matcher(url.getExpandedURL());
             if (twitpic_matcher.find()) {
                 imageUrls.add("http://twitpic.com/show/full/" + twitpic_matcher.group(1));
+                continue;
+            }
+            Matcher twipple_matcher = twipple_pattern.matcher(url.getExpandedURL());
+            if (twipple_matcher.find()) {
+                imageUrls.add("http://p.twpl.jp/show/orig/" + twipple_matcher.group(1));
+                continue;
             }
         }
         for (MediaEntity media : medias) {
