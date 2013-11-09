@@ -31,19 +31,19 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class TwitterAdapter extends ArrayAdapter<Row> {
-    private JustawayApplication app;
-    private Context context;
+    private JustawayApplication mApplication;
+    private Context mContext;
     private ArrayList<Row> statuses = new ArrayList<Row>();
-    private LayoutInflater inflater;
-    private int layout;
+    private LayoutInflater mInflater;
+    private int mLayout;
     private static int limit = 500;
 
     public TwitterAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId);
-        this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        this.context = context;
-        this.layout = textViewResourceId;
-        this.app = (JustawayApplication) context.getApplicationContext();
+        this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.mContext = context;
+        this.mLayout = textViewResourceId;
+        this.mApplication = (JustawayApplication) context.getApplicationContext();
     }
 
     @Override
@@ -116,7 +116,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         View view = convertView;
         if (view == null) {
             // 受け取ったビューがnullなら新しくビューを生成
-            view = inflater.inflate(this.layout, null);
+            view = mInflater.inflate(this.mLayout, null);
         }
 
         // 表示すべきデータの取得
@@ -145,7 +145,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         }
 
         if (position == 0) {
-            ((MainActivity) context).showTopView();
+            ((MainActivity) mContext).showTopView();
         }
 
         return view;
@@ -165,7 +165,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         view.findViewById(R.id.retweet).setVisibility(View.GONE);
         view.findViewById(R.id.images).setVisibility(View.GONE);
         ImageView icon = (ImageView) view.findViewById(R.id.icon);
-        app.displayRoundedImage(message.getSender().getBiggerProfileImageURL(), icon);
+        mApplication.displayRoundedImage(message.getSender().getBiggerProfileImageURL(), icon);
         view.findViewById(R.id.action).setVisibility(View.GONE);
         view.findViewById(R.id.is_favorited).setVisibility(View.GONE);
     }
@@ -184,16 +184,15 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         view.findViewById(R.id.via).setVisibility(View.VISIBLE);
 
         TextView actionIcon = (TextView) view.findViewById(R.id.action_icon);
-        actionIcon.setTypeface(Typeface.createFromAsset(context.getAssets(), "fontello.ttf"));
-        actionIcon.setText("");
+        actionIcon.setTypeface(Typeface.createFromAsset(mContext.getAssets(), "fontello.ttf"));
         TextView actionBy = (TextView) view.findViewById(R.id.action_by);
         TextView actionName = (TextView) view.findViewById(R.id.action_name);
         User user = JustawayApplication.getApplication().getUser();
 
         if (status.isFavorited() && user.getId() != status.getUser().getId()) {
             TextView isFavorited = (TextView) view.findViewById(R.id.is_favorited);
-            isFavorited.setTextColor(context.getResources().getColor(color.holo_orange_light));
-            isFavorited.setTypeface(Typeface.createFromAsset(context.getAssets(), "fontello.ttf"));
+            isFavorited.setTextColor(mContext.getResources().getColor(color.holo_orange_light));
+            isFavorited.setTypeface(Typeface.createFromAsset(mContext.getAssets(), "fontello.ttf"));
             isFavorited.setVisibility(View.VISIBLE);
         } else {
             view.findViewById(R.id.is_favorited).setVisibility(View.GONE);
@@ -202,7 +201,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         // favの場合
         if (favorite != null) {
             actionIcon.setText(R.string.fontello_star);
-            actionIcon.setTextColor(context.getResources().getColor(color.holo_orange_light));
+            actionIcon.setTextColor(mContext.getResources().getColor(color.holo_orange_light));
             actionBy.setText(favorite.getName());
             actionName.setText("favorited");
             view.findViewById(R.id.action).setVisibility(View.VISIBLE);
@@ -210,7 +209,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                     + favorite.getScreenName() + "(" + favorite.getName() + ") and "
                     + String.valueOf(status.getFavoriteCount()) + " others");
             ImageView icon = (ImageView) view.findViewById(R.id.retweet_icon);
-            app.displayRoundedImage(favorite.getMiniProfileImageURL(), icon);
+            mApplication.displayRoundedImage(favorite.getMiniProfileImageURL(), icon);
             view.findViewById(R.id.retweet).setVisibility(View.VISIBLE);
         }
         // RTの場合
@@ -218,7 +217,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             // 自分のツイート
             if (user.getId() == status.getUser().getId()) {
                 actionIcon.setText(R.string.fontello_retweet);
-                actionIcon.setTextColor(context.getResources().getColor(color.holo_green_light));
+                actionIcon.setTextColor(mContext.getResources().getColor(color.holo_green_light));
                 actionBy.setText(retweet.getUser().getName());
                 actionName.setText("retweeted");
                 view.findViewById(R.id.action).setVisibility(View.VISIBLE);
@@ -229,13 +228,13 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                     + retweet.getUser().getScreenName() + "(" + retweet.getUser().getName()
                     + ") and " + String.valueOf(status.getRetweetCount()) + " others");
             ImageView icon = (ImageView) view.findViewById(R.id.retweet_icon);
-            app.displayRoundedImage(retweet.getUser().getMiniProfileImageURL(), icon);
+            mApplication.displayRoundedImage(retweet.getUser().getMiniProfileImageURL(), icon);
             view.findViewById(R.id.retweet).setVisibility(View.VISIBLE);
         } else {
             // 自分へのリプ
             if (user.getId() == status.getInReplyToUserId()) {
                 actionIcon.setText(R.string.fontello_at);
-                actionIcon.setTextColor(context.getResources().getColor(color.holo_red_light));
+                actionIcon.setTextColor(mContext.getResources().getColor(color.holo_red_light));
                 actionBy.setText(status.getUser().getName());
                 actionName.setText("mentioned you");
                 view.findViewById(R.id.action).setVisibility(View.VISIBLE);
@@ -247,13 +246,13 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         }
 
         ImageView icon = (ImageView) view.findViewById(R.id.icon);
-        app.displayRoundedImage(status.getUser().getBiggerProfileImageURL(), icon);
+        mApplication.displayRoundedImage(status.getUser().getBiggerProfileImageURL(), icon);
         icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), ProfileActivity.class);
                 intent.putExtra("screenName", status.getUser().getScreenName());
-                context.startActivity(intent);
+                mContext.startActivity(intent);
             }
         });
 
@@ -282,18 +281,18 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         images.removeAllViews();
         if (imageUrls.size() > 0) {
             for (final String url : imageUrls) {
-                ImageView image = new ImageView(context);
+                ImageView image = new ImageView(mContext);
                 image.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 images.addView(image, new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, 120));
-                app.displayRoundedImage(url, image);
+                mApplication.displayRoundedImage(url, image);
                 // 画像タップで拡大表示（ピンチイン・ピンチアウトいつかちゃんとやる）
                 image.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(v.getContext(), ScaleImageActivity.class);
                         intent.putExtra("url", url);
-                        context.startActivity(intent);
+                        mContext.startActivity(intent);
                     }
                 });
             }
