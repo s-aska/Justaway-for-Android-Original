@@ -1,6 +1,7 @@
 package info.justaway.adapter;
 
 import info.justaway.JustawayApplication;
+import info.justaway.PostActivity;
 import info.justaway.ScaleImageActivity;
 import info.justaway.MainActivity;
 import info.justaway.ProfileActivity;
@@ -9,6 +10,7 @@ import info.justaway.model.Row;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,6 +23,7 @@ import twitter4j.User;
 import android.R.color;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -136,11 +139,11 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
 
             Status retweet = status.getRetweetedStatus();
             if (row.isFavorite()) {
-                renderStatus(view, status, null, row.getSource());
+                renderStatus(view, row, status, null, row.getSource());
             } else if (retweet == null) {
-                renderStatus(view, status, null, null);
+                renderStatus(view, row, status, null, null);
             } else {
-                renderStatus(view, retweet, status, null);
+                renderStatus(view, row, retweet, status, null);
             }
         }
 
@@ -167,36 +170,87 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         ImageView icon = (ImageView) view.findViewById(R.id.icon);
         mApplication.displayRoundedImage(message.getSender().getBiggerProfileImageURL(), icon);
         view.findViewById(R.id.action).setVisibility(View.GONE);
-        view.findViewById(R.id.is_favorited).setVisibility(View.GONE);
+        // view.findViewById(R.id.is_favorited).setVisibility(View.GONE);
     }
 
-    private void renderStatus(View view, final Status status, Status retweet, User favorite) {
+    private void renderStatus(View view, final Row row, final Status status, Status retweet, User favorite) {
+
+        final Status soruce = retweet != null ? retweet : status;
+        User user = JustawayApplication.getApplication().getUser();
+
+        Typeface fontello = Typeface.createFromAsset(mContext.getAssets(), "fontello.ttf");
+
+        final TextView do_reply = (TextView) view.findViewById(R.id.do_reply);
+        final TextView do_retweet = (TextView) view.findViewById(R.id.do_retweet);
+        final TextView do_fav = (TextView) view.findViewById(R.id.do_fav);
+
+        do_reply.setTypeface(fontello);
+        do_reply.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, PostActivity.class);
+                String text = "@" + soruce.getUser().getScreenName() + " ";
+                intent.putExtra("status", text);
+                intent.putExtra("selection", text.length());
+                intent.putExtra("inReplyToStatusId", status.getId());
+                mContext.startActivity(intent);
+            }
+        });
+
+        do_retweet.setTypeface(fontello);
+        do_retweet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mApplication.isRT(status)) {
+                    mApplication.doDestroyStatus(soruce.getId());
+                    do_retweet.setTextColor(Color.parseColor("#666666"));
+                } else {
+                    mApplication.doRetweet(row);
+                    do_retweet.setTextColor(mContext.getResources().getColor(color.holo_green_light));
+                }
+            }
+        });
+
+        do_fav.setTypeface(fontello);
+        do_fav.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mApplication.isFav(status)) {
+                    mApplication.doDestroyFavorite(soruce.getId());
+                    do_retweet.setTextColor(Color.parseColor("#666666"));
+                } else {
+                    mApplication.doFavorite(soruce.getId());
+                    do_fav.setTextColor(mContext.getResources().getColor(color.holo_orange_light));
+                }
+            }
+        });
+
+        if (mApplication.isRT(soruce)) {
+            do_retweet.setTextColor(mContext.getResources().getColor(color.holo_green_light));
+        } else {
+            do_retweet.setTextColor(Color.parseColor("#666666"));
+        }
+
+        if (mApplication.isFav(status)) {
+            do_fav.setTextColor(mContext.getResources().getColor(color.holo_orange_light));
+        } else {
+            do_fav.setTextColor(Color.parseColor("#666666"));
+        }
+
         ((TextView) view.findViewById(R.id.display_name)).setText(status.getUser().getName());
         ((TextView) view.findViewById(R.id.screen_name)).setText("@"
                 + status.getUser().getScreenName());
         ((TextView) view.findViewById(R.id.status)).setText(status.getText());
-        SimpleDateFormat date_format = new SimpleDateFormat("MM'/'dd' 'hh':'mm':'ss",
-                Locale.ENGLISH);
-        ((TextView) view.findViewById(R.id.datetime)).setText(date_format.format(status
-                .getCreatedAt()));
+        ((TextView) view.findViewById(R.id.datetime))
+                .setText(getRelativeTime(status.getCreatedAt()));
         ((TextView) view.findViewById(R.id.via))
                 .setText("via " + getClientName(status.getSource()));
         view.findViewById(R.id.via).setVisibility(View.VISIBLE);
 
         TextView actionIcon = (TextView) view.findViewById(R.id.action_icon);
-        actionIcon.setTypeface(Typeface.createFromAsset(mContext.getAssets(), "fontello.ttf"));
+        actionIcon.setTypeface(fontello);
         TextView actionBy = (TextView) view.findViewById(R.id.action_by);
         TextView actionName = (TextView) view.findViewById(R.id.action_name);
-        User user = JustawayApplication.getApplication().getUser();
-
-        if (status.isFavorited() && user.getId() != status.getUser().getId()) {
-            TextView isFavorited = (TextView) view.findViewById(R.id.is_favorited);
-            isFavorited.setTextColor(mContext.getResources().getColor(color.holo_orange_light));
-            isFavorited.setTypeface(Typeface.createFromAsset(mContext.getAssets(), "fontello.ttf"));
-            isFavorited.setVisibility(View.VISIBLE);
-        } else {
-            view.findViewById(R.id.is_favorited).setVisibility(View.GONE);
-        }
 
         // favの場合
         if (favorite != null) {
@@ -308,6 +362,21 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             return tokens[2];
         } else {
             return tokens[0];
+        }
+    }
+
+    private String getRelativeTime(Date date) {
+        int diff = (int) (((new Date()).getTime() - date.getTime()) / 1000);
+        if (diff < 1) {
+            return "now";
+        } else if (diff < 60) {
+            return diff + "s";
+        } else if (diff < 3600) {
+            return (diff / 60) + "m";
+        } else if (diff < 86400) {
+            return (diff / 3600) + "h";
+        } else {
+            return (diff / 86400) + "d";
         }
     }
 }
