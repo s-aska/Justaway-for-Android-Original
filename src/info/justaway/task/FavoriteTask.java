@@ -8,7 +8,9 @@ public class FavoriteTask extends AsyncTask<Long, Void, Boolean> {
     @Override
     protected Boolean doInBackground(Long... params) {
         try {
-            JustawayApplication.getApplication().getTwitter().createFavorite(params[0]);
+            JustawayApplication application = JustawayApplication.getApplication();
+            application.getTwitter().createFavorite(params[0]);
+            application.setFav(params[0]);
             return true;
         } catch (Exception e) {
             e.printStackTrace();

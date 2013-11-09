@@ -48,21 +48,24 @@
                         android:layout_width="60dip"
                         android:layout_height="wrap_content"
                         android:background="@color/transparent"
-                        android:text="@string/fontello_home" />
+                        android:text="@string/fontello_home"
+                        android:textSize="20sp" />
 
                     <Button
                         android:id="@+id/action_interactions"
                         android:layout_width="60dip"
                         android:layout_height="wrap_content"
                         android:background="@color/transparent"
-                        android:text="@string/fontello_at" />
+                        android:text="@string/fontello_at"
+                        android:textSize="20sp" />
 
                     <Button
                         android:id="@+id/action_directmessage"
                         android:layout_width="60dip"
                         android:layout_height="wrap_content"
                         android:background="@color/transparent"
-                        android:text="@string/fontello_mail" />
+                        android:text="@string/fontello_mail"
+                        android:textSize="20sp" />
                 </LinearLayout>
             </HorizontalScrollView>
 

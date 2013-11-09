@@ -32,14 +32,16 @@
                     android:layout_width="60dip"
                     android:layout_height="wrap_content"
                     android:background="@color/transparent"
-                    android:text="@string/fontello_marquee" />
+                    android:text="@string/fontello_uni"
+                    android:textSize="20sp" />
 
                 <Button
                     android:id="@+id/img"
                     android:layout_width="60dip"
                     android:layout_height="wrap_content"
                     android:background="@color/transparent"
-                    android:text="@string/fontello_picture" />
+                    android:text="@string/fontello_picture"
+                    android:textSize="20sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -60,7 +62,8 @@
                     android:layout_width="60dip"
                     android:layout_height="wrap_content"
                     android:background="@color/transparent"
-                    android:text="@string/fontello_paper" />
+                    android:text="@string/fontello_paper"
+                    android:textSize="20sp" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

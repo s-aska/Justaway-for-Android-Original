@@ -1,5 +1,6 @@
 package info.justaway.fragment;
 
+import info.justaway.JustawayApplication;
 import info.justaway.MainActivity;
 import info.justaway.PostActivity;
 import info.justaway.R;
@@ -122,6 +123,7 @@ public abstract class BaseFragment extends ListFragment {
     public void onCreateContextMenu(ContextMenu menu, View view, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, view, menuInfo);
 
+        JustawayApplication application = JustawayApplication.getApplication();
         AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
         ListView listView = (ListView) view;
         MainActivity activity = (MainActivity) getActivity();
@@ -147,7 +149,7 @@ public abstract class BaseFragment extends ListFragment {
         menu.add(0, CONTEXT_MENU_REPLY_ID, 0, "リプ");
         menu.add(0, CONTEXT_MENU_QT_ID, 0, "引用");
 
-        if (status.isFavorited()) {
+        if (application.isFav(status)) {
             menu.add(0, CONTEXT_MENU_RM_FAV_ID, 0, "ふぁぼを解除");
         } else {
             menu.add(0, CONTEXT_MENU_FAV_ID, 0, "ふぁぼ");
@@ -160,7 +162,9 @@ public abstract class BaseFragment extends ListFragment {
                 menu.add(0, CONTEXT_MENU_RM_ID, 0, "ツイ消し");
             }
         } else {
-            menu.add(0, CONTEXT_MENU_FAVRT_ID, 0, "ふぁぼ＆公式RT");
+            if (application.isFav(status) == false) {
+                menu.add(0, CONTEXT_MENU_FAVRT_ID, 0, "ふぁぼ＆公式RT");
+            }
             menu.add(0, CONTEXT_MENU_RT_ID, 0, "公式RT");
         }
 
@@ -185,6 +189,7 @@ public abstract class BaseFragment extends ListFragment {
 
     public boolean onContextItemSelected(MenuItem item) {
 
+        JustawayApplication application = JustawayApplication.getApplication();
         MainActivity activity = (MainActivity) getActivity();
         Row row = activity.getSelectedRow();
         Status status = row.getStatus();
@@ -195,7 +200,7 @@ public abstract class BaseFragment extends ListFragment {
         switch (item.getItemId()) {
         case CONTEXT_MENU_REPLY_ID:
             intent = new Intent(activity, PostActivity.class);
-            String text = "@" + status.getUser().getScreenName() + " ";
+            String text = "@" + soruce.getUser().getScreenName() + " ";
             intent.putExtra("status", text);
             intent.putExtra("selection", text.length());
             intent.putExtra("inReplyToStatusId", status.getId());
@@ -219,20 +224,20 @@ public abstract class BaseFragment extends ListFragment {
             activity.doDestroyDirectMessage(row.getMessage().getId());
             return true;
         case CONTEXT_MENU_RM_ID:
-            activity.doDestroyStatus(row.getStatus().getId());
+            application.doDestroyStatus(row.getStatus().getId());
             return true;
         case CONTEXT_MENU_RT_ID:
-            activity.doRetweet(status.getId());
+            application.doRetweet(row);
             return true;
         case CONTEXT_MENU_RM_FAV_ID:
-            activity.doDestroyFavorite(status.getId());
+            application.doDestroyFavorite(status.getId());
             return true;
         case CONTEXT_MENU_FAV_ID:
-            activity.doFavorite(status.getId());
+            application.doFavorite(status.getId());
             return true;
         case CONTEXT_MENU_FAVRT_ID:
-            activity.doFavorite(status.getId());
-            activity.doRetweet(status.getId());
+            application.doFavorite(status.getId());
+            application.doRetweet(row);
             return true;
         case CONTEXT_MENU_TALK_ID:
             TalkFragment dialog = new TalkFragment();

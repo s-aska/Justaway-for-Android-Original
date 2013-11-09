@@ -1,5 +1,6 @@
 package info.justaway;
 
+import java.nio.MappedByteBuffer;
 import java.util.ArrayList;
 
 import info.justaway.fragment.BaseFragment;
@@ -45,7 +46,7 @@ import android.widget.LinearLayout;
  */
 public class MainActivity extends FragmentActivity implements LoaderManager.LoaderCallbacks<User> {
 
-    private JustawayApplication app;
+    private JustawayApplication mApplication;
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager viewPager;
     private Row selectedRow;
@@ -93,20 +94,20 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        app = JustawayApplication.getApplication();
+        mApplication = JustawayApplication.getApplication();
 
         // スリープさせない指定
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         // アクセストークンがない場合に認証用のアクティビティを起動する
-        if (!app.hasAccessToken()) {
+        if (!mApplication.hasAccessToken()) {
             Intent intent = new Intent(this, SigninActivity.class);
             startActivity(intent);
             finish();
         } else {
 
             // とりあえず勝手にストリーミング開始するようにしている
-            TwitterStream twitterStream = app.getTwitterStream();
+            TwitterStream twitterStream = mApplication.getTwitterStream();
             twitterStream.addListener(getUserStreamAdapter());
             twitterStream.user();
 
@@ -155,7 +156,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
             mSectionsPagerAdapter.notifyDataSetChanged();
         }
 
-        ArrayList<Integer> tabs = app.loadTabs();
+        ArrayList<Integer> tabs = mApplication.loadTabs();
         int position = 2;
         for (Integer tab : tabs) {
             Typeface fontello = Typeface.createFromAsset(getAssets(), "fontello.ttf");
@@ -170,6 +171,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                 Button button = new Button(this);
                 button.setWidth(60);
                 button.setTypeface(fontello);
+                button.setTextSize(18);
                 button.setBackgroundColor(getResources().getColor(R.color.transparent));
                 button.setText(R.string.fontello_list);
                 button.setOnClickListener(tabMenuOnClickListener(++position));
@@ -226,8 +228,8 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                 tabs.add(-2);
                 tabs.add(-3);
                 tabs.addAll(lists);
-                app.saveTabs(tabs);
-                app.setLists(lists);
+                mApplication.saveTabs(tabs);
+                mApplication.setLists(lists);
                 initTab();
             } else if (resultCode == RESULT_CANCELED) {
                 ArrayList<Integer> lists = new ArrayList<Integer>();
@@ -236,8 +238,8 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                 tabs.add(-1);
                 tabs.add(-2);
                 tabs.add(-3);
-                app.saveTabs(tabs);
-                app.setLists(lists);
+                mApplication.saveTabs(tabs);
+                mApplication.setLists(lists);
                 initTab();
             }
             break;
@@ -521,8 +523,13 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                     id = 1;
                 } else {
                     Status retweet = status.getRetweetedStatus();
+                    // 被RT
                     if (retweet != null && getUser().getId() == retweet.getUser().getId()) {
                         id = 1;
+                    }
+                    // 自RT
+                    if (retweet != null && getUser().getId() == status.getUser().getId()) {
+                        return;
                     }
                 }
                 BaseFragment fragmen = (BaseFragment) mSectionsPagerAdapter
@@ -595,7 +602,6 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
 
             @Override
             public void onDirectMessage(DirectMessage directMessage) {
-                // TODO Auto-generated method stub
                 super.onDirectMessage(directMessage);
                 BaseFragment fragmen = (BaseFragment) mSectionsPagerAdapter
                         .findFragmentByPosition(2);
@@ -614,22 +620,6 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                 }
             }
         };
-    }
-
-    public void doFavorite(Long id) {
-        new FavoriteTask().execute(id);
-    }
-
-    public void doDestroyFavorite(Long id) {
-        new UnFavoriteTask().execute(id);
-    }
-
-    public void doRetweet(Long id) {
-        new RetweetTask().execute(id);
-    }
-
-    public void doDestroyStatus(long id) {
-        new DestroyStatusTask().execute(id);
     }
 
     public void doDestroyDirectMessage(Long id) {

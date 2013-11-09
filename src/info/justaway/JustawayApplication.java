@@ -1,14 +1,21 @@
 package info.justaway;
 
 import info.justaway.display.FadeInRoundedBitmapDisplayer;
+import info.justaway.model.Row;
+import info.justaway.task.DestroyStatusTask;
+import info.justaway.task.FavoriteTask;
+import info.justaway.task.RetweetTask;
+import info.justaway.task.UnFavoriteTask;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 
+import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
 import twitter4j.TwitterStream;
@@ -65,14 +72,14 @@ public class JustawayApplication extends Application {
         sApplication = this;
 
         DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder().cacheInMemory(true)
-            .cacheOnDisc(true).displayer(new FadeInBitmapDisplayer(150)).build();
+                .cacheOnDisc(true).displayer(new FadeInBitmapDisplayer(150)).build();
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
-            .defaultDisplayImageOptions(defaultOptions).build();
+                .defaultDisplayImageOptions(defaultOptions).build();
         ImageLoader.getInstance().init(config);
         mImageLoader = ImageLoader.getInstance();
         mRoundedDisplayImageOptions = new DisplayImageOptions.Builder().cacheInMemory(true)
-            .cacheOnDisc(true).resetViewBeforeLoading(true)
-            .displayer(new FadeInRoundedBitmapDisplayer(150, 5)).build();
+                .cacheOnDisc(true).resetViewBeforeLoading(true)
+                .displayer(new FadeInRoundedBitmapDisplayer(150, 5)).build();
 
         // 例外発生時の処理を指定（スタックトレースを保存）
         Thread.setDefaultUncaughtExceptionHandler(new MyUncaughtExceptionHandler(sApplication));
@@ -128,8 +135,7 @@ public class JustawayApplication extends Application {
     /**
      * あると便利な簡易通知
      * 
-     * @param text
-     *            表示するメッセージ
+     * @param text 表示するメッセージ
      */
     public static void showToast(String text) {
         Toast.makeText(sApplication, text, Toast.LENGTH_SHORT).show();
@@ -192,8 +198,7 @@ public class JustawayApplication extends Application {
     }
 
     /**
-     * @param user
-     *            the user to set
+     * @param user the user to set
      */
     public void setUser(User user) {
         this.user = user;
@@ -240,8 +245,7 @@ public class JustawayApplication extends Application {
     /**
      * Twitterアクセストークン保存
      * 
-     * @param accessToken
-     *            Twitterアクセストークン
+     * @param accessToken Twitterアクセストークン
      */
     public void setAccessToken(AccessToken accessToken) {
         SharedPreferences preferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
@@ -289,8 +293,8 @@ public class JustawayApplication extends Application {
         }
         ConfigurationBuilder confbuilder = new ConfigurationBuilder();
         twitter4j.conf.Configuration conf = confbuilder.setOAuthConsumerKey(getConsumerKey())
-            .setOAuthConsumerSecret(getConsumerSecret()).setOAuthAccessToken(token.getToken())
-            .setOAuthAccessTokenSecret(token.getTokenSecret()).build();
+                .setOAuthConsumerSecret(getConsumerSecret()).setOAuthAccessToken(token.getToken())
+                .setOAuthAccessTokenSecret(token.getTokenSecret()).build();
         TwitterStream twitterStream = new TwitterStreamFactory(conf).getInstance();
         this.twitterStream = twitterStream;
         return twitterStream;
@@ -306,5 +310,78 @@ public class JustawayApplication extends Application {
         editor.remove(TOKEN_SECRET);
         editor.commit();
         this.accessToken = null;
+    }
+
+    private HashMap<Long, Boolean> mFavMap = new HashMap<Long, Boolean>();
+    private HashMap<Long, Boolean> mRTMap = new HashMap<Long, Boolean>();
+
+    public void setFav(Long id) {
+        mFavMap.put(id, true);
+    }
+
+    public Boolean isFav(Long id) {
+        return mFavMap.get(id) != null ? true : false;
+    }
+
+    public Boolean isFav(Status status) {
+        if (status.isFavorited()) {
+            return true;
+        }
+        if (mFavMap.get(status.getId()) != null) {
+            return true;
+        }
+        Status retweet = status.getRetweetedStatus();
+        if (retweet == null) {
+            return false;
+        }
+        if (retweet.isFavorited()) {
+            return true;
+        }
+        if (mFavMap.get(retweet.getId()) != null) {
+            return true;
+        }
+        return false;
+    }
+
+    public Boolean isRT(Status status) {
+        if (mRTMap.get(status.getId()) != null) {
+            return true;
+        }
+        if (status.isRetweetedByMe()) {
+            return true;
+        }
+        Status retweet = status.getRetweetedStatus();
+        if (retweet != null) {
+            if (retweet.isRetweetedByMe()) {
+                return true;
+            }
+            if (retweet.getUser().getId() == getUser().getId()) {
+                return true;
+            }
+            if (status.getUser().getId() == getUser().getId()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void doFavorite(Long id) {
+        mFavMap.put(id, true);
+        new FavoriteTask().execute(id);
+    }
+
+    public void doDestroyFavorite(Long id) {
+        mFavMap.remove(id);
+        new UnFavoriteTask().execute(id);
+    }
+
+    public void doRetweet(Row row) {
+        mRTMap.put(row.getStatus().getId(), true);
+        new RetweetTask().execute(row);
+    }
+
+    public void doDestroyStatus(long id) {
+        mRTMap.remove(id);
+        new DestroyStatusTask().execute(id);
     }
 }

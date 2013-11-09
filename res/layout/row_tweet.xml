@@ -84,12 +84,21 @@
                         android:textColor="#666666"
                         android:textSize="10sp" />
 
-                    <TextView
+                    <!--
+                         <TextView
                         android:id="@+id/is_favorited"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/fontello_star"
                         android:textSize="12sp" />
+                    -->
+
+                    <TextView
+                        android:id="@+id/datetime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#666666"
+                        android:textSize="10sp" />
                 </TableRow>
             </TableLayout>
 
@@ -97,36 +106,65 @@
                 android:id="@+id/status"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="6dp"
                 android:textSize="12sp" />
 
             <LinearLayout
                 android:id="@+id/images"
-                android:layout_width="120dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="4dp"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="10dip"
+                android:layout_marginBottom="4dip"
                 android:orientation="vertical" >
             </LinearLayout>
 
-            <LinearLayout
+            <TableLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="left" >
+                android:stretchColumns="3" >
 
-                <TextView
-                    android:id="@+id/datetime"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="4dp"
-                    android:textSize="8sp" />
+                <TableRow>
 
-                <TextView
-                    android:id="@+id/via"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="8sp" />
-            </LinearLayout>
+                    <TextView
+                        android:id="@+id/do_reply"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="6dip"
+                        android:text="@string/fontello_reply"
+                        android:textColor="#666666"
+                        android:clickable="true"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/do_retweet"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="18dip"
+                        android:padding="6dip"
+                        android:text="@string/fontello_retweet"
+                        android:textColor="#666666"
+                        android:clickable="true"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/do_fav"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="18dip"
+                        android:padding="6dip"
+                        android:text="@string/fontello_star"
+                        android:textColor="#666666"
+                        android:clickable="true"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/via"
+                        android:layout_width="0dip"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom|right"
+                        android:textColor="#666666"
+                        android:textSize="10sp" />
+                </TableRow>
+            </TableLayout>
 
             <LinearLayout
                 android:id="@+id/retweet"
