@@ -6,6 +6,7 @@ import info.justaway.task.DestroyStatusTask;
 import info.justaway.task.FavoriteTask;
 import info.justaway.task.RetweetTask;
 import info.justaway.task.UnFavoriteTask;
+import info.justaway.task.UnRetweetTask;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -380,8 +381,12 @@ public class JustawayApplication extends Application {
         new RetweetTask().execute(row);
     }
 
+    public void doDestroyRetweet(Row row) {
+        mRTMap.remove(row.getStatus().getId());
+        new UnRetweetTask().execute(row);
+    }
+
     public void doDestroyStatus(long id) {
-        mRTMap.remove(id);
         new DestroyStatusTask().execute(id);
     }
 }

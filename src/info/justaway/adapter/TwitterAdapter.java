@@ -201,8 +201,8 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         do_retweet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mApplication.isRT(status)) {
-                    mApplication.doDestroyStatus(soruce.getId());
+                if (row.isRTByMe) {
+                    mApplication.doDestroyRetweet(row);
                     do_retweet.setTextColor(Color.parseColor("#666666"));
                 } else {
                     mApplication.doRetweet(row);
@@ -216,10 +216,10 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             @Override
             public void onClick(View v) {
                 if (mApplication.isFav(status)) {
-                    mApplication.doDestroyFavorite(soruce.getId());
+                    mApplication.doDestroyFavorite(status.getId());
                     do_retweet.setTextColor(Color.parseColor("#666666"));
                 } else {
-                    mApplication.doFavorite(soruce.getId());
+                    mApplication.doFavorite(status.getId());
                     do_fav.setTextColor(mContext.getResources().getColor(color.holo_orange_light));
                 }
             }

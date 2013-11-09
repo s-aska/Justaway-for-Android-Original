@@ -119,6 +119,7 @@ public abstract class BaseFragment extends ListFragment {
     static final int CONTEXT_MENU_RM_ID = 10;
     static final int CONTEXT_MENU_TALK_ID = 11;
     static final int CONTEXT_MENU_RM_FAV_ID = 12;
+    static final int CONTEXT_MENU_RM_RT_ID = 13;
 
     public void onCreateContextMenu(ContextMenu menu, View view, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, view, menuInfo);
@@ -157,7 +158,7 @@ public abstract class BaseFragment extends ListFragment {
 
         if (status.getUser().getId() == activity.getUser().getId()) {
             if (retweet != null) {
-                menu.add(0, CONTEXT_MENU_RM_ID, 0, "公式RTを解除");
+                menu.add(0, CONTEXT_MENU_RM_RT_ID, 0, "公式RTを解除");
             } else {
                 menu.add(0, CONTEXT_MENU_RM_ID, 0, "ツイ消し");
             }
@@ -228,6 +229,9 @@ public abstract class BaseFragment extends ListFragment {
             return true;
         case CONTEXT_MENU_RT_ID:
             application.doRetweet(row);
+            return true;
+        case CONTEXT_MENU_RM_RT_ID:
+            application.doDestroyRetweet(row);
             return true;
         case CONTEXT_MENU_RM_FAV_ID:
             application.doDestroyFavorite(status.getId());

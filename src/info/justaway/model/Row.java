@@ -1,5 +1,6 @@
 package info.justaway.model;
 
+import info.justaway.JustawayApplication;
 import twitter4j.DirectMessage;
 import twitter4j.Status;
 import twitter4j.User;
@@ -15,6 +16,8 @@ public class Row {
     private User source;
     private User target;
     private int type;
+    public Boolean isRTByMe;
+    public Long unRetweetId;
 
     public Row() {
         super();
@@ -23,6 +26,7 @@ public class Row {
     public static Row newStatus(Status status) {
         Row row = new Row();
         row.setStatus(status);
+        row.setFlag(status);
         row.setType(TYPE_STATUS);
         return row;
     }
@@ -32,8 +36,14 @@ public class Row {
         row.setStatus(status);
         row.setTarget(target);
         row.setSource(source);
+        row.setFlag(status);
         row.setType(TYPE_FAVORITE);
         return row;
+    }
+
+    public void setFlag(Status status) {
+        isRTByMe = JustawayApplication.getApplication().isRT(status);
+        unRetweetId = isRTByMe ? status.getId() : null;
     }
 
     public static Row newDirectMessage(DirectMessage message) {
