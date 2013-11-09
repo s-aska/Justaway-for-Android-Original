@@ -154,7 +154,32 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         return view;
     }
 
-    private void renderMessage(View view, DirectMessage message) {
+    private void renderMessage(View view, final DirectMessage message) {
+
+        Typeface fontello = Typeface.createFromAsset(mContext.getAssets(), "fontello.ttf");
+        User user = JustawayApplication.getApplication().getUser();
+
+        TextView do_reply = (TextView) view.findViewById(R.id.do_reply);
+        view.findViewById(R.id.do_retweet).setVisibility(View.GONE);
+        view.findViewById(R.id.do_fav).setVisibility(View.GONE);
+
+        if (message.getSender().getId() == user.getId()) {
+            do_reply.setVisibility(View.GONE);
+        } else {
+            do_reply.setVisibility(View.VISIBLE);
+            do_reply.setTypeface(fontello);
+            do_reply.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(mContext, PostActivity.class);
+                    String text = "D " + message.getSender().getScreenName() + " ";
+                    intent.putExtra("status", text);
+                    intent.putExtra("selection", text.length());
+                    mContext.startActivity(intent);
+                }
+            });
+        }
+
         ((TextView) view.findViewById(R.id.display_name)).setText(message.getSender().getName());
         ((TextView) view.findViewById(R.id.screen_name)).setText("@"
                 + message.getSender().getScreenName());
@@ -173,7 +198,8 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         // view.findViewById(R.id.is_favorited).setVisibility(View.GONE);
     }
 
-    private void renderStatus(View view, final Row row, final Status status, Status retweet, User favorite) {
+    private void renderStatus(View view, final Row row, final Status status, Status retweet,
+            User favorite) {
 
         final Status soruce = retweet != null ? retweet : status;
         User user = JustawayApplication.getApplication().getUser();
@@ -206,7 +232,8 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                     do_retweet.setTextColor(Color.parseColor("#666666"));
                 } else {
                     mApplication.doRetweet(row);
-                    do_retweet.setTextColor(mContext.getResources().getColor(color.holo_green_light));
+                    do_retweet.setTextColor(mContext.getResources()
+                            .getColor(color.holo_green_light));
                 }
             }
         });
