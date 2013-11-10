@@ -22,22 +22,23 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="38dip"
-            android:layout_marginRight="6dip"
+            android:layout_marginRight="7dip"
             android:textSize="12sp" />
 
         <TextView
-            android:id="@+id/action_by"
+            android:id="@+id/action_by_display_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="12sp"
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/action_name"
+            android:id="@+id/action_by_screen_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="4dip"
-            android:textSize="12sp" />
+            android:textColor="#666666"
+            android:textSize="10sp" />
     </LinearLayout>
 
     <LinearLayout
@@ -50,7 +51,7 @@
             android:id="@+id/icon"
             android:layout_width="48dip"
             android:layout_height="48dip"
-            android:layout_marginBottom="2dip"
+            android:layout_marginBottom="6dip"
             android:layout_marginRight="6dip"
             android:layout_marginTop="1dip"
             android:contentDescription="@string/description_icon"
@@ -119,6 +120,7 @@
             </LinearLayout>
 
             <TableLayout
+                android:id="@+id/menu_and_via"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:stretchColumns="5" >
