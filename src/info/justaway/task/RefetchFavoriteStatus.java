@@ -9,6 +9,7 @@ public class RefetchFavoriteStatus extends AsyncTask<Row, Void, twitter4j.Status
 
     private BaseFragment fragment;
     private Row row;
+    // TODO: use http://cdn.api.twitter.com/1/urls/count.json
 
     public RefetchFavoriteStatus(BaseFragment fragment) {
         super();
