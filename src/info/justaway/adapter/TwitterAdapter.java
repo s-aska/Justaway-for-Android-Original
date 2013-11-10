@@ -25,6 +25,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +40,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     private ArrayList<Row> statuses = new ArrayList<Row>();
     private LayoutInflater mInflater;
     private int mLayout;
-    private static int limit = 500;
+    private static final int LIMIT = 200;
 
     public TwitterAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId);
@@ -52,6 +53,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     @Override
     public void add(Row row) {
         super.add(row);
+        this.filter(row);
         this.statuses.add(row);
         this.limitation();
     }
@@ -59,6 +61,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     @Override
     public void insert(Row row, int index) {
         super.insert(row, index);
+        this.filter(row);
         this.statuses.add(index, row);
         this.limitation();
     }
@@ -67,6 +70,17 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     public void remove(Row row) {
         super.remove(row);
         this.statuses.remove(row);
+    }
+
+    private void filter(Row row) {
+        Status status = row.getStatus();
+        if (status != null && status.isRetweeted()) {
+            Status retweet = status.getRetweetedStatus();
+            if (retweet != null && status.getUser().getId() == mApplication.getUser().getId()) {
+                Log.d("Justaway", "[filter]" + retweet.getId() + " => " + status.getId());
+                mApplication.setRtId(retweet.getId(), status.getId());
+            }
+        }
     }
 
     public void replaceStatus(Status status) {
@@ -99,8 +113,8 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
 
     public void limitation() {
         int size = this.statuses.size();
-        if (size > limit) {
-            int count = size - limit;
+        if (size > LIMIT) {
+            int count = size - LIMIT;
             for (int i = 0; i < count; i++) {
                 super.remove(this.statuses.remove(size - i - 1));
             }
@@ -162,6 +176,8 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         TextView do_reply = (TextView) view.findViewById(R.id.do_reply);
         view.findViewById(R.id.do_retweet).setVisibility(View.GONE);
         view.findViewById(R.id.do_fav).setVisibility(View.GONE);
+        view.findViewById(R.id.retweet_count).setVisibility(View.GONE);
+        view.findViewById(R.id.fav_count).setVisibility(View.GONE);
 
         if (message.getSender().getId() == user.getId()) {
             do_reply.setVisibility(View.GONE);
@@ -209,6 +225,24 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         final TextView do_reply = (TextView) view.findViewById(R.id.do_reply);
         final TextView do_retweet = (TextView) view.findViewById(R.id.do_retweet);
         final TextView do_fav = (TextView) view.findViewById(R.id.do_fav);
+        TextView retweet_count = (TextView) view.findViewById(R.id.retweet_count);
+        TextView fav_count = (TextView) view.findViewById(R.id.fav_count);
+
+        if (status.getFavoriteCount() > 0) {
+            fav_count.setText(String.valueOf(status.getFavoriteCount()));
+            fav_count.setVisibility(View.VISIBLE);
+        } else {
+            fav_count.setText("0");
+            fav_count.setVisibility(View.INVISIBLE);
+        }
+
+        if (status.getRetweetCount() > 0) {
+            retweet_count.setText(String.valueOf(status.getRetweetCount()));
+            retweet_count.setVisibility(View.VISIBLE);
+        } else {
+            retweet_count.setText("0");
+            retweet_count.setVisibility(View.INVISIBLE);
+        }
 
         do_reply.setTypeface(fontello);
         do_reply.setOnClickListener(new View.OnClickListener() {
@@ -227,11 +261,12 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         do_retweet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (row.isRTByMe) {
-                    mApplication.doDestroyRetweet(row);
+                Long id = mApplication.getRtId(status);
+                if (id != null) {
+                    mApplication.doDestroyRetweet(status.getId());
                     do_retweet.setTextColor(Color.parseColor("#666666"));
                 } else {
-                    mApplication.doRetweet(row);
+                    mApplication.doRetweet(status.getId());
                     do_retweet.setTextColor(mContext.getResources()
                             .getColor(color.holo_green_light));
                 }
@@ -252,7 +287,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             }
         });
 
-        if (mApplication.isRT(soruce)) {
+        if (mApplication.getRtId(status) != null) {
             do_retweet.setTextColor(mContext.getResources().getColor(color.holo_green_light));
         } else {
             do_retweet.setTextColor(Color.parseColor("#666666"));
@@ -287,10 +322,9 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             actionName.setText("favorited");
             view.findViewById(R.id.action).setVisibility(View.VISIBLE);
             ((TextView) view.findViewById(R.id.retweet_by)).setText("favorited by "
-                    + favorite.getScreenName() + "(" + favorite.getName() + ") and "
-                    + String.valueOf(status.getFavoriteCount()) + " others");
+                    + favorite.getScreenName() + "(" + favorite.getName() + ")");
             ImageView icon = (ImageView) view.findViewById(R.id.retweet_icon);
-            mApplication.displayRoundedImage(favorite.getMiniProfileImageURL(), icon);
+            mApplication.displayRoundedImage(favorite.getProfileImageURL(), icon);
             view.findViewById(R.id.retweet).setVisibility(View.VISIBLE);
         }
         // RTの場合
@@ -306,10 +340,9 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                 view.findViewById(R.id.action).setVisibility(View.GONE);
             }
             ((TextView) view.findViewById(R.id.retweet_by)).setText("retweeted by "
-                    + retweet.getUser().getScreenName() + "(" + retweet.getUser().getName()
-                    + ") and " + String.valueOf(status.getRetweetCount()) + " others");
+                    + retweet.getUser().getScreenName() + "(" + retweet.getUser().getName() + ")");
             ImageView icon = (ImageView) view.findViewById(R.id.retweet_icon);
-            mApplication.displayRoundedImage(retweet.getUser().getMiniProfileImageURL(), icon);
+            mApplication.displayRoundedImage(retweet.getUser().getProfileImageURL(), icon);
             view.findViewById(R.id.retweet).setVisibility(View.VISIBLE);
         } else {
             // 自分へのリプ

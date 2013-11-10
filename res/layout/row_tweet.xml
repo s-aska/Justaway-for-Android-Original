@@ -4,16 +4,16 @@
     android:layout_height="?android:attr/listPreferredItemHeight"
     android:baselineAligned="false"
     android:orientation="vertical"
-    android:paddingBottom="5dip"
-    android:paddingLeft="5dip"
-    android:paddingRight="6dip"
-    android:paddingTop="5dip" >
+    android:paddingBottom="3dip"
+    android:paddingLeft="6dip"
+    android:paddingRight="7dip"
+    android:paddingTop="4dip" >
 
     <LinearLayout
         android:id="@+id/action"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
+        android:layout_marginBottom="4dip"
         android:layout_weight="1"
         android:orientation="horizontal" >
 
@@ -21,8 +21,8 @@
             android:id="@+id/action_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="38dp"
-            android:layout_marginRight="6dp"
+            android:layout_marginLeft="38dip"
+            android:layout_marginRight="6dip"
             android:textSize="12sp" />
 
         <TextView
@@ -36,7 +36,7 @@
             android:id="@+id/action_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="4dp"
+            android:layout_marginLeft="4dip"
             android:textSize="12sp" />
     </LinearLayout>
 
@@ -48,10 +48,11 @@
 
         <ImageView
             android:id="@+id/icon"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginBottom="2dp"
-            android:layout_marginRight="5dp"
+            android:layout_width="48dip"
+            android:layout_height="48dip"
+            android:layout_marginBottom="2dip"
+            android:layout_marginRight="6dip"
+            android:layout_marginTop="1dip"
             android:contentDescription="@string/description_icon"
             android:paddingTop="2dip" />
 
@@ -64,7 +65,7 @@
             <TableLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="6dp"
+                android:layout_marginBottom="6dip"
                 android:stretchColumns="1" >
 
                 <TableRow>
@@ -80,7 +81,7 @@
                         android:id="@+id/screen_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="4dp"
+                        android:layout_marginLeft="4dip"
                         android:textColor="#666666"
                         android:textSize="10sp" />
 
@@ -112,15 +113,15 @@
                 android:id="@+id/images"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dip"
                 android:layout_marginBottom="4dip"
+                android:layout_marginTop="10dip"
                 android:orientation="vertical" >
             </LinearLayout>
 
             <TableLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:stretchColumns="3" >
+                android:stretchColumns="5" >
 
                 <TableRow>
 
@@ -131,7 +132,6 @@
                         android:padding="6dip"
                         android:text="@string/fontello_reply"
                         android:textColor="#666666"
-                        android:clickable="true"
                         android:textSize="18sp" />
 
                     <TextView
@@ -142,25 +142,41 @@
                         android:padding="6dip"
                         android:text="@string/fontello_retweet"
                         android:textColor="#666666"
-                        android:clickable="true"
                         android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/retweet_count"
+                        android:layout_width="24dip"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="6dip"
+                        android:paddingTop="6dip"
+                        android:textColor="#999999"
+                        android:textSize="10sp" />
 
                     <TextView
                         android:id="@+id/do_fav"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="18dip"
                         android:padding="6dip"
                         android:text="@string/fontello_star"
                         android:textColor="#666666"
-                        android:clickable="true"
                         android:textSize="18sp" />
+
+                    <TextView
+                        android:id="@+id/fav_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="6dip"
+                        android:paddingTop="6dip"
+                        android:textColor="#999999"
+                        android:textSize="10sp" />
 
                     <TextView
                         android:id="@+id/via"
                         android:layout_width="0dip"
                         android:layout_height="wrap_content"
                         android:layout_gravity="bottom|right"
+                        android:paddingBottom="2dip"
                         android:textColor="#666666"
                         android:textSize="10sp" />
                 </TableRow>
@@ -170,21 +186,21 @@
                 android:id="@+id/retweet"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
+                android:layout_marginBottom="2dip"
                 android:gravity="left" >
 
                 <ImageView
                     android:id="@+id/retweet_icon"
-                    android:layout_width="12dp"
-                    android:layout_height="12dp"
-                    android:layout_marginRight="4dp"
+                    android:layout_width="16dip"
+                    android:layout_height="16dip"
+                    android:layout_marginRight="4dip"
                     android:contentDescription="@string/description_icon" />
 
                 <TextView
                     android:id="@+id/retweet_by"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="3dp"
+                    android:layout_marginTop="3dip"
                     android:textSize="8sp" />
             </LinearLayout>
         </LinearLayout>
