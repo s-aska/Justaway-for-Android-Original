@@ -1,7 +1,6 @@
 package info.justaway;
 
 import info.justaway.display.FadeInRoundedBitmapDisplayer;
-import info.justaway.model.Row;
 import info.justaway.task.DestroyStatusTask;
 import info.justaway.task.FavoriteTask;
 import info.justaway.task.RetweetTask;
@@ -72,21 +71,15 @@ public class JustawayApplication extends Application {
         super.onCreate();
         sApplication = this;
 
-        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
-                .cacheInMemory(true)
-                .cacheOnDisc(true)
-                .resetViewBeforeLoading(true)
-                .build();
+        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder().cacheInMemory(true)
+                .cacheOnDisc(true).resetViewBeforeLoading(true).build();
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
                 .defaultDisplayImageOptions(defaultOptions).build();
         ImageLoader.getInstance().init(config);
         mImageLoader = ImageLoader.getInstance();
-        mRoundedDisplayImageOptions = new DisplayImageOptions.Builder()
-                .cacheInMemory(true)
-                .cacheOnDisc(true)
-                .resetViewBeforeLoading(true)
-                .displayer(new FadeInRoundedBitmapDisplayer(5))
-                .build();
+        mRoundedDisplayImageOptions = new DisplayImageOptions.Builder().cacheInMemory(true)
+                .cacheOnDisc(true).resetViewBeforeLoading(true)
+                .displayer(new FadeInRoundedBitmapDisplayer(5)).build();
 
         // 例外発生時の処理を指定（スタックトレースを保存）
         Thread.setDefaultUncaughtExceptionHandler(new MyUncaughtExceptionHandler(sApplication));
@@ -195,7 +188,7 @@ public class JustawayApplication extends Application {
     private AccessToken accessToken;
     private Twitter twitter;
     private TwitterStream twitterStream;
-    private static User user;
+    private User user;
 
     /**
      * @return the user
@@ -360,28 +353,7 @@ public class JustawayApplication extends Application {
             Log.d("Justaway", "[getRtId] " + status.getId() + " => " + id);
             return id;
         }
-//        if (status.isRetweetedByMe()) {
-//            mRtIdMap.put(status.getId(), status.getId());
-//            return status.getId();
-//        }
-//        if (mRtIdMap.containsValue(status.getId())) {
-//            mRtIdMap.put(status.getId(), status.getId());
-//            return status.getId();
-//        }
         return null;
-//        Status retweet = status.getRetweetedStatus();
-//        if (retweet != null) {
-//            if (retweet.isRetweetedByMe()) {
-//                return true;
-//            }
-//            if (retweet.getUser().getId() == getUser().getId()) {
-//                return true;
-//            }
-//            if (status.getUser().getId() == getUser().getId()) {
-//                return true;
-//            }
-//        }
-//        return false;
     }
 
     public void doFavorite(Long id) {

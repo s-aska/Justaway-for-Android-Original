@@ -1,6 +1,5 @@
 package info.justaway;
 
-import java.nio.MappedByteBuffer;
 import java.util.ArrayList;
 
 import info.justaway.fragment.BaseFragment;
@@ -10,11 +9,7 @@ import info.justaway.fragment.TimelineFragment;
 import info.justaway.fragment.UserListFragment;
 import info.justaway.model.Row;
 import info.justaway.task.DestroyDirectMessageTask;
-import info.justaway.task.DestroyStatusTask;
-import info.justaway.task.FavoriteTask;
 import info.justaway.task.RefetchFavoriteStatus;
-import info.justaway.task.RetweetTask;
-import info.justaway.task.UnFavoriteTask;
 import info.justaway.task.VerifyCredentialsLoader;
 import twitter4j.DirectMessage;
 import twitter4j.Status;
