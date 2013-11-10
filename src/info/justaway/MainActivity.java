@@ -12,6 +12,7 @@ import info.justaway.model.Row;
 import info.justaway.task.DestroyDirectMessageTask;
 import info.justaway.task.DestroyStatusTask;
 import info.justaway.task.FavoriteTask;
+import info.justaway.task.RefetchFavoriteStatus;
 import info.justaway.task.RetweetTask;
 import info.justaway.task.UnFavoriteTask;
 import info.justaway.task.VerifyCredentialsLoader;
@@ -562,20 +563,10 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                     fragmen.replaceStatus(status);
                     return;
                 }
-                final Row row = Row.newFavorite(source, target, status);
-
-                // FIXME: 「つながり」的なタブができたらちゃんと実装する
-                view.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        JustawayApplication.showToast(row.getSource().getScreenName() + " fav "
-                                + row.getStatus().getText());
-                    }
-                });
-
+                Row row = Row.newFavorite(source, target, status);
                 BaseFragment fragmen = (BaseFragment) mSectionsPagerAdapter
                         .findFragmentByPosition(1);
-                fragmen.add(row);
+                new RefetchFavoriteStatus(fragmen).execute(row);
             }
 
             @Override

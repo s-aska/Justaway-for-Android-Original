@@ -178,6 +178,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         view.findViewById(R.id.do_fav).setVisibility(View.GONE);
         view.findViewById(R.id.retweet_count).setVisibility(View.GONE);
         view.findViewById(R.id.fav_count).setVisibility(View.GONE);
+        view.findViewById(R.id.menu_and_via).setVisibility(View.VISIBLE);
 
         if (message.getSender().getId() == user.getId()) {
             do_reply.setVisibility(View.GONE);
@@ -311,21 +312,18 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
 
         TextView actionIcon = (TextView) view.findViewById(R.id.action_icon);
         actionIcon.setTypeface(fontello);
-        TextView actionBy = (TextView) view.findViewById(R.id.action_by);
-        TextView actionName = (TextView) view.findViewById(R.id.action_name);
+        TextView actionByName = (TextView) view.findViewById(R.id.action_by_display_name);
+        TextView actionByScreenName = (TextView) view.findViewById(R.id.action_by_screen_name);
 
         // favの場合
         if (favorite != null) {
             actionIcon.setText(R.string.fontello_star);
             actionIcon.setTextColor(mContext.getResources().getColor(color.holo_orange_light));
-            actionBy.setText(favorite.getName());
-            actionName.setText("favorited");
+            actionByName.setText(favorite.getName());
+            actionByScreenName.setText("@" + favorite.getScreenName());
+            view.findViewById(R.id.retweet).setVisibility(View.GONE);
+            view.findViewById(R.id.menu_and_via).setVisibility(View.VISIBLE);
             view.findViewById(R.id.action).setVisibility(View.VISIBLE);
-            ((TextView) view.findViewById(R.id.retweet_by)).setText("favorited by "
-                    + favorite.getScreenName() + "(" + favorite.getName() + ")");
-            ImageView icon = (ImageView) view.findViewById(R.id.retweet_icon);
-            mApplication.displayRoundedImage(favorite.getProfileImageURL(), icon);
-            view.findViewById(R.id.retweet).setVisibility(View.VISIBLE);
         }
         // RTの場合
         else if (retweet != null) {
@@ -333,30 +331,35 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             if (user.getId() == status.getUser().getId()) {
                 actionIcon.setText(R.string.fontello_retweet);
                 actionIcon.setTextColor(mContext.getResources().getColor(color.holo_green_light));
-                actionBy.setText(retweet.getUser().getName());
-                actionName.setText("retweeted");
+                actionByName.setText(retweet.getUser().getName());
+                actionByScreenName.setText("@" + retweet.getUser().getScreenName());
+                view.findViewById(R.id.retweet).setVisibility(View.GONE);
+                view.findViewById(R.id.menu_and_via).setVisibility(View.VISIBLE);
                 view.findViewById(R.id.action).setVisibility(View.VISIBLE);
             } else {
+                ImageView icon = (ImageView) view.findViewById(R.id.retweet_icon);
+                mApplication.displayRoundedImage(retweet.getUser().getProfileImageURL(), icon);
+                TextView retweet_by = (TextView) view.findViewById(R.id.retweet_by);
+                retweet_by.setText("RT by "
+                        + retweet.getUser().getName() + " @" + retweet.getUser().getScreenName());
                 view.findViewById(R.id.action).setVisibility(View.GONE);
+                view.findViewById(R.id.menu_and_via).setVisibility(View.VISIBLE);
+                view.findViewById(R.id.retweet).setVisibility(View.VISIBLE);
             }
-            ((TextView) view.findViewById(R.id.retweet_by)).setText("retweeted by "
-                    + retweet.getUser().getScreenName() + "(" + retweet.getUser().getName() + ")");
-            ImageView icon = (ImageView) view.findViewById(R.id.retweet_icon);
-            mApplication.displayRoundedImage(retweet.getUser().getProfileImageURL(), icon);
-            view.findViewById(R.id.retweet).setVisibility(View.VISIBLE);
         } else {
             // 自分へのリプ
             if (user.getId() == status.getInReplyToUserId()) {
                 actionIcon.setText(R.string.fontello_at);
                 actionIcon.setTextColor(mContext.getResources().getColor(color.holo_red_light));
-                actionBy.setText(status.getUser().getName());
-                actionName.setText("mentioned you");
+                actionByName.setText(status.getUser().getName());
+                actionByScreenName.setText("@" + status.getUser().getScreenName());
                 view.findViewById(R.id.action).setVisibility(View.VISIBLE);
                 view.findViewById(R.id.retweet).setVisibility(View.GONE);
             } else {
                 view.findViewById(R.id.action).setVisibility(View.GONE);
                 view.findViewById(R.id.retweet).setVisibility(View.GONE);
             }
+            view.findViewById(R.id.menu_and_via).setVisibility(View.VISIBLE);
         }
 
         ImageView icon = (ImageView) view.findViewById(R.id.icon);

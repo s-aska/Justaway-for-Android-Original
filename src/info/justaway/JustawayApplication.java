@@ -195,7 +195,7 @@ public class JustawayApplication extends Application {
     private AccessToken accessToken;
     private Twitter twitter;
     private TwitterStream twitterStream;
-    private User user;
+    private static User user;
 
     /**
      * @return the user
