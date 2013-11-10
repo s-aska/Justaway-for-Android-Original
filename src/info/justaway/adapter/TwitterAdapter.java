@@ -76,7 +76,8 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         Status status = row.getStatus();
         if (status != null && status.isRetweeted()) {
             Status retweet = status.getRetweetedStatus();
-            if (retweet != null && status.getUser().getId() == mApplication.getUser().getId()) {
+            User user = mApplication.getUser();
+            if (retweet != null && user != null && status.getUser().getId() == user.getId()) {
                 Log.d("Justaway", "[filter]" + retweet.getId() + " => " + status.getId());
                 mApplication.setRtId(retweet.getId(), status.getId());
             }
