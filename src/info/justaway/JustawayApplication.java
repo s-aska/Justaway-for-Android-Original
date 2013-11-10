@@ -14,7 +14,6 @@ import java.util.HashMap;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 
 import twitter4j.Status;
 import twitter4j.Twitter;
@@ -30,6 +29,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -72,15 +72,21 @@ public class JustawayApplication extends Application {
         super.onCreate();
         sApplication = this;
 
-        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder().cacheInMemory(true)
-                .cacheOnDisc(true).displayer(new FadeInBitmapDisplayer(150)).build();
+        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
+                .cacheInMemory(true)
+                .cacheOnDisc(true)
+                .resetViewBeforeLoading(true)
+                .build();
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
                 .defaultDisplayImageOptions(defaultOptions).build();
         ImageLoader.getInstance().init(config);
         mImageLoader = ImageLoader.getInstance();
-        mRoundedDisplayImageOptions = new DisplayImageOptions.Builder().cacheInMemory(true)
-                .cacheOnDisc(true).resetViewBeforeLoading(true)
-                .displayer(new FadeInRoundedBitmapDisplayer(150, 5)).build();
+        mRoundedDisplayImageOptions = new DisplayImageOptions.Builder()
+                .cacheInMemory(true)
+                .cacheOnDisc(true)
+                .resetViewBeforeLoading(true)
+                .displayer(new FadeInRoundedBitmapDisplayer(5))
+                .build();
 
         // 例外発生時の処理を指定（スタックトレースを保存）
         Thread.setDefaultUncaughtExceptionHandler(new MyUncaughtExceptionHandler(sApplication));
@@ -313,22 +319,22 @@ public class JustawayApplication extends Application {
         this.accessToken = null;
     }
 
-    private HashMap<Long, Boolean> mFavMap = new HashMap<Long, Boolean>();
-    private HashMap<Long, Boolean> mRTMap = new HashMap<Long, Boolean>();
+    private HashMap<Long, Boolean> mIsFavMap = new HashMap<Long, Boolean>();
+    private HashMap<Long, Long> mRtIdMap = new HashMap<Long, Long>();
 
     public void setFav(Long id) {
-        mFavMap.put(id, true);
+        mIsFavMap.put(id, true);
     }
 
     public Boolean isFav(Long id) {
-        return mFavMap.get(id) != null ? true : false;
+        return mIsFavMap.get(id) != null ? true : false;
     }
 
     public Boolean isFav(Status status) {
         if (status.isFavorited()) {
             return true;
         }
-        if (mFavMap.get(status.getId()) != null) {
+        if (mIsFavMap.get(status.getId()) != null) {
             return true;
         }
         Status retweet = status.getRetweetedStatus();
@@ -338,52 +344,72 @@ public class JustawayApplication extends Application {
         if (retweet.isFavorited()) {
             return true;
         }
-        if (mFavMap.get(retweet.getId()) != null) {
+        if (mIsFavMap.get(retweet.getId()) != null) {
             return true;
         }
         return false;
     }
 
-    public Boolean isRT(Status status) {
-        if (mRTMap.get(status.getId()) != null) {
-            return true;
+    public void setRtId(Long sourceId, Long retweetId) {
+        mRtIdMap.put(sourceId, retweetId);
+    }
+
+    public Long getRtId(Status status) {
+        Long id = mRtIdMap.get(status.getId());
+        if (id != null) {
+            Log.d("Justaway", "[getRtId] " + status.getId() + " => " + id);
+            return id;
         }
-        if (status.isRetweetedByMe()) {
-            return true;
-        }
-        Status retweet = status.getRetweetedStatus();
-        if (retweet != null) {
-            if (retweet.isRetweetedByMe()) {
-                return true;
-            }
-            if (retweet.getUser().getId() == getUser().getId()) {
-                return true;
-            }
-            if (status.getUser().getId() == getUser().getId()) {
-                return true;
-            }
-        }
-        return false;
+//        if (status.isRetweetedByMe()) {
+//            mRtIdMap.put(status.getId(), status.getId());
+//            return status.getId();
+//        }
+//        if (mRtIdMap.containsValue(status.getId())) {
+//            mRtIdMap.put(status.getId(), status.getId());
+//            return status.getId();
+//        }
+        return null;
+//        Status retweet = status.getRetweetedStatus();
+//        if (retweet != null) {
+//            if (retweet.isRetweetedByMe()) {
+//                return true;
+//            }
+//            if (retweet.getUser().getId() == getUser().getId()) {
+//                return true;
+//            }
+//            if (status.getUser().getId() == getUser().getId()) {
+//                return true;
+//            }
+//        }
+//        return false;
     }
 
     public void doFavorite(Long id) {
-        mFavMap.put(id, true);
+        mIsFavMap.put(id, true);
         new FavoriteTask().execute(id);
     }
 
     public void doDestroyFavorite(Long id) {
-        mFavMap.remove(id);
+        mIsFavMap.remove(id);
         new UnFavoriteTask().execute(id);
     }
 
-    public void doRetweet(Row row) {
-        mRTMap.put(row.getStatus().getId(), true);
-        new RetweetTask().execute(row);
+    public void doRetweet(Long id) {
+        Log.d("Justaway", "[doRetweet] " + id + " => 0 (temp)");
+        JustawayApplication.getApplication().setRtId(id, (long) 0);
+        new RetweetTask().execute(id);
     }
 
-    public void doDestroyRetweet(Row row) {
-        mRTMap.remove(row.getStatus().getId());
-        new UnRetweetTask().execute(row);
+    public void doDestroyRetweet(Long sourceId) {
+        Long retweetId = mRtIdMap.get(sourceId);
+        if (retweetId == null) {
+            return;
+        }
+        Log.d("Justaway", "[doDestroyRetweet] " + sourceId + " => " + retweetId);
+        mRtIdMap.remove(sourceId);
+        if (retweetId > 0) {
+            new UnRetweetTask().execute(retweetId);
+        }
     }
 
     public void doDestroyStatus(long id) {

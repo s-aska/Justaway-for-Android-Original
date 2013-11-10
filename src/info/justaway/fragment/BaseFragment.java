@@ -158,11 +158,13 @@ public abstract class BaseFragment extends ListFragment {
 
         if (status.getUser().getId() == activity.getUser().getId()) {
             if (retweet != null) {
-                menu.add(0, CONTEXT_MENU_RM_RT_ID, 0, "公式RTを解除");
+                if (application.getRtId(status) != null) {
+                    menu.add(0, CONTEXT_MENU_RM_RT_ID, 0, "公式RTを解除");
+                }
             } else {
                 menu.add(0, CONTEXT_MENU_RM_ID, 0, "ツイ消し");
             }
-        } else {
+        } else if (application.getRtId(status) == null) {
             if (application.isFav(status) == false) {
                 menu.add(0, CONTEXT_MENU_FAVRT_ID, 0, "ふぁぼ＆公式RT");
             }
@@ -228,10 +230,10 @@ public abstract class BaseFragment extends ListFragment {
             application.doDestroyStatus(row.getStatus().getId());
             return true;
         case CONTEXT_MENU_RT_ID:
-            application.doRetweet(row);
+            application.doRetweet(row.getStatus().getId());
             return true;
         case CONTEXT_MENU_RM_RT_ID:
-            application.doDestroyRetweet(row);
+            application.doDestroyRetweet(row.getStatus().getId());
             return true;
         case CONTEXT_MENU_RM_FAV_ID:
             application.doDestroyFavorite(status.getId());
@@ -241,7 +243,7 @@ public abstract class BaseFragment extends ListFragment {
             return true;
         case CONTEXT_MENU_FAVRT_ID:
             application.doFavorite(status.getId());
-            application.doRetweet(row);
+            application.doRetweet(row.getStatus().getId());
             return true;
         case CONTEXT_MENU_TALK_ID:
             TalkFragment dialog = new TalkFragment();

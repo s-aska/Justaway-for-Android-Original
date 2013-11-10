@@ -32,6 +32,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -311,7 +312,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
              * あまりに使いづらいの上限を増やしている、指定値＋前後のタブまでが保持されるようになる
              * デフォルト値は1（表示しているタブの前後までしか保持されない）
              */
-            viewPager.setOffscreenPageLimit(3);
+            viewPager.setOffscreenPageLimit(10);
 
             /**
              * スワイプ移動でも移動先が未読アプしている場合、アピ解除判定を行う
@@ -529,6 +530,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                     }
                     // 自RT
                     if (retweet != null && getUser().getId() == status.getUser().getId()) {
+                        Log.d("Justaway", "[myRT]");
                         return;
                     }
                 }
