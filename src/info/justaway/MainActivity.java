@@ -169,7 +169,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                 button.setWidth(60);
                 button.setTypeface(fontello);
                 button.setTextSize(18);
-                button.setBackgroundColor(getResources().getColor(R.color.transparent));
+                button.setBackgroundColor(getResources().getColor(R.color.menu_background));
                 button.setText(R.string.fontello_list);
                 button.setOnClickListener(tabMenuOnClickListener(++position));
                 final int fp = position;
@@ -320,6 +320,24 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                     if (f.isTop()) {
                         showTopView();
                     }
+                    LinearLayout tab_menus = (LinearLayout) findViewById(R.id.tab_menus);
+                    int count = tab_menus.getChildCount();
+                    for (int i = 0; i < count; i++) {
+                        Button button = (Button) tab_menus.getChildAt(i);
+                        if (i == position) {
+                            button.setBackgroundColor(getResources().getColor(R.color.menu_active_background));
+                        } else {
+                            button.setBackgroundColor(getResources().getColor(R.color.menu_background));
+                        }
+                    }
+                    // 4つめ以降のタブを消す
+//                    if (count > 3) {
+//                        for (int position = count - 1; position > 2; position--) {
+//                            tab_menus.removeView(tab_menus.getChildAt(position));
+//                            mSectionsPagerAdapter.removeTab(position);
+//                        }
+//                        mSectionsPagerAdapter.notifyDataSetChanged();
+//                    }
                 }
             });
         }
