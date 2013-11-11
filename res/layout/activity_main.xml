@@ -47,7 +47,7 @@
                         android:id="@+id/action_timeline"
                         android:layout_width="60dip"
                         android:layout_height="wrap_content"
-                        android:background="@color/transparent"
+                        android:background="@color/menu_active_background"
                         android:text="@string/fontello_home"
                         android:textSize="20sp" />
 
@@ -55,7 +55,7 @@
                         android:id="@+id/action_interactions"
                         android:layout_width="60dip"
                         android:layout_height="wrap_content"
-                        android:background="@color/transparent"
+                        android:background="@color/menu_background"
                         android:text="@string/fontello_at"
                         android:textSize="20sp" />
 
@@ -63,7 +63,7 @@
                         android:id="@+id/action_directmessage"
                         android:layout_width="60dip"
                         android:layout_height="wrap_content"
-                        android:background="@color/transparent"
+                        android:background="@color/menu_background"
                         android:text="@string/fontello_mail"
                         android:textSize="20sp" />
                 </LinearLayout>
@@ -73,7 +73,7 @@
                 android:id="@+id/action_tweet"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@color/transparent"
+                android:background="@color/menu_background"
                 android:text="@string/fontello_edit" />
         </TableRow>
     </TableLayout>
