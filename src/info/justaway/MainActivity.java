@@ -168,7 +168,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                 Button button = new Button(this);
                 button.setWidth(60);
                 button.setTypeface(fontello);
-                button.setTextSize(18);
+                button.setTextSize(22);
                 button.setBackgroundColor(getResources().getColor(R.color.menu_background));
                 button.setText(R.string.fontello_list);
                 button.setOnClickListener(tabMenuOnClickListener(++position));
