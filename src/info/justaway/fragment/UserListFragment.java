@@ -2,6 +2,7 @@ package info.justaway.fragment;
 
 import twitter4j.ResponseList;
 import twitter4j.Status;
+import twitter4j.User;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -12,10 +13,11 @@ import info.justaway.JustawayApplication;
 import info.justaway.MainActivity;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.model.Row;
+import info.justaway.model.UserListStatusesWithMembers;
 import info.justaway.task.UserListStatusesLoader;
 
 public class UserListFragment extends BaseFragment implements
-        LoaderManager.LoaderCallbacks<ResponseList<Status>> {
+        LoaderManager.LoaderCallbacks<UserListStatusesWithMembers> {
 
     private int userListId;
     private LongSparseArray<Boolean> members = new LongSparseArray<Boolean>();
@@ -69,25 +71,38 @@ public class UserListFragment extends BaseFragment implements
     }
 
     @Override
-    public Loader<ResponseList<Status>> onCreateLoader(int arg0, Bundle args) {
+    public Loader<UserListStatusesWithMembers> onCreateLoader(int arg0, Bundle args) {
         return new UserListStatusesLoader(getActivity(), userListId);
     }
 
     @Override
-    public void onLoadFinished(Loader<ResponseList<Status>> arg0, ResponseList<Status> statuses) {
+    public void onLoadFinished(Loader<UserListStatusesWithMembers> arg0,
+            UserListStatusesWithMembers response) {
+        if (response == null) {
+            return;
+        }
+        ResponseList<Status> statuses = response.getStatues();
         if (statuses != null) {
             TwitterAdapter adapter = (TwitterAdapter) getListAdapter();
             adapter.clear();
             for (twitter4j.Status status : statuses) {
                 adapter.add(Row.newStatus(status));
+                // 最初のツイートに登場ユーザーをStreaming APIからの取り込み対象にすることでAPI節約!!!
                 members.append(status.getUser().getId(), true);
             }
         } else {
             JustawayApplication.showToast("UserListStatusesの取得に失敗しました＞＜");
         }
+        // Listメンバー取り込み(API Limitが厳しい為、20件迄)
+        ResponseList<User> listMembers = response.getMembers();
+        if (listMembers != null) {
+            for (User user : listMembers) {
+                members.append(user.getId(), true);
+            }
+        }
     }
 
     @Override
-    public void onLoaderReset(Loader<ResponseList<Status>> arg0) {
+    public void onLoaderReset(Loader<UserListStatusesWithMembers> arg0) {
     }
 }
