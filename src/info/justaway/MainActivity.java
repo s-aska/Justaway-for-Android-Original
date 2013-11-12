@@ -432,7 +432,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
             private final Class<?> clazz;
             private final Bundle args;
             private final String tabTitle;
-            private final Integer id;
+            private final int id;
 
             /**
              * タブ内のActivity、引数を設定する。
@@ -441,7 +441,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
              * @param args タブ内のv4.Fragmentに対する引数
              * @param tabTitle タブに表示するタイトル
              */
-            TabInfo(Class<?> clazz, Bundle args, String tabTitle, Integer id) {
+            TabInfo(Class<?> clazz, Bundle args, String tabTitle, int id) {
                 this.clazz = clazz;
                 this.args = args;
                 this.tabTitle = tabTitle;
@@ -493,6 +493,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                 if (tab.id == id) {
                     return (BaseFragment) instantiateItem(mViewPager, position);
                 }
+                position++;
             }
             return null;
         }
