@@ -7,6 +7,7 @@ import info.justaway.model.Row;
 import info.justaway.task.InteractionsLoader;
 import twitter4j.ResponseList;
 import twitter4j.Status;
+import twitter4j.User;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -25,12 +26,37 @@ public class InteractionsFragment extends BaseFragment implements
         getLoaderManager().initLoader(0, null, this);
     }
 
+    private Boolean skip(Row row) {
+        if (row.isFavorite()) {
+            return false;
+        }
+        if (row.isStatus()) {
+            JustawayApplication application = JustawayApplication.getApplication();
+            User user = application.getUser();
+            Status status = row.getStatus();
+            // mentioned for me
+            if (status.getInReplyToUserId() == user.getId()) {
+                return false;
+            }
+            // retweeted for me
+            Status retweet = status.getRetweetedStatus();
+            if (retweet != null && retweet.getUser().getId() == user.getId()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /**
      * ページ最上部だと自動的に読み込まれ、スクロールしていると動かないという美しい挙動
      */
     public void add(final Row row) {
         final ListView listView = getListView();
         if (listView == null) {
+            return;
+        }
+
+        if (skip(row)) {
             return;
         }
 

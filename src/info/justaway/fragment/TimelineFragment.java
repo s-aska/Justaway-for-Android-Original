@@ -34,6 +34,7 @@ public class TimelineFragment extends BaseFragment implements
         if (listView == null) {
             return;
         }
+
         listView.post(new Runnable() {
             @Override
             public void run() {

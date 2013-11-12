@@ -32,6 +32,10 @@ public class DirectMessageFragment extends BaseFragment implements
             return;
         }
 
+        if (row.isDirectMessage() == false) {
+            return;
+        }
+
         final TwitterAdapter adapter = (TwitterAdapter) listView.getAdapter();
         listView.post(new Runnable() {
             @Override

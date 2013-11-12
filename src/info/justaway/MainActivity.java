@@ -48,6 +48,9 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
     private ViewPager viewPager;
     private Row selectedRow;
     private final int REQUEST_CHOOSE_USER_LIST = 100;
+    private final int TAB_ID_TIMELINE = -1;
+    private final int TAB_ID_INTERACTIONS = -2;
+    private final int TAB_ID_DIRECTMESSAGE = -3;
 
     /**
      * 自分自身のUserオブジェクト(Twitter) リプのタブでツイートが自分に対してのリプかどうかの判定などで使用している
@@ -297,11 +300,12 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
             mSectionsPagerAdapter = new SectionsPagerAdapter(this, viewPager);
             setViewPager(viewPager);
 
-            mSectionsPagerAdapter.addTab(TimelineFragment.class, null, "Home", -1);
-            mSectionsPagerAdapter.addTab(InteractionsFragment.class, null, "Home", -2);
-            mSectionsPagerAdapter.addTab(DirectMessageFragment.class, null, "Home", -3);
+            mSectionsPagerAdapter.addTab(TimelineFragment.class, null, "Home", TAB_ID_TIMELINE);
+            mSectionsPagerAdapter.addTab(InteractionsFragment.class, null, "Home",
+                    TAB_ID_INTERACTIONS);
+            mSectionsPagerAdapter.addTab(DirectMessageFragment.class, null, "Home",
+                    TAB_ID_DIRECTMESSAGE);
             initTab();
-//            mSectionsPagerAdapter.notifyDataSetChanged();
 
             /**
              * タブは前後タブまでは状態が保持されるがそれ以上離れるとViewが破棄されてしまう、
@@ -325,19 +329,22 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                     for (int i = 0; i < count; i++) {
                         Button button = (Button) tab_menus.getChildAt(i);
                         if (i == position) {
-                            button.setBackgroundColor(getResources().getColor(R.color.menu_active_background));
+                            button.setBackgroundColor(getResources().getColor(
+                                    R.color.menu_active_background));
                         } else {
-                            button.setBackgroundColor(getResources().getColor(R.color.menu_background));
+                            button.setBackgroundColor(getResources().getColor(
+                                    R.color.menu_background));
                         }
                     }
                     // 4つめ以降のタブを消す
-//                    if (count > 3) {
-//                        for (int position = count - 1; position > 2; position--) {
-//                            tab_menus.removeView(tab_menus.getChildAt(position));
-//                            mSectionsPagerAdapter.removeTab(position);
-//                        }
-//                        mSectionsPagerAdapter.notifyDataSetChanged();
-//                    }
+                    // if (count > 3) {
+                    // for (int position = count - 1; position > 2; position--)
+                    // {
+                    // tab_menus.removeView(tab_menus.getChildAt(position));
+                    // mSectionsPagerAdapter.removeTab(position);
+                    // }
+                    // mSectionsPagerAdapter.notifyDataSetChanged();
+                    // }
                 }
             });
         }
@@ -377,7 +384,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
      */
     public void onNewDirectMessage(Boolean autoScroll) {
         // 表示中のタブかつ自動スクロール時はハイライトしない
-        if (viewPager.getCurrentItem() == 1 && autoScroll == true) {
+        if (viewPager.getCurrentItem() == 2 && autoScroll == true) {
             return;
         }
         Button button = (Button) findViewById(R.id.action_directmessage);
@@ -385,13 +392,32 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
     }
 
     /**
+     * 新しいツイートが来たアピ
+     */
+    public void onNewListStatus(int listId, Boolean autoScroll) {
+        // 表示中のタブかつ自動スクロール時はハイライトしない
+        int position = mSectionsPagerAdapter.findPositionById(listId);
+        if (viewPager.getCurrentItem() == position && autoScroll == true) {
+            return;
+        }
+        Log.d("Justaway", "listId: " + listId);
+        Log.d("Justaway", "position: " + position);
+        if (position >= 0) {
+            LinearLayout tab_menus = (LinearLayout) findViewById(R.id.tab_menus);
+            Button button = (Button) tab_menus.getChildAt(position);
+            button.setTextColor(getResources().getColor(color.holo_blue_bright));
+        }
+    }
+
+    /**
      * 新しいレコードを見たアピ
      */
     public void showTopView() {
-        int id = viewPager.getCurrentItem() == 0 ? R.id.action_timeline : viewPager
-                .getCurrentItem() == 1 ? R.id.action_interactions : R.id.action_directmessage;
-        Button button = (Button) findViewById(id);
-        button.setTextColor(getResources().getColor(color.white));
+        LinearLayout tab_menus = (LinearLayout) findViewById(R.id.tab_menus);
+        Button button = (Button) tab_menus.getChildAt(viewPager.getCurrentItem());
+        if (button != null) {
+            button.setTextColor(getResources().getColor(color.white));
+        }
     }
 
     /**
@@ -448,6 +474,27 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
 
         public BaseFragment findFragmentByPosition(int position) {
             return (BaseFragment) instantiateItem(mViewPager, position);
+        }
+
+        public int findPositionById(int id) {
+            int position = 0;
+            for (TabInfo tab : mTabs) {
+                if (tab.id == id) {
+                    return position;
+                }
+                position++;
+            }
+            return -1;
+        }
+
+        public BaseFragment findFragmentById(int id) {
+            int position = 0;
+            for (TabInfo tab : mTabs) {
+                if (tab.id == id) {
+                    return (BaseFragment) instantiateItem(mViewPager, position);
+                }
+            }
+            return null;
         }
 
         /**
@@ -533,32 +580,21 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                 /**
                  * 自分宛のリプまたは自分のツイートのRTは別タブ
                  */
-                int id = 0;
-                if (getUser().getId() == status.getInReplyToUserId()) {
-                    id = 1;
-                } else {
-                    Status retweet = status.getRetweetedStatus();
-                    // 被RT
-                    if (retweet != null && getUser().getId() == retweet.getUser().getId()) {
-                        id = 1;
+                int count = mSectionsPagerAdapter.getCount();
+                for (int id = 0; id < (count - 1); id++) {
+                    BaseFragment fragmen = (BaseFragment) mSectionsPagerAdapter
+                            .findFragmentByPosition(id);
+                    if (fragmen != null) {
+                        fragmen.add(Row.newStatus(status));
                     }
-                    // 自RT
-                    if (retweet != null && getUser().getId() == status.getUser().getId()) {
-                        Log.d("Justaway", "[myRT]");
-                        return;
-                    }
-                }
-                BaseFragment fragmen = (BaseFragment) mSectionsPagerAdapter
-                        .findFragmentByPosition(id);
-                if (fragmen != null) {
-                    fragmen.add(Row.newStatus(status));
                 }
             }
 
             @Override
             public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
                 super.onDeletionNotice(statusDeletionNotice);
-                for (int id = 0; id < 2; id++) {
+                int count = mSectionsPagerAdapter.getCount();
+                for (int id = 0; id < (count - 1); id++) {
                     BaseFragment fragmen = (BaseFragment) mSectionsPagerAdapter
                             .findFragmentByPosition(id);
                     if (fragmen != null) {
@@ -569,16 +605,14 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
 
             @Override
             public void onFavorite(User source, User target, Status status) {
-                // 自分の fav をタイムラインに反映
+                // 自分の fav を反映
                 if (source.getId() == getUser().getId()) {
-                    BaseFragment fragmen = (BaseFragment) mSectionsPagerAdapter
-                            .findFragmentByPosition(0);
-                    fragmen.replaceStatus(status);
+                    mApplication.setFav(status.getId());
                     return;
                 }
                 Row row = Row.newFavorite(source, target, status);
                 BaseFragment fragmen = (BaseFragment) mSectionsPagerAdapter
-                        .findFragmentByPosition(1);
+                        .findFragmentById(TAB_ID_INTERACTIONS);
                 new RefetchFavoriteStatus(fragmen).execute(row);
             }
 
@@ -588,15 +622,12 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                 final User source = arg0;
                 final Status status = arg2;
 
-                // 自分の unfav をタイムラインに反映
+                // 自分の unfav を反映
                 if (source.getId() == getUser().getId()) {
-                    BaseFragment fragmen = (BaseFragment) mSectionsPagerAdapter
-                            .findFragmentByPosition(0);
-                    fragmen.replaceStatus(status);
+                    mApplication.removeFav(status.getId());
                     return;
                 }
 
-                // FIXME: 「つながり」的なタブができたらちゃんと実装する
                 view.post(new Runnable() {
                     @Override
                     public void run() {
@@ -610,7 +641,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
             public void onDirectMessage(DirectMessage directMessage) {
                 super.onDirectMessage(directMessage);
                 BaseFragment fragmen = (BaseFragment) mSectionsPagerAdapter
-                        .findFragmentByPosition(2);
+                        .findFragmentById(TAB_ID_DIRECTMESSAGE);
                 if (fragmen != null) {
                     fragmen.add(Row.newDirectMessage(directMessage));
                 }
@@ -620,7 +651,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
             public void onDeletionNotice(long directMessageId, long userId) {
                 super.onDeletionNotice(directMessageId, userId);
                 DirectMessageFragment fragmen = (DirectMessageFragment) mSectionsPagerAdapter
-                        .findFragmentByPosition(2);
+                        .findFragmentById(TAB_ID_DIRECTMESSAGE);
                 if (fragmen != null) {
                     fragmen.remove(directMessageId);
                 }
@@ -632,7 +663,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
         new DestroyDirectMessageTask().execute(id);
         // 自分宛のDMを消してもStreaming APIで拾えないで自力で消す
         DirectMessageFragment fragmen = (DirectMessageFragment) mSectionsPagerAdapter
-                .findFragmentByPosition(2);
+                .findFragmentById(TAB_ID_DIRECTMESSAGE);
         if (fragmen != null) {
             fragmen.remove(id);
         }

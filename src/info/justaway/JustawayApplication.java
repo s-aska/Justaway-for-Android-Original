@@ -319,6 +319,10 @@ public class JustawayApplication extends Application {
         mIsFavMap.put(id, true);
     }
 
+    public void removeFav(Long id) {
+        mIsFavMap.remove(id);
+    }
+
     public Boolean isFav(Long id) {
         return mIsFavMap.get(id) != null ? true : false;
     }
