@@ -7,6 +7,7 @@ import info.justaway.model.Row;
 import info.justaway.task.TimelineLoader;
 import twitter4j.ResponseList;
 import twitter4j.Status;
+import twitter4j.User;
 
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -32,6 +33,12 @@ public class TimelineFragment extends BaseFragment implements
     public void add(final Row row) {
         final ListView listView = getListView();
         if (listView == null) {
+            return;
+        }
+
+        User user = JustawayApplication.getApplication().getUser();
+        Status retweet = row.getStatus().getRetweetedStatus();
+        if (retweet != null && user != null && retweet.getUser().getId() == user.getId()) {
             return;
         }
 

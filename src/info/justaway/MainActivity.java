@@ -579,7 +579,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
             public void onStatus(Status status) {
 
                 /**
-                 * 自分宛のリプまたは自分のツイートのRTは別タブ
+                 * ツイートを表示するかどうかはFragmentに任せる
                  */
                 int count = mSectionsPagerAdapter.getCount();
                 for (int id = 0; id < (count - 1); id++) {
