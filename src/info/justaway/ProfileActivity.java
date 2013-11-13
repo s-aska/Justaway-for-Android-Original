@@ -63,6 +63,9 @@ public class ProfileActivity extends FragmentActivity implements
         locationIcon = (TextView) findViewById(R.id.location_icon);
         locationIcon.setTypeface(Typeface.createFromAsset(context.getAssets(), "fontello.ttf"));
         locationIcon.setText(R.string.fontello_location);
+        TextView favouritesCount = (TextView) findViewById(R.id.favouritesCount_icon);
+        favouritesCount.setTypeface(Typeface.createFromAsset(context.getAssets(), "fontello.ttf"));
+        favouritesCount.setText(R.string.fontello_star);
 
         Intent intent = getIntent();
         Bundle args = new Bundle(1);
