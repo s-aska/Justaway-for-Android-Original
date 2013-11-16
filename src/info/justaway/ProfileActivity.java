@@ -1,10 +1,14 @@
 package info.justaway;
 
+import info.justaway.adapter.TwitterAdapter;
 import info.justaway.model.Profile;
+import info.justaway.model.Row;
 import info.justaway.task.FollowTask;
 import info.justaway.task.ShowUserLoader;
 import info.justaway.task.UnfollowTask;
 import twitter4j.Relationship;
+import twitter4j.ResponseList;
+import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.User;
 
@@ -12,6 +16,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
@@ -20,6 +25,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 public class ProfileActivity extends FragmentActivity implements
@@ -151,6 +157,14 @@ public class ProfileActivity extends FragmentActivity implements
                     }
                 });
             }
+            ListView listView = (ListView) findViewById(R.id.listView);
+            TwitterAdapter adapter = new TwitterAdapter(this, R.layout.row_tweet);
+            ResponseList<Status> statuses = profile.getStatuses();
+            for (Status status : statuses) {
+                adapter.add(Row.newStatus(status));
+            }
+            listView.setAdapter(adapter);
+
         }
     }
 

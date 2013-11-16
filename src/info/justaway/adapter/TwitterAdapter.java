@@ -164,7 +164,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         }
 
         if (position == 0) {
-            ((MainActivity) mContext).showTopView();
+            // ((MainActivity) mContext).showTopView();
         }
 
         return view;
