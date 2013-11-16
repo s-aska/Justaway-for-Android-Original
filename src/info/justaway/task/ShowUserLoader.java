@@ -3,6 +3,9 @@ package info.justaway.task;
 import info.justaway.JustawayApplication;
 import info.justaway.model.Profile;
 import twitter4j.Relationship;
+import twitter4j.ResponseList;
+import twitter4j.Status;
+import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.User;
 
@@ -20,11 +23,14 @@ public class ShowUserLoader extends AbstractAsyncTaskLoader<Profile> {
     @Override
     public Profile loadInBackground() {
         try {
-            User user = JustawayApplication.getApplication().getTwitter().showUser(screenName);
-            Relationship relationship = JustawayApplication.getApplication().getTwitter().showFriendship(JustawayApplication.getApplication().getUser().getScreenName(), screenName);
+            Twitter twitter = JustawayApplication.getApplication().getTwitter();
+            User user = twitter.showUser(screenName);
+            Relationship relationship = twitter.showFriendship(JustawayApplication.getApplication().getUser().getScreenName(), screenName);
+            ResponseList<Status> statuses = twitter.getUserTimeline(screenName);
             Profile profile = new Profile();
             profile.setRelationship(relationship);
             profile.setUser(user);
+            profile.setStatuses(statuses);
             return profile;
         } catch (TwitterException e) {
             e.printStackTrace();
