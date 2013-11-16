@@ -41,6 +41,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     private ArrayList<Row> statuses = new ArrayList<Row>();
     private LayoutInflater mInflater;
     private int mLayout;
+    private Boolean isMain;
     private static final int LIMIT = 200;
 
     public TwitterAdapter(Context context, int textViewResourceId) {
@@ -49,6 +50,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         this.mContext = context;
         this.mLayout = textViewResourceId;
         this.mApplication = (JustawayApplication) context.getApplicationContext();
+        this.isMain = mContext.getClass().getName().equals("info.justaway.MainActivity");
     }
 
     @Override
@@ -163,8 +165,8 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             }
         }
 
-        if (position == 0) {
-            // ((MainActivity) mContext).showTopView();
+        if (isMain && position == 0) {
+            ((MainActivity) mContext).showTopView();
         }
 
         return view;
@@ -364,6 +366,12 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             view.findViewById(R.id.menu_and_via).setVisibility(View.VISIBLE);
         }
 
+        if (status.getUser().isProtected()) {
+            ((TextView) view.findViewById(R.id.fontello_lock)).setTypeface(fontello);
+            view.findViewById(R.id.fontello_lock).setVisibility(View.VISIBLE);
+        } else {
+            view.findViewById(R.id.fontello_lock).setVisibility(View.GONE);
+        }
         ImageView icon = (ImageView) view.findViewById(R.id.icon);
         mApplication.displayRoundedImage(status.getUser().getBiggerProfileImageURL(), icon);
         icon.setOnClickListener(new View.OnClickListener() {

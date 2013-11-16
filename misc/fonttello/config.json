@@ -19,6 +19,12 @@
       "src": "fontawesome"
     },
     {
+      "uid": "c1f1975c885aa9f3dad7810c53b82074",
+      "css": "lock",
+      "code": 59404,
+      "src": "fontawesome"
+    },
+    {
       "uid": "09feb4465d9bd1364f4e301c9ddbaa92",
       "css": "retweet",
       "code": 59393,
@@ -65,6 +71,12 @@
       "css": "mail",
       "code": 59398,
       "src": "modernpics"
+    },
+    {
+      "uid": "b1ec8e90c2c85cf0035849980a3789b3",
+      "css": "twitter",
+      "code": 59405,
+      "src": "zocial"
     },
     {
       "uid": "6059b7737287728091ce7e4c600cca56",
