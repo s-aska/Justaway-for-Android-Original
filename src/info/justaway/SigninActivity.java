@@ -4,6 +4,7 @@ import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -24,7 +25,7 @@ public class SigninActivity extends Activity {
         setContentView(R.layout.activity_signin);
 
         JustawayApplication application = JustawayApplication.getApplication();
-        
+
         mCallbackURL = getString(R.string.twitter_callback_url);
         mTwitter = application.getTwitter();
 
@@ -39,7 +40,7 @@ public class SigninActivity extends Activity {
 
     /**
      * OAuth認証（厳密には認可）を開始します。
-     * 
+     *
      * @param listener
      */
     private void startAuthorize() {

@@ -17,6 +17,7 @@ import twitter4j.StatusDeletionNotice;
 import twitter4j.TwitterStream;
 import twitter4j.User;
 import twitter4j.UserStreamAdapter;
+
 import android.R.color;
 import android.os.Bundle;
 import android.content.Context;
@@ -39,7 +40,6 @@ import android.widget.LinearLayout;
 
 /**
  * @author aska
- * 
  */
 public class MainActivity extends FragmentActivity implements LoaderManager.LoaderCallbacks<User> {
 
@@ -218,33 +218,33 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-        case REQUEST_CHOOSE_USER_LIST:
-            if (resultCode == RESULT_OK) {
-                Bundle bundle = data.getExtras();
-                ArrayList<Integer> lists = bundle.getIntegerArrayList("lists");
-                ArrayList<Integer> tabs = new ArrayList<Integer>();
-                // 後々タブ設定画面に標準のタブを含める
-                tabs.add(-1);
-                tabs.add(-2);
-                tabs.add(-3);
-                tabs.addAll(lists);
-                mApplication.saveTabs(tabs);
-                mApplication.setLists(lists);
-                initTab();
-            } else if (resultCode == RESULT_CANCELED) {
-                ArrayList<Integer> lists = new ArrayList<Integer>();
-                ArrayList<Integer> tabs = new ArrayList<Integer>();
-                // 後々タブ設定画面に標準のタブを含める
-                tabs.add(-1);
-                tabs.add(-2);
-                tabs.add(-3);
-                mApplication.saveTabs(tabs);
-                mApplication.setLists(lists);
-                initTab();
-            }
-            break;
-        default:
-            break;
+            case REQUEST_CHOOSE_USER_LIST:
+                if (resultCode == RESULT_OK) {
+                    Bundle bundle = data.getExtras();
+                    ArrayList<Integer> lists = bundle.getIntegerArrayList("lists");
+                    ArrayList<Integer> tabs = new ArrayList<Integer>();
+                    // 後々タブ設定画面に標準のタブを含める
+                    tabs.add(-1);
+                    tabs.add(-2);
+                    tabs.add(-3);
+                    tabs.addAll(lists);
+                    mApplication.saveTabs(tabs);
+                    mApplication.setLists(lists);
+                    initTab();
+                } else if (resultCode == RESULT_CANCELED) {
+                    ArrayList<Integer> lists = new ArrayList<Integer>();
+                    ArrayList<Integer> tabs = new ArrayList<Integer>();
+                    // 後々タブ設定画面に標準のタブを含める
+                    tabs.add(-1);
+                    tabs.add(-2);
+                    tabs.add(-3);
+                    mApplication.saveTabs(tabs);
+                    mApplication.setLists(lists);
+                    initTab();
+                }
+                break;
+            default:
+                break;
         }
     }
 
@@ -271,7 +271,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
 
     /**
      * 認証済みのユーザーアカウントを取得
-     * 
+     *
      * @param id
      * @param args
      * @return User 認証済みのユーザー
@@ -436,9 +436,9 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
 
             /**
              * タブ内のActivity、引数を設定する。
-             * 
-             * @param clazz タブ内のv4.Fragment
-             * @param args タブ内のv4.Fragmentに対する引数
+             *
+             * @param clazz    タブ内のv4.Fragment
+             * @param args     タブ内のv4.Fragmentに対する引数
              * @param tabTitle タブに表示するタイトル
              */
             TabInfo(Class<?> clazz, Bundle args, String tabTitle, int id) {
@@ -500,9 +500,9 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
 
         /**
          * タブ内に起動するActivity、引数、タイトルを設定する
-         * 
-         * @param clazz 起動するv4.Fragmentクラス
-         * @param args v4.Fragmentに対する引数
+         *
+         * @param clazz    起動するv4.Fragmentクラス
+         * @param args     v4.Fragmentに対する引数
          * @param tabTitle タブのタイトル
          */
         public void addTab(Class<?> clazz, Bundle args, String tabTitle, Integer id) {

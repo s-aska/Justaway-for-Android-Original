@@ -7,6 +7,7 @@ import info.justaway.task.UnfollowTask;
 import twitter4j.Relationship;
 import twitter4j.Twitter;
 import twitter4j.User;
+
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -161,21 +162,21 @@ public class ProfileActivity extends FragmentActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent intent = null;
         switch (item.getItemId()) {
-        case R.id.open_twitter:
-            intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/"
-                    + user.getScreenName()));
-            startActivity(intent);
-            break;
-        case R.id.open_favstar:
-            intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://ja.favstar.fm/users/"
-                    + user.getScreenName() + "/recent"));
-            startActivity(intent);
-            break;
-        case R.id.open_twilog:
-            intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://twilog.org/"
-                    + user.getScreenName()));
-            startActivity(intent);
-            break;
+            case R.id.open_twitter:
+                intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/"
+                        + user.getScreenName()));
+                startActivity(intent);
+                break;
+            case R.id.open_favstar:
+                intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://ja.favstar.fm/users/"
+                        + user.getScreenName() + "/recent"));
+                startActivity(intent);
+                break;
+            case R.id.open_twilog:
+                intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://twilog.org/"
+                        + user.getScreenName()));
+                startActivity(intent);
+                break;
         }
         return true;
     }

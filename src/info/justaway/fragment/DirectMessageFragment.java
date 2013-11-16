@@ -8,6 +8,7 @@ import info.justaway.task.DirectMessageLoader;
 
 import twitter4j.DirectMessage;
 import twitter4j.ResponseList;
+
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -85,7 +86,7 @@ public class DirectMessageFragment extends BaseFragment implements
 
     @Override
     public void onLoadFinished(Loader<ResponseList<DirectMessage>> arg0,
-            ResponseList<DirectMessage> statuses) {
+                               ResponseList<DirectMessage> statuses) {
         if (statuses != null) {
             TwitterAdapter adapter = (TwitterAdapter) getListAdapter();
             adapter.clear();

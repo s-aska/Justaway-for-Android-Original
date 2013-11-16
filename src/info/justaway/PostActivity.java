@@ -5,6 +5,7 @@ import java.io.File;
 
 import twitter4j.StatusUpdate;
 import twitter4j.Twitter;
+
 import android.R.color;
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -53,7 +54,7 @@ public class PostActivity extends Activity {
         JustawayApplication application = JustawayApplication.getApplication();
 
         Typeface fontello = Typeface.createFromAsset(getAssets(), "fontello.ttf");
-        
+
         mEditText = (EditText) findViewById(R.id.status);
         mTextView = (TextView) findViewById(R.id.count);
         mTweetButton = (Button) findViewById(R.id.tweet);
@@ -100,7 +101,7 @@ public class PostActivity extends Activity {
                 String pageUri = intent.getExtras().getString(Intent.EXTRA_TEXT);
                 String pageTitle = intent.getExtras().getString(Intent.EXTRA_SUBJECT);
                 if (pageTitle == null) {
-                    pageTitle = ""; 
+                    pageTitle = "";
                 }
                 if (pageUri != null) {
                     pageTitle += " " + pageUri;
@@ -211,7 +212,7 @@ public class PostActivity extends Activity {
 
     private void uriToFile(Uri uri) {
         ContentResolver cr = getContentResolver();
-        String[] columns = { MediaStore.Images.Media.DATA };
+        String[] columns = {MediaStore.Images.Media.DATA};
         Cursor c = cr.query(uri, columns, null, null, null);
         c.moveToFirst();
         File path = new File(c.getString(0));
@@ -257,34 +258,34 @@ public class PostActivity extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-        case R.id.tweet_clear:
-            mEditText.setText("");
-            break;
-        case R.id.tweet_battery:
-            Intent batteryIntent = getApplicationContext().registerReceiver(null,
-                    new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-            int level = batteryIntent.getIntExtra("level", 0);
-            int scale = batteryIntent.getIntExtra("scale", 100);
-            int status = batteryIntent.getIntExtra("status", 0);
-            int battery = level * 100 / scale;
-            String model = Build.MODEL;
+            case R.id.tweet_clear:
+                mEditText.setText("");
+                break;
+            case R.id.tweet_battery:
+                Intent batteryIntent = getApplicationContext().registerReceiver(null,
+                        new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+                int level = batteryIntent.getIntExtra("level", 0);
+                int scale = batteryIntent.getIntExtra("scale", 100);
+                int status = batteryIntent.getIntExtra("status", 0);
+                int battery = level * 100 / scale;
+                String model = Build.MODEL;
 
-            switch (status) {
-            case BatteryManager.BATTERY_STATUS_FULL:
-                mEditText.setText(model + " のバッテリー残量:" + battery + "% (0゜・◡・♥​​)");
-                break;
-            case BatteryManager.BATTERY_STATUS_CHARGING:
-                mEditText.setText(model + " のバッテリー残量:" + battery + "% 充電なう(・◡・♥​​)");
-                break;
-            default:
-                if (level <= 10) {
-                    mEditText.setText(model + " のバッテリー残量:" + battery + "% (◞‸◟)");
-                } else {
-                    mEditText.setText(model + " のバッテリー残量:" + battery + "% (・◡・♥​​)");
+                switch (status) {
+                    case BatteryManager.BATTERY_STATUS_FULL:
+                        mEditText.setText(model + " のバッテリー残量:" + battery + "% (0゜・◡・♥​​)");
+                        break;
+                    case BatteryManager.BATTERY_STATUS_CHARGING:
+                        mEditText.setText(model + " のバッテリー残量:" + battery + "% 充電なう(・◡・♥​​)");
+                        break;
+                    default:
+                        if (level <= 10) {
+                            mEditText.setText(model + " のバッテリー残量:" + battery + "% (◞‸◟)");
+                        } else {
+                            mEditText.setText(model + " のバッテリー残量:" + battery + "% (・◡・♥​​)");
+                        }
+                        break;
                 }
                 break;
-            }
-            break;
         }
         return true;
     }

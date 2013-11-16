@@ -1,29 +1,29 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
         android:id="@+id/user_list"
         android:orderInCategory="100"
         android:showAsAction="never"
-        android:title="@string/user_list"/>
+        android:title="@string/user_list" />
     <item
         android:id="@+id/onore"
         android:orderInCategory="100"
         android:showAsAction="never"
-        android:title="@string/onore"/>
+        android:title="@string/onore" />
     <item
         android:id="@+id/reload"
         android:orderInCategory="100"
         android:showAsAction="never"
-        android:title="@string/reload"/>
+        android:title="@string/reload" />
     <item
         android:id="@+id/signout"
         android:orderInCategory="100"
         android:showAsAction="never"
-        android:title="@string/signout"/>
+        android:title="@string/signout" />
     <item
         android:id="@+id/death"
         android:orderInCategory="100"
         android:showAsAction="never"
-        android:title="@string/death"/>
-    
+        android:title="@string/death" />
+
 </menu>

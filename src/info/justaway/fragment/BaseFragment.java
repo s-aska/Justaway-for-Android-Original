@@ -8,6 +8,7 @@ import info.justaway.adapter.TwitterAdapter;
 import info.justaway.model.Row;
 import twitter4j.Status;
 import twitter4j.URLEntity;
+
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -70,7 +71,7 @@ public abstract class BaseFragment extends ListFragment {
 
     /**
      * UserStreamでonStatusを受信した時の挙動
-     * 
+     *
      * @param status
      */
     public abstract void add(Row row);
@@ -201,82 +202,82 @@ public abstract class BaseFragment extends ListFragment {
         Intent intent;
 
         switch (item.getItemId()) {
-        case CONTEXT_MENU_REPLY_ID:
-            intent = new Intent(activity, PostActivity.class);
-            String text = "@" + soruce.getUser().getScreenName() + " ";
-            intent.putExtra("status", text);
-            intent.putExtra("selection", text.length());
-            intent.putExtra("inReplyToStatusId", status.getId());
-            startActivity(intent);
-            return true;
-        case CONTEXT_MENU_QT_ID:
-            intent = new Intent(activity, PostActivity.class);
-            intent.putExtra("status", " https://twitter.com/" + status.getUser().getScreenName()
-                    + "/status/" + String.valueOf(status.getId()));
-            intent.putExtra("inReplyToStatusId", status.getId());
-            startActivity(intent);
-            return true;
-        case CONTEXT_MENU_DM_ID:
-            String msg = "D " + row.getMessage().getSenderScreenName() + " ";
-            intent = new Intent(activity, PostActivity.class);
-            intent.putExtra("status", msg);
-            intent.putExtra("selection", msg.length());
-            startActivity(intent);
-            return true;
-        case CONTEXT_MENU_RM_DM_ID:
-            activity.doDestroyDirectMessage(row.getMessage().getId());
-            return true;
-        case CONTEXT_MENU_RM_ID:
-            application.doDestroyStatus(row.getStatus().getId());
-            return true;
-        case CONTEXT_MENU_RT_ID:
-            application.doRetweet(row.getStatus().getId());
-            return true;
-        case CONTEXT_MENU_RM_RT_ID:
-            application.doDestroyRetweet(row.getStatus().getId());
-            return true;
-        case CONTEXT_MENU_RM_FAV_ID:
-            application.doDestroyFavorite(status.getId());
-            return true;
-        case CONTEXT_MENU_FAV_ID:
-            application.doFavorite(status.getId());
-            return true;
-        case CONTEXT_MENU_FAVRT_ID:
-            application.doFavorite(status.getId());
-            application.doRetweet(row.getStatus().getId());
-            return true;
-        case CONTEXT_MENU_TALK_ID:
-            TalkFragment dialog = new TalkFragment();
-            Bundle args = new Bundle();
-            args.putLong("statusId", soruce.getId());
-            dialog.setArguments(args);
-            dialog.show(getActivity().getSupportFragmentManager(), "dialog");
-            return true;
-        case CONTEXT_MENU_LINK_ID:
-
-            /**
-             * 現在は全てIntentでブラウザなどに飛ばしているが、 画像やツイートは自アプリで参照できるように対応する予定
-             */
-            intent = new Intent(Intent.ACTION_VIEW, Uri.parse(item.getTitle().toString()));
-            startActivity(intent);
-            return true;
-        case CONTEXT_MENU_TOFU_ID:
-            try {
-                intent = new Intent("com.product.kanzmrsw.tofubuster.ACTION_SHOW_TEXT");
-                intent.putExtra(Intent.EXTRA_TEXT, status.getText());
-                intent.putExtra(Intent.EXTRA_SUBJECT, "Justaway");
-                intent.putExtra("isCopyEnabled", true);
-                startActivity(intent); // TofuBusterがインストールされていない場合、startActivityで落ちる
-            } catch (Exception e) {
-                // 露骨な誘導
-                intent = new Intent(
-                        Intent.ACTION_VIEW,
-                        Uri.parse("https://market.android.com/details?id=com.product.kanzmrsw.tofubuster"));
+            case CONTEXT_MENU_REPLY_ID:
+                intent = new Intent(activity, PostActivity.class);
+                String text = "@" + soruce.getUser().getScreenName() + " ";
+                intent.putExtra("status", text);
+                intent.putExtra("selection", text.length());
+                intent.putExtra("inReplyToStatusId", status.getId());
                 startActivity(intent);
-            }
-            return true;
-        default:
-            return super.onContextItemSelected(item);
+                return true;
+            case CONTEXT_MENU_QT_ID:
+                intent = new Intent(activity, PostActivity.class);
+                intent.putExtra("status", " https://twitter.com/" + status.getUser().getScreenName()
+                        + "/status/" + String.valueOf(status.getId()));
+                intent.putExtra("inReplyToStatusId", status.getId());
+                startActivity(intent);
+                return true;
+            case CONTEXT_MENU_DM_ID:
+                String msg = "D " + row.getMessage().getSenderScreenName() + " ";
+                intent = new Intent(activity, PostActivity.class);
+                intent.putExtra("status", msg);
+                intent.putExtra("selection", msg.length());
+                startActivity(intent);
+                return true;
+            case CONTEXT_MENU_RM_DM_ID:
+                activity.doDestroyDirectMessage(row.getMessage().getId());
+                return true;
+            case CONTEXT_MENU_RM_ID:
+                application.doDestroyStatus(row.getStatus().getId());
+                return true;
+            case CONTEXT_MENU_RT_ID:
+                application.doRetweet(row.getStatus().getId());
+                return true;
+            case CONTEXT_MENU_RM_RT_ID:
+                application.doDestroyRetweet(row.getStatus().getId());
+                return true;
+            case CONTEXT_MENU_RM_FAV_ID:
+                application.doDestroyFavorite(status.getId());
+                return true;
+            case CONTEXT_MENU_FAV_ID:
+                application.doFavorite(status.getId());
+                return true;
+            case CONTEXT_MENU_FAVRT_ID:
+                application.doFavorite(status.getId());
+                application.doRetweet(row.getStatus().getId());
+                return true;
+            case CONTEXT_MENU_TALK_ID:
+                TalkFragment dialog = new TalkFragment();
+                Bundle args = new Bundle();
+                args.putLong("statusId", soruce.getId());
+                dialog.setArguments(args);
+                dialog.show(getActivity().getSupportFragmentManager(), "dialog");
+                return true;
+            case CONTEXT_MENU_LINK_ID:
+
+                /**
+                 * 現在は全てIntentでブラウザなどに飛ばしているが、 画像やツイートは自アプリで参照できるように対応する予定
+                 */
+                intent = new Intent(Intent.ACTION_VIEW, Uri.parse(item.getTitle().toString()));
+                startActivity(intent);
+                return true;
+            case CONTEXT_MENU_TOFU_ID:
+                try {
+                    intent = new Intent("com.product.kanzmrsw.tofubuster.ACTION_SHOW_TEXT");
+                    intent.putExtra(Intent.EXTRA_TEXT, status.getText());
+                    intent.putExtra(Intent.EXTRA_SUBJECT, "Justaway");
+                    intent.putExtra("isCopyEnabled", true);
+                    startActivity(intent); // TofuBusterがインストールされていない場合、startActivityで落ちる
+                } catch (Exception e) {
+                    // 露骨な誘導
+                    intent = new Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("https://market.android.com/details?id=com.product.kanzmrsw.tofubuster"));
+                    startActivity(intent);
+                }
+                return true;
+            default:
+                return super.onContextItemSelected(item);
         }
     }
 }

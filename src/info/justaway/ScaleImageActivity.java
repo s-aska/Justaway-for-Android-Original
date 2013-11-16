@@ -7,6 +7,7 @@ import java.util.Date;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import info.justaway.view.ScaleImageView;
+
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
@@ -19,7 +20,7 @@ import android.view.Window;
 
 /**
  * 画像の拡大表示用のActivity、かぶせて使う
- * 
+ *
  * @author aska
  */
 public class ScaleImageActivity extends Activity {

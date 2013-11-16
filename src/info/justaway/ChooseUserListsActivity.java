@@ -6,6 +6,7 @@ import info.justaway.adapter.UserListAdapter;
 import info.justaway.task.UserListsLoader;
 import twitter4j.ResponseList;
 import twitter4j.UserList;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;

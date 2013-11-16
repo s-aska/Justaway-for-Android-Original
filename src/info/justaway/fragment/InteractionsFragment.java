@@ -8,6 +8,7 @@ import info.justaway.task.InteractionsLoader;
 import twitter4j.ResponseList;
 import twitter4j.Status;
 import twitter4j.User;
+
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;

@@ -4,6 +4,7 @@ import info.justaway.JustawayApplication;
 import twitter4j.ResponseList;
 import twitter4j.TwitterException;
 import twitter4j.UserList;
+
 import android.content.Context;
 
 public class UserListsLoader extends AbstractAsyncTaskLoader<ResponseList<UserList>> {

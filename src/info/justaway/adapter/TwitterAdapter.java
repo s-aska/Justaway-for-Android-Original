@@ -20,6 +20,7 @@ import twitter4j.MediaEntity;
 import twitter4j.Status;
 import twitter4j.URLEntity;
 import twitter4j.User;
+
 import android.R.color;
 import android.content.Context;
 import android.content.Intent;
@@ -217,7 +218,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     }
 
     private void renderStatus(View view, final Row row, final Status status, Status retweet,
-            User favorite) {
+                              User favorite) {
 
         final Status soruce = retweet != null ? retweet : status;
         User user = JustawayApplication.getApplication().getUser();
