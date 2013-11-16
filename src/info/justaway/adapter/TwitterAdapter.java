@@ -41,6 +41,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     private ArrayList<Row> statuses = new ArrayList<Row>();
     private LayoutInflater mInflater;
     private int mLayout;
+    private Boolean isMain;
     private static final int LIMIT = 200;
 
     public TwitterAdapter(Context context, int textViewResourceId) {
@@ -49,6 +50,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         this.mContext = context;
         this.mLayout = textViewResourceId;
         this.mApplication = (JustawayApplication) context.getApplicationContext();
+        this.isMain = mContext.getClass().getName().equals("info.justaway.MainActivity");
     }
 
     @Override
@@ -163,8 +165,8 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             }
         }
 
-        if (position == 0) {
-            // ((MainActivity) mContext).showTopView();
+        if (isMain && position == 0) {
+            ((MainActivity) mContext).showTopView();
         }
 
         return view;
