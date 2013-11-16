@@ -16,7 +16,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
@@ -24,6 +23,7 @@ import android.support.v4.content.Loader;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -160,10 +160,23 @@ public class ProfileActivity extends FragmentActivity implements
             ListView listView = (ListView) findViewById(R.id.listView);
             TwitterAdapter adapter = new TwitterAdapter(this, R.layout.row_tweet);
             ResponseList<Status> statuses = profile.getStatuses();
+            int height = 0;
             for (Status status : statuses) {
                 adapter.add(Row.newStatus(status));
             }
             listView.setAdapter(adapter);
+            for (int i = 0; i < adapter.getCount(); i++) {
+                View item = adapter.getView(i, null, listView);
+                item.measure(0, View.MeasureSpec.UNSPECIFIED);
+                //System.out.println(item.getMeasuredHeight());
+                height += item.getMeasuredHeight();
+
+            }
+            ViewGroup.LayoutParams p = listView.getLayoutParams();
+            p.height = height + (listView.getDividerHeight() * (adapter.getCount() - 1));
+            listView.setLayoutParams(p);
+            listView.requestLayout();
+            //System.out.println(height);
 
         }
     }
