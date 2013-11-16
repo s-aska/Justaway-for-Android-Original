@@ -11,9 +11,9 @@
 
     <Button
         android:id="@+id/action_start_oauth"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="64dip"
+        android:layout_height="64dip"
         android:layout_centerHorizontal="true"
-        android:text="@string/signin_with_twitter" />
+        android:text="@string/fontello_twitter" />
 
 </RelativeLayout>

@@ -364,6 +364,12 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             view.findViewById(R.id.menu_and_via).setVisibility(View.VISIBLE);
         }
 
+        if (status.getUser().isProtected()) {
+            ((TextView) view.findViewById(R.id.fontello_lock)).setTypeface(fontello);
+            view.findViewById(R.id.fontello_lock).setVisibility(View.VISIBLE);
+        } else {
+            view.findViewById(R.id.fontello_lock).setVisibility(View.GONE);
+        }
         ImageView icon = (ImageView) view.findViewById(R.id.icon);
         mApplication.displayRoundedImage(status.getUser().getBiggerProfileImageURL(), icon);
         icon.setOnClickListener(new View.OnClickListener() {

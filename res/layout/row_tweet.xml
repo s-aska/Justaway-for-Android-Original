@@ -67,7 +67,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="6dip"
-                android:stretchColumns="1">
+                android:stretchColumns="2">
 
                 <TableRow>
 
@@ -83,6 +83,15 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="4dip"
+                        android:textColor="#666666"
+                        android:textSize="10sp" />
+
+                    <TextView
+                        android:id="@+id/fontello_lock"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="4dip"
+                        android:text="@string/fontello_lock"
                         android:textColor="#666666"
                         android:textSize="10sp" />
 
