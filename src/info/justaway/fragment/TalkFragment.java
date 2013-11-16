@@ -17,7 +17,7 @@ import android.widget.ListView;
 
 /**
  * 会話を表示
- * 
+ *
  * @author aska
  */
 public class TalkFragment extends DialogFragment {

@@ -3,12 +3,14 @@ package info.justaway.fragment;
 import twitter4j.ResponseList;
 import twitter4j.Status;
 import twitter4j.User;
+
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.util.LongSparseArray;
 import android.view.View;
 import android.widget.ListView;
+
 import info.justaway.JustawayApplication;
 import info.justaway.MainActivity;
 import info.justaway.adapter.TwitterAdapter;
@@ -77,7 +79,7 @@ public class UserListFragment extends BaseFragment implements
 
     @Override
     public void onLoadFinished(Loader<UserListStatusesWithMembers> arg0,
-            UserListStatusesWithMembers response) {
+                               UserListStatusesWithMembers response) {
         if (response == null) {
             return;
         }

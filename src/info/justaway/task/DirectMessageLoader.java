@@ -8,6 +8,7 @@ import twitter4j.DirectMessage;
 import twitter4j.ResponseList;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
+
 import android.content.Context;
 
 public class DirectMessageLoader extends AbstractAsyncTaskLoader<ResponseList<DirectMessage>> {

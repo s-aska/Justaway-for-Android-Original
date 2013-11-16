@@ -5,6 +5,7 @@ import info.justaway.model.Profile;
 import twitter4j.Relationship;
 import twitter4j.TwitterException;
 import twitter4j.User;
+
 import android.content.Context;
 
 public class ShowUserLoader extends AbstractAsyncTaskLoader<Profile> {

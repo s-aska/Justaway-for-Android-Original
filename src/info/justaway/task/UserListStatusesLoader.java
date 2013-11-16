@@ -6,7 +6,9 @@ import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.User;
+
 import android.content.Context;
+
 import info.justaway.JustawayApplication;
 import info.justaway.model.UserListStatusesWithMembers;
 

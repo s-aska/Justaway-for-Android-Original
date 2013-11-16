@@ -220,43 +220,43 @@ public class ScaleImageView extends ImageView implements OnTouchListener {
         }
         int touchCount = event.getPointerCount();
         switch (event.getAction()) {
-        case MotionEvent.ACTION_DOWN:
-        case MotionEvent.ACTION_POINTER_1_DOWN:
-        case MotionEvent.ACTION_POINTER_2_DOWN:
-            if (touchCount >= 2) {
-                float distance = distance(event.getX(0), event.getX(1), event.getY(0),
-                        event.getY(1));
-                mPrevDistance = distance;
-                isScaling = true;
-            } else {
-                mPrevMoveX = (int) event.getX();
-                mPrevMoveY = (int) event.getY();
-            }
-        case MotionEvent.ACTION_MOVE:
-            if (touchCount >= 2 && isScaling) {
-                float dist = distance(event.getX(0), event.getX(1), event.getY(0), event.getY(1));
-                float scale = (dist - mPrevDistance) / dispDistance();
-                mPrevDistance = dist;
-                scale += 1;
-                scale = scale * scale;
-                zoomTo(scale, mWidth / 2, mHeight / 2);
-                cutting();
-            } else if (!isScaling) {
-                int distanceX = mPrevMoveX - (int) event.getX();
-                int distanceY = mPrevMoveY - (int) event.getY();
-                mPrevMoveX = (int) event.getX();
-                mPrevMoveY = (int) event.getY();
-                mMatrix.postTranslate(-distanceX, -distanceY);
-                cutting();
-            }
-            break;
-        case MotionEvent.ACTION_UP:
-        case MotionEvent.ACTION_POINTER_UP:
-        case MotionEvent.ACTION_POINTER_2_UP:
-            if (event.getPointerCount() <= 1) {
-                isScaling = false;
-            }
-            break;
+            case MotionEvent.ACTION_DOWN:
+            case MotionEvent.ACTION_POINTER_1_DOWN:
+            case MotionEvent.ACTION_POINTER_2_DOWN:
+                if (touchCount >= 2) {
+                    float distance = distance(event.getX(0), event.getX(1), event.getY(0),
+                            event.getY(1));
+                    mPrevDistance = distance;
+                    isScaling = true;
+                } else {
+                    mPrevMoveX = (int) event.getX();
+                    mPrevMoveY = (int) event.getY();
+                }
+            case MotionEvent.ACTION_MOVE:
+                if (touchCount >= 2 && isScaling) {
+                    float dist = distance(event.getX(0), event.getX(1), event.getY(0), event.getY(1));
+                    float scale = (dist - mPrevDistance) / dispDistance();
+                    mPrevDistance = dist;
+                    scale += 1;
+                    scale = scale * scale;
+                    zoomTo(scale, mWidth / 2, mHeight / 2);
+                    cutting();
+                } else if (!isScaling) {
+                    int distanceX = mPrevMoveX - (int) event.getX();
+                    int distanceY = mPrevMoveY - (int) event.getY();
+                    mPrevMoveX = (int) event.getX();
+                    mPrevMoveY = (int) event.getY();
+                    mMatrix.postTranslate(-distanceX, -distanceY);
+                    cutting();
+                }
+                break;
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_POINTER_UP:
+            case MotionEvent.ACTION_POINTER_2_UP:
+                if (event.getPointerCount() <= 1) {
+                    isScaling = false;
+                }
+                break;
         }
         return true;
     }

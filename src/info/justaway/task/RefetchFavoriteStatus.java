@@ -3,6 +3,7 @@ package info.justaway.task;
 import info.justaway.JustawayApplication;
 import info.justaway.fragment.BaseFragment;
 import info.justaway.model.Row;
+
 import android.os.AsyncTask;
 
 public class RefetchFavoriteStatus extends AsyncTask<Row, Void, twitter4j.Status> {

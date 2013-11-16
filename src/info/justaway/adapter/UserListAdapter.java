@@ -6,6 +6,7 @@ import info.justaway.R;
 import java.util.ArrayList;
 
 import twitter4j.UserList;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;

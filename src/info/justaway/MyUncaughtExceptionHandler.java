@@ -46,27 +46,27 @@ public class MyUncaughtExceptionHandler implements UncaughtExceptionHandler {
     private void saveState(Throwable error) {
         try {
             PrintWriter writer = new PrintWriter(sContext.openFileOutput(BUG_FILE,
-                Context.MODE_PRIVATE));
+                    Context.MODE_PRIVATE));
             if (sPackageInfo != null) {
                 writer.printf("[BUG][%s] versionName:%s, versionCode:%d\n",
-                    sPackageInfo.packageName, sPackageInfo.versionName, sPackageInfo.versionCode);
+                        sPackageInfo.packageName, sPackageInfo.versionName, sPackageInfo.versionCode);
             } else {
                 writer.printf("[BUG][Unkown]\n");
             }
             try {
                 writer
-                    .printf("Runtime Memory: total: %dKB, free: %dKB, used: %dKB\n", Runtime
-                        .getRuntime().totalMemory() / 1024,
-                        Runtime.getRuntime().freeMemory() / 1024, (Runtime.getRuntime()
-                            .totalMemory() - Runtime.getRuntime().freeMemory()) / 1024);
+                        .printf("Runtime Memory: total: %dKB, free: %dKB, used: %dKB\n", Runtime
+                                .getRuntime().totalMemory() / 1024,
+                                Runtime.getRuntime().freeMemory() / 1024, (Runtime.getRuntime()
+                                .totalMemory() - Runtime.getRuntime().freeMemory()) / 1024);
             } catch (Exception e) {
                 e.printStackTrace();
             }
             try {
                 ((ActivityManager) sContext.getSystemService(Context.ACTIVITY_SERVICE))
-                    .getMemoryInfo(sMemoryInfo);
+                        .getMemoryInfo(sMemoryInfo);
                 writer.printf("availMem: %dKB, lowMemory: %b\n", sMemoryInfo.availMem / 1024,
-                    sMemoryInfo.lowMemory);
+                        sMemoryInfo.lowMemory);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -108,15 +108,15 @@ public class MyUncaughtExceptionHandler implements UncaughtExceptionHandler {
 
         final String subject = firstLine;
         new AlertDialog.Builder(activity).setTitle("バグレポート").setMessage("バグ発生状況を開発者に送信しますか？")
-            .setPositiveButton("送信", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                    activity.startActivity(new Intent(Intent.ACTION_SENDTO, Uri.parse(MAIL_TO))
-                        .putExtra(Intent.EXTRA_SUBJECT, subject).putExtra(Intent.EXTRA_TEXT,
-                            body.toString()));
-                }
-            }).setNegativeButton("キャンセル", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int which) {
-                }
-            }).show();
+                .setPositiveButton("送信", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        activity.startActivity(new Intent(Intent.ACTION_SENDTO, Uri.parse(MAIL_TO))
+                                .putExtra(Intent.EXTRA_SUBJECT, subject).putExtra(Intent.EXTRA_TEXT,
+                                        body.toString()));
+                    }
+                }).setNegativeButton("キャンセル", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        }).show();
     }
 }

@@ -7,13 +7,13 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@color/background"
-    tools:context=".MainActivity" >
+    tools:context=".MainActivity">
 
-   <Button
-       android:id="@+id/action_start_oauth"
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content"
-       android:layout_centerHorizontal="true"
-       android:text="@string/signin_with_twitter" />
+    <Button
+        android:id="@+id/action_start_oauth"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="@string/signin_with_twitter" />
 
 </RelativeLayout>

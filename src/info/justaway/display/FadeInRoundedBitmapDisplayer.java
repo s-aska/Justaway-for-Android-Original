@@ -18,6 +18,7 @@ package info.justaway.display;
 import android.graphics.*;
 import android.graphics.Bitmap.Config;
 import android.widget.ImageView;
+
 import com.nostra13.universalimageloader.core.assist.LoadedFrom;
 import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
 
@@ -46,11 +47,11 @@ public class FadeInRoundedBitmapDisplayer implements BitmapDisplayer {
         Paint paint = new Paint();
         paint.setAntiAlias(true);
         paint.setShader(new BitmapShader(source, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP));
- 
+
         Bitmap output = Bitmap.createBitmap(source.getWidth(), source.getHeight(), Config.ARGB_8888);
         Canvas canvas = new Canvas(output);
         canvas.drawRoundRect(new RectF(margin, margin, source.getWidth() - margin, source.getHeight() - margin), radius, radius, paint);
- 
+
         return output;
     }
 }

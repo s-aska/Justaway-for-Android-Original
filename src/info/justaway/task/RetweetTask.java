@@ -1,6 +1,7 @@
 package info.justaway.task;
 
 import info.justaway.JustawayApplication;
+
 import android.os.AsyncTask;
 import android.util.Log;
 

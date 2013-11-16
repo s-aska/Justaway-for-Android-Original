@@ -22,6 +22,7 @@ import twitter4j.TwitterStreamFactory;
 import twitter4j.User;
 import twitter4j.auth.AccessToken;
 import twitter4j.conf.ConfigurationBuilder;
+
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -34,7 +35,7 @@ import android.widget.Toast;
 
 /**
  * アプリケーション、アクティビティ間でのデータの共有などに利用
- * 
+ *
  * @author aska
  */
 public class JustawayApplication extends Application {
@@ -46,7 +47,7 @@ public class JustawayApplication extends Application {
 
     /**
      * 毎回キャストしなくて良いように
-     * 
+     *
      * @return アプリケーションのインスタンス
      */
     public static JustawayApplication getApplication() {
@@ -134,7 +135,7 @@ public class JustawayApplication extends Application {
 
     /**
      * あると便利な簡易通知
-     * 
+     *
      * @param text 表示するメッセージ
      */
     public static void showToast(String text) {
@@ -214,7 +215,7 @@ public class JustawayApplication extends Application {
 
     /**
      * Twitterアクセストークン有無
-     * 
+     *
      * @return Twitterアクセストークン有無
      */
     public Boolean hasAccessToken() {
@@ -223,7 +224,7 @@ public class JustawayApplication extends Application {
 
     /**
      * Twitterアクセストークン取得
-     * 
+     *
      * @return Twitterアクセストークン
      */
     private AccessToken getAccessToken() {
@@ -244,7 +245,7 @@ public class JustawayApplication extends Application {
 
     /**
      * Twitterアクセストークン保存
-     * 
+     *
      * @param accessToken Twitterアクセストークン
      */
     public void setAccessToken(AccessToken accessToken) {
@@ -258,7 +259,7 @@ public class JustawayApplication extends Application {
 
     /**
      * Twitterインスタンスを取得
-     * 
+     *
      * @return Twitterインスタンス
      */
     public Twitter getTwitter() {
@@ -279,7 +280,7 @@ public class JustawayApplication extends Application {
 
     /**
      * TwitterStreamインスタンスを取得
-     * 
+     *
      * @return TwitterStreamインスタンス
      */
     public TwitterStream getTwitterStream() {
