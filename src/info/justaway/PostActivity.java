@@ -129,39 +129,34 @@ public class PostActivity extends Activity {
             public void onClick(View v) {
                 String totsuzen = mEditText.getText().toString() + "\n";
                 int i;
-                String hito = "人";
-                String hunya = "^Y";
                 String ue = "";
                 String shita = "";
-                String gen = "";
                 int j = 0;
                 String gentotsu = "";
 
-                int len = totsuzen.length();
+                // 改行文字がある場所を見つけて上と下を作る
                 for (i = 0; totsuzen.charAt(i) != '\n'; i++) {
-                    ue += hito;
-                    shita += hunya;
+                    int codeunit = totsuzen.codePointAt(i);
+                    if (0xffff < codeunit) {
+                        i++;
+                    }
+                    ue += "人";
+                    shita += "^Y";
                 }
-                int moji = i + 5;
-                for (i = 0; len > i; i++) {
+                // 突然死したいテキストの文字をひとつづつ見る
+                for (i = 0; totsuzen.length() > i; i++) {
+                    // 一文字取り出して改行文字なのかチェック
                     if (totsuzen.charAt(i) == '\n') {
-                        gen = "＞ " + totsuzen.substring(j, i) + " ＜\n";
-                        i = i + 1;
+                        String gen = "＞ " + totsuzen.substring(j, i) + " ＜\n";
+                        i++;
                         j = i;
-                        if (moji > gen.length()) {
-                            int n;
-                            String as = "";
-                            int a = moji - gen.length();
-                            for (n = 0; a > n; n++) {
-                                as = as + "　";
-                            }
-                            gen = gen.substring(0, gen.length() - 3) + as + " ＜\n";
-                        }
-                        gentotsu = gentotsu + gen;
+                        gentotsu = gentotsu.concat(gen);
                     }
                 }
+
                 mEditText.setText("＿" + ue + "＿\n" + gentotsu + "￣" + shita + "￣");
             }
+
         });
 
         mImgButton.setOnClickListener(new View.OnClickListener() {
@@ -177,7 +172,8 @@ public class PostActivity extends Activity {
         mEditText.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 int textColor;
-                int length = 140 - s.length();
+                String str = s.toString();
+                int length = 140 - str.codePointCount(0, str.length());
                 // 140文字をオーバーした時は文字数を赤色に
                 if (length < 0) {
                     textColor = Color.RED;
@@ -188,7 +184,8 @@ public class PostActivity extends Activity {
                 mTextView.setText(String.valueOf(length));
 
                 // 文字数が0文字または140文字以上の時はボタンを無効
-                if (s.length() == 0 || s.length() > 140) {
+                if (str.codePointCount(0, str.length()) == 0
+                        || str.codePointCount(0, str.length()) > 140) {
                     mTweetButton.setEnabled(false);
                 } else {
                     mTweetButton.setEnabled(true);
