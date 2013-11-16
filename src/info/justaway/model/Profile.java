@@ -1,12 +1,23 @@
 package info.justaway.model;
 
 import twitter4j.Relationship;
+import twitter4j.ResponseList;
+import twitter4j.Status;
 import twitter4j.User;
 
 public class Profile {
 
     private User user;
     private Relationship relationship;
+    private ResponseList<Status> statuses;
+
+    public ResponseList<Status> getStatuses() {
+        return statuses;
+    }
+
+    public void setStatuses(ResponseList<Status> statuses) {
+        this.statuses = statuses;
+    }
 
     public User getUser() {
         return user;
