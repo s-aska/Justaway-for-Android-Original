@@ -15,5 +15,7 @@
     <!-- https://twitter.com/JMNCR/status/398810317645283328 -->
     <string name="fontello_picture"></string>
     <string name="fontello_paper"></string>
+    <string name="fontello_lock"></string>
+    <string name="fontello_twitter"></string>
 
 </resources>

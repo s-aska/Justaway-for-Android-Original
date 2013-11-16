@@ -7,10 +7,12 @@ import twitter4j.auth.RequestToken;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class SigninActivity extends Activity {
@@ -29,7 +31,10 @@ public class SigninActivity extends Activity {
         mCallbackURL = getString(R.string.twitter_callback_url);
         mTwitter = application.getTwitter();
 
-        findViewById(R.id.action_start_oauth).setOnClickListener(new View.OnClickListener() {
+        Typeface fontello = Typeface.createFromAsset(this.getAssets(), "fontello.ttf");
+        TextView button = (TextView) findViewById(R.id.action_start_oauth);
+        button.setTypeface(fontello);
+        button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startAuthorize();
@@ -40,8 +45,6 @@ public class SigninActivity extends Activity {
 
     /**
      * OAuth認証（厳密には認可）を開始します。
-     *
-     * @param listener
      */
     private void startAuthorize() {
         AsyncTask<Void, Void, String> task = new AsyncTask<Void, Void, String>() {
