@@ -370,7 +370,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             ((TextView) view.findViewById(R.id.fontello_lock)).setTypeface(fontello);
             view.findViewById(R.id.fontello_lock).setVisibility(View.VISIBLE);
         } else {
-            view.findViewById(R.id.fontello_lock).setVisibility(View.GONE);
+            view.findViewById(R.id.fontello_lock).setVisibility(View.INVISIBLE);
         }
         ImageView icon = (ImageView) view.findViewById(R.id.icon);
         mApplication.displayRoundedImage(status.getUser().getBiggerProfileImageURL(), icon);
