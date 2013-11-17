@@ -95,15 +95,6 @@
                         android:textColor="#666666"
                         android:textSize="10sp" />
 
-                    <!--
-                         <TextView
-                        android:id="@+id/is_favorited"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/fontello_star"
-                        android:textSize="12sp" />
-                    -->
-
                     <TextView
                         android:id="@+id/datetime"
                         android:layout_width="wrap_content"
