@@ -28,6 +28,9 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 public class ProfileActivity extends FragmentActivity implements
         LoaderManager.LoaderCallbacks<Profile> {
 
@@ -129,7 +132,10 @@ public class ProfileActivity extends FragmentActivity implements
                     .getFollowersCount()));
             ((TextView) findViewById(R.id.listedCount)).setText(String.valueOf(user
                     .getListedCount()));
-            ((TextView) findViewById(R.id.createdAt)).setText(user.getCreatedAt().toString());
+            SimpleDateFormat date_format = new SimpleDateFormat("yyyy年MM月dd日",
+                    Locale.ENGLISH);
+            String createdAt = date_format.format(user.getCreatedAt()).toString();
+            ((TextView) findViewById(R.id.createdAt)).setText(createdAt);
             String iconUrl = user.getBiggerProfileImageURL();
             String bannerUrl = user.getProfileBannerMobileRetinaURL();
             JustawayApplication.getApplication().displayRoundedImage(iconUrl, icon);
