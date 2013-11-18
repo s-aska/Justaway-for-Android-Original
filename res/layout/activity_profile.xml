@@ -137,7 +137,10 @@
                 <Button
                     android:id="@+id/follow"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:background="@color/menu_background"
+                    android:paddingLeft="16dip"
+                    android:paddingRight="16dip" />
             </LinearLayout>
         </LinearLayout>
 
