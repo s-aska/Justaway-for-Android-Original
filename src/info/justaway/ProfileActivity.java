@@ -23,9 +23,8 @@ import android.support.v4.content.Loader;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ListView;
+import android.widget.TableLayout;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
@@ -163,27 +162,16 @@ public class ProfileActivity extends FragmentActivity implements
                     }
                 });
             }
-            ListView listView = (ListView) findViewById(R.id.listView);
-            TwitterAdapter adapter = new TwitterAdapter(this, R.layout.row_tweet);
+            TableLayout table = (TableLayout) findViewById(R.id.table);
+            TwitterAdapter adapter = new TwitterAdapter(this, R.layout.row_tweet_for_table);
             ResponseList<Status> statuses = profile.getStatuses();
-            int height = 0;
+            int i = 0;
             for (Status status : statuses) {
                 adapter.add(Row.newStatus(status));
+                View row = adapter.getView(i, null, table);
+                table.addView(row);
+                i++;
             }
-            listView.setAdapter(adapter);
-            for (int i = 0; i < adapter.getCount(); i++) {
-                View item = adapter.getView(i, null, listView);
-                item.measure(0, View.MeasureSpec.UNSPECIFIED);
-                //System.out.println(item.getMeasuredHeight());
-                height += item.getMeasuredHeight();
-
-            }
-            ViewGroup.LayoutParams p = listView.getLayoutParams();
-            p.height = height + (listView.getDividerHeight() * (adapter.getCount() - 1));
-            listView.setLayoutParams(p);
-            listView.requestLayout();
-            //System.out.println(height);
-
         }
     }
 
