@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/scrollView"
     android:layout_height="match_parent"
     android:layout_width="match_parent">
@@ -93,12 +92,15 @@
 
                 <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:paddingTop="6dip"
+                    android:paddingLeft="6dip">
 
                     <TextView
                         android:id="@+id/url_icon"
+                        android:layout_height="wrap_content"
                         android:layout_width="20dp"
-                        android:layout_height="20dp"
+                        android:paddingLeft="2dip"
                         android:contentDescription="@string/description_icon" />
 
                     <TextView
@@ -109,12 +111,15 @@
 
                 <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:paddingTop="6dip"
+                    android:paddingLeft="6dip">
 
                     <TextView
                         android:id="@+id/location_icon"
+                        android:layout_height="wrap_content"
                         android:layout_width="20dp"
-                        android:layout_height="20dp"
+                        android:paddingLeft="5dip"
                         android:contentDescription="@string/description_icon" />
 
                     <TextView
@@ -139,11 +144,17 @@
         <TextView
             android:id="@+id/description"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:paddingTop="6dip"
+            android:paddingLeft="6dip"
+            android:paddingBottom="6dip" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingTop="6dip"
+            android:paddingBottom="6dip"
+            android:background="@color/menu_background"
             android:orientation="horizontal">
 
             <LinearLayout
@@ -156,7 +167,8 @@
                     android:id="@+id/statusesCount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center" />
+                    android:layout_gravity="center"
+                    android:paddingBottom="4dip" />
 
                 <TextView
                     android:id="@+id/statusesCountLabel"
@@ -176,7 +188,8 @@
                     android:id="@+id/friendsCount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center" />
+                    android:layout_gravity="center"
+                    android:paddingBottom="4dip" />
 
                 <TextView
                     android:id="@+id/friendsCountLabel"
@@ -196,7 +209,8 @@
                     android:id="@+id/followersCount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center" />
+                    android:layout_gravity="center"
+                    android:paddingBottom="4dip" />
 
                 <TextView
                     android:id="@+id/followersCountLabel"
@@ -216,7 +230,8 @@
                     android:id="@+id/listedCount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center" />
+                    android:layout_gravity="center"
+                    android:paddingBottom="4dip" />
 
                 <TextView
                     android:id="@+id/listedCountLabel"
@@ -230,13 +245,18 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingTop="6dip"
+            android:paddingLeft="8dip"
+            android:paddingRight="6dip"
+            android:paddingBottom="6dip">
 
             <TextView
                 android:id="@+id/favouritesCount_icon"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:contentDescription="@string/fontello_star" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingRight="4dip"
+                android:text="@string/fontello_star" />
 
             <TextView
                 android:id="@+id/favouritesCount"
@@ -252,6 +272,7 @@
                     android:id="@+id/createdAtLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:paddingRight="6dip"
                     android:text="@string/createdAt" />
 
                 <TextView
@@ -266,6 +287,6 @@
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
             android:stretchColumns="1"
-            android:shrinkColumns="0"/>
+            android:shrinkColumns="0" />
     </LinearLayout>
 </ScrollView>
