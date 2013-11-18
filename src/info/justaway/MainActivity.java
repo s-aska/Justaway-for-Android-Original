@@ -564,6 +564,9 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
         } else if (itemId == R.id.user_list) {
             Intent intent = new Intent(this, ChooseUserListsActivity.class);
             startActivityForResult(intent, REQUEST_CHOOSE_USER_LIST);
+        } else if (itemId == R.id.search) {
+            Intent intent = new Intent(this, SearchActivity.class);
+            startActivity(intent);
         }
         return true;
     }

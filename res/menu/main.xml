@@ -11,6 +11,11 @@
         android:showAsAction="never"
         android:title="@string/onore" />
     <item
+        android:id="@+id/search"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/search" />
+    <item
         android:id="@+id/reload"
         android:orderInCategory="100"
         android:showAsAction="never"
