@@ -251,7 +251,7 @@ public class PostActivity extends Activity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.post_main, menu);
+        getMenuInflater().inflate(R.menu.post, menu);
         return true;
     }
 
