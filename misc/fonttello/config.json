@@ -7,6 +7,12 @@
   "ascent": 850,
   "glyphs": [
     {
+      "uid": "9dd9e835aebe1060ba7190ad2b2ed951",
+      "css": "search",
+      "code": 59406,
+      "src": "fontawesome"
+    },
+    {
       "uid": "474656633f79ea2f1dad59ff63f6bf07",
       "css": "star",
       "code": 59392,

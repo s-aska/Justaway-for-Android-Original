@@ -22,7 +22,8 @@
             <Button
                 android:id="@+id/search"
                 android:layout_width="58dip"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:text="@string/fontello_search"/>
         </LinearLayout>
 
     </LinearLayout>

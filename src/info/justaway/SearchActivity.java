@@ -2,9 +2,12 @@ package info.justaway;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import twitter4j.Twitter;
 
@@ -22,6 +25,9 @@ public class SearchActivity extends Activity {
 
         JustawayApplication application = JustawayApplication.getApplication();
         twitter = application.getTwitter();
+
+        Button search = (Button) findViewById(R.id.search);
+        search.setTypeface(Typeface.createFromAsset(context.getAssets(), "fontello.ttf"));
 
         searchWords = (EditText) findViewById(R.id.searchWords);
 
