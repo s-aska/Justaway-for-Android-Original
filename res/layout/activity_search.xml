@@ -33,9 +33,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-        <ListView
-            android:layout_width="wrap_content"
+        <TableLayout
+            android:id="@+id/table"
             android:layout_height="wrap_content"
-            android:id="@+id/listView" />
+            android:layout_width="match_parent"
+            android:stretchColumns="1"
+            android:shrinkColumns="0" />
     </ScrollView>
 </LinearLayout>
