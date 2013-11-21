@@ -73,6 +73,7 @@ public class SearchActivity extends Activity {
         @Override
         protected void onPostExecute(QueryResult queryResult) {
             TableLayout table = (TableLayout) findViewById(R.id.table);
+            table.removeAllViews();
             TwitterAdapter adapter = new TwitterAdapter(context, R.layout.row_tweet_for_table);
             List<twitter4j.Status> statuses = queryResult.getTweets();
             int i = 0;
