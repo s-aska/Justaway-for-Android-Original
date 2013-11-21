@@ -103,8 +103,8 @@
         <activity
             android:name=".ScaleImageActivity"
             android:theme="@android:style/Theme.Translucent"></activity>
-        <activity android:name=".SearchActivity">
-        </activity>
+        <activity android:name=".SearchActivity"></activity>
+        <activity android:name=".EditProfileActivity"></activity>
     </application>
 
 </manifest>
