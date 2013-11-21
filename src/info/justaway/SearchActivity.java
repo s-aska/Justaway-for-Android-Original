@@ -29,6 +29,7 @@ public class SearchActivity extends Activity {
     private Context context;
     private Twitter twitter;
     private EditText searchWords;
+    private TableLayout table;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +44,7 @@ public class SearchActivity extends Activity {
         search.setTypeface(Typeface.createFromAsset(context.getAssets(), "fontello.ttf"));
 
         searchWords = (EditText) findViewById(R.id.searchWords);
+        table = (TableLayout) findViewById(R.id.table);
 
         findViewById(R.id.search).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -51,6 +53,7 @@ public class SearchActivity extends Activity {
                 InputMethodManager inputMethodManager =
                         (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                table.removeAllViews();
 
                 new SearchTask().execute(query);
             }
@@ -72,8 +75,6 @@ public class SearchActivity extends Activity {
 
         @Override
         protected void onPostExecute(QueryResult queryResult) {
-            TableLayout table = (TableLayout) findViewById(R.id.table);
-            table.removeAllViews();
             TwitterAdapter adapter = new TwitterAdapter(context, R.layout.row_tweet_for_table);
             List<twitter4j.Status> statuses = queryResult.getTweets();
             int i = 0;
