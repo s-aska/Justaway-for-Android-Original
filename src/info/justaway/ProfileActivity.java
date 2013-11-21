@@ -153,12 +153,22 @@ public class ProfileActivity extends FragmentActivity implements
                         new UnfollowTask().execute(user.getId());
                     }
                 });
-            } else {
+            } else if (relationship.isSourceFollowingTarget() && !relationship.isSourceFollowingTarget()) {
                 ((TextView) findViewById(R.id.follow)).setText("フォローする");
                 findViewById(R.id.follow).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         new FollowTask().execute(user.getId());
+                    }
+                });
+            } else {
+                ((TextView) findViewById(R.id.follow)).setText("プロフィールを編集する");
+                ((TextView) findViewById(R.id.follow)).setTextSize(13);
+                findViewById(R.id.follow).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(context, EditProfileActivity.class);
+                        startActivity(intent);
                     }
                 });
             }

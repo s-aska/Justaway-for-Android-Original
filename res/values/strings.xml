@@ -31,5 +31,9 @@
     <string name="open_twitter">Twitterで開く</string>
     <string name="open_favstar">Favstarで開く</string>
     <string name="open_twilog">Twilogで開く</string>
+    <string name="name">名前</string>
+    <string name="location">現在地</string>
+    <string name="web_site">Web</string>
+    <string name="bio">自己紹介</string>
 
 </resources>
