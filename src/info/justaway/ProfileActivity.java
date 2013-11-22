@@ -40,8 +40,7 @@ public class ProfileActivity extends FragmentActivity implements
     private TextView urlIcon;
     private TextView locationIcon;
     private User user;
-
-    // private TextView addedToTwitter;
+    private JustawayApplication application;
 
     /**
      * Twitter REST API用のインスタンス
@@ -60,7 +59,7 @@ public class ProfileActivity extends FragmentActivity implements
         setContentView(R.layout.activity_profile);
         context = this;
 
-        JustawayApplication application = JustawayApplication.getApplication();
+        application = JustawayApplication.getApplication();
 
         twitter = application.getTwitter();
         icon = (ImageView) findViewById(R.id.icon);
@@ -145,23 +144,7 @@ public class ProfileActivity extends FragmentActivity implements
             if (relationship.isSourceFollowedByTarget()) {
                 ((TextView) findViewById(R.id.followedBy)).setText("フォローされています");
             }
-            if (relationship.isSourceFollowingTarget()) {
-                ((TextView) findViewById(R.id.follow)).setText("フォローを解除");
-                findViewById(R.id.follow).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        new UnfollowTask().execute(user.getId());
-                    }
-                });
-            } else if (relationship.isSourceFollowingTarget() && !relationship.isSourceFollowingTarget()) {
-                ((TextView) findViewById(R.id.follow)).setText("フォローする");
-                findViewById(R.id.follow).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        new FollowTask().execute(user.getId());
-                    }
-                });
-            } else {
+            if (user.getId() == application.getUser().getId()) {
                 ((TextView) findViewById(R.id.follow)).setText("プロフィールを編集する");
                 ((TextView) findViewById(R.id.follow)).setTextSize(13);
                 findViewById(R.id.follow).setOnClickListener(new View.OnClickListener() {
@@ -169,6 +152,22 @@ public class ProfileActivity extends FragmentActivity implements
                     public void onClick(View v) {
                         Intent intent = new Intent(context, EditProfileActivity.class);
                         startActivity(intent);
+                    }
+                });
+            } else if (relationship.isSourceFollowingTarget()) {
+                ((TextView) findViewById(R.id.follow)).setText("フォローを解除");
+                findViewById(R.id.follow).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        new UnfollowTask().execute(user.getId());
+                    }
+                });
+            } else {
+                ((TextView) findViewById(R.id.follow)).setText("フォローする");
+                findViewById(R.id.follow).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        new FollowTask().execute(user.getId());
                     }
                 });
             }
