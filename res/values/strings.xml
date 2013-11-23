@@ -8,7 +8,6 @@
     <string name="action_directmessage">文</string>
     <string name="onore">己</string>
     <string name="reload">再</string>
-    <string name="save">拾</string>
     <string name="user_list">覧</string>
     <string name="signin_with_twitter">認</string>
     <string name="signout">出</string>
@@ -35,5 +34,6 @@
     <string name="location">現在地</string>
     <string name="web_site">Web</string>
     <string name="bio">自己紹介</string>
+    <string name="save">保存</string>
 
 </resources>
