@@ -128,7 +128,13 @@ public class PostActivity extends Activity {
         mSuddenlyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String totsuzen = mEditText.getText().toString() + "\n";
+
+                int selectStart = mEditText.getSelectionStart();
+                int selectEnd = mEditText.getSelectionEnd();
+                String text = mEditText.getText().toString();
+                String totsuzen = text.substring(selectStart, selectEnd) + "\n";
+                String prefix = text.substring(0, selectStart);
+                String suffix = text.substring(selectEnd);
                 int i;
                 String ue = "";
                 String shita = "";
@@ -155,7 +161,7 @@ public class PostActivity extends Activity {
                     }
                 }
 
-                mEditText.setText("＿" + ue + "＿\n" + gentotsu + "￣" + shita + "￣");
+                mEditText.setText(prefix + "＿" + ue + "＿\n" + gentotsu + "￣" + shita + "￣" + suffix);
             }
 
         });
