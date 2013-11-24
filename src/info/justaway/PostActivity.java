@@ -128,13 +128,18 @@ public class PostActivity extends Activity {
         mSuddenlyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                String text = mEditText.getText().toString();
                 int selectStart = mEditText.getSelectionStart();
                 int selectEnd = mEditText.getSelectionEnd();
-                String text = mEditText.getText().toString();
-                String totsuzen = text.substring(selectStart, selectEnd) + "\n";
-                String prefix = text.substring(0, selectStart);
-                String suffix = text.substring(selectEnd);
+
+                String totsuzen = "";
+                System.out.println(selectStart + " " + selectEnd);
+                if (selectStart != selectEnd) {
+                    totsuzen = text.substring(selectStart, selectEnd) + "\n";
+                } else {
+                    totsuzen = text + "\n";
+                }
+
                 int i;
                 String ue = "";
                 String shita = "";
@@ -160,10 +165,12 @@ public class PostActivity extends Activity {
                         gentotsu = gentotsu.concat(gen);
                     }
                 }
-
-                mEditText.setText(prefix + "＿" + ue + "＿\n" + gentotsu + "￣" + shita + "￣" + suffix);
+                if (selectStart != selectEnd) {
+                    mEditText.setText(text.substring(0, selectStart) + "＿" + ue + "＿\n" + gentotsu + "￣" + shita + "￣" + text.substring(selectEnd));
+                } else {
+                    mEditText.setText("＿" + ue + "＿\n" + gentotsu + "￣" + shita + "￣");
+                }
             }
-
         });
 
         mImgButton.setOnClickListener(new View.OnClickListener() {
