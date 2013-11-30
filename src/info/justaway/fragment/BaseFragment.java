@@ -4,8 +4,10 @@ import info.justaway.JustawayApplication;
 import info.justaway.MainActivity;
 import info.justaway.PostActivity;
 import info.justaway.R;
+import info.justaway.SearchActivity;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.model.Row;
+import twitter4j.HashtagEntity;
 import twitter4j.Status;
 import twitter4j.URLEntity;
 
@@ -71,8 +73,6 @@ public abstract class BaseFragment extends ListFragment {
 
     /**
      * UserStreamでonStatusを受信した時の挙動
-     *
-     * @param status
      */
     public abstract void add(Row row);
 
@@ -121,6 +121,7 @@ public abstract class BaseFragment extends ListFragment {
     static final int CONTEXT_MENU_TALK_ID = 11;
     static final int CONTEXT_MENU_RM_FAV_ID = 12;
     static final int CONTEXT_MENU_RM_RT_ID = 13;
+    static final int CONTEXT_MENU_HASH_ID = 14;
 
     public void onCreateContextMenu(ContextMenu menu, View view, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, view, menuInfo);
@@ -145,7 +146,7 @@ public abstract class BaseFragment extends ListFragment {
 
         Status status = row.getStatus();
         Status retweet = status.getRetweetedStatus();
-        Status soruce = retweet != null ? retweet : status;
+        Status source = retweet != null ? retweet : status;
 
         menu.setHeaderTitle(status.getText());
         menu.add(0, CONTEXT_MENU_REPLY_ID, 0, "リプ");
@@ -172,20 +173,26 @@ public abstract class BaseFragment extends ListFragment {
             menu.add(0, CONTEXT_MENU_RT_ID, 0, "公式RT");
         }
 
-        if (soruce.getInReplyToStatusId() > 0) {
+        if (source.getInReplyToStatusId() > 0) {
             menu.add(0, CONTEXT_MENU_TALK_ID, 0, "会話を表示");
         }
 
         // ツイート内のURLへアクセスできるようにメニューに展開する
-        URLEntity[] urls = soruce.getURLEntities();
+        URLEntity[] urls = source.getURLEntities();
         for (URLEntity url : urls) {
             menu.add(0, CONTEXT_MENU_LINK_ID, 0, url.getExpandedURL().toString());
         }
 
         // ツイート内のURL(画像)へアクセスできるようにメニューに展開する
-        URLEntity[] medias = soruce.getMediaEntities();
+        URLEntity[] medias = source.getMediaEntities();
         for (URLEntity url : medias) {
             menu.add(0, CONTEXT_MENU_LINK_ID, 0, url.getExpandedURL().toString());
+        }
+
+        // ツイート内のハッシュタグを検索できるようにメニューに展開する
+        HashtagEntity[] hashtags = source.getHashtagEntities();
+        for (HashtagEntity hashtag : hashtags) {
+            menu.add(0, CONTEXT_MENU_HASH_ID, 0, "#" + hashtag.getText());
         }
 
         menu.add(0, CONTEXT_MENU_TOFU_ID, 0, "TofuBuster");
@@ -259,6 +266,11 @@ public abstract class BaseFragment extends ListFragment {
                  * 現在は全てIntentでブラウザなどに飛ばしているが、 画像やツイートは自アプリで参照できるように対応する予定
                  */
                 intent = new Intent(Intent.ACTION_VIEW, Uri.parse(item.getTitle().toString()));
+                startActivity(intent);
+                return true;
+            case CONTEXT_MENU_HASH_ID:
+                intent = new Intent(activity, SearchActivity.class);
+                intent.putExtra("word", item.getTitle().toString());
                 startActivity(intent);
                 return true;
             case CONTEXT_MENU_TOFU_ID:

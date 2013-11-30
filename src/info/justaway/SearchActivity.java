@@ -2,6 +2,7 @@ package info.justaway;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -45,6 +46,14 @@ public class SearchActivity extends Activity {
 
         searchWords = (EditText) findViewById(R.id.searchWords);
         table = (TableLayout) findViewById(R.id.table);
+
+        Intent intent = getIntent();
+        String word = intent.getStringExtra("word");
+        if (word != null) {
+            searchWords.setText(word);
+            Query query = new Query(word);
+            new SearchTask().execute(query);
+        }
 
         findViewById(R.id.search).setOnClickListener(new View.OnClickListener() {
             @Override
