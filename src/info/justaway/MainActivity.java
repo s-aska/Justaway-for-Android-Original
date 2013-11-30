@@ -307,6 +307,8 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                     TAB_ID_DIRECTMESSAGE);
             initTab();
 
+            findViewById(R.id.footer).setVisibility(View.VISIBLE);
+
             /**
              * タブは前後タブまでは状態が保持されるがそれ以上離れるとViewが破棄されてしまう、
              * あまりに使いづらいの上限を増やしている、指定値＋前後のタブまでが保持されるようになる
