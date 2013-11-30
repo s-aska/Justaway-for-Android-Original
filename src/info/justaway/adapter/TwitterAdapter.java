@@ -391,6 +391,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         ArrayList<String> imageUrls = new ArrayList<String>();
         Pattern twitpic_pattern = Pattern.compile("^http://twitpic\\.com/(\\w+)$");
         Pattern twipple_pattern = Pattern.compile("^http://p\\.twipple\\.jp/(\\w+)$");
+        Pattern instagram_pattern = Pattern.compile("^http://instagram\\.com/p/(\\w+)/$");
         for (URLEntity url : urls) {
             Matcher twitpic_matcher = twitpic_pattern.matcher(url.getExpandedURL());
             if (twitpic_matcher.find()) {
@@ -400,6 +401,11 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             Matcher twipple_matcher = twipple_pattern.matcher(url.getExpandedURL());
             if (twipple_matcher.find()) {
                 imageUrls.add("http://p.twpl.jp/show/orig/" + twipple_matcher.group(1));
+                continue;
+            }
+            Matcher instagram_matcher = instagram_pattern.matcher(url.getExpandedURL());
+            if (instagram_matcher.find()) {
+                imageUrls.add(url.getExpandedURL() + "media?size=l");
                 continue;
             }
         }
