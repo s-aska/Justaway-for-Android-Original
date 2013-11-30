@@ -35,5 +35,6 @@
     <string name="web_site">Web</string>
     <string name="bio">自己紹介</string>
     <string name="save">保存</string>
+    <string name="updateProfileImage">画像を変更</string>
 
 </resources>

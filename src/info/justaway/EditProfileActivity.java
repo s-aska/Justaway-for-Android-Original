@@ -1,18 +1,25 @@
 package info.justaway;
 
-import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
+
+import java.io.File;
 
 import twitter4j.Twitter;
 import twitter4j.User;
 
-public class EditProfileActivity extends Activity {
+public class EditProfileActivity extends FragmentActivity {
 
     private Context context;
     private Twitter twitter;
@@ -22,6 +29,7 @@ public class EditProfileActivity extends Activity {
     private EditText location;
     private EditText url;
     private EditText description;
+    private ImageView icon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,11 +39,8 @@ public class EditProfileActivity extends Activity {
 
         application = JustawayApplication.getApplication();
         twitter = application.getTwitter();
-
-        Intent intent = getIntent();
         User user = application.getUser();
 
-        //user = application.getUser();
         name = ((EditText) findViewById(R.id.name));
         name.setText(user.getName());
         location = ((EditText) findViewById(R.id.location));
@@ -44,6 +49,18 @@ public class EditProfileActivity extends Activity {
         url.setText(user.getURLEntity().getExpandedURL());
         description = ((EditText) findViewById(R.id.bio));
         description.setText(user.getDescription());
+        icon = ((ImageView) findViewById(R.id.icon));
+        application.displayRoundedImage(user.getBiggerProfileImageURL(), icon);
+
+        findViewById(R.id.icon).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_PICK);
+                intent.setType("image/*");
+                startActivityForResult(intent, 1);
+
+            }
+        });
 
         findViewById(R.id.save).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,6 +92,32 @@ public class EditProfileActivity extends Activity {
                 finish();
             } else {
                 showToast("プロフィールの保存に失敗しました");
+            }
+        }
+    }
+
+    private File uriToFile(Uri uri) {
+        ContentResolver cr = getContentResolver();
+        String[] columns = {MediaStore.Images.Media.DATA};
+        Cursor c = cr.query(uri, columns, null, null, null);
+        c.moveToFirst();
+        File path = new File(c.getString(0));
+        if (!path.exists()) {
+            return null;
+        }
+
+        return path;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            Uri uri = data.getData();
+            File file = uriToFile(uri);
+            if (file != null) {
+                UpdateProfileImageFragment dialog = new UpdateProfileImageFragment(file, uri);
+                dialog.show(getSupportFragmentManager(), "dialog");
             }
         }
     }

@@ -2,12 +2,31 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/background">
+    android:background="@color/background"
+    android:padding="6dip">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/icon"
+                android:layout_width="96dip"
+                android:layout_height="96dip"
+                android:paddingRight="6dip" />
+
+            <Button
+                android:id="@+id/updateProfileImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:text="@string/updateProfileImage" />
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -16,8 +35,9 @@
 
             <TextView
                 android:id="@+id/nameLabel"
-                android:layout_width="wrap_content"
+                android:layout_width="64dip"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:text="@string/name" />
 
             <EditText
@@ -34,8 +54,9 @@
 
             <TextView
                 android:id="@+id/locationLabel"
-                android:layout_width="wrap_content"
+                android:layout_width="64dip"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:text="@string/location" />
 
             <EditText
@@ -52,8 +73,9 @@
 
             <TextView
                 android:id="@+id/webSiteLabel"
-                android:layout_width="wrap_content"
+                android:layout_width="64dip"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:text="@string/web_site" />
 
             <EditText
@@ -70,8 +92,9 @@
 
             <TextView
                 android:id="@+id/bioLabel"
-                android:layout_width="wrap_content"
+                android:layout_width="64dip"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:text="@string/bio" />
 
             <EditText
@@ -86,6 +109,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
-            android:text="@string/save"/>
+            android:text="@string/save" />
     </LinearLayout>
 </LinearLayout>
