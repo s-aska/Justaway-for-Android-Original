@@ -41,7 +41,7 @@ public class EditProfileActivity extends Activity {
         location = ((EditText) findViewById(R.id.location));
         location.setText(user.getLocation());
         url = ((EditText) findViewById(R.id.webSite));
-        url.setText(user.getURL());
+        url.setText(user.getURLEntity().getExpandedURL());
         description = ((EditText) findViewById(R.id.bio));
         description.setText(user.getDescription());
 
@@ -57,8 +57,8 @@ public class EditProfileActivity extends Activity {
         @Override
         protected User doInBackground(Void... params) {
             try {
-                User user = twitter.updateProfile(name.getText().toString(), location.getText().toString(),
-                        url.getText().toString(), description.getText().toString());
+                User user = twitter.updateProfile(name.getText().toString(), url.getText().toString(),
+                        location.getText().toString(), description.getText().toString());
                 return user;
             } catch (Exception e) {
                 e.printStackTrace();

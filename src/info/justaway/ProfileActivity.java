@@ -111,7 +111,7 @@ public class ProfileActivity extends FragmentActivity implements
                 ((TextView) findViewById(R.id.location)).setText("");
             }
             if (user.getURL() != null) {
-                ((TextView) findViewById(R.id.url)).setText(String.valueOf(user.getURL()));
+                ((TextView) findViewById(R.id.url)).setText(user.getURLEntity().getExpandedURL());
             } else {
                 ((TextView) findViewById(R.id.url)).setText("");
             }
