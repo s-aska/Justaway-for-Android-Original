@@ -21,8 +21,10 @@
     </LinearLayout>
 
     <TableLayout
+        android:id="@+id/footer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:visibility="invisible">
 
         <!-- TableRow 無いと2段になる(◞‸◟) -->
 
