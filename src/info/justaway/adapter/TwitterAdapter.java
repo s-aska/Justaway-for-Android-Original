@@ -222,7 +222,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     private void renderStatus(View view, final Row row, final Status status, Status retweet,
                               User favorite) {
 
-        final Status soruce = retweet != null ? retweet : status;
+        final Status source = retweet != null ? retweet : status;
         User user = JustawayApplication.getApplication().getUser();
 
         Typeface fontello = Typeface.createFromAsset(mContext.getAssets(), "fontello.ttf");
@@ -254,7 +254,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, PostActivity.class);
-                String text = "@" + soruce.getUser().getScreenName() + " ";
+                String text = "@" + source.getUser().getScreenName() + " ";
                 intent.putExtra("status", text);
                 intent.putExtra("selection", text.length());
                 intent.putExtra("inReplyToStatusId", status.getId());
