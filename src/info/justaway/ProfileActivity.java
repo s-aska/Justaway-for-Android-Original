@@ -151,7 +151,6 @@ public class ProfileActivity extends FragmentActivity implements
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(context, EditProfileActivity.class);
-                        intent.putExtra("user", user);
                         startActivity(intent);
                     }
                 });

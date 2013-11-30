@@ -16,7 +16,7 @@ public class EditProfileActivity extends Activity {
 
     private Context context;
     private Twitter twitter;
-    private User user;
+    private JustawayApplication application;
 
     private EditText name;
     private EditText location;
@@ -29,11 +29,11 @@ public class EditProfileActivity extends Activity {
         setContentView(R.layout.activity_edit_profile);
         context = this;
 
-        JustawayApplication application = JustawayApplication.getApplication();
+        application = JustawayApplication.getApplication();
         twitter = application.getTwitter();
 
         Intent intent = getIntent();
-        user = (User) intent.getSerializableExtra("user");
+        User user = application.getUser();
 
         //user = application.getUser();
         name = ((EditText) findViewById(R.id.name));
@@ -53,24 +53,25 @@ public class EditProfileActivity extends Activity {
         });
     }
 
-    private class UpdateProfileTask extends AsyncTask<Void, Void, Boolean> {
+    private class UpdateProfileTask extends AsyncTask<Void, Void, User> {
         @Override
-        protected Boolean doInBackground(Void... params) {
+        protected User doInBackground(Void... params) {
             try {
-                twitter.updateProfile(name.getText().toString(), location.getText().toString(),
+                User user = twitter.updateProfile(name.getText().toString(), location.getText().toString(),
                         url.getText().toString(), description.getText().toString());
-                return true;
+                return user;
             } catch (Exception e) {
                 e.printStackTrace();
-                return false;
+                return null;
             }
         }
 
         @Override
-        protected void onPostExecute(Boolean success) {
+        protected void onPostExecute(User user) {
             // dismissProgressDialog();
-            if (success) {
+            if (user != null) {
                 showToast("プロフィールを保存しました");
+                application.setUser(user);
                 finish();
             } else {
                 showToast("プロフィールの保存に失敗しました");
