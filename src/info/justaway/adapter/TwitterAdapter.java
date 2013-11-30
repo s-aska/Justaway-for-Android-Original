@@ -43,6 +43,8 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     private int mLayout;
     private Boolean isMain;
     private static final int LIMIT = 200;
+    private static final SimpleDateFormat date_format = new SimpleDateFormat("yyyy/MM'/'dd' 'HH':'mm':'ss",
+            Locale.ENGLISH);
 
     public TwitterAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId);
@@ -206,8 +208,6 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                 + message.getSender().getScreenName());
         ((TextView) view.findViewById(R.id.status)).setText("D " + message.getRecipientScreenName()
                 + " " + message.getText());
-        SimpleDateFormat date_format = new SimpleDateFormat("MM'/'dd' 'hh':'mm':'ss",
-                Locale.ENGLISH);
         ((TextView) view.findViewById(R.id.datetime)).setText(date_format.format(message
                 .getCreatedAt()));
         view.findViewById(R.id.via).setVisibility(View.GONE);
@@ -455,8 +455,6 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         }
     }
 
-    private static final SimpleDateFormat date_format = new SimpleDateFormat("yyyy/MM'/'dd' 'hh':'mm':'ss",
-            Locale.ENGLISH);
     private String getAbsoluteTime(Date date) {
         return date_format.format(date);
     }
