@@ -42,7 +42,10 @@ public class SearchActivity extends Activity {
         twitter = application.getTwitter();
 
         Button search = (Button) findViewById(R.id.search);
-        search.setTypeface(Typeface.createFromAsset(context.getAssets(), "fontello.ttf"));
+        Button tweet = (Button) findViewById(R.id.tweet);
+        Typeface fontello = Typeface.createFromAsset(context.getAssets(), "fontello.ttf");
+        search.setTypeface(fontello);
+        tweet.setTypeface(fontello);
 
         searchWords = (EditText) findViewById(R.id.searchWords);
         table = (TableLayout) findViewById(R.id.table);
@@ -55,7 +58,7 @@ public class SearchActivity extends Activity {
             new SearchTask().execute(query);
         }
 
-        findViewById(R.id.search).setOnClickListener(new View.OnClickListener() {
+        search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Query query = new Query(searchWords.getText().toString());
@@ -65,6 +68,14 @@ public class SearchActivity extends Activity {
                 table.removeAllViews();
 
                 new SearchTask().execute(query);
+            }
+        });
+        tweet.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, PostActivity.class);
+                intent.putExtra("status", " " + searchWords.getText().toString());
+                startActivity(intent);
             }
         });
     }
