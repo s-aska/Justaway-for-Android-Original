@@ -52,7 +52,7 @@ public class EditProfileActivity extends FragmentActivity {
         icon = ((ImageView) findViewById(R.id.icon));
         application.displayRoundedImage(user.getBiggerProfileImageURL(), icon);
 
-        findViewById(R.id.icon).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.updateProfileImage).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Intent.ACTION_PICK);
