@@ -308,8 +308,10 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         ((TextView) view.findViewById(R.id.screen_name)).setText("@"
                 + status.getUser().getScreenName());
         ((TextView) view.findViewById(R.id.status)).setText(status.getText());
+//        ((TextView) view.findViewById(R.id.datetime))
+//                .setText(getRelativeTime(status.getCreatedAt()));
         ((TextView) view.findViewById(R.id.datetime))
-                .setText(getRelativeTime(status.getCreatedAt()));
+                .setText(getAbsoluteTime(status.getCreatedAt()));
         ((TextView) view.findViewById(R.id.via))
                 .setText("via " + getClientName(status.getSource()));
         view.findViewById(R.id.via).setVisibility(View.VISIBLE);
@@ -451,5 +453,11 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         } else {
             return (diff / 86400) + "d";
         }
+    }
+
+    private static final SimpleDateFormat date_format = new SimpleDateFormat("yyyy/MM'/'dd' 'hh':'mm':'ss",
+            Locale.ENGLISH);
+    private String getAbsoluteTime(Date date) {
+        return date_format.format(date);
     }
 }
