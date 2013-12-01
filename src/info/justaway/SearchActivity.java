@@ -1,18 +1,19 @@
 package info.justaway;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.view.ContextMenu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TableLayout;
 
 import java.util.List;
 
@@ -20,17 +21,14 @@ import info.justaway.adapter.TwitterAdapter;
 import info.justaway.model.Row;
 import twitter4j.Query;
 import twitter4j.QueryResult;
-import twitter4j.ResponseList;
-import twitter4j.Status;
-import twitter4j.StatusUpdate;
 import twitter4j.Twitter;
 
-public class SearchActivity extends Activity {
+public class SearchActivity extends FragmentActivity {
 
     private Context context;
     private Twitter twitter;
     private EditText searchWords;
-    private TableLayout table;
+    private TwitterAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +36,7 @@ public class SearchActivity extends Activity {
         setContentView(R.layout.activity_search);
         context = this;
 
-        JustawayApplication application = JustawayApplication.getApplication();
+        final JustawayApplication application = JustawayApplication.getApplication();
         twitter = application.getTwitter();
 
         Button search = (Button) findViewById(R.id.search);
@@ -48,15 +46,23 @@ public class SearchActivity extends Activity {
         tweet.setTypeface(fontello);
 
         searchWords = (EditText) findViewById(R.id.searchWords);
-        table = (TableLayout) findViewById(R.id.table);
 
-        Intent intent = getIntent();
-        String word = intent.getStringExtra("word");
-        if (word != null) {
-            searchWords.setText(word);
-            Query query = new Query(word);
-            new SearchTask().execute(query);
-        }
+        ListView listView = (ListView) findViewById(R.id.listView);
+
+        // コンテキストメニューを使える様にする為の指定、但しデフォルトではロングタップで開く
+        registerForContextMenu(listView);
+
+        // Status(ツイート)をViewに描写するアダプター
+        adapter = new TwitterAdapter(context, R.layout.row_tweet);
+        listView.setAdapter(adapter);
+
+        // シングルタップでコンテキストメニューを開くための指定
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                view.showContextMenu();
+            }
+        });
 
         search.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,8 +71,7 @@ public class SearchActivity extends Activity {
                 InputMethodManager inputMethodManager =
                         (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                table.removeAllViews();
-
+                adapter.clear();
                 new SearchTask().execute(query);
             }
         });
@@ -78,6 +83,26 @@ public class SearchActivity extends Activity {
                 startActivity(intent);
             }
         });
+
+        Intent intent = getIntent();
+        String word = intent.getStringExtra("word");
+        if (word != null) {
+            searchWords.setText(word);
+            search.performClick();
+        }
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        JustawayApplication application = JustawayApplication.getApplication();
+        application.onCreateContextMenuForStatus(menu, v, menuInfo);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        JustawayApplication application = JustawayApplication.getApplication();
+        return application.onContextItemSelected(this, item);
     }
 
     private class SearchTask extends AsyncTask<Query, Void, QueryResult> {
@@ -95,15 +120,15 @@ public class SearchActivity extends Activity {
 
         @Override
         protected void onPostExecute(QueryResult queryResult) {
-            TwitterAdapter adapter = new TwitterAdapter(context, R.layout.row_tweet_for_table);
             List<twitter4j.Status> statuses = queryResult.getTweets();
-            int i = 0;
             for (twitter4j.Status status : statuses) {
                 adapter.add(Row.newStatus(status));
-                View row = adapter.getView(i, null, table);
-                table.addView(row);
-                i++;
             }
+
+            // インテント経由で検索時にうまく閉じてくれないので入れている
+            InputMethodManager inputMethodManager =
+                    (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(searchWords.getWindowToken(), 0);
         }
     }
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/scrollView"
     android:layout_height="match_parent"
     android:layout_width="match_parent">
@@ -285,11 +285,9 @@
             </LinearLayout>
         </LinearLayout>
 
-        <TableLayout
-            android:id="@+id/table"
+        <ListView
+            android:id="@+id/listView"
             android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:stretchColumns="1"
-            android:shrinkColumns="0" />
+            android:layout_width="match_parent"/>
     </LinearLayout>
-</ScrollView>
+</LinearLayout>
