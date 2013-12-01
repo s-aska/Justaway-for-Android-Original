@@ -161,6 +161,7 @@
             android:orientation="horizontal">
 
             <LinearLayout
+                android:id="@+id/statuses"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -171,6 +172,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:textColor="#33b5e5"
                     android:paddingBottom="4dip" />
 
                 <TextView
@@ -178,6 +180,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:textColor="#33b5e5"
                     android:text="@string/tweets" />
             </LinearLayout>
 
