@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.view.Gravity;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -31,13 +32,17 @@ public class UpdateProfileImageFragment extends DialogFragment {
 
         builder.setTitle("プロフィール画像を変更しますか？");
 
+        // LinearLayoutを被せないとサイズを調整できない
+        LinearLayout layout = new LinearLayout(getActivity());
+        layout.setGravity(Gravity.CENTER);
         ImageView image = new ImageView(getActivity());
         image.setScaleType(ImageView.ScaleType.CENTER_CROP);
         image.setLayoutParams(new LinearLayout.LayoutParams(
-                320,
-                320));
+                340,
+                340));
         JustawayApplication.getApplication().displayImage(uri.toString(), image);
-        builder.setView(image);
+        layout.addView(image);
+        builder.setView(layout);
 
         builder.setPositiveButton("適用",
                 new DialogInterface.OnClickListener() {
