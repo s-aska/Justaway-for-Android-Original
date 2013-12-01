@@ -42,7 +42,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     private LayoutInflater mInflater;
     private int mLayout;
     private Boolean isMain;
-    private static final int LIMIT = 200;
+    private static final int LIMIT = 100;
     private static final SimpleDateFormat date_format = new SimpleDateFormat("yyyy/MM'/'dd' 'HH':'mm':'ss",
             Locale.ENGLISH);
 
