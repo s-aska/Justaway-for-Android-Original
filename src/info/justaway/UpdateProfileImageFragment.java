@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import java.io.File;
 
@@ -28,12 +29,14 @@ public class UpdateProfileImageFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Builder builder = new Builder(getActivity());
 
-        builder.setTitle("プロフィール画像を変更する");
-        builder.setMessage("");
+        builder.setTitle("プロフィール画像を変更しますか？");
 
         ImageView image = new ImageView(getActivity());
         image.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        JustawayApplication.getApplication().displayRoundedImage(uri.toString(), image);
+        image.setLayoutParams(new LinearLayout.LayoutParams(
+                320,
+                320));
+        JustawayApplication.getApplication().displayImage(uri.toString(), image);
         builder.setView(image);
 
         builder.setPositiveButton("適用",

@@ -16,6 +16,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
@@ -107,6 +108,7 @@ public class ProfileActivity extends FragmentActivity implements
         }
         args.putString("screenName", screenName);
         getSupportLoaderManager().initLoader(0, args, this);
+        new UserTimelineTask().execute(screenName);
     }
 
     @Override
@@ -207,11 +209,6 @@ public class ProfileActivity extends FragmentActivity implements
                 });
             }
 
-            adapter.clear();
-            ResponseList<Status> statuses = profile.getStatuses();
-            for (Status status : statuses) {
-                adapter.add(Row.newStatus(status));
-            }
         }
     }
 
@@ -240,5 +237,26 @@ public class ProfileActivity extends FragmentActivity implements
                 break;
         }
         return true;
+    }
+
+    private class UserTimelineTask extends AsyncTask<String, Void, ResponseList<twitter4j.Status>> {
+        @Override
+        protected ResponseList<twitter4j.Status> doInBackground(String... params) {
+            try {
+                ResponseList<twitter4j.Status> statuses = JustawayApplication.getApplication().getTwitter().getUserTimeline(params[0]);
+                return statuses;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(ResponseList<twitter4j.Status> statuses) {
+            adapter.clear();
+            for (twitter4j.Status status : statuses) {
+                adapter.add(Row.newStatus(status));
+            }
+        }
     }
 }
