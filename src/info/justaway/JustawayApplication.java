@@ -24,6 +24,7 @@ import twitter4j.TwitterStream;
 import twitter4j.TwitterStreamFactory;
 import twitter4j.URLEntity;
 import twitter4j.User;
+import twitter4j.UserMentionEntity;
 import twitter4j.auth.AccessToken;
 import twitter4j.conf.ConfigurationBuilder;
 
@@ -431,6 +432,7 @@ public class JustawayApplication extends Application {
     static final int CONTEXT_MENU_RM_FAV_ID = 12;
     static final int CONTEXT_MENU_RM_RT_ID = 13;
     static final int CONTEXT_MENU_HASH_ID = 14;
+    static final int CONTEXT_MENU_AT_ID = 15;
     private Row selectedRow;
 
     public void onCreateContextMenuForStatus(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo) {
@@ -500,6 +502,11 @@ public class JustawayApplication extends Application {
         HashtagEntity[] hashtags = source.getHashtagEntities();
         for (HashtagEntity hashtag : hashtags) {
             menu.add(0, CONTEXT_MENU_HASH_ID, 0, "#" + hashtag.getText());
+        }
+
+        UserMentionEntity[] mentions = source.getUserMentionEntities();
+        for (UserMentionEntity mention: mentions) {
+            menu.add(0, CONTEXT_MENU_AT_ID, 0, "@" + mention.getScreenName());
         }
 
         menu.add(0, CONTEXT_MENU_TOFU_ID, 0, "TofuBuster");
@@ -576,7 +583,12 @@ public class JustawayApplication extends Application {
                 return true;
             case CONTEXT_MENU_HASH_ID:
                 intent = new Intent(activity, SearchActivity.class);
-                intent.putExtra("word", item.getTitle().toString());
+                intent.putExtra("query", item.getTitle().toString());
+                activity.startActivity(intent);
+                return true;
+            case CONTEXT_MENU_AT_ID:
+                intent = new Intent(activity, ProfileActivity.class);
+                intent.putExtra("screenName", item.getTitle().toString().substring(1));
                 activity.startActivity(intent);
                 return true;
             case CONTEXT_MENU_TOFU_ID:

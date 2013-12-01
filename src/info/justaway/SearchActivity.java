@@ -85,9 +85,9 @@ public class SearchActivity extends FragmentActivity {
         });
 
         Intent intent = getIntent();
-        String word = intent.getStringExtra("word");
-        if (word != null) {
-            searchWords.setText(word);
+        String query = intent.getStringExtra("query");
+        if (query != null) {
+            searchWords.setText(query);
             search.performClick();
         }
     }
