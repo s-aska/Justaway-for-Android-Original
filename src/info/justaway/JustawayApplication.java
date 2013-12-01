@@ -100,10 +100,20 @@ public class JustawayApplication extends Application {
     }
 
     public void displayImage(String url, ImageView view) {
+        String tag = (String) view.getTag();
+        if (tag != null && tag == url) {
+            return;
+        }
+        view.setTag(url);
         mImageLoader.displayImage(url, view);
     }
 
     public void displayRoundedImage(String url, ImageView view) {
+        String tag = (String) view.getTag();
+        if (tag != null && tag == url) {
+            return;
+        }
+        view.setTag(url);
         mImageLoader.displayImage(url, view, mRoundedDisplayImageOptions);
     }
 
