@@ -26,11 +26,9 @@ public class ShowUserLoader extends AbstractAsyncTaskLoader<Profile> {
             Twitter twitter = JustawayApplication.getApplication().getTwitter();
             User user = twitter.showUser(screenName);
             Relationship relationship = twitter.showFriendship(JustawayApplication.getApplication().getUser().getScreenName(), screenName);
-            ResponseList<Status> statuses = twitter.getUserTimeline(screenName);
             Profile profile = new Profile();
             profile.setRelationship(relationship);
             profile.setUser(user);
-            profile.setStatuses(statuses);
             return profile;
         } catch (TwitterException e) {
             e.printStackTrace();
