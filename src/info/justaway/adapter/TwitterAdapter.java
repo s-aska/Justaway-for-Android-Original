@@ -208,14 +208,17 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                 + message.getSender().getScreenName());
         ((TextView) view.findViewById(R.id.status)).setText("D " + message.getRecipientScreenName()
                 + " " + message.getText());
-        ((TextView) view.findViewById(R.id.datetime)).setText(date_format.format(message
-                .getCreatedAt()));
+        ((TextView) view.findViewById(R.id.datetime))
+                .setText(getAbsoluteTime(message.getCreatedAt()));
+        ((TextView) view.findViewById(R.id.datetime_relative))
+                .setText(getRelativeTime(message.getCreatedAt()));
         view.findViewById(R.id.via).setVisibility(View.GONE);
         view.findViewById(R.id.retweet).setVisibility(View.GONE);
         view.findViewById(R.id.images).setVisibility(View.GONE);
         ImageView icon = (ImageView) view.findViewById(R.id.icon);
         mApplication.displayRoundedImage(message.getSender().getBiggerProfileImageURL(), icon);
         view.findViewById(R.id.action).setVisibility(View.GONE);
+        view.findViewById(R.id.fontello_lock).setVisibility(View.INVISIBLE);
         // view.findViewById(R.id.is_favorited).setVisibility(View.GONE);
     }
 
@@ -308,8 +311,8 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         ((TextView) view.findViewById(R.id.screen_name)).setText("@"
                 + status.getUser().getScreenName());
         ((TextView) view.findViewById(R.id.status)).setText(status.getText());
-//        ((TextView) view.findViewById(R.id.datetime))
-//                .setText(getRelativeTime(status.getCreatedAt()));
+        ((TextView) view.findViewById(R.id.datetime_relative))
+                .setText(getRelativeTime(status.getCreatedAt()));
         ((TextView) view.findViewById(R.id.datetime))
                 .setText(getAbsoluteTime(status.getCreatedAt()));
         ((TextView) view.findViewById(R.id.via))
