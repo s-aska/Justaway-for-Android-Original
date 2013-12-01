@@ -171,9 +171,19 @@ public class ProfileActivity extends FragmentActivity implements
                     Locale.ENGLISH);
             String createdAt = date_format.format(user.getCreatedAt()).toString();
             ((TextView) findViewById(R.id.createdAt)).setText(createdAt);
-            String iconUrl = user.getBiggerProfileImageURL();
+            final String iconUrl = user.getBiggerProfileImageURL();
             String bannerUrl = user.getProfileBannerMobileRetinaURL();
             JustawayApplication.getApplication().displayRoundedImage(iconUrl, icon);
+            // 画像タップで拡大表示（ピンチイン・ピンチアウトいつかちゃんとやる）
+            icon.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(v.getContext(), ScaleImageActivity.class);
+                    intent.putExtra("url", iconUrl);
+                    startActivity(intent);
+                }
+            });
+
             if (bannerUrl != null) {
                 JustawayApplication.getApplication().displayImage(bannerUrl, banner);
             }
