@@ -167,13 +167,25 @@ public class ProfileActivity extends FragmentActivity implements
                     .getFollowersCount()));
             ((TextView) findViewById(R.id.listedCount)).setText(String.valueOf(user
                     .getListedCount()));
+
+            findViewById(R.id.statusesCount).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, SearchActivity.class);
+                    intent.putExtra("query", "from:" + user.getScreenName());
+                    startActivity(intent);
+                }
+            });
+
             SimpleDateFormat date_format = new SimpleDateFormat("yyyy年MM月dd日",
                     Locale.ENGLISH);
             String createdAt = date_format.format(user.getCreatedAt()).toString();
             ((TextView) findViewById(R.id.createdAt)).setText(createdAt);
+
             final String iconUrl = user.getBiggerProfileImageURL();
             String bannerUrl = user.getProfileBannerMobileRetinaURL();
             JustawayApplication.getApplication().displayRoundedImage(iconUrl, icon);
+
             // 画像タップで拡大表示（ピンチイン・ピンチアウトいつかちゃんとやる）
             icon.setOnClickListener(new View.OnClickListener() {
                 @Override
