@@ -1,6 +1,8 @@
 package info.justaway;
 
 import info.justaway.display.FadeInRoundedBitmapDisplayer;
+import info.justaway.fragment.TalkFragment;
+import info.justaway.model.Row;
 import info.justaway.task.DestroyStatusTask;
 import info.justaway.task.FavoriteTask;
 import info.justaway.task.RetweetTask;
@@ -14,23 +16,34 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
+import twitter4j.HashtagEntity;
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
 import twitter4j.TwitterStream;
 import twitter4j.TwitterStreamFactory;
+import twitter4j.URLEntity;
 import twitter4j.User;
 import twitter4j.auth.AccessToken;
 import twitter4j.conf.ConfigurationBuilder;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
+import android.net.Uri;
+import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.Toast;
 
 /**
@@ -391,5 +404,188 @@ public class JustawayApplication extends Application {
 
     public void doDestroyStatus(long id) {
         new DestroyStatusTask().execute(id);
+    }
+
+
+    static final int CONTEXT_MENU_REPLY_ID = 1;
+    static final int CONTEXT_MENU_FAV_ID = 2;
+    static final int CONTEXT_MENU_FAVRT_ID = 3;
+    static final int CONTEXT_MENU_RT_ID = 4;
+    static final int CONTEXT_MENU_QT_ID = 5;
+    static final int CONTEXT_MENU_LINK_ID = 6;
+    static final int CONTEXT_MENU_TOFU_ID = 7;
+    static final int CONTEXT_MENU_DM_ID = 8;
+    static final int CONTEXT_MENU_RM_DM_ID = 9;
+    static final int CONTEXT_MENU_RM_ID = 10;
+    static final int CONTEXT_MENU_TALK_ID = 11;
+    static final int CONTEXT_MENU_RM_FAV_ID = 12;
+    static final int CONTEXT_MENU_RM_RT_ID = 13;
+    static final int CONTEXT_MENU_HASH_ID = 14;
+    private Row selectedRow;
+
+    public void onCreateContextMenuForStatus(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo) {
+        JustawayApplication application = sApplication;
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+        ListView listView = (ListView) view;
+        Row row = (Row) listView.getItemAtPosition(info.position);
+        selectedRow = row;
+
+        if (row.isDirectMessage()) {
+            menu.setHeaderTitle(row.getMessage().getSenderScreenName());
+            menu.add(0, CONTEXT_MENU_DM_ID, 0, "返信(DM)");
+            menu.add(0, CONTEXT_MENU_RM_DM_ID, 0, "ツイ消し(DM)");
+            return;
+        }
+
+        /*
+         * statusの保持はActivityで行わないとなぜか2タブ目以降の値が保持できない..
+         */
+
+        Status status = row.getStatus();
+        Status retweet = status.getRetweetedStatus();
+        Status source = retweet != null ? retweet : status;
+
+        menu.setHeaderTitle(status.getText());
+        menu.add(0, CONTEXT_MENU_REPLY_ID, 0, "リプ");
+        menu.add(0, CONTEXT_MENU_QT_ID, 0, "引用");
+
+        if (application.isFav(status)) {
+            menu.add(0, CONTEXT_MENU_RM_FAV_ID, 0, "ふぁぼを解除");
+        } else {
+            menu.add(0, CONTEXT_MENU_FAV_ID, 0, "ふぁぼ");
+        }
+
+        if (status.getUser().getId() == getUser().getId()) {
+            if (retweet != null) {
+                if (application.getRtId(status) != null) {
+                    menu.add(0, CONTEXT_MENU_RM_RT_ID, 0, "公式RTを解除");
+                }
+            } else {
+                menu.add(0, CONTEXT_MENU_RM_ID, 0, "ツイ消し");
+            }
+        } else if (application.getRtId(status) == null) {
+            if (application.isFav(status) == false) {
+                menu.add(0, CONTEXT_MENU_FAVRT_ID, 0, "ふぁぼ＆公式RT");
+            }
+            menu.add(0, CONTEXT_MENU_RT_ID, 0, "公式RT");
+        }
+
+        if (source.getInReplyToStatusId() > 0) {
+            menu.add(0, CONTEXT_MENU_TALK_ID, 0, "会話を表示");
+        }
+
+        // ツイート内のURLへアクセスできるようにメニューに展開する
+        URLEntity[] urls = source.getURLEntities();
+        for (URLEntity url : urls) {
+            menu.add(0, CONTEXT_MENU_LINK_ID, 0, url.getExpandedURL().toString());
+        }
+
+        // ツイート内のURL(画像)へアクセスできるようにメニューに展開する
+        URLEntity[] medias = source.getMediaEntities();
+        for (URLEntity url : medias) {
+            menu.add(0, CONTEXT_MENU_LINK_ID, 0, url.getExpandedURL().toString());
+        }
+
+        // ツイート内のハッシュタグを検索できるようにメニューに展開する
+        HashtagEntity[] hashtags = source.getHashtagEntities();
+        for (HashtagEntity hashtag : hashtags) {
+            menu.add(0, CONTEXT_MENU_HASH_ID, 0, "#" + hashtag.getText());
+        }
+
+        menu.add(0, CONTEXT_MENU_TOFU_ID, 0, "TofuBuster");
+    }
+
+    public boolean onContextItemSelected(FragmentActivity activity, MenuItem item) {
+
+        JustawayApplication application = getApplication();
+        Row row = selectedRow;
+        Status status = row.getStatus();
+        Status retweet = status != null ? status.getRetweetedStatus() : null;
+        Status source = retweet != null ? retweet : status;
+        Intent intent;
+
+        switch (item.getItemId()) {
+            case CONTEXT_MENU_REPLY_ID:
+                intent = new Intent(activity, PostActivity.class);
+                String text = "@" + source.getUser().getScreenName() + " ";
+                intent.putExtra("status", text);
+                intent.putExtra("selection", text.length());
+                intent.putExtra("inReplyToStatusId", status.getId());
+                activity.startActivity(intent);
+                return true;
+            case CONTEXT_MENU_QT_ID:
+                intent = new Intent(activity, PostActivity.class);
+                intent.putExtra("status", " https://twitter.com/" + status.getUser().getScreenName()
+                        + "/status/" + String.valueOf(status.getId()));
+                intent.putExtra("inReplyToStatusId", status.getId());
+                activity.startActivity(intent);
+                return true;
+            case CONTEXT_MENU_DM_ID:
+                String msg = "D " + row.getMessage().getSenderScreenName() + " ";
+                intent = new Intent(activity, PostActivity.class);
+                intent.putExtra("status", msg);
+                intent.putExtra("selection", msg.length());
+                activity.startActivity(intent);
+                return true;
+            case CONTEXT_MENU_RM_DM_ID:
+//                activity.doDestroyDirectMessage(row.getMessage().getId());
+                return true;
+            case CONTEXT_MENU_RM_ID:
+                application.doDestroyStatus(row.getStatus().getId());
+                return true;
+            case CONTEXT_MENU_RT_ID:
+                application.doRetweet(row.getStatus().getId());
+                return true;
+            case CONTEXT_MENU_RM_RT_ID:
+                application.doDestroyRetweet(row.getStatus().getId());
+                return true;
+            case CONTEXT_MENU_RM_FAV_ID:
+                application.doDestroyFavorite(status.getId());
+                return true;
+            case CONTEXT_MENU_FAV_ID:
+                application.doFavorite(status.getId());
+                return true;
+            case CONTEXT_MENU_FAVRT_ID:
+                application.doFavorite(status.getId());
+                application.doRetweet(row.getStatus().getId());
+                return true;
+            case CONTEXT_MENU_TALK_ID:
+                TalkFragment dialog = new TalkFragment();
+                Bundle args = new Bundle();
+                args.putLong("statusId", source.getId());
+                dialog.setArguments(args);
+                dialog.show(activity.getSupportFragmentManager(), "dialog");
+                return true;
+            case CONTEXT_MENU_LINK_ID:
+
+                /**
+                 * 現在は全てIntentでブラウザなどに飛ばしているが、 画像やツイートは自アプリで参照できるように対応する予定
+                 */
+                intent = new Intent(Intent.ACTION_VIEW, Uri.parse(item.getTitle().toString()));
+                activity.startActivity(intent);
+                return true;
+            case CONTEXT_MENU_HASH_ID:
+                intent = new Intent(activity, SearchActivity.class);
+                intent.putExtra("word", item.getTitle().toString());
+                activity.startActivity(intent);
+                return true;
+            case CONTEXT_MENU_TOFU_ID:
+                try {
+                    intent = new Intent("com.product.kanzmrsw.tofubuster.ACTION_SHOW_TEXT");
+                    intent.putExtra(Intent.EXTRA_TEXT, status.getText());
+                    intent.putExtra(Intent.EXTRA_SUBJECT, "Justaway");
+                    intent.putExtra("isCopyEnabled", true);
+                    activity.startActivity(intent); // TofuBusterがインストールされていない場合、startActivityで落ちる
+                } catch (Exception e) {
+                    // 露骨な誘導
+                    intent = new Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("https://market.android.com/details?id=com.product.kanzmrsw.tofubuster"));
+                    activity.startActivity(intent);
+                }
+                return true;
+            default:
+                return true;
+        }
     }
 }

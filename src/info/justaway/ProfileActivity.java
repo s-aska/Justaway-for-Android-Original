@@ -20,10 +20,13 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
@@ -41,6 +44,7 @@ public class ProfileActivity extends FragmentActivity implements
     private TextView locationIcon;
     private User user;
     private JustawayApplication application;
+    private TwitterAdapter adapter;
 
     /**
      * Twitter REST API用のインスタンス
@@ -75,6 +79,24 @@ public class ProfileActivity extends FragmentActivity implements
         favouritesCount.setTypeface(Typeface.createFromAsset(context.getAssets(), "fontello.ttf"));
         favouritesCount.setText(R.string.fontello_star);
 
+
+        ListView listView = (ListView) findViewById(R.id.listView);
+
+        // コンテキストメニューを使える様にする為の指定、但しデフォルトではロングタップで開く
+        registerForContextMenu(listView);
+
+        // Status(ツイート)をViewに描写するアダプター
+        adapter = new TwitterAdapter(context, R.layout.row_tweet);
+        listView.setAdapter(adapter);
+
+        // シングルタップでコンテキストメニューを開くための指定
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                view.showContextMenu();
+            }
+        });
+
         Intent intent = getIntent();
         Bundle args = new Bundle(1);
         String screenName = null;
@@ -85,6 +107,19 @@ public class ProfileActivity extends FragmentActivity implements
         }
         args.putString("screenName", screenName);
         getSupportLoaderManager().initLoader(0, args, this);
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        JustawayApplication application = JustawayApplication.getApplication();
+        application.onCreateContextMenuForStatus(menu, v, menuInfo);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        JustawayApplication application = JustawayApplication.getApplication();
+        return application.onContextItemSelected(this, item);
     }
 
     @Override
@@ -171,15 +206,11 @@ public class ProfileActivity extends FragmentActivity implements
                     }
                 });
             }
-            TableLayout table = (TableLayout) findViewById(R.id.table);
-            TwitterAdapter adapter = new TwitterAdapter(this, R.layout.row_tweet_for_table);
+
+            adapter.clear();
             ResponseList<Status> statuses = profile.getStatuses();
-            int i = 0;
             for (Status status : statuses) {
                 adapter.add(Row.newStatus(status));
-                View row = adapter.getView(i, null, table);
-                table.addView(row);
-                i++;
             }
         }
     }

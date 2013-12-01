@@ -36,16 +36,8 @@
 
     </LinearLayout>
 
-    <ScrollView
-        android:id="@+id/ScrollView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
-        <TableLayout
-            android:id="@+id/table"
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent"
-            android:stretchColumns="1"
-            android:shrinkColumns="0" />
-    </ScrollView>
+    <ListView
+        android:id="@+id/listView"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"/>
 </LinearLayout>
