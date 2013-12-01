@@ -168,7 +168,7 @@ public class ProfileActivity extends FragmentActivity implements
             ((TextView) findViewById(R.id.listedCount)).setText(String.valueOf(user
                     .getListedCount()));
 
-            findViewById(R.id.statusesCount).setOnClickListener(new View.OnClickListener() {
+            findViewById(R.id.statuses).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(context, SearchActivity.class);
