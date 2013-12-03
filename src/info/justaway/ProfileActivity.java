@@ -1,6 +1,8 @@
 package info.justaway;
 
 import info.justaway.adapter.TwitterAdapter;
+import info.justaway.fragment.profile.DescriptionFragment;
+import info.justaway.fragment.profile.SummaryFragment;
 import info.justaway.model.Profile;
 import info.justaway.model.Row;
 import info.justaway.task.FollowTask;
@@ -8,7 +10,6 @@ import info.justaway.task.ShowUserLoader;
 import info.justaway.task.UnfollowTask;
 import twitter4j.Relationship;
 import twitter4j.ResponseList;
-import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.User;
 
@@ -18,9 +19,12 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.support.v4.view.ViewPager;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,21 +32,16 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TableLayout;
 import android.widget.TextView;
 
-import java.text.SimpleDateFormat;
-import java.util.Locale;
+import java.util.ArrayList;
 
 public class ProfileActivity extends FragmentActivity implements
         LoaderManager.LoaderCallbacks<Profile> {
 
     private Context context;
     private Twitter twitter;
-    private ImageView icon;
     private ImageView banner;
-    private TextView urlIcon;
-    private TextView locationIcon;
     private User user;
     private JustawayApplication application;
     private TwitterAdapter adapter;
@@ -67,20 +66,10 @@ public class ProfileActivity extends FragmentActivity implements
         application = JustawayApplication.getApplication();
 
         twitter = application.getTwitter();
-        icon = (ImageView) findViewById(R.id.icon);
         banner = (ImageView) findViewById(R.id.banner);
         banner.setImageResource(R.drawable.suzuri);
-        urlIcon = (TextView) findViewById(R.id.url_icon);
-        urlIcon.setTypeface(Typeface.createFromAsset(context.getAssets(), "fontello.ttf"));
-        urlIcon.setText(R.string.fontello_sdd);
-        locationIcon = (TextView) findViewById(R.id.location_icon);
-        locationIcon.setTypeface(Typeface.createFromAsset(context.getAssets(), "fontello.ttf"));
-        locationIcon.setText(R.string.fontello_location);
-        TextView favouritesCount = (TextView) findViewById(R.id.favouritesCount_icon);
-        favouritesCount.setTypeface(Typeface.createFromAsset(context.getAssets(), "fontello.ttf"));
-        favouritesCount.setText(R.string.fontello_star);
 
-
+        // リストビューの設定
         ListView listView = (ListView) findViewById(R.id.listView);
 
         // コンテキストメニューを使える様にする為の指定、但しデフォルトではロングタップで開く
@@ -98,6 +87,7 @@ public class ProfileActivity extends FragmentActivity implements
             }
         });
 
+        // インテント経由での起動をサポート
         Intent intent = getIntent();
         Bundle args = new Bundle(1);
         String screenName = null;
@@ -140,23 +130,6 @@ public class ProfileActivity extends FragmentActivity implements
     public void onLoadFinished(Loader<Profile> arg0, Profile profile) {
         user = profile.getUser();
         if (user != null) {
-            ((TextView) findViewById(R.id.screenName)).setText("@" + user.getScreenName());
-            ((TextView) findViewById(R.id.name)).setText(user.getName());
-            if (user.getLocation() != null) {
-                ((TextView) findViewById(R.id.location)).setText(user.getLocation());
-            } else {
-                ((TextView) findViewById(R.id.location)).setText("");
-            }
-            if (user.getURL() != null) {
-                ((TextView) findViewById(R.id.url)).setText(user.getURLEntity().getExpandedURL());
-            } else {
-                ((TextView) findViewById(R.id.url)).setText("");
-            }
-            if (user.getDescription() != null) {
-                ((TextView) findViewById(R.id.description)).setText(user.getDescription());
-            } else {
-                ((TextView) findViewById(R.id.description)).setText("");
-            }
             ((TextView) findViewById(R.id.favouritesCount)).setText(String.valueOf(user
                     .getFavouritesCount()));
             ((TextView) findViewById(R.id.statusesCount)).setText(String.valueOf(user
@@ -177,60 +150,25 @@ public class ProfileActivity extends FragmentActivity implements
                 }
             });
 
-            SimpleDateFormat date_format = new SimpleDateFormat("yyyy年MM月dd日",
-                    Locale.ENGLISH);
-            String createdAt = date_format.format(user.getCreatedAt()).toString();
-            ((TextView) findViewById(R.id.createdAt)).setText(createdAt);
-
-            final String iconUrl = user.getBiggerProfileImageURL();
             String bannerUrl = user.getProfileBannerMobileRetinaURL();
-            JustawayApplication.getApplication().displayRoundedImage(iconUrl, icon);
-
-            // 画像タップで拡大表示（ピンチイン・ピンチアウトいつかちゃんとやる）
-            icon.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(v.getContext(), ScaleImageActivity.class);
-                    intent.putExtra("url", iconUrl);
-                    startActivity(intent);
-                }
-            });
-
             if (bannerUrl != null) {
                 JustawayApplication.getApplication().displayImage(bannerUrl, banner);
             }
-            Relationship relationship = profile.getRelationship();
-            if (relationship.isSourceFollowedByTarget()) {
-                ((TextView) findViewById(R.id.followedBy)).setText("フォローされています");
-            }
-            if (user.getId() == application.getUser().getId()) {
-                ((TextView) findViewById(R.id.follow)).setText("プロフィールを編集する");
-                ((TextView) findViewById(R.id.follow)).setTextSize(13);
-                findViewById(R.id.follow).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(context, EditProfileActivity.class);
-                        startActivity(intent);
-                    }
-                });
-            } else if (relationship.isSourceFollowingTarget()) {
-                ((TextView) findViewById(R.id.follow)).setText("フォローを解除");
-                findViewById(R.id.follow).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        new UnfollowTask().execute(user.getId());
-                    }
-                });
-            } else {
-                ((TextView) findViewById(R.id.follow)).setText("フォローする");
-                findViewById(R.id.follow).setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        new FollowTask().execute(user.getId());
-                    }
-                });
-            }
 
+            Relationship relationship = profile.getRelationship();
+
+            /**
+             * スワイプで動かせるタブを実装するのに最低限必要な実装
+             */
+            ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+            SectionsPagerAdapter pagerAdapter = new SectionsPagerAdapter(this, viewPager);
+
+            Bundle args = new Bundle();
+            args.putSerializable("user", user);
+            args.putSerializable("relationship", relationship);
+            pagerAdapter.addTab(SummaryFragment.class, args);
+            pagerAdapter.addTab(DescriptionFragment.class, args);
+            pagerAdapter.notifyDataSetChanged();
         }
     }
 
@@ -259,6 +197,61 @@ public class ProfileActivity extends FragmentActivity implements
                 break;
         }
         return true;
+    }
+
+    /**
+     * タブの切替毎に必要なFragmentを取得するためのAdapterクラス
+     */
+    public static class SectionsPagerAdapter extends FragmentPagerAdapter {
+        private final Context mContext;
+        private final ViewPager mViewPager;
+        private final ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
+
+        private static final class TabInfo {
+            private final Class<?> clazz;
+            private final Bundle args;
+
+            /**
+             * タブ内のActivity、引数を設定する。
+             *
+             * @param clazz    タブ内のv4.Fragment
+             * @param args     タブ内のv4.Fragmentに対する引数
+             */
+            TabInfo(Class<?> clazz, Bundle args) {
+                this.clazz = clazz;
+                this.args = args;
+            }
+        }
+
+        public SectionsPagerAdapter(FragmentActivity context, ViewPager viewPager) {
+            super(context.getSupportFragmentManager());
+            viewPager.setAdapter(this);
+            mContext = context;
+            mViewPager = viewPager;
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            TabInfo info = mTabs.get(position);
+            return Fragment.instantiate(mContext, info.clazz.getName(), info.args);
+        }
+
+        /**
+         * タブ内に起動するActivity、引数、タイトルを設定する
+         *
+         * @param clazz    起動するv4.Fragmentクラス
+         * @param args     v4.Fragmentに対する引数
+         */
+        public void addTab(Class<?> clazz, Bundle args) {
+            TabInfo info = new TabInfo(clazz, args);
+            mTabs.add(info);
+        }
+
+        @Override
+        public int getCount() {
+            // タブ数
+            return mTabs.size();
+        }
     }
 
     private class UserTimelineTask extends AsyncTask<String, Void, ResponseList<twitter4j.Status>> {

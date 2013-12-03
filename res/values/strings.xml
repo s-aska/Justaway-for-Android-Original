@@ -21,10 +21,11 @@
     <string name="tweet_suddenly">突</string>
     <string name="tweet_battery">残</string>
     <string name="tweet_img">画</string>
-    <string name="tweets">TWEETS</string>
-    <string name="following">FOLLOWING</string>
-    <string name="followers">FOLLOWERS</string>
-    <string name="listed">LISTED</string>
+    <string name="tweets">ツイート</string>
+    <string name="following">フォロー</string>
+    <string name="followers">フォロワー</string>
+    <string name="listed">リスト</string>
+    <string name="favourites">お気に入り</string>
     <string name="createdAt">Twitter開始日</string>
     <string name="description_icon">Profile Icon</string>
     <string name="open_twitter">Twitterで開く</string>

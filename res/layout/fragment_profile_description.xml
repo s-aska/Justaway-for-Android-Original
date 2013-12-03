@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="12dip"
+    android:paddingRight="12dip"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:background="#99000000">
+
+    <TextView
+        android:id="@+id/description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:layout_marginBottom="4dip"
+        android:shadowColor="@android:color/black"
+        android:shadowDx="5.0"
+        android:shadowDy="5.0"
+        android:shadowRadius="10.0"
+        android:textColor="@android:color/white"
+        android:textSize="12sp"
+        android:autoLink="web" />
+
+    <TextView
+        android:id="@+id/location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="4dip"
+        android:shadowColor="@android:color/black"
+        android:shadowDx="5.0"
+        android:shadowDy="5.0"
+        android:shadowRadius="10.0"
+        android:textColor="@android:color/white"
+        android:textSize="12sp"
+        android:autoLink="web" />
+
+    <TextView
+        android:id="@+id/url"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="4dip"
+        android:shadowColor="@android:color/black"
+        android:shadowDx="5.0"
+        android:shadowDy="5.0"
+        android:shadowRadius="10.0"
+        android:textColor="@android:color/white"
+        android:textSize="12sp"
+        android:autoLink="web" />
+
+    <TextView
+        android:id="@+id/start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:shadowColor="@android:color/black"
+        android:shadowDx="5.0"
+        android:shadowDy="5.0"
+        android:shadowRadius="10.0"
+        android:textColor="@android:color/white"
+        android:textSize="12sp" />
+</LinearLayout>
