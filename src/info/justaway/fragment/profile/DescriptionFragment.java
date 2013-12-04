@@ -9,8 +9,11 @@ import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import info.justaway.R;
+import twitter4j.URLEntity;
 import twitter4j.User;
 
 public class DescriptionFragment extends Fragment {
@@ -27,7 +30,16 @@ public class DescriptionFragment extends Fragment {
         TextView start = (TextView) v.findViewById(R.id.start);
 
         if (user.getDescription() != null && user.getDescription().length() > 0) {
-            description.setText(user.getDescription());
+            String descriptionString = user.getDescription();
+            if (user.getDescriptionURLEntities()!= null) {
+                URLEntity[] urls = user.getDescriptionURLEntities();
+                for (URLEntity descriptionUrl : urls) {
+                    Pattern p = Pattern.compile(descriptionUrl.getURL());
+                    Matcher m = p.matcher(descriptionString);
+                    descriptionString = m.replaceAll(descriptionUrl.getExpandedURL());
+                }
+            }
+            description.setText(descriptionString);
             description.setVisibility(View.VISIBLE);
         } else {
             description.setVisibility(View.GONE);
