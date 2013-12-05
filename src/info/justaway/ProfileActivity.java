@@ -33,6 +33,7 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.VideoView;
 
 import java.util.ArrayList;
 
@@ -141,12 +142,15 @@ public class ProfileActivity extends FragmentActivity implements
             ((TextView) findViewById(R.id.listedCount)).setText(String.valueOf(user
                     .getListedCount()));
 
+            final View frame = findViewById(R.id.frame);
             findViewById(R.id.statuses).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(context, SearchActivity.class);
-                    intent.putExtra("query", "from:" + user.getScreenName());
-                    startActivity(intent);
+                    if (frame.getVisibility() == View.VISIBLE) {
+                        frame.setVisibility(View.GONE);
+                    } else {
+                        frame.setVisibility(View.VISIBLE);
+                    }
                 }
             });
 
@@ -169,6 +173,17 @@ public class ProfileActivity extends FragmentActivity implements
             pagerAdapter.addTab(SummaryFragment.class, args);
             pagerAdapter.addTab(DescriptionFragment.class, args);
             pagerAdapter.notifyDataSetChanged();
+            viewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+                @Override
+                public void onPageSelected(int position) {
+                    if (position == 0) {
+                        ((TextView) findViewById(R.id.symbol)).setText("● ○");
+                    } else {
+                        ((TextView) findViewById(R.id.symbol)).setText("○ ●");
+                    }
+                }
+            });
+
         }
     }
 
