@@ -310,7 +310,6 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         ((TextView) view.findViewById(R.id.display_name)).setText(status.getUser().getName());
         ((TextView) view.findViewById(R.id.screen_name)).setText("@"
                 + status.getUser().getScreenName());
-        ((TextView) view.findViewById(R.id.status)).setText(status.getText());
         ((TextView) view.findViewById(R.id.datetime_relative))
                 .setText(getRelativeTime(status.getCreatedAt()));
         ((TextView) view.findViewById(R.id.datetime))
@@ -395,7 +394,12 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         Pattern twitpic_pattern = Pattern.compile("^http://twitpic\\.com/(\\w+)$");
         Pattern twipple_pattern = Pattern.compile("^http://p\\.twipple\\.jp/(\\w+)$");
         Pattern instagram_pattern = Pattern.compile("^http://instagram\\.com/p/(\\w+)/$");
+        String statusString = status.getText();
         for (URLEntity url : urls) {
+            Pattern p = Pattern.compile(url.getURL());
+            Matcher m = p.matcher(statusString);
+            statusString = m.replaceAll(url.getExpandedURL());
+            
             Matcher twitpic_matcher = twitpic_pattern.matcher(url.getExpandedURL());
             if (twitpic_matcher.find()) {
                 imageUrls.add("http://twitpic.com/show/full/" + twitpic_matcher.group(1));
@@ -412,6 +416,8 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                 continue;
             }
         }
+        ((TextView) view.findViewById(R.id.status)).setText(statusString);
+
         for (MediaEntity media : medias) {
             imageUrls.add(media.getMediaURL());
         }
