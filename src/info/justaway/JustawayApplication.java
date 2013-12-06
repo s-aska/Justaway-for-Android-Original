@@ -433,6 +433,8 @@ public class JustawayApplication extends Application {
     static final int CONTEXT_MENU_RM_RT_ID = 13;
     static final int CONTEXT_MENU_HASH_ID = 14;
     static final int CONTEXT_MENU_AT_ID = 15;
+    static final int CONTEXT_MENU_REPLY_ALL_ID = 16;
+
     private Row selectedRow;
 
     public void onCreateContextMenuForStatus(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo) {
@@ -459,6 +461,12 @@ public class JustawayApplication extends Application {
 
         menu.setHeaderTitle(status.getText());
         menu.add(0, CONTEXT_MENU_REPLY_ID, 0, "リプ");
+
+        UserMentionEntity[] mentions = source.getUserMentionEntities();
+        if (mentions.length > 1) {
+            menu.add(0, CONTEXT_MENU_REPLY_ALL_ID, 0, "全員にリプ");
+        }
+
         menu.add(0, CONTEXT_MENU_QT_ID, 0, "引用");
 
         if (application.isFav(status)) {
@@ -504,7 +512,6 @@ public class JustawayApplication extends Application {
             menu.add(0, CONTEXT_MENU_HASH_ID, 0, "#" + hashtag.getText());
         }
 
-        UserMentionEntity[] mentions = source.getUserMentionEntities();
         for (UserMentionEntity mention: mentions) {
             menu.add(0, CONTEXT_MENU_AT_ID, 0, "@" + mention.getScreenName());
         }
@@ -520,11 +527,24 @@ public class JustawayApplication extends Application {
         Status retweet = status != null ? status.getRetweetedStatus() : null;
         Status source = retweet != null ? retweet : status;
         Intent intent;
+        String text;
 
         switch (item.getItemId()) {
             case CONTEXT_MENU_REPLY_ID:
+                text = "@" + source.getUser().getScreenName() + " ";
                 intent = new Intent(activity, PostActivity.class);
-                String text = "@" + source.getUser().getScreenName() + " ";
+                intent.putExtra("status", text);
+                intent.putExtra("selection", text.length());
+                intent.putExtra("inReplyToStatusId", status.getId());
+                activity.startActivity(intent);
+                return true;
+            case CONTEXT_MENU_REPLY_ALL_ID:
+                UserMentionEntity[] mentions = source.getUserMentionEntities();
+                text = "";
+                for (UserMentionEntity mention: mentions) {
+                    text = text.concat("@" + mention.getScreenName() + " ");
+                }
+                intent = new Intent(activity, PostActivity.class);
                 intent.putExtra("status", text);
                 intent.putExtra("selection", text.length());
                 intent.putExtra("inReplyToStatusId", status.getId());
