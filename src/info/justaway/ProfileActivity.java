@@ -177,9 +177,9 @@ public class ProfileActivity extends FragmentActivity implements
                 @Override
                 public void onPageSelected(int position) {
                     if (position == 0) {
-                        ((TextView) findViewById(R.id.symbol)).setText("● ○");
+                        ((TextView) findViewById(R.id.symbol)).setText("●  ○");
                     } else {
-                        ((TextView) findViewById(R.id.symbol)).setText("○ ●");
+                        ((TextView) findViewById(R.id.symbol)).setText("○  ●");
                     }
                 }
             });
