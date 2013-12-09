@@ -60,7 +60,14 @@ public class SummaryFragment extends Fragment {
             followedBy.setText("");
         }
 
-        if (user.getId() == application.getUser().getId()) {
+        User me = application.getUser();
+        if (me == null) {
+            follow.setVisibility(View.GONE);
+            return v;
+        }
+
+        follow.setVisibility(View.VISIBLE);
+        if (user.getId() == me.getId()) {
             follow.setText("プロフィールを編集する");
             follow.setOnClickListener(new View.OnClickListener() {
                 @Override
