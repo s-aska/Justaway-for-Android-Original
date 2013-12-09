@@ -75,18 +75,6 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
     }
 
     /**
-     * コンテキストメニュー表示時の選択したツイートをセットしている Streaming API対応で勝手に画面がスクロールされる為、
-     * positionから取得されるitemが変わってしまい、どこかに保存する必要があった
-     */
-    public Row getSelectedRow() {
-        return selectedRow;
-    }
-
-    public void setSelectedRow(Row selectedRow) {
-        this.selectedRow = selectedRow;
-    }
-
-    /**
      * @param savedInstanceState
      */
     @Override

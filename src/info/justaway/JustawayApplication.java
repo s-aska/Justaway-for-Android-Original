@@ -435,6 +435,10 @@ public class JustawayApplication extends Application {
     static final int CONTEXT_MENU_AT_ID = 15;
     static final int CONTEXT_MENU_REPLY_ALL_ID = 16;
 
+    /**
+     * コンテキストメニュー表示時の選択したツイートをセットしている Streaming API対応で勝手に画面がスクロールされる為、
+     * positionから取得されるitemが変わってしまい、どこかに保存する必要があった
+     */
     private Row selectedRow;
 
     public void onCreateContextMenuForStatus(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo) {
