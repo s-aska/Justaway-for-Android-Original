@@ -522,6 +522,7 @@ public class JustawayApplication extends Application {
     public boolean onContextItemSelected(FragmentActivity activity, MenuItem item) {
 
         JustawayApplication application = getApplication();
+        User me = application.getUser();
         Row row = selectedRow;
         Status status = row.getStatus();
         Status retweet = status != null ? status.getRetweetedStatus() : null;
@@ -539,9 +540,15 @@ public class JustawayApplication extends Application {
                 activity.startActivity(intent);
                 return true;
             case CONTEXT_MENU_REPLY_ALL_ID:
+                text = "@" + source.getUser().getScreenName() + " ";
                 UserMentionEntity[] mentions = source.getUserMentionEntities();
-                text = "";
                 for (UserMentionEntity mention: mentions) {
+                    if (source.getUser().getScreenName().equals(mention.getScreenName())) {
+                        continue;
+                    }
+                    if (me.getScreenName().equals(mention.getScreenName())) {
+                        continue;
+                    }
                     text = text.concat("@" + mention.getScreenName() + " ");
                 }
                 intent = new Intent(activity, PostActivity.class);
