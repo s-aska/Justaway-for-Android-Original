@@ -20,6 +20,29 @@
             android:layout_height="fill_parent"></android.support.v4.view.ViewPager>
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/singleLineTweet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:background="@color/menu_background">
+
+        <EditText
+            android:id="@+id/editStatus"
+            android:layout_width="1dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/send"
+            android:layout_width="58dip"
+            android:layout_height="wrap_content"
+            android:background="@color/menu_background"
+            android:text="@string/fontello_paper"
+            android:textSize="22sp" />
+
+    </LinearLayout>
+
     <TableLayout
         android:id="@+id/footer"
         android:layout_width="match_parent"
@@ -27,7 +50,6 @@
         android:visibility="invisible">
 
         <!-- TableRow 無いと2段になる(◞‸◟) -->
-
         <TableRow>
 
             <HorizontalScrollView
