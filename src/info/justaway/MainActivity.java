@@ -14,11 +14,14 @@ import info.justaway.task.VerifyCredentialsLoader;
 import twitter4j.DirectMessage;
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
+import twitter4j.StatusUpdate;
 import twitter4j.TwitterStream;
 import twitter4j.User;
 import twitter4j.UserStreamAdapter;
 
 import android.R.color;
+import android.app.ProgressDialog;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.content.Context;
 import android.content.Intent;
@@ -36,6 +39,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 
 /**
@@ -47,6 +51,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager viewPager;
     private Row selectedRow;
+    private ProgressDialog mProgressDialog;
     private final int REQUEST_CHOOSE_USER_LIST = 100;
     private final int TAB_ID_TIMELINE = -1;
     private final int TAB_ID_INTERACTIONS = -2;
@@ -115,10 +120,12 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
         Button interactions = (Button) findViewById(R.id.action_interactions);
         Button directmessage = (Button) findViewById(R.id.action_directmessage);
         Button tweet = (Button) findViewById(R.id.action_tweet);
+        Button send = (Button) findViewById(R.id.send);
         home.setTypeface(fontello);
         interactions.setTypeface(fontello);
         directmessage.setTypeface(fontello);
         tweet.setTypeface(fontello);
+        send.setTypeface(fontello);
         home.setOnClickListener(tabMenuOnClickListener(0));
         interactions.setOnClickListener(tabMenuOnClickListener(1));
         directmessage.setOnClickListener(tabMenuOnClickListener(2));
@@ -127,6 +134,25 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), PostActivity.class);
                 startActivity(intent);
+            }
+        });
+        tweet.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                findViewById(R.id.singleLineTweet).setVisibility(View.VISIBLE);
+                return true;
+            }
+        });
+        send.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                EditText status = (EditText) findViewById(R.id.editStatus);
+                String msg = status.getText().toString();
+                if (msg != null && msg.length() > 0) {
+                    showProgressDialog("送信中！！１１１１１");
+                    StatusUpdate super_sugoi = new StatusUpdate(msg);
+                    new UpdateStatusTask().execute(super_sugoi);
+                }
             }
         });
     }
@@ -518,7 +544,12 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            moveTaskToBack(true);
+            View singleLineTweet = findViewById(R.id.singleLineTweet);
+            if (singleLineTweet.getVisibility() == View.VISIBLE) {
+                singleLineTweet.setVisibility(View.GONE);
+            } else {
+                moveTaskToBack(true);
+            }
         }
         return false;
     }
@@ -651,6 +682,42 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                 }
             }
         };
+    }
+
+    public class UpdateStatusTask extends AsyncTask<StatusUpdate, Void, Boolean> {
+        @Override
+        protected Boolean doInBackground(StatusUpdate... params) {
+            StatusUpdate super_sugoi = params[0];
+            try {
+                mApplication.getTwitter().updateStatus(super_sugoi);
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            dismissProgressDialog();
+            if (success) {
+                EditText status = (EditText) findViewById(R.id.editStatus);
+                status.setText("");
+            } else {
+                mApplication.showToast("残念~！もう一回！！");
+            }
+        }
+    }
+
+    private void showProgressDialog(String message) {
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setMessage(message);
+        mProgressDialog.show();
+    }
+
+    private void dismissProgressDialog() {
+        if (mProgressDialog != null)
+            mProgressDialog.dismiss();
     }
 
     public void doDestroyDirectMessage(Long id) {
