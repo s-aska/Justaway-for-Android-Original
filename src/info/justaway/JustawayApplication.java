@@ -1,33 +1,5 @@
 package info.justaway;
 
-import info.justaway.display.FadeInRoundedBitmapDisplayer;
-import info.justaway.fragment.TalkFragment;
-import info.justaway.model.Row;
-import info.justaway.task.DestroyStatusTask;
-import info.justaway.task.FavoriteTask;
-import info.justaway.task.RetweetTask;
-import info.justaway.task.UnFavoriteTask;
-import info.justaway.task.UnRetweetTask;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-
-import twitter4j.HashtagEntity;
-import twitter4j.Status;
-import twitter4j.Twitter;
-import twitter4j.TwitterFactory;
-import twitter4j.TwitterStream;
-import twitter4j.TwitterStreamFactory;
-import twitter4j.URLEntity;
-import twitter4j.User;
-import twitter4j.UserMentionEntity;
-import twitter4j.auth.AccessToken;
-import twitter4j.conf.ConfigurationBuilder;
-
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
@@ -42,10 +14,39 @@ import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import info.justaway.display.FadeInRoundedBitmapDisplayer;
+import info.justaway.fragment.TalkFragment;
+import info.justaway.model.Row;
+import info.justaway.task.DestroyStatusTask;
+import info.justaway.task.FavoriteTask;
+import info.justaway.task.RetweetTask;
+import info.justaway.task.UnFavoriteTask;
+import info.justaway.task.UnRetweetTask;
+import twitter4j.HashtagEntity;
+import twitter4j.Status;
+import twitter4j.Twitter;
+import twitter4j.TwitterFactory;
+import twitter4j.TwitterStream;
+import twitter4j.TwitterStreamFactory;
+import twitter4j.URLEntity;
+import twitter4j.User;
+import twitter4j.UserMentionEntity;
+import twitter4j.auth.AccessToken;
+import twitter4j.conf.ConfigurationBuilder;
 
 /**
  * アプリケーション、アクティビティ間でのデータの共有などに利用
@@ -202,6 +203,24 @@ public class JustawayApplication extends Application {
             }
         }
         return false;
+    }
+
+    /*
+     * クックモードの記憶
+     */
+    private static final String QUICK_MODE = "quickMode";
+
+    public void setQuickMod (Boolean quickMode) {
+        SharedPreferences preferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
+        Editor editor = preferences.edit();
+        editor.putBoolean(QUICK_MODE, quickMode);
+        editor.commit();
+    }
+
+    public Boolean getQuickMode() {
+        SharedPreferences preferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
+        Boolean quickMode = preferences.getBoolean(QUICK_MODE, false);
+        return quickMode;
     }
 
     /**
@@ -417,6 +436,20 @@ public class JustawayApplication extends Application {
         new DestroyStatusTask().execute(id);
     }
 
+    public void showKeyboard(final View view) {
+        view.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                inputMethodManager.showSoftInput(view, 0);
+            }
+        }, 200);
+    }
+
+    public void hideKeyboard(View view) {
+        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+    }
 
     static final int CONTEXT_MENU_REPLY_ID = 1;
     static final int CONTEXT_MENU_FAV_ID = 2;
@@ -440,6 +473,15 @@ public class JustawayApplication extends Application {
      * positionから取得されるitemが変わってしまい、どこかに保存する必要があった
      */
     private Row selectedRow;
+    private Long inReplyToStatusId;
+
+    public Long getInReplyToStatusId() {
+        return inReplyToStatusId;
+    }
+
+    public void setInReplyToStatusId(Long inReplyToStatusId) {
+        this.inReplyToStatusId = inReplyToStatusId;
+    }
 
     public void onCreateContextMenuForStatus(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo) {
         JustawayApplication application = sApplication;
@@ -516,7 +558,7 @@ public class JustawayApplication extends Application {
             menu.add(0, CONTEXT_MENU_HASH_ID, 0, "#" + hashtag.getText());
         }
 
-        for (UserMentionEntity mention: mentions) {
+        for (UserMentionEntity mention : mentions) {
             menu.add(0, CONTEXT_MENU_AT_ID, 0, "@" + mention.getScreenName());
         }
 
@@ -533,10 +575,23 @@ public class JustawayApplication extends Application {
         Status source = retweet != null ? retweet : status;
         Intent intent;
         String text;
+        EditText editStatus = null;
+        View singleLineTweet = activity.findViewById(R.id.singleLineTweet);
+        if (singleLineTweet != null && singleLineTweet.getVisibility() == View.VISIBLE) {
+            editStatus = (EditText) activity.findViewById(R.id.editStatus);
+        }
 
         switch (item.getItemId()) {
             case CONTEXT_MENU_REPLY_ID:
                 text = "@" + source.getUser().getScreenName() + " ";
+                if (editStatus != null) {
+                    editStatus.requestFocus();
+                    editStatus.setText(text);
+                    editStatus.setSelection(text.length());
+                    setInReplyToStatusId(status.getId());
+                    showKeyboard(editStatus);
+                    return true;
+                }
                 intent = new Intent(activity, PostActivity.class);
                 intent.putExtra("status", text);
                 intent.putExtra("selection", text.length());
@@ -546,7 +601,7 @@ public class JustawayApplication extends Application {
             case CONTEXT_MENU_REPLY_ALL_ID:
                 text = "@" + source.getUser().getScreenName() + " ";
                 UserMentionEntity[] mentions = source.getUserMentionEntities();
-                for (UserMentionEntity mention: mentions) {
+                for (UserMentionEntity mention : mentions) {
                     if (source.getUser().getScreenName().equals(mention.getScreenName())) {
                         continue;
                     }
@@ -555,6 +610,14 @@ public class JustawayApplication extends Application {
                     }
                     text = text.concat("@" + mention.getScreenName() + " ");
                 }
+                if (editStatus != null) {
+                    editStatus.requestFocus();
+                    editStatus.setText(text);
+                    editStatus.setSelection(text.length());
+                    setInReplyToStatusId(status.getId());
+                    showKeyboard(editStatus);
+                    return true;
+                }
                 intent = new Intent(activity, PostActivity.class);
                 intent.putExtra("status", text);
                 intent.putExtra("selection", text.length());
@@ -562,17 +625,32 @@ public class JustawayApplication extends Application {
                 activity.startActivity(intent);
                 return true;
             case CONTEXT_MENU_QT_ID:
+                text = " https://twitter.com/" + status.getUser().getScreenName()
+                        + "/status/" + String.valueOf(status.getId());
+                if (editStatus != null) {
+                    editStatus.requestFocus();
+                    editStatus.setText(text);
+                    setInReplyToStatusId(status.getId());
+                    showKeyboard(editStatus);
+                    return true;
+                }
                 intent = new Intent(activity, PostActivity.class);
-                intent.putExtra("status", " https://twitter.com/" + status.getUser().getScreenName()
-                        + "/status/" + String.valueOf(status.getId()));
+                intent.putExtra("status", text);
                 intent.putExtra("inReplyToStatusId", status.getId());
                 activity.startActivity(intent);
                 return true;
             case CONTEXT_MENU_DM_ID:
-                String msg = "D " + row.getMessage().getSenderScreenName() + " ";
+                text = "D " + row.getMessage().getSenderScreenName() + " ";
+                if (editStatus != null) {
+                    editStatus.requestFocus();
+                    editStatus.setText(text);
+                    editStatus.setSelection(text.length());
+                    showKeyboard(editStatus);
+                    return true;
+                }
                 intent = new Intent(activity, PostActivity.class);
-                intent.putExtra("status", msg);
-                intent.putExtra("selection", msg.length());
+                intent.putExtra("status", text);
+                intent.putExtra("selection", text.length());
                 activity.startActivity(intent);
                 return true;
             case CONTEXT_MENU_RM_DM_ID:
