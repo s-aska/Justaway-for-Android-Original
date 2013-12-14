@@ -99,6 +99,8 @@ public class SearchActivity extends FragmentActivity {
         if (query != null) {
             searchWords.setText(query);
             search.performClick();
+        } else {
+            application.showKeyboard(searchWords);
         }
 
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {

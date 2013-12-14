@@ -139,7 +139,11 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
         tweet.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                showQuickPanel(true);
+                if (findViewById(R.id.singleLineTweet).getVisibility() == View.VISIBLE) {
+                    hideQuickPanel();
+                } else {
+                    showQuickPanel();
+                }
                 return true;
             }
         });
@@ -162,17 +166,13 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
         });
     }
 
-    public void showQuickPanel(Boolean autoShowKeyboard) {
+    public void showQuickPanel() {
         findViewById(R.id.singleLineTweet).setVisibility(View.VISIBLE);
         EditText editStatus = (EditText) findViewById(R.id.editStatus);
         editStatus.setFocusable(true);
         editStatus.setFocusableInTouchMode(true);
         editStatus.setEnabled(true);
-        if (autoShowKeyboard) {
-            editStatus.requestFocus();
-            mApplication.showKeyboard(editStatus);
-            mApplication.setQuickMod(true);
-        }
+        mApplication.setQuickMod(true);
     }
 
     public void hideQuickPanel() {
@@ -394,7 +394,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
             });
 
             if (mApplication.getQuickMode()) {
-                showQuickPanel(false);
+                showQuickPanel();
             }
         }
     }
@@ -577,19 +577,13 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            View singleLineTweet = findViewById(R.id.singleLineTweet);
-            if (singleLineTweet.getVisibility() == View.VISIBLE) {
-                EditText editStatus = (EditText) findViewById(R.id.editStatus);
-                if (editStatus.getText().toString().length() > 0) {
-                    editStatus.setText("");
-                    editStatus.clearFocus();
-                    mApplication.setInReplyToStatusId((long) 0);
-                } else {
-                    hideQuickPanel();
-                }
-            } else {
-                moveTaskToBack(true);
+            EditText editText = (EditText) findViewById(R.id.editStatus);
+            if (editText.getText().length() > 0) {
+                editText.setText("");
+                mApplication.setInReplyToStatusId((long) 0);
+                return false;
             }
+            moveTaskToBack(true);
         }
         return false;
     }

@@ -27,7 +27,7 @@
         android:visibility="gone"
         android:background="@color/menu_background">
 
-        <EditText
+        <info.justaway.view.ClearEditText
             android:id="@+id/editStatus"
             android:layout_width="1dip"
             android:layout_height="wrap_content"
