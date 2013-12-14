@@ -1,5 +1,6 @@
 package info.justaway.fragment;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -13,7 +14,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import info.justaway.JustawayApplication;
-import info.justaway.MainActivity;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.model.Row;
@@ -29,7 +29,7 @@ public class TalkFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        MainActivity activity = (MainActivity) getActivity();
+        Activity activity = getActivity();
         Dialog dialog = new Dialog(activity);
         dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
