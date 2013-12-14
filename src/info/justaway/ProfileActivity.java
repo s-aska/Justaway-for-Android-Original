@@ -8,6 +8,7 @@ import info.justaway.model.Row;
 import info.justaway.task.FollowTask;
 import info.justaway.task.ShowUserLoader;
 import info.justaway.task.UnfollowTask;
+import twitter4j.Paging;
 import twitter4j.Relationship;
 import twitter4j.ResponseList;
 import twitter4j.Twitter;
@@ -29,9 +30,11 @@ import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.VideoView;
 
@@ -46,6 +49,10 @@ public class ProfileActivity extends FragmentActivity implements
     private User user;
     private JustawayApplication application;
     private TwitterAdapter adapter;
+    private ListView listView;
+    private ProgressBar mFooter;
+    private int currentPage = 1;
+    private int nextPage = 1;
 
     /**
      * Twitter REST API用のインスタンス
@@ -71,10 +78,13 @@ public class ProfileActivity extends FragmentActivity implements
         banner.setImageResource(R.drawable.suzuri);
 
         // リストビューの設定
-        ListView listView = (ListView) findViewById(R.id.listView);
+        listView = (ListView) findViewById(R.id.listView);
 
         // コンテキストメニューを使える様にする為の指定、但しデフォルトではロングタップで開く
         registerForContextMenu(listView);
+
+        mFooter = (ProgressBar) findViewById(R.id.guruguru);
+        mFooter.setVisibility(View.GONE);
 
         // Status(ツイート)をViewに描写するアダプター
         adapter = new TwitterAdapter(context, R.layout.row_tweet);
@@ -100,6 +110,31 @@ public class ProfileActivity extends FragmentActivity implements
         args.putString("screenName", screenName);
         getSupportLoaderManager().initLoader(0, args, this);
         new UserTimelineTask().execute(screenName);
+
+        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                // 最後までスクロールされたかどうかの判定
+                if (totalItemCount == firstVisibleItem + visibleItemCount) {
+                    additionalReading();
+                }
+            }
+        });
+    }
+
+    private void additionalReading() {
+        // 次のページあるのか確認
+        if (currentPage != nextPage) {
+            mFooter.setVisibility(View.VISIBLE);
+            currentPage++;
+            new UserTimelineTask().execute(user.getScreenName().toString());
+        }
+        return;
     }
 
     @Override
@@ -273,7 +308,7 @@ public class ProfileActivity extends FragmentActivity implements
         @Override
         protected ResponseList<twitter4j.Status> doInBackground(String... params) {
             try {
-                ResponseList<twitter4j.Status> statuses = JustawayApplication.getApplication().getTwitter().getUserTimeline(params[0]);
+                ResponseList<twitter4j.Status> statuses = JustawayApplication.getApplication().getTwitter().getUserTimeline(params[0], new Paging(nextPage));
                 return statuses;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -283,10 +318,11 @@ public class ProfileActivity extends FragmentActivity implements
 
         @Override
         protected void onPostExecute(ResponseList<twitter4j.Status> statuses) {
-            adapter.clear();
             for (twitter4j.Status status : statuses) {
                 adapter.add(Row.newStatus(status));
             }
+            mFooter.setVisibility(View.GONE);
+            nextPage++;
         }
     }
 }
