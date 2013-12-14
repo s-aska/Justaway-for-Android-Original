@@ -161,7 +161,13 @@
 
         <ListView
             android:id="@+id/listView"
+            android:layout_height="0dip"
+            android:layout_width="match_parent"
+            android:layout_weight="1" />
+        <ProgressBar
+            android:id="@+id/guruguru"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_width="match_parent" />
+            android:gravity="center" />
     </LinearLayout>
 </LinearLayout>
