@@ -1,22 +1,7 @@
 package info.justaway;
 
-import info.justaway.adapter.TwitterAdapter;
-import info.justaway.fragment.profile.DescriptionFragment;
-import info.justaway.fragment.profile.SummaryFragment;
-import info.justaway.model.Profile;
-import info.justaway.model.Row;
-import info.justaway.task.FollowTask;
-import info.justaway.task.ShowUserLoader;
-import info.justaway.task.UnfollowTask;
-import twitter4j.Paging;
-import twitter4j.Relationship;
-import twitter4j.ResponseList;
-import twitter4j.Twitter;
-import twitter4j.User;
-
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -36,9 +21,20 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.VideoView;
 
 import java.util.ArrayList;
+
+import info.justaway.adapter.TwitterAdapter;
+import info.justaway.fragment.profile.DescriptionFragment;
+import info.justaway.fragment.profile.SummaryFragment;
+import info.justaway.model.Profile;
+import info.justaway.model.Row;
+import info.justaway.task.ShowUserLoader;
+import twitter4j.Paging;
+import twitter4j.Relationship;
+import twitter4j.ResponseList;
+import twitter4j.Twitter;
+import twitter4j.User;
 
 public class ProfileActivity extends FragmentActivity implements
         LoaderManager.LoaderCallbacks<Profile> {
@@ -164,62 +160,67 @@ public class ProfileActivity extends FragmentActivity implements
 
     @Override
     public void onLoadFinished(Loader<Profile> arg0, Profile profile) {
-        user = profile.getUser();
-        if (user != null) {
-            ((TextView) findViewById(R.id.favouritesCount)).setText(String.valueOf(user
-                    .getFavouritesCount()));
-            ((TextView) findViewById(R.id.statusesCount)).setText(String.valueOf(user
-                    .getStatusesCount()));
-            ((TextView) findViewById(R.id.friendsCount)).setText(String.valueOf(user
-                    .getFriendsCount()));
-            ((TextView) findViewById(R.id.followersCount)).setText(String.valueOf(user
-                    .getFollowersCount()));
-            ((TextView) findViewById(R.id.listedCount)).setText(String.valueOf(user
-                    .getListedCount()));
-
-            final View frame = findViewById(R.id.frame);
-            findViewById(R.id.statuses).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (frame.getVisibility() == View.VISIBLE) {
-                        frame.setVisibility(View.GONE);
-                    } else {
-                        frame.setVisibility(View.VISIBLE);
-                    }
-                }
-            });
-
-            String bannerUrl = user.getProfileBannerMobileRetinaURL();
-            if (bannerUrl != null) {
-                JustawayApplication.getApplication().displayImage(bannerUrl, banner);
-            }
-
-            Relationship relationship = profile.getRelationship();
-
-            /**
-             * スワイプで動かせるタブを実装するのに最低限必要な実装
-             */
-            ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-            SectionsPagerAdapter pagerAdapter = new SectionsPagerAdapter(this, viewPager);
-
-            Bundle args = new Bundle();
-            args.putSerializable("user", user);
-            args.putSerializable("relationship", relationship);
-            pagerAdapter.addTab(SummaryFragment.class, args);
-            pagerAdapter.addTab(DescriptionFragment.class, args);
-            pagerAdapter.notifyDataSetChanged();
-            viewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-                @Override
-                public void onPageSelected(int position) {
-                    if (position == 0) {
-                        ((TextView) findViewById(R.id.symbol)).setText("●  ○");
-                    } else {
-                        ((TextView) findViewById(R.id.symbol)).setText("○  ●");
-                    }
-                }
-            });
-
+        if (profile == null) {
+            application.showToast("読み込みに失敗しました:;(∩´﹏`∩);:");
+            return;
         }
+        user = profile.getUser();
+        if (user == null) {
+            application.showToast("読み込みに失敗しました:;(∩´﹏`∩);:");
+            return;
+        }
+        ((TextView) findViewById(R.id.favouritesCount)).setText(String.valueOf(user
+                .getFavouritesCount()));
+        ((TextView) findViewById(R.id.statusesCount)).setText(String.valueOf(user
+                .getStatusesCount()));
+        ((TextView) findViewById(R.id.friendsCount)).setText(String.valueOf(user
+                .getFriendsCount()));
+        ((TextView) findViewById(R.id.followersCount)).setText(String.valueOf(user
+                .getFollowersCount()));
+        ((TextView) findViewById(R.id.listedCount)).setText(String.valueOf(user
+                .getListedCount()));
+
+        final View frame = findViewById(R.id.frame);
+        findViewById(R.id.statuses).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (frame.getVisibility() == View.VISIBLE) {
+                    frame.setVisibility(View.GONE);
+                } else {
+                    frame.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        String bannerUrl = user.getProfileBannerMobileRetinaURL();
+        if (bannerUrl != null) {
+            JustawayApplication.getApplication().displayImage(bannerUrl, banner);
+        }
+
+        Relationship relationship = profile.getRelationship();
+
+        /**
+         * スワイプで動かせるタブを実装するのに最低限必要な実装
+         */
+        ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+        SectionsPagerAdapter pagerAdapter = new SectionsPagerAdapter(this, viewPager);
+
+        Bundle args = new Bundle();
+        args.putSerializable("user", user);
+        args.putSerializable("relationship", relationship);
+        pagerAdapter.addTab(SummaryFragment.class, args);
+        pagerAdapter.addTab(DescriptionFragment.class, args);
+        pagerAdapter.notifyDataSetChanged();
+        viewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                if (position == 0) {
+                    ((TextView) findViewById(R.id.symbol)).setText("●  ○");
+                } else {
+                    ((TextView) findViewById(R.id.symbol)).setText("○  ●");
+                }
+            }
+        });
     }
 
     @Override
@@ -264,8 +265,8 @@ public class ProfileActivity extends FragmentActivity implements
             /**
              * タブ内のActivity、引数を設定する。
              *
-             * @param clazz    タブ内のv4.Fragment
-             * @param args     タブ内のv4.Fragmentに対する引数
+             * @param clazz タブ内のv4.Fragment
+             * @param args  タブ内のv4.Fragmentに対する引数
              */
             TabInfo(Class<?> clazz, Bundle args) {
                 this.clazz = clazz;
@@ -289,8 +290,8 @@ public class ProfileActivity extends FragmentActivity implements
         /**
          * タブ内に起動するActivity、引数、タイトルを設定する
          *
-         * @param clazz    起動するv4.Fragmentクラス
-         * @param args     v4.Fragmentに対する引数
+         * @param clazz 起動するv4.Fragmentクラス
+         * @param args  v4.Fragmentに対する引数
          */
         public void addTab(Class<?> clazz, Bundle args) {
             TabInfo info = new TabInfo(clazz, args);
