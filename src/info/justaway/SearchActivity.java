@@ -10,10 +10,12 @@ import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import java.util.List;
 
@@ -29,6 +31,9 @@ public class SearchActivity extends FragmentActivity {
     private Twitter twitter;
     private EditText searchWords;
     private TwitterAdapter adapter;
+    private ListView listView;
+    private ProgressBar mFooter;
+    private Query nextQuery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,8 +51,10 @@ public class SearchActivity extends FragmentActivity {
         tweet.setTypeface(fontello);
 
         searchWords = (EditText) findViewById(R.id.searchWords);
-
-        ListView listView = (ListView) findViewById(R.id.listView);
+        mFooter = (ProgressBar) findViewById(R.id.guruguru);
+        mFooter.setVisibility(View.GONE);
+        listView = (ListView) findViewById(R.id.listView);
+        listView.setVisibility(View.GONE);
 
         // コンテキストメニューを使える様にする為の指定、但しデフォルトではロングタップで開く
         registerForContextMenu(listView);
@@ -72,6 +79,9 @@ public class SearchActivity extends FragmentActivity {
                         (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
                 adapter.clear();
+                listView.setVisibility(View.GONE);
+                mFooter.setVisibility(View.VISIBLE);
+                nextQuery = null;
                 new SearchTask().execute(query);
             }
         });
@@ -90,6 +100,30 @@ public class SearchActivity extends FragmentActivity {
             searchWords.setText(query);
             search.performClick();
         }
+
+        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                // 最後までスクロールされたかどうかの判定
+                if (totalItemCount == firstVisibleItem + visibleItemCount) {
+                    additionalReading();
+                }
+            }
+        });
+    }
+
+    private void additionalReading() {
+        if (nextQuery != null) {
+            mFooter.setVisibility(View.VISIBLE);
+            new SearchTask().execute(nextQuery);
+            nextQuery = null;
+        }
+        return;
     }
 
     @Override
@@ -120,10 +154,24 @@ public class SearchActivity extends FragmentActivity {
 
         @Override
         protected void onPostExecute(QueryResult queryResult) {
+            if (queryResult == null) {
+                JustawayApplication.showToast("失敗です！規制かな？");
+                return;
+            }
+            if (queryResult.hasNext()) {
+                nextQuery = queryResult.nextQuery();
+            }
+            int count = adapter.getCount();
             List<twitter4j.Status> statuses = queryResult.getTweets();
             for (twitter4j.Status status : statuses) {
                 adapter.add(Row.newStatus(status));
             }
+
+            listView.setVisibility(View.VISIBLE);
+            if (count == 0) {
+                listView.setSelection(0);
+            }
+            mFooter.setVisibility(View.GONE);
 
             // インテント経由で検索時にうまく閉じてくれないので入れている
             InputMethodManager inputMethodManager =
