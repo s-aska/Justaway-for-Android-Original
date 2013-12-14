@@ -139,7 +139,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
         tweet.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                findViewById(R.id.singleLineTweet).setVisibility(View.VISIBLE);
+                showQuickPanel(true);
                 return true;
             }
         });
@@ -151,10 +151,39 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                 if (msg != null && msg.length() > 0) {
                     showProgressDialog("送信中！！１１１１１");
                     StatusUpdate super_sugoi = new StatusUpdate(msg);
+                    Long inReplyToStatusId = mApplication.getInReplyToStatusId();
+                    if (inReplyToStatusId != null && inReplyToStatusId > 0) {
+                        super_sugoi.setInReplyToStatusId(inReplyToStatusId);
+                        mApplication.setInReplyToStatusId((long) 0);
+                    }
                     new UpdateStatusTask().execute(super_sugoi);
                 }
             }
         });
+    }
+
+    public void showQuickPanel(Boolean autoShowKeyboard) {
+        findViewById(R.id.singleLineTweet).setVisibility(View.VISIBLE);
+        EditText editStatus = (EditText) findViewById(R.id.editStatus);
+        editStatus.setFocusable(true);
+        editStatus.setFocusableInTouchMode(true);
+        editStatus.setEnabled(true);
+        if (autoShowKeyboard) {
+            editStatus.requestFocus();
+            mApplication.showKeyboard(editStatus);
+            mApplication.setQuickMod(true);
+        }
+    }
+
+    public void hideQuickPanel() {
+        EditText editStatus = (EditText) findViewById(R.id.editStatus);
+        editStatus.setFocusable(false);
+        editStatus.setFocusableInTouchMode(false);
+        editStatus.setEnabled(false);
+        editStatus.clearFocus();
+        findViewById(R.id.singleLineTweet).setVisibility(View.GONE);
+        mApplication.setInReplyToStatusId((long) 0);
+        mApplication.setQuickMod(false);
     }
 
     public void initTab() {
@@ -363,6 +392,10 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                     // }
                 }
             });
+
+            if (mApplication.getQuickMode()) {
+                showQuickPanel(false);
+            }
         }
     }
 
@@ -546,7 +579,14 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             View singleLineTweet = findViewById(R.id.singleLineTweet);
             if (singleLineTweet.getVisibility() == View.VISIBLE) {
-                singleLineTweet.setVisibility(View.GONE);
+                EditText editStatus = (EditText) findViewById(R.id.editStatus);
+                if (editStatus.getText().toString().length() > 0) {
+                    editStatus.setText("");
+                    editStatus.clearFocus();
+                    mApplication.setInReplyToStatusId((long) 0);
+                } else {
+                    hideQuickPanel();
+                }
             } else {
                 moveTaskToBack(true);
             }

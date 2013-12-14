@@ -31,6 +31,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -194,8 +195,21 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             do_reply.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(mContext, PostActivity.class);
                     String text = "D " + message.getSender().getScreenName() + " ";
+                    if (mContext.getClass().getName().equals("info.justaway.MainActivity")) {
+                        MainActivity activity = (MainActivity) mContext;
+                        View singleLineTweet = activity.findViewById(R.id.singleLineTweet);
+                        if (singleLineTweet != null && singleLineTweet.getVisibility() == View.VISIBLE) {
+                            EditText editStatus = (EditText) activity.findViewById(R.id.editStatus);
+                            editStatus.setText(text);
+                            editStatus.setSelection(text.length());
+                            editStatus.requestFocus();
+                            mApplication.showKeyboard(editStatus);
+                            mApplication.setInReplyToStatusId((long) 0);
+                            return;
+                        }
+                    }
+                    Intent intent = new Intent(mContext, PostActivity.class);
                     intent.putExtra("status", text);
                     intent.putExtra("selection", text.length());
                     mContext.startActivity(intent);
@@ -258,6 +272,19 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, PostActivity.class);
                 String text = "@" + source.getUser().getScreenName() + " ";
+                if (mContext.getClass().getName().equals("info.justaway.MainActivity")) {
+                    MainActivity activity = (MainActivity) mContext;
+                    View singleLineTweet = activity.findViewById(R.id.singleLineTweet);
+                    if (singleLineTweet != null && singleLineTweet.getVisibility() == View.VISIBLE) {
+                        EditText editStatus = (EditText) activity.findViewById(R.id.editStatus);
+                        editStatus.setText(text);
+                        editStatus.setSelection(text.length());
+                        editStatus.requestFocus();
+                        mApplication.showKeyboard(editStatus);
+                        mApplication.setInReplyToStatusId(status.getId());
+                        return;
+                    }
+                }
                 intent.putExtra("status", text);
                 intent.putExtra("selection", text.length());
                 intent.putExtra("inReplyToStatusId", status.getId());

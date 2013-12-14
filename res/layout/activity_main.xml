@@ -31,7 +31,9 @@
             android:id="@+id/editStatus"
             android:layout_width="1dip"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:enabled="false"
+            android:focusable="false" />
 
         <Button
             android:id="@+id/send"
