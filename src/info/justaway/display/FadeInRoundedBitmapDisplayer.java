@@ -35,7 +35,7 @@ public class FadeInRoundedBitmapDisplayer implements BitmapDisplayer {
         Bitmap roundedBitmap;
         try {
             roundedBitmap = transform(bitmap, roundPixels);
-        } catch (Exception e) {
+        } catch (OutOfMemoryError e) {
             roundedBitmap = bitmap;
         }
         imageView.setImageBitmap(roundedBitmap);
