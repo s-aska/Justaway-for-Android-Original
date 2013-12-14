@@ -38,7 +38,7 @@ public class SummaryFragment extends Fragment {
         TextView followedBy = (TextView) v.findViewById(R.id.followedBy);
         TextView follow = (TextView) v.findViewById(R.id.follow);
 
-        final String iconUrl = user.getBiggerProfileImageURL();
+        String iconUrl = user.getBiggerProfileImageURL();
         application.displayRoundedImage(iconUrl, icon);
 
         // アイコンタップで拡大
@@ -46,7 +46,7 @@ public class SummaryFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), ScaleImageActivity.class);
-                intent.putExtra("url", iconUrl);
+                intent.putExtra("url", user.getOriginalProfileImageURL());
                 startActivity(intent);
             }
         });
