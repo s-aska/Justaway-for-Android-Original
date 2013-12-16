@@ -18,12 +18,12 @@ public class VerifyCredentialsLoader extends AbstractAsyncTaskLoader<User> {
     @Override
     public User loadInBackground() {
         try {
-            JustawayApplication applicaton = JustawayApplication.getApplication();
-            Twitter twitter = applicaton.getTwitter();
+            JustawayApplication application = JustawayApplication.getApplication();
+            Twitter twitter = application.getTwitter();
             User user = twitter.verifyCredentials();
             ResponseList<Status> favorites = twitter.getFavorites(user.getId());
             for (Status status : favorites) {
-                applicaton.setFav(status.getId());
+                application.setFav(status.getId());
             }
             return user;
         } catch (TwitterException e) {
