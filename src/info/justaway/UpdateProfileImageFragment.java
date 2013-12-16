@@ -81,7 +81,6 @@ public class UpdateProfileImageFragment extends DialogFragment {
             JustawayApplication application = JustawayApplication.getApplication();
             if (user != null) {
                 application.showToast("プロフィール画像が公開されました");
-                application.setUser(user);
             } else {
                 application.showToast("失敗しました");
             }

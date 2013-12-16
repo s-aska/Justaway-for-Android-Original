@@ -36,9 +36,9 @@ public class TimelineFragment extends BaseFragment implements
             return;
         }
 
-        User user = JustawayApplication.getApplication().getUser();
+        long userId = JustawayApplication.getApplication().getUserId();
         Status retweet = row.getStatus().getRetweetedStatus();
-        if (retweet != null && user != null && retweet.getUser().getId() == user.getId()) {
+        if (retweet != null && retweet.getUser().getId() == userId) {
             return;
         }
 

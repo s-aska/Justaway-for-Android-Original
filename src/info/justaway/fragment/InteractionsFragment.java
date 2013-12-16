@@ -33,15 +33,14 @@ public class InteractionsFragment extends BaseFragment implements
         }
         if (row.isStatus()) {
             JustawayApplication application = JustawayApplication.getApplication();
-            User user = application.getUser();
             Status status = row.getStatus();
             // mentioned for me
-            if (status.getInReplyToUserId() == user.getId()) {
+            if (status.getInReplyToUserId() == application.getUserId()) {
                 return false;
             }
             // retweeted for me
             Status retweet = status.getRetweetedStatus();
-            if (retweet != null && retweet.getUser().getId() == user.getId()) {
+            if (retweet != null && retweet.getUser().getId() == application.getUserId()) {
                 return false;
             }
         }

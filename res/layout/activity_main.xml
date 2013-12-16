@@ -99,7 +99,9 @@
                 android:layout_width="58dip"
                 android:layout_height="wrap_content"
                 android:background="@color/menu_background"
-                android:text="@string/fontello_edit" />
+                android:text="@string/fontello_edit"
+                android:focusable="true"
+                android:focusableInTouchMode="true"><requestFocus /></Button>
         </TableRow>
     </TableLayout>
 

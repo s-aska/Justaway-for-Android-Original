@@ -17,7 +17,7 @@ public class UserListsLoader extends AbstractAsyncTaskLoader<ResponseList<UserLi
     public ResponseList<UserList> loadInBackground() {
         try {
             return JustawayApplication.getApplication().getTwitter()
-                    .getUserLists(JustawayApplication.getApplication().getUser().getId());
+                    .getUserLists(JustawayApplication.getApplication().getUserId());
         } catch (TwitterException e) {
             e.printStackTrace();
             return null;
