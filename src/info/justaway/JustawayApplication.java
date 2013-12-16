@@ -390,10 +390,6 @@ public class JustawayApplication extends Application {
         mIsFavMap.remove(id);
     }
 
-    public Boolean isFav(Long id) {
-        return mIsFavMap.get(id) != null ? true : false;
-    }
-
     public Boolean isFav(Status status) {
         if (status.isFavorited()) {
             return true;
