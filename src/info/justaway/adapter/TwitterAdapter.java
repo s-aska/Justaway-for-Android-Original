@@ -82,8 +82,8 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         Status status = row.getStatus();
         if (status != null && status.isRetweeted()) {
             Status retweet = status.getRetweetedStatus();
-            User user = mApplication.getUser();
-            if (retweet != null && user != null && status.getUser().getId() == user.getId()) {
+            long userId = mApplication.getUserId();
+            if (retweet != null && status.getUser().getId() == userId) {
                 Log.d("Justaway", "[filter]" + retweet.getId() + " => " + status.getId());
                 mApplication.setRtId(retweet.getId(), status.getId());
             }
@@ -178,7 +178,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     private void renderMessage(View view, final DirectMessage message) {
 
         Typeface fontello = Typeface.createFromAsset(mContext.getAssets(), "fontello.ttf");
-        User user = JustawayApplication.getApplication().getUser();
+        long userId = JustawayApplication.getApplication().getUserId();
 
         TextView do_reply = (TextView) view.findViewById(R.id.do_reply);
         view.findViewById(R.id.do_retweet).setVisibility(View.GONE);
@@ -187,7 +187,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         view.findViewById(R.id.fav_count).setVisibility(View.GONE);
         view.findViewById(R.id.menu_and_via).setVisibility(View.VISIBLE);
 
-        if (message.getSender().getId() == user.getId()) {
+        if (message.getSender().getId() == userId) {
             do_reply.setVisibility(View.GONE);
         } else {
             do_reply.setVisibility(View.VISIBLE);
@@ -240,7 +240,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                               User favorite) {
 
         final Status source = retweet != null ? retweet : status;
-        User user = JustawayApplication.getApplication().getUser();
+        long userId = JustawayApplication.getApplication().getUserId();
 
         Typeface fontello = Typeface.createFromAsset(mContext.getAssets(), "fontello.ttf");
 
@@ -363,7 +363,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         // RTの場合
         else if (retweet != null) {
             // 自分のツイート
-            if (user.getId() == status.getUser().getId()) {
+            if (userId == status.getUser().getId()) {
                 actionIcon.setText(R.string.fontello_retweet);
                 actionIcon.setTextColor(mContext.getResources().getColor(color.holo_green_light));
                 actionByName.setText(retweet.getUser().getName());
@@ -383,7 +383,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             }
         } else {
             // 自分へのリプ
-            if (user.getId() == status.getInReplyToUserId()) {
+            if (userId == status.getInReplyToUserId()) {
                 actionIcon.setText(R.string.fontello_at);
                 actionIcon.setTextColor(mContext.getResources().getColor(color.holo_red_light));
                 actionByName.setText(status.getUser().getName());

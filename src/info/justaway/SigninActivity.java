@@ -109,6 +109,8 @@ public class SigninActivity extends Activity {
     private void successOAuth(AccessToken accessToken) {
         JustawayApplication application = JustawayApplication.getApplication();
         application.setAccessToken(accessToken);
+        application.setUserId(accessToken.getUserId());
+        application.setScreenName(accessToken.getScreenName());
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();

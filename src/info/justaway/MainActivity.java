@@ -1,5 +1,28 @@
 package info.justaway;
 
+import android.R.color;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Typeface;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
+import android.support.v4.view.ViewPager;
+import android.util.Log;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+
 import java.util.ArrayList;
 
 import info.justaway.fragment.BaseFragment;
@@ -19,29 +42,6 @@ import twitter4j.TwitterStream;
 import twitter4j.User;
 import twitter4j.UserStreamAdapter;
 
-import android.R.color;
-import android.app.ProgressDialog;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Typeface;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
-import android.support.v4.view.ViewPager;
-import android.util.Log;
-import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-
 /**
  * @author aska
  */
@@ -50,23 +50,11 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
     private JustawayApplication mApplication;
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager viewPager;
-    private Row selectedRow;
     private ProgressDialog mProgressDialog;
     private final int REQUEST_CHOOSE_USER_LIST = 100;
     private final int TAB_ID_TIMELINE = -1;
     private final int TAB_ID_INTERACTIONS = -2;
     private final int TAB_ID_DIRECTMESSAGE = -3;
-
-    /**
-     * 自分自身のUserオブジェクト(Twitter) リプのタブでツイートが自分に対してのリプかどうかの判定などで使用している
-     */
-    public User getUser() {
-        return JustawayApplication.getApplication().getUser();
-    }
-
-    public void setUser(User user) {
-        JustawayApplication.getApplication().setUser(user);
-    }
 
     /**
      * タブビューを実現するためのもの、とても大事 サポートパッケージv4から、2系でも使えるパッケージを使用
@@ -97,17 +85,13 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
             Intent intent = new Intent(this, SigninActivity.class);
             startActivity(intent);
             finish();
-        } else {
-
-            // とりあえず勝手にストリーミング開始するようにしている
-            TwitterStream twitterStream = mApplication.getTwitterStream();
-            twitterStream.addListener(getUserStreamAdapter());
-            twitterStream.user();
-
+        } else if (mApplication.getUserId() < 0 || mApplication.getScreenName() == null) {
             /**
              * onCreateLoader => onLoadFinished と繋がる
              */
             getSupportLoaderManager().initLoader(0, null, this);
+        } else {
+            setup();
         }
 
         /**
@@ -164,6 +148,16 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                 }
             }
         });
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
     }
 
     public void showQuickPanel() {
@@ -326,77 +320,78 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
 
     @Override
     public void onLoadFinished(Loader<User> loader, User user) {
+
         // VerifyCredentialsLoaderが失敗する場合も考慮
         if (user == null) {
-            JustawayApplication.getApplication().resetAccessToken();
+            mApplication.resetAccessToken();
             Intent intent = new Intent(this, SigninActivity.class);
             startActivity(intent);
             finish();
         } else {
-            setUser(user);
             JustawayApplication.showToast(user.getScreenName() + " さんこんにちわ！！！！");
-
-            /**
-             * スワイプで動かせるタブを実装するのに最低限必要な実装
-             */
-            ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-            mSectionsPagerAdapter = new SectionsPagerAdapter(this, viewPager);
-            setViewPager(viewPager);
-
-            mSectionsPagerAdapter.addTab(TimelineFragment.class, null, "Home", TAB_ID_TIMELINE);
-            mSectionsPagerAdapter.addTab(InteractionsFragment.class, null, "Home",
-                    TAB_ID_INTERACTIONS);
-            mSectionsPagerAdapter.addTab(DirectMessageFragment.class, null, "Home",
-                    TAB_ID_DIRECTMESSAGE);
-            initTab();
-
-            findViewById(R.id.footer).setVisibility(View.VISIBLE);
-
-            /**
-             * タブは前後タブまでは状態が保持されるがそれ以上離れるとViewが破棄されてしまう、
-             * あまりに使いづらいの上限を増やしている、指定値＋前後のタブまでが保持されるようになる
-             * デフォルト値は1（表示しているタブの前後までしか保持されない）
-             */
-            viewPager.setOffscreenPageLimit(10);
-
-            /**
-             * スワイプ移動でも移動先が未読アプしている場合、アピ解除判定を行う
-             */
-            viewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-                @Override
-                public void onPageSelected(int position) {
-                    BaseFragment f = mSectionsPagerAdapter.findFragmentByPosition(position);
-                    if (f.isTop()) {
-                        showTopView();
-                    }
-                    LinearLayout tab_menus = (LinearLayout) findViewById(R.id.tab_menus);
-                    int count = tab_menus.getChildCount();
-                    for (int i = 0; i < count; i++) {
-                        Button button = (Button) tab_menus.getChildAt(i);
-                        if (i == position) {
-                            button.setBackgroundColor(getResources().getColor(
-                                    R.color.menu_active_background));
-                        } else {
-                            button.setBackgroundColor(getResources().getColor(
-                                    R.color.menu_background));
-                        }
-                    }
-                    // 4つめ以降のタブを消す
-                    // if (count > 3) {
-                    // for (int position = count - 1; position > 2; position--)
-                    // {
-                    // tab_menus.removeView(tab_menus.getChildAt(position));
-                    // mSectionsPagerAdapter.removeTab(position);
-                    // }
-                    // mSectionsPagerAdapter.notifyDataSetChanged();
-                    // }
-                }
-            });
-
-            if (mApplication.getQuickMode()) {
-                showQuickPanel();
-            }
+            mApplication.setUserId(user.getId());
+            mApplication.setScreenName(user.getScreenName());
+            setup();
         }
+    }
+
+    public void setup() {
+
+        /**
+         * スワイプで動かせるタブを実装するのに最低限必要な実装
+         */
+        ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+        mSectionsPagerAdapter = new SectionsPagerAdapter(this, viewPager);
+        setViewPager(viewPager);
+
+        mSectionsPagerAdapter.addTab(TimelineFragment.class, null, "Home", TAB_ID_TIMELINE);
+        mSectionsPagerAdapter.addTab(InteractionsFragment.class, null, "Home",
+                TAB_ID_INTERACTIONS);
+        mSectionsPagerAdapter.addTab(DirectMessageFragment.class, null, "Home",
+                TAB_ID_DIRECTMESSAGE);
+        initTab();
+
+        findViewById(R.id.footer).setVisibility(View.VISIBLE);
+
+        /**
+         * タブは前後タブまでは状態が保持されるがそれ以上離れるとViewが破棄されてしまう、
+         * あまりに使いづらいの上限を増やしている、指定値＋前後のタブまでが保持されるようになる
+         * デフォルト値は1（表示しているタブの前後までしか保持されない）
+         */
+        viewPager.setOffscreenPageLimit(10);
+
+        /**
+         * スワイプ移動でも移動先が未読アプしている場合、アピ解除判定を行う
+         */
+        viewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                BaseFragment f = mSectionsPagerAdapter.findFragmentByPosition(position);
+                if (f.isTop()) {
+                    showTopView();
+                }
+                LinearLayout tab_menus = (LinearLayout) findViewById(R.id.tab_menus);
+                int count = tab_menus.getChildCount();
+                for (int i = 0; i < count; i++) {
+                    Button button = (Button) tab_menus.getChildAt(i);
+                    if (i == position) {
+                        button.setBackgroundColor(getResources().getColor(
+                                R.color.menu_active_background));
+                    } else {
+                        button.setBackgroundColor(getResources().getColor(
+                                R.color.menu_background));
+                    }
+                }
+            }
+        });
+
+        if (mApplication.getQuickMode()) {
+            showQuickPanel();
+        }
+
+        TwitterStream twitterStream = mApplication.getTwitterStream();
+        twitterStream.addListener(getUserStreamAdapter());
+        twitterStream.user();
     }
 
     @Override
@@ -614,7 +609,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
             initTab();
         } else if (itemId == R.id.onore) {
             Intent intent = new Intent(this, ProfileActivity.class);
-            intent.putExtra("screenName", getUser().getScreenName());
+            intent.putExtra("screenName", mApplication.getScreenName());
             startActivity(intent);
         } else if (itemId == R.id.user_list) {
             Intent intent = new Intent(this, ChooseUserListsActivity.class);
@@ -665,7 +660,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
             @Override
             public void onFavorite(User source, User target, Status status) {
                 // 自分の fav を反映
-                if (source.getId() == getUser().getId()) {
+                if (source.getId() == mApplication.getUserId()) {
                     mApplication.setFav(status.getId());
                     return;
                 }
@@ -682,7 +677,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                 final Status status = arg2;
 
                 // 自分の unfav を反映
-                if (source.getId() == getUser().getId()) {
+                if (source.getId() == mApplication.getUserId()) {
                     mApplication.removeFav(status.getId());
                     return;
                 }

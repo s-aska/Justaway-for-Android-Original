@@ -1,7 +1,6 @@
 package info.justaway;
 
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -9,6 +8,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -16,14 +17,10 @@ import android.widget.Toast;
 
 import java.io.File;
 
-import twitter4j.Twitter;
+import info.justaway.task.VerifyCredentialsLoader;
 import twitter4j.User;
 
-public class EditProfileActivity extends FragmentActivity {
-
-    private Context context;
-    private Twitter twitter;
-    private JustawayApplication application;
+public class EditProfileActivity extends FragmentActivity implements LoaderManager.LoaderCallbacks<User> {
 
     private EditText name;
     private EditText location;
@@ -35,22 +32,12 @@ public class EditProfileActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
-        context = this;
-
-        application = JustawayApplication.getApplication();
-        twitter = application.getTwitter();
-        User user = application.getUser();
 
         name = ((EditText) findViewById(R.id.name));
-        name.setText(user.getName());
         location = ((EditText) findViewById(R.id.location));
-        location.setText(user.getLocation());
         url = ((EditText) findViewById(R.id.webSite));
-        url.setText(user.getURLEntity().getExpandedURL());
         description = ((EditText) findViewById(R.id.bio));
-        description.setText(user.getDescription());
         icon = ((ImageView) findViewById(R.id.icon));
-        application.displayRoundedImage(user.getBiggerProfileImageURL(), icon);
 
         findViewById(R.id.updateProfileImage).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,7 +45,6 @@ public class EditProfileActivity extends FragmentActivity {
                 Intent intent = new Intent(Intent.ACTION_PICK);
                 intent.setType("image/*");
                 startActivityForResult(intent, 1);
-
             }
         });
 
@@ -68,14 +54,50 @@ public class EditProfileActivity extends FragmentActivity {
                 new UpdateProfileTask().execute();
             }
         });
+
+        /**
+         * onCreateLoader => onLoadFinished と繋がる
+         */
+        getSupportLoaderManager().initLoader(0, null, this);
+
+    }
+
+    @Override
+    public Loader<User> onCreateLoader(int id, Bundle args) {
+        return new VerifyCredentialsLoader(this);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<User> loader, User user) {
+        JustawayApplication application = JustawayApplication.getApplication();
+        if (user == null) {
+            application.resetAccessToken();
+            Intent intent = new Intent(this, SigninActivity.class);
+            startActivity(intent);
+            finish();
+        } else {
+            name.setText(user.getName());
+            location.setText(user.getLocation());
+            url.setText(user.getURLEntity().getExpandedURL());
+            description.setText(user.getDescription());
+            application.displayRoundedImage(user.getOriginalProfileImageURL(), icon);
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<User> arg0) {
+
     }
 
     private class UpdateProfileTask extends AsyncTask<Void, Void, User> {
         @Override
         protected User doInBackground(Void... params) {
             try {
-                User user = twitter.updateProfile(name.getText().toString(), url.getText().toString(),
-                        location.getText().toString(), description.getText().toString());
+                User user = JustawayApplication.getApplication().getTwitter().updateProfile(
+                        name.getText().toString(),
+                        url.getText().toString(),
+                        location.getText().toString(),
+                        description.getText().toString());
                 return user;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -88,7 +110,6 @@ public class EditProfileActivity extends FragmentActivity {
             // dismissProgressDialog();
             if (user != null) {
                 showToast("プロフィールを保存しました");
-                application.setUser(user);
                 finish();
             } else {
                 showToast("プロフィールの保存に失敗しました");

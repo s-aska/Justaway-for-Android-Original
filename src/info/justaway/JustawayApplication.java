@@ -232,20 +232,41 @@ public class JustawayApplication extends Application {
     private AccessToken accessToken;
     private Twitter twitter;
     private TwitterStream twitterStream;
-    private User user;
+    private String screenName;
+    private long userId = -1L;
 
-    /**
-     * @return the user
-     */
-    public User getUser() {
-        return user;
+    public long getUserId() {
+        if (userId != -1L) {
+            return userId;
+        }
+        SharedPreferences preferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        userId = preferences.getLong("user_id", -1L);
+        return userId;
     }
 
-    /**
-     * @param user the user to set
-     */
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserId(long userId) {
+        SharedPreferences preferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        Editor editor = preferences.edit();
+        editor.putLong("user_id", userId);
+        editor.commit();
+        this.userId = userId;
+    }
+
+    public String getScreenName() {
+        if (screenName != null) {
+            return screenName;
+        }
+        SharedPreferences preferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        screenName = preferences.getString("screen_name", null);
+        return screenName;
+    }
+
+    public void setScreenName(String screenName) {
+        SharedPreferences preferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        Editor editor = preferences.edit();
+        editor.putString("screen_name", screenName);
+        editor.commit();
+        this.screenName = screenName;
     }
 
     private String getConsumerKey() {
@@ -352,6 +373,8 @@ public class JustawayApplication extends Application {
         Editor editor = preferences.edit();
         editor.remove(TOKEN);
         editor.remove(TOKEN_SECRET);
+        editor.remove("user_id");
+        editor.remove("screen_name");
         editor.commit();
         this.accessToken = null;
     }
@@ -521,7 +544,7 @@ public class JustawayApplication extends Application {
             menu.add(0, CONTEXT_MENU_FAV_ID, 0, "ふぁぼ");
         }
 
-        if (status.getUser().getId() == getUser().getId()) {
+        if (status.getUser().getId() == getUserId()) {
             if (retweet != null) {
                 if (application.getRtId(status) != null) {
                     menu.add(0, CONTEXT_MENU_RM_RT_ID, 0, "公式RTを解除");
@@ -568,7 +591,6 @@ public class JustawayApplication extends Application {
     public boolean onContextItemSelected(FragmentActivity activity, MenuItem item) {
 
         JustawayApplication application = getApplication();
-        User me = application.getUser();
         Row row = selectedRow;
         Status status = row.getStatus();
         Status retweet = status != null ? status.getRetweetedStatus() : null;
@@ -605,7 +627,7 @@ public class JustawayApplication extends Application {
                     if (source.getUser().getScreenName().equals(mention.getScreenName())) {
                         continue;
                     }
-                    if (me.getScreenName().equals(mention.getScreenName())) {
+                    if (getScreenName().equals(mention.getScreenName())) {
                         continue;
                     }
                     text = text.concat("@" + mention.getScreenName() + " ");
