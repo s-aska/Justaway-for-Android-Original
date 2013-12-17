@@ -159,15 +159,10 @@
             </LinearLayout>
         </LinearLayout>
 
-        <ListView
-            android:id="@+id/listView"
-            android:layout_height="0dip"
+        <android.support.v4.view.ViewPager
+            android:id="@+id/listPager"
             android:layout_width="match_parent"
-            android:layout_weight="1" />
-        <ProgressBar
-            android:id="@+id/guruguru"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center" />
+            android:layout_height="match_parent" />
+
     </LinearLayout>
 </LinearLayout>

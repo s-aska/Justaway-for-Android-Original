@@ -3,7 +3,6 @@ package info.justaway;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -15,11 +14,7 @@ import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -27,12 +22,10 @@ import java.util.ArrayList;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.fragment.profile.DescriptionFragment;
 import info.justaway.fragment.profile.SummaryFragment;
+import info.justaway.fragment.profile.UserTimelineFragment;
 import info.justaway.model.Profile;
-import info.justaway.model.Row;
 import info.justaway.task.ShowUserLoader;
-import twitter4j.Paging;
 import twitter4j.Relationship;
-import twitter4j.ResponseList;
 import twitter4j.Twitter;
 import twitter4j.User;
 
@@ -44,11 +37,6 @@ public class ProfileActivity extends FragmentActivity implements
     private ImageView banner;
     private User user;
     private JustawayApplication application;
-    private TwitterAdapter adapter;
-    private ListView listView;
-    private ProgressBar mFooter;
-    private int currentPage = 1;
-    private int nextPage = 1;
 
     /**
      * Twitter REST API用のインスタンス
@@ -73,27 +61,6 @@ public class ProfileActivity extends FragmentActivity implements
         banner = (ImageView) findViewById(R.id.banner);
         banner.setImageResource(R.drawable.suzuri);
 
-        // リストビューの設定
-        listView = (ListView) findViewById(R.id.listView);
-
-        // コンテキストメニューを使える様にする為の指定、但しデフォルトではロングタップで開く
-        registerForContextMenu(listView);
-
-        mFooter = (ProgressBar) findViewById(R.id.guruguru);
-        mFooter.setVisibility(View.GONE);
-
-        // Status(ツイート)をViewに描写するアダプター
-        adapter = new TwitterAdapter(context, R.layout.row_tweet);
-        listView.setAdapter(adapter);
-
-        // シングルタップでコンテキストメニューを開くための指定
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                view.showContextMenu();
-            }
-        });
-
         // インテント経由での起動をサポート
         Intent intent = getIntent();
         Bundle args = new Bundle(1);
@@ -105,32 +72,7 @@ public class ProfileActivity extends FragmentActivity implements
         }
         args.putString("screenName", screenName);
         getSupportLoaderManager().initLoader(0, args, this);
-        new UserTimelineTask().execute(screenName);
 
-        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
-
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-            }
-
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                // 最後までスクロールされたかどうかの判定
-                if (totalItemCount == firstVisibleItem + visibleItemCount) {
-                    additionalReading();
-                }
-            }
-        });
-    }
-
-    private void additionalReading() {
-        // 次のページあるのか確認
-        if (currentPage != nextPage) {
-            mFooter.setVisibility(View.VISIBLE);
-            currentPage++;
-            new UserTimelineTask().execute(user.getScreenName().toString());
-        }
-        return;
     }
 
     @Override
@@ -221,6 +163,16 @@ public class ProfileActivity extends FragmentActivity implements
                 }
             }
         });
+
+        // ユーザリスト用のタブ
+        ViewPager listViewPager = (ViewPager) findViewById(R.id.listPager);
+        SectionsPagerAdapter listPagerAdapter = new SectionsPagerAdapter(this, listViewPager);
+
+        Bundle listArgs = new Bundle();
+        listArgs.putSerializable("user", user);
+        listPagerAdapter.addTab(UserTimelineFragment.class, listArgs);
+        //listPagerAdapter.addTab(FollowListFragment.class, listArgs);
+        listPagerAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -305,25 +257,4 @@ public class ProfileActivity extends FragmentActivity implements
         }
     }
 
-    private class UserTimelineTask extends AsyncTask<String, Void, ResponseList<twitter4j.Status>> {
-        @Override
-        protected ResponseList<twitter4j.Status> doInBackground(String... params) {
-            try {
-                ResponseList<twitter4j.Status> statuses = JustawayApplication.getApplication().getTwitter().getUserTimeline(params[0], new Paging(nextPage));
-                return statuses;
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(ResponseList<twitter4j.Status> statuses) {
-            for (twitter4j.Status status : statuses) {
-                adapter.add(Row.newStatus(status));
-            }
-            mFooter.setVisibility(View.GONE);
-            nextPage++;
-        }
-    }
 }
