@@ -21,6 +21,7 @@ import java.util.ArrayList;
 
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.fragment.profile.DescriptionFragment;
+import info.justaway.fragment.profile.FollowListFragment;
 import info.justaway.fragment.profile.SummaryFragment;
 import info.justaway.fragment.profile.UserTimelineFragment;
 import info.justaway.model.Profile;
@@ -171,7 +172,7 @@ public class ProfileActivity extends FragmentActivity implements
         Bundle listArgs = new Bundle();
         listArgs.putSerializable("user", user);
         listPagerAdapter.addTab(UserTimelineFragment.class, listArgs);
-        //listPagerAdapter.addTab(FollowListFragment.class, listArgs);
+        listPagerAdapter.addTab(FollowListFragment.class, listArgs);
         listPagerAdapter.notifyDataSetChanged();
     }
 
