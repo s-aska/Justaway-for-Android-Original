@@ -40,7 +40,7 @@ public class UserTimelineFragment extends Fragment {
         View v = inflater.inflate(R.layout.list, container, false);
 
         JustawayApplication application = JustawayApplication.getApplication();
-        context = application.getApplicationContext();
+        context = getActivity();
 
         user = (User) getArguments().getSerializable("user");
 
