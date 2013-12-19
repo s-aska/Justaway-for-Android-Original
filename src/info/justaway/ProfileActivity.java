@@ -2,6 +2,7 @@ package info.justaway;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -19,7 +20,6 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import info.justaway.adapter.TwitterAdapter;
 import info.justaway.fragment.profile.DescriptionFragment;
 import info.justaway.fragment.profile.FollowListFragment;
 import info.justaway.fragment.profile.SummaryFragment;
@@ -33,11 +33,13 @@ import twitter4j.User;
 public class ProfileActivity extends FragmentActivity implements
         LoaderManager.LoaderCallbacks<Profile> {
 
-    private Context context;
     private Twitter twitter;
     private ImageView banner;
     private User user;
     private JustawayApplication application;
+    private int currentPosition = 0;
+    private int blue;
+    private int white;
 
     /**
      * Twitter REST API用のインスタンス
@@ -54,13 +56,18 @@ public class ProfileActivity extends FragmentActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-        context = this;
 
         application = JustawayApplication.getApplication();
 
         twitter = application.getTwitter();
         banner = (ImageView) findViewById(R.id.banner);
         banner.setImageResource(R.drawable.suzuri);
+
+        blue = getResources().getColor(android.R.color.holo_blue_light);
+        white = getResources().getColor(android.R.color.secondary_text_dark);
+
+        ((TextView) findViewById(R.id.statusesCount)).setTextColor(Color.parseColor("#33b5e5"));
+        ((TextView) findViewById(R.id.statusesCountLabel)).setTextColor(Color.parseColor("#33b5e5"));
 
         // インテント経由での起動をサポート
         Intent intent = getIntent();
@@ -174,6 +181,58 @@ public class ProfileActivity extends FragmentActivity implements
         listPagerAdapter.addTab(UserTimelineFragment.class, listArgs);
         listPagerAdapter.addTab(FollowListFragment.class, listArgs);
         listPagerAdapter.notifyDataSetChanged();
+        listViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                switch (position) {
+                    case 0:
+                        ((TextView) findViewById(R.id.statusesCount)).setTextColor(blue);
+                        ((TextView) findViewById(R.id.statusesCountLabel)).setTextColor(blue);
+                        break;
+                    case 1:
+                        ((TextView) findViewById(R.id.friendsCount)).setTextColor(blue);
+                        ((TextView) findViewById(R.id.friendsCountLabel)).setTextColor(blue);
+                        break;
+                    case 2:
+                        ((TextView) findViewById(R.id.friendsCount)).setTextColor(blue);
+                        ((TextView) findViewById(R.id.friendsCountLabel)).setTextColor(blue);
+                        break;
+                    case 3:
+                        ((TextView) findViewById(R.id.listedCount)).setTextColor(blue);
+                        ((TextView) findViewById(R.id.listedCountLabel)).setTextColor(blue);
+                        break;
+                    case 4:
+                        ((TextView) findViewById(R.id.favouritesCount)).setTextColor(blue);
+                        ((TextView) findViewById(R.id.favouritesCountLabel)).setTextColor(blue);
+                        break;
+                }
+
+                // 青くなってるのを取り消す処理
+                switch (currentPosition) {
+                    case 0:
+                        ((TextView) findViewById(R.id.statusesCount)).setTextColor(white);
+                        ((TextView) findViewById(R.id.statusesCountLabel)).setTextColor(white);
+                        break;
+                    case 1:
+                        ((TextView) findViewById(R.id.friendsCount)).setTextColor(white);
+                        ((TextView) findViewById(R.id.friendsCountLabel)).setTextColor(white);
+                        break;
+                    case 2:
+                        ((TextView) findViewById(R.id.friendsCount)).setTextColor(white);
+                        ((TextView) findViewById(R.id.friendsCountLabel)).setTextColor(white);
+                        break;
+                    case 3:
+                        ((TextView) findViewById(R.id.listedCount)).setTextColor(white);
+                        ((TextView) findViewById(R.id.listedCountLabel)).setTextColor(white);
+                        break;
+                    case 4:
+                        ((TextView) findViewById(R.id.favouritesCount)).setTextColor(white);
+                        ((TextView) findViewById(R.id.favouritesCountLabel)).setTextColor(white);
+                        break;
+                }
+                currentPosition = position;
+            }
+        });
     }
 
     @Override
