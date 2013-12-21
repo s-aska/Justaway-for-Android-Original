@@ -11,7 +11,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
-import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -84,19 +83,6 @@ public class ProfileActivity extends FragmentActivity implements
         args.putString("screenName", screenName);
         getSupportLoaderManager().initLoader(0, args, this);
 
-    }
-
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        JustawayApplication application = JustawayApplication.getApplication();
-        application.onCreateContextMenuForStatus(menu, v, menuInfo);
-    }
-
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        JustawayApplication application = JustawayApplication.getApplication();
-        return application.onContextItemSelected(this, item);
     }
 
     @Override
