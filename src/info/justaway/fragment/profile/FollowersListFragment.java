@@ -16,7 +16,11 @@ import info.justaway.adapter.FrendListAdapter;
 import twitter4j.PagableResponseList;
 import twitter4j.User;
 
-public class FollowListFragment extends Fragment {
+/**
+ * Created by teshi on 2013/12/20.
+ */
+public class FollowersListFragment extends Fragment {
+
     private FrendListAdapter adapter;
     private long userId;
     private long cursor = -1;
@@ -28,8 +32,6 @@ public class FollowListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.list, container, false);
-
-        JustawayApplication application = JustawayApplication.getApplication();
 
         User user = (User) getArguments().getSerializable("user");
         userId = user.getId();
@@ -47,7 +49,7 @@ public class FollowListFragment extends Fragment {
         adapter = new FrendListAdapter(getActivity(), R.layout.row_user);
         listView.setAdapter(adapter);
 
-        new FriendsListTask().execute(userId);
+        new FollowersListTask().execute(userId);
 
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {
 
@@ -71,18 +73,18 @@ public class FollowListFragment extends Fragment {
         if (currentPage != nextPage) {
             mFooter.setVisibility(View.VISIBLE);
             currentPage++;
-            new FriendsListTask().execute(userId);
+            new FollowersListTask().execute(userId);
         }
         return;
     }
 
-    private class FriendsListTask extends AsyncTask<Long, Void, PagableResponseList<User>> {
+    private class FollowersListTask extends AsyncTask<Long, Void, PagableResponseList<User>> {
         @Override
         protected PagableResponseList<User> doInBackground(Long... params) {
             try {
-                PagableResponseList<User> friendsList = JustawayApplication.getApplication().getTwitter().getFriendsList(params[0], cursor);
-                cursor = friendsList.getNextCursor();
-                return friendsList;
+                PagableResponseList<User> followersList = JustawayApplication.getApplication().getTwitter().getFollowersList(params[0], cursor);
+                cursor = followersList.getNextCursor();
+                return followersList;
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -90,12 +92,13 @@ public class FollowListFragment extends Fragment {
         }
 
         @Override
-        protected void onPostExecute(PagableResponseList<User> friendsList) {
-            for (User frendUser : friendsList) {
-                adapter.add(frendUser);
+        protected void onPostExecute(PagableResponseList<User> followersList) {
+            for (User friendUser : followersList) {
+                adapter.add(friendUser);
             }
             mFooter.setVisibility(View.GONE);
             nextPage++;
         }
     }
 }
+
