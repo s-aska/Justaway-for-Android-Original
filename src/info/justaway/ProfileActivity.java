@@ -21,7 +21,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import info.justaway.fragment.profile.DescriptionFragment;
-import info.justaway.fragment.profile.FollowListFragment;
+import info.justaway.fragment.profile.FollowersListFragment;
+import info.justaway.fragment.profile.FollowingListFragment;
 import info.justaway.fragment.profile.SummaryFragment;
 import info.justaway.fragment.profile.UserTimelineFragment;
 import info.justaway.model.Profile;
@@ -179,8 +180,10 @@ public class ProfileActivity extends FragmentActivity implements
         Bundle listArgs = new Bundle();
         listArgs.putSerializable("user", user);
         listPagerAdapter.addTab(UserTimelineFragment.class, listArgs);
-        listPagerAdapter.addTab(FollowListFragment.class, listArgs);
+        listPagerAdapter.addTab(FollowingListFragment.class, listArgs);
+        listPagerAdapter.addTab(FollowersListFragment.class, listArgs);
         listPagerAdapter.notifyDataSetChanged();
+        listViewPager.setOffscreenPageLimit(5);
         listViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
@@ -194,8 +197,8 @@ public class ProfileActivity extends FragmentActivity implements
                         ((TextView) findViewById(R.id.friendsCountLabel)).setTextColor(blue);
                         break;
                     case 2:
-                        ((TextView) findViewById(R.id.friendsCount)).setTextColor(blue);
-                        ((TextView) findViewById(R.id.friendsCountLabel)).setTextColor(blue);
+                        ((TextView) findViewById(R.id.followersCount)).setTextColor(blue);
+                        ((TextView) findViewById(R.id.followersCountLabel)).setTextColor(blue);
                         break;
                     case 3:
                         ((TextView) findViewById(R.id.listedCount)).setTextColor(blue);
@@ -218,8 +221,8 @@ public class ProfileActivity extends FragmentActivity implements
                         ((TextView) findViewById(R.id.friendsCountLabel)).setTextColor(white);
                         break;
                     case 2:
-                        ((TextView) findViewById(R.id.friendsCount)).setTextColor(white);
-                        ((TextView) findViewById(R.id.friendsCountLabel)).setTextColor(white);
+                        ((TextView) findViewById(R.id.followersCount)).setTextColor(white);
+                        ((TextView) findViewById(R.id.followersCountLabel)).setTextColor(white);
                         break;
                     case 3:
                         ((TextView) findViewById(R.id.listedCount)).setTextColor(white);
