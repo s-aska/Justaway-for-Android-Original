@@ -262,6 +262,14 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
 
     @Override
     protected void onDestroy() {
+
+        // ちゃんと接続を切らないとアプリが凍結されるらしい
+        TwitterStream twitterStream = mApplication.getTwitterStream();
+        if (twitterStream != null) {
+            twitterStream.cleanUp();
+            twitterStream.shutdown();
+        }
+
         super.onDestroy();
     }
 
@@ -592,7 +600,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                 mApplication.setInReplyToStatusId((long) 0);
                 return false;
             }
-            moveTaskToBack(true);
+            finish();
         }
         return false;
     }
@@ -609,18 +617,6 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
         if (itemId == R.id.signout) {
             JustawayApplication.getApplication().resetAccessToken();
             finish();
-        } else if (itemId == R.id.death) {
-            int index = 5;
-            String[] strs = new String[index];
-            String str = strs[index];// ここでIndexOutOfBoundsException
-        } else if (itemId == R.id.reload) {
-            TwitterStream twitterStream = JustawayApplication.getApplication().getTwitterStream();
-            if (twitterStream != null) {
-                twitterStream.cleanUp();
-                twitterStream.shutdown();
-                twitterStream.user();
-            }
-            initTab();
         } else if (itemId == R.id.onore) {
             Intent intent = new Intent(this, ProfileActivity.class);
             intent.putExtra("screenName", mApplication.getScreenName());
