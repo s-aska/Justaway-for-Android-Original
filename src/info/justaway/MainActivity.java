@@ -645,7 +645,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                  * ツイートを表示するかどうかはFragmentに任せる
                  */
                 int count = mSectionsPagerAdapter.getCount();
-                for (int id = 0; id < (count - 1); id++) {
+                for (int id = 0; id < count; id++) {
                     BaseFragment fragmen = (BaseFragment) mSectionsPagerAdapter
                             .findFragmentByPosition(id);
                     if (fragmen != null) {
@@ -658,7 +658,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
             public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
                 super.onDeletionNotice(statusDeletionNotice);
                 int count = mSectionsPagerAdapter.getCount();
-                for (int id = 0; id < (count - 1); id++) {
+                for (int id = 0; id < count; id++) {
                     BaseFragment fragmen = (BaseFragment) mSectionsPagerAdapter
                             .findFragmentByPosition(id);
                     if (fragmen != null) {
