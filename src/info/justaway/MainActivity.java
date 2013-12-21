@@ -117,6 +117,20 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), PostActivity.class);
+                if (findViewById(R.id.singleLineTweet).getVisibility() == View.VISIBLE) {
+                    EditText status = (EditText) findViewById(R.id.editStatus);
+                    String msg = status.getText().toString();
+                    if (msg != null && msg.length() > 0) {
+                        Long inReplyToStatusId = mApplication.getInReplyToStatusId();
+                        intent.putExtra("status", msg);
+                        intent.putExtra("selection", msg.length());
+                        if (inReplyToStatusId > 0) {
+                            intent.putExtra("inReplyToStatusId", inReplyToStatusId);
+                        }
+                        status.setText("");
+                        status.clearFocus();
+                    }
+                }
                 startActivity(intent);
             }
         });
