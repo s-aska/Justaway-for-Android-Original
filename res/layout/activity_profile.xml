@@ -74,6 +74,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/friends"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -95,6 +96,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/followers"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -116,6 +118,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/listed"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -137,6 +140,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/favourites"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
