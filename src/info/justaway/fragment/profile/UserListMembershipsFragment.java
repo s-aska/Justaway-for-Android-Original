@@ -93,6 +93,8 @@ public class UserListMembershipsFragment extends Fragment {
 
         @Override
         protected void onPostExecute(PagableResponseList<UserList> userLists) {
+            if (userLists == null) return;
+
             for (UserList userlist : userLists) {
                 adapter.add(userlist);
             }

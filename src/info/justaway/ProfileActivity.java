@@ -11,7 +11,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
-import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -87,19 +86,6 @@ public class ProfileActivity extends FragmentActivity implements
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        JustawayApplication application = JustawayApplication.getApplication();
-        application.onCreateContextMenuForStatus(menu, v, menuInfo);
-    }
-
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        JustawayApplication application = JustawayApplication.getApplication();
-        return application.onContextItemSelected(this, item);
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.profile, menu);
         return true;
@@ -133,18 +119,6 @@ public class ProfileActivity extends FragmentActivity implements
         ((TextView) findViewById(R.id.listedCount)).setText(String.valueOf(user
                 .getListedCount()));
 
-        final View frame = findViewById(R.id.frame);
-        findViewById(R.id.statuses).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (frame.getVisibility() == View.VISIBLE) {
-                    frame.setVisibility(View.GONE);
-                } else {
-                    frame.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-
         String bannerUrl = user.getProfileBannerMobileRetinaURL();
         if (bannerUrl != null) {
             JustawayApplication.getApplication().displayImage(bannerUrl, banner);
@@ -155,7 +129,7 @@ public class ProfileActivity extends FragmentActivity implements
         /**
          * スワイプで動かせるタブを実装するのに最低限必要な実装
          */
-        ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+        final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         SectionsPagerAdapter pagerAdapter = new SectionsPagerAdapter(this, viewPager);
 
         Bundle args = new Bundle();
@@ -176,7 +150,7 @@ public class ProfileActivity extends FragmentActivity implements
         });
 
         // ユーザリスト用のタブ
-        ViewPager listViewPager = (ViewPager) findViewById(R.id.listPager);
+        final ViewPager listViewPager = (ViewPager) findViewById(R.id.listPager);
         SectionsPagerAdapter listPagerAdapter = new SectionsPagerAdapter(this, listViewPager);
 
         Bundle listArgs = new Bundle();
@@ -238,6 +212,43 @@ public class ProfileActivity extends FragmentActivity implements
                         break;
                 }
                 currentPosition = position;
+            }
+        });
+
+        findViewById(R.id.statuses).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listViewPager.setCurrentItem(0);
+            }
+        });
+        findViewById(R.id.friends).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listViewPager.setCurrentItem(1);
+            }
+        });
+        findViewById(R.id.friends).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listViewPager.setCurrentItem(1);
+            }
+        });
+        findViewById(R.id.followers).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listViewPager.setCurrentItem(2);
+            }
+        });
+        findViewById(R.id.listed).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listViewPager.setCurrentItem(3);
+            }
+        });
+        findViewById(R.id.favourites).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listViewPager.setCurrentItem(4);
             }
         });
     }

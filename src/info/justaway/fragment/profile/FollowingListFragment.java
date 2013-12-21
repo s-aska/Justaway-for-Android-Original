@@ -89,6 +89,8 @@ public class FollowingListFragment extends Fragment {
 
         @Override
         protected void onPostExecute(PagableResponseList<User> friendsList) {
+            if (friendsList == null) return;
+
             for (User friendUser : friendsList) {
                 adapter.add(friendUser);
             }

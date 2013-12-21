@@ -1,6 +1,7 @@
 package info.justaway.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import info.justaway.JustawayApplication;
+import info.justaway.ProfileActivity;
 import info.justaway.R;
 import twitter4j.UserList;
 
@@ -50,7 +52,7 @@ public class UserListAdapter extends ArrayAdapter<UserList> {
             view = inflater.inflate(this.layout, null);
         }
 
-        UserList userList = userLists.get(position);
+        final UserList userList = userLists.get(position);
 
         ImageView icon = (ImageView) view.findViewById(R.id.icon);
         String iconUrl = userList.getUser().getBiggerProfileImageURL();
@@ -60,6 +62,15 @@ public class UserListAdapter extends ArrayAdapter<UserList> {
         ((TextView) view.findViewById(R.id.screen_name)).setText(userList.getUser().getScreenName() + "さんが作成");
         ((TextView) view.findViewById(R.id.description)).setText(userList.getDescription());
         ((TextView) view.findViewById(R.id.member_count)).setText(userList.getMemberCount() + "人のメンバー");
+
+        icon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), ProfileActivity.class);
+                intent.putExtra("screenName", userList.getUser().getScreenName());
+                context.startActivity(intent);
+            }
+        });
 
         return view;
     }
