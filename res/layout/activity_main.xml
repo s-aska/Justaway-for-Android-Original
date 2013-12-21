@@ -74,7 +74,9 @@
                         android:layout_height="wrap_content"
                         android:background="@color/menu_active_background"
                         android:text="@string/fontello_home"
-                        android:textSize="22sp" />
+                        android:textSize="22sp"
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"><requestFocus /></Button>
 
                     <Button
                         android:id="@+id/action_interactions"
@@ -99,9 +101,7 @@
                 android:layout_width="58dip"
                 android:layout_height="wrap_content"
                 android:background="@color/menu_background"
-                android:text="@string/fontello_edit"
-                android:focusable="true"
-                android:focusableInTouchMode="true"><requestFocus /></Button>
+                android:text="@string/fontello_edit" />
         </TableRow>
     </TableLayout>
 
