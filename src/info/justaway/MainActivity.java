@@ -124,7 +124,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                         Long inReplyToStatusId = mApplication.getInReplyToStatusId();
                         intent.putExtra("status", msg);
                         intent.putExtra("selection", msg.length());
-                        if (inReplyToStatusId > 0) {
+                        if (inReplyToStatusId != null && inReplyToStatusId > 0) {
                             intent.putExtra("inReplyToStatusId", inReplyToStatusId);
                         }
                         status.setText("");
