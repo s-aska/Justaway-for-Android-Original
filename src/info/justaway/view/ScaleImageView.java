@@ -16,7 +16,7 @@ import android.widget.ImageView;
 public class ScaleImageView extends ImageView implements OnTouchListener {
     private Activity mActivity;
     private Context mContext;
-    private float MAX_SCALE = 2f;
+    private float MAX_SCALE = 10f;
 
     private Matrix mMatrix;
     private final float[] mMatrixValues = new float[9];
