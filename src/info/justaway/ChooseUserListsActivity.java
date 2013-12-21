@@ -2,7 +2,7 @@ package info.justaway;
 
 import java.util.ArrayList;
 
-import info.justaway.adapter.UserListAdapter;
+import info.justaway.adapter.SubscribeUserListAdapter;
 import info.justaway.task.UserListsLoader;
 import twitter4j.ResponseList;
 import twitter4j.UserList;
@@ -12,19 +12,14 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
-import android.view.ContextMenu;
 import android.view.KeyEvent;
-import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
-import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.ListView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
 
 public class ChooseUserListsActivity extends FragmentActivity implements
         LoaderManager.LoaderCallbacks<ResponseList<UserList>> {
 
-    private UserListAdapter adapter;
+    private SubscribeUserListAdapter adapter;
 
     // private ArrayList<Integer> lists = new ArrayList<Integer>();
 
@@ -35,7 +30,7 @@ public class ChooseUserListsActivity extends FragmentActivity implements
 
         ListView listView = (ListView) findViewById(R.id.list);
 
-        adapter = new UserListAdapter(this, R.layout.row_user_list);
+        adapter = new SubscribeUserListAdapter(this, R.layout.row_subscribe_user_list);
 
         listView.setAdapter(adapter);
 

@@ -1,31 +1,37 @@
 package info.justaway.adapter;
 
-import info.justaway.JustawayApplication;
-import info.justaway.R;
-
-import java.util.ArrayList;
-
-import twitter4j.UserList;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import java.util.ArrayList;
+
+import info.justaway.JustawayApplication;
+import info.justaway.R;
+import twitter4j.UserList;
+
+/**
+ * Created by teshi on 2013/12/21.
+ */
 public class UserListAdapter extends ArrayAdapter<UserList> {
 
+    private JustawayApplication mApplication;
     private ArrayList<UserList> userLists = new ArrayList<UserList>();
     private Context context;
     private LayoutInflater inflater;
     private int layout;
+
 
     public UserListAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId);
         this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.context = context;
         this.layout = textViewResourceId;
+        this.mApplication = (JustawayApplication) context.getApplicationContext();
     }
 
     @Override
@@ -44,14 +50,17 @@ public class UserListAdapter extends ArrayAdapter<UserList> {
             view = inflater.inflate(this.layout, null);
         }
 
-        UserList userList = (UserList) userLists.get(position);
+        UserList userList = userLists.get(position);
 
-        CheckBox checkbox = (CheckBox) view;
-        checkbox.setText(userList.getName());
-        checkbox.setChecked(JustawayApplication.getApplication().existsTab(userList.getId()));
-        checkbox.setTag(userList.getId());
+        ImageView icon = (ImageView) view.findViewById(R.id.icon);
+        String iconUrl = userList.getUser().getBiggerProfileImageURL();
+        mApplication.displayRoundedImage(iconUrl, icon);
+
+        ((TextView) view.findViewById(R.id.list_name)).setText(userList.getName());
+        ((TextView) view.findViewById(R.id.screen_name)).setText(userList.getUser().getScreenName() + "さんが作成");
+        ((TextView) view.findViewById(R.id.description)).setText(userList.getDescription());
+        ((TextView) view.findViewById(R.id.member_count)).setText(userList.getMemberCount() + "人のメンバー");
 
         return view;
     }
-
 }
