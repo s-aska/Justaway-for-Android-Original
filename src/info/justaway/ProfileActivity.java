@@ -21,6 +21,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import info.justaway.fragment.profile.DescriptionFragment;
+import info.justaway.fragment.profile.FavoritesListFragment;
 import info.justaway.fragment.profile.FollowersListFragment;
 import info.justaway.fragment.profile.FollowingListFragment;
 import info.justaway.fragment.profile.SummaryFragment;
@@ -182,6 +183,7 @@ public class ProfileActivity extends FragmentActivity implements
         listPagerAdapter.addTab(UserTimelineFragment.class, listArgs);
         listPagerAdapter.addTab(FollowingListFragment.class, listArgs);
         listPagerAdapter.addTab(FollowersListFragment.class, listArgs);
+        listPagerAdapter.addTab(FavoritesListFragment.class, listArgs);
         listPagerAdapter.notifyDataSetChanged();
         listViewPager.setOffscreenPageLimit(5);
         listViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
@@ -200,11 +202,11 @@ public class ProfileActivity extends FragmentActivity implements
                         ((TextView) findViewById(R.id.followersCount)).setTextColor(blue);
                         ((TextView) findViewById(R.id.followersCountLabel)).setTextColor(blue);
                         break;
-                    case 3:
+                    case 4:
                         ((TextView) findViewById(R.id.listedCount)).setTextColor(blue);
                         ((TextView) findViewById(R.id.listedCountLabel)).setTextColor(blue);
                         break;
-                    case 4:
+                    case 3:
                         ((TextView) findViewById(R.id.favouritesCount)).setTextColor(blue);
                         ((TextView) findViewById(R.id.favouritesCountLabel)).setTextColor(blue);
                         break;
@@ -224,11 +226,11 @@ public class ProfileActivity extends FragmentActivity implements
                         ((TextView) findViewById(R.id.followersCount)).setTextColor(white);
                         ((TextView) findViewById(R.id.followersCountLabel)).setTextColor(white);
                         break;
-                    case 3:
+                    case 4:
                         ((TextView) findViewById(R.id.listedCount)).setTextColor(white);
                         ((TextView) findViewById(R.id.listedCountLabel)).setTextColor(white);
                         break;
-                    case 4:
+                    case 3:
                         ((TextView) findViewById(R.id.favouritesCount)).setTextColor(white);
                         ((TextView) findViewById(R.id.favouritesCountLabel)).setTextColor(white);
                         break;
