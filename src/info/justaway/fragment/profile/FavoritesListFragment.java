@@ -4,7 +4,9 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -91,6 +93,29 @@ public class FavoritesListFragment extends Fragment {
         return;
     }
 
+    public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, view, menuInfo);
+        JustawayApplication application = JustawayApplication.getApplication();
+        application.onCreateContextMenuForStatus(menu, view, menuInfo);
+
+        // DialogFragment内でContextMenuを使うにはこれが必要
+        MenuItem.OnMenuItemClickListener listener = new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                onContextItemSelected(item);
+                return true;
+            }
+        };
+
+        for (int i = 0, n = menu.size(); i < n; i++)
+            menu.getItem(i).setOnMenuItemClickListener(listener);
+    }
+
+    public boolean onContextItemSelected(MenuItem item) {
+        JustawayApplication application = JustawayApplication.getApplication();
+        return application.onContextItemSelected(getActivity(), item);
+    }
+
     private class FavoritesListTask extends AsyncTask<String, Void, ResponseList<Status>> {
         @Override
         protected ResponseList<twitter4j.Status> doInBackground(String... params) {
@@ -105,6 +130,8 @@ public class FavoritesListFragment extends Fragment {
 
         @Override
         protected void onPostExecute(ResponseList<twitter4j.Status> statuses) {
+            if (statuses == null) return;
+
             for (twitter4j.Status status : statuses) {
                 adapter.add(Row.newStatus(status));
             }
