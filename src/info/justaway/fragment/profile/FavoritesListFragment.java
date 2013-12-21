@@ -105,6 +105,8 @@ public class FavoritesListFragment extends Fragment {
 
         @Override
         protected void onPostExecute(ResponseList<twitter4j.Status> statuses) {
+            if (statuses == null) return;
+
             for (twitter4j.Status status : statuses) {
                 adapter.add(Row.newStatus(status));
             }

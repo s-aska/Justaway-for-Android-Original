@@ -1,6 +1,7 @@
 package info.justaway.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import info.justaway.JustawayApplication;
+import info.justaway.ProfileActivity;
 import info.justaway.R;
 import twitter4j.URLEntity;
 import twitter4j.User;
@@ -23,7 +25,7 @@ import twitter4j.User;
  */
 public class FriendListAdapter extends ArrayAdapter<User> {
     private JustawayApplication mApplication;
-    private ArrayList<User> userLists = new ArrayList<User>();
+    private ArrayList<User> users = new ArrayList<User>();
     private Context context;
     private LayoutInflater inflater;
     private int layout;
@@ -39,7 +41,7 @@ public class FriendListAdapter extends ArrayAdapter<User> {
     @Override
     public void add(User user) {
         super.add(user);
-        userLists.add(user);
+        users.add(user);
     }
 
     @Override
@@ -52,13 +54,7 @@ public class FriendListAdapter extends ArrayAdapter<User> {
             view = inflater.inflate(this.layout, null);
         }
 
-        User userList = (User) userLists.get(position);
-        renderStatus(view, userList);
-
-        return view;
-    }
-
-    private void renderStatus(View view, final User user) {
+        final User user = users.get(position);
 
         ImageView icon = (ImageView) view.findViewById(R.id.icon);
         String iconUrl = user.getBiggerProfileImageURL();
@@ -94,13 +90,15 @@ public class FriendListAdapter extends ArrayAdapter<User> {
             view.findViewById(R.id.fontello_lock).setVisibility(View.INVISIBLE);
         }
 
-//        icon.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(v.getContext(), ProfileActivity.class);
-//                intent.putExtra("screenName", status.getUser().getScreenName());
-//                mContext.startActivity(intent);
-//            }
-//        });
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), ProfileActivity.class);
+                intent.putExtra("screenName", user.getScreenName());
+                context.startActivity(intent);
+            }
+        });
+
+        return view;
     }
 }
