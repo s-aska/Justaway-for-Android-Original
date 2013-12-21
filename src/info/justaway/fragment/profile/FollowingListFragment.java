@@ -12,12 +12,12 @@ import android.widget.ProgressBar;
 
 import info.justaway.JustawayApplication;
 import info.justaway.R;
-import info.justaway.adapter.FrendListAdapter;
+import info.justaway.adapter.FriendListAdapter;
 import twitter4j.PagableResponseList;
 import twitter4j.User;
 
 public class FollowingListFragment extends Fragment {
-    private FrendListAdapter adapter;
+    private FriendListAdapter adapter;
     private long userId;
     private long cursor = -1;
     private ListView listView;
@@ -42,7 +42,7 @@ public class FollowingListFragment extends Fragment {
         mFooter.setVisibility(View.GONE);
 
         // Status(ツイート)をViewに描写するアダプター
-        adapter = new FrendListAdapter(getActivity(), R.layout.row_user);
+        adapter = new FriendListAdapter(getActivity(), R.layout.row_user);
         listView.setAdapter(adapter);
 
         new FriendsListTask().execute(userId);

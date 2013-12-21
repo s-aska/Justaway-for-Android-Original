@@ -21,14 +21,14 @@ import twitter4j.User;
 /**
  * Created by teshi on 2013/12/18.
  */
-public class FrendListAdapter extends ArrayAdapter<User> {
+public class FriendListAdapter extends ArrayAdapter<User> {
     private JustawayApplication mApplication;
     private ArrayList<User> userLists = new ArrayList<User>();
     private Context context;
     private LayoutInflater inflater;
     private int layout;
 
-    public FrendListAdapter(Context context, int textViewResourceId) {
+    public FriendListAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId);
         this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.context = context;
