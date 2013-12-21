@@ -88,7 +88,10 @@
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
-        <activity android:name=".ProfileActivity">
+        <activity android:name=".ProfileActivity"></activity>
+        <activity
+            android:name=".StatusActivity"
+            android:theme="@style/Theme.MyTrans">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
