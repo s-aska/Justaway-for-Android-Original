@@ -61,12 +61,9 @@ public class SigninActivity extends Activity {
 
             @Override
             protected void onPostExecute(String url) {
-                if (url != null) {
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                    startActivity(intent);
-                } else {
-                    // 失敗
-                }
+                if (url == null) return;
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                startActivity(intent);
             }
         };
         task.execute();
