@@ -1,6 +1,5 @@
 package info.justaway.model;
 
-import info.justaway.JustawayApplication;
 import twitter4j.DirectMessage;
 import twitter4j.Status;
 import twitter4j.User;
@@ -45,15 +44,15 @@ public class Row {
     }
 
     public boolean isStatus() {
-        return type == TYPE_STATUS ? true : false;
+        return type == TYPE_STATUS;
     }
 
     public boolean isFavorite() {
-        return type == TYPE_FAVORITE ? true : false;
+        return type == TYPE_FAVORITE;
     }
 
     public boolean isDirectMessage() {
-        return type == TYPE_DM ? true : false;
+        return type == TYPE_DM;
     }
 
     public Status getStatus() {

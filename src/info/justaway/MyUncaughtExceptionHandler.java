@@ -51,7 +51,7 @@ public class MyUncaughtExceptionHandler implements UncaughtExceptionHandler {
                 writer.printf("[BUG][%s] versionName:%s, versionCode:%d\n",
                         sPackageInfo.packageName, sPackageInfo.versionName, sPackageInfo.versionCode);
             } else {
-                writer.printf("[BUG][Unkown]\n");
+                writer.printf("[BUG][Unknown]\n");
             }
             try {
                 writer
@@ -82,17 +82,17 @@ public class MyUncaughtExceptionHandler implements UncaughtExceptionHandler {
     }
 
     public static final void showBugReportDialogIfExist(final Activity activity) {
-        File bugfile = activity.getFileStreamPath(BUG_FILE);
-        if (!bugfile.exists())
+        File bugFile = activity.getFileStreamPath(BUG_FILE);
+        if (!bugFile.exists())
             return;
 
-        File dstfile = activity.getFileStreamPath(BUG_FILE + ".txt");
-        bugfile.renameTo(dstfile);
+        File writeFile = activity.getFileStreamPath(BUG_FILE + ".txt");
+        bugFile.renameTo(writeFile);
 
         final StringBuilder body = new StringBuilder();
         String firstLine = null;
         try {
-            BufferedReader br = new BufferedReader(new FileReader(dstfile));
+            BufferedReader br = new BufferedReader(new FileReader(writeFile));
             String line;
             while ((line = br.readLine()) != null) {
                 if (firstLine == null) {
