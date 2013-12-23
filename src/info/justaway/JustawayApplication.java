@@ -43,7 +43,6 @@ import twitter4j.TwitterFactory;
 import twitter4j.TwitterStream;
 import twitter4j.TwitterStreamFactory;
 import twitter4j.URLEntity;
-import twitter4j.User;
 import twitter4j.UserMentionEntity;
 import twitter4j.auth.AccessToken;
 import twitter4j.conf.ConfigurationBuilder;
@@ -56,9 +55,8 @@ import twitter4j.conf.ConfigurationBuilder;
 public class JustawayApplication extends Application {
 
     private static JustawayApplication sApplication;
-    private ArrayList<Integer> lists = new ArrayList<Integer>();
-    private ImageLoader mImageLoader;
-    private DisplayImageOptions mRoundedDisplayImageOptions;
+    private static ImageLoader mImageLoader;
+    private static DisplayImageOptions mRoundedDisplayImageOptions;
 
     /**
      * 毎回キャストしなくて良いように
@@ -69,33 +67,33 @@ public class JustawayApplication extends Application {
         return sApplication;
     }
 
-    public ArrayList<Integer> getLists() {
-        return lists;
-    }
-
-    public void setLists(ArrayList<Integer> lists) {
-        this.lists = lists;
-    }
-
-    /*
-     * 起動時
-     * 
-     * @see android.app.Application#onCreate()
-     */
     @Override
     public void onCreate() {
         super.onCreate();
         sApplication = this;
 
-        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder().cacheInMemory(true)
-                .cacheOnDisc(true).resetViewBeforeLoading(true).build();
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this)
-                .defaultDisplayImageOptions(defaultOptions).build();
+        DisplayImageOptions defaultOptions = new DisplayImageOptions
+                .Builder()
+                .cacheInMemory(true)
+                .cacheOnDisc(true)
+                .resetViewBeforeLoading(true)
+                .build();
+
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration
+                .Builder(this)
+                .defaultDisplayImageOptions(defaultOptions)
+                .build();
+
         ImageLoader.getInstance().init(config);
+
         mImageLoader = ImageLoader.getInstance();
-        mRoundedDisplayImageOptions = new DisplayImageOptions.Builder().cacheInMemory(true)
-                .cacheOnDisc(true).resetViewBeforeLoading(true)
-                .displayer(new FadeInRoundedBitmapDisplayer(5)).build();
+
+        mRoundedDisplayImageOptions = new DisplayImageOptions.Builder()
+                .cacheInMemory(true)
+                .cacheOnDisc(true)
+                .resetViewBeforeLoading(true)
+                .displayer(new FadeInRoundedBitmapDisplayer(5))
+                .build();
 
         // 例外発生時の処理を指定（スタックトレースを保存）
         Thread.setDefaultUncaughtExceptionHandler(new MyUncaughtExceptionHandler(sApplication));
@@ -103,7 +101,7 @@ public class JustawayApplication extends Application {
 
     public void displayImage(String url, ImageView view) {
         String tag = (String) view.getTag();
-        if (tag != null && tag == url) {
+        if (tag != null && tag.equals(url)) {
             return;
         }
         view.setTag(url);
@@ -112,7 +110,7 @@ public class JustawayApplication extends Application {
 
     public void displayRoundedImage(String url, ImageView view) {
         String tag = (String) view.getTag();
-        if (tag != null && tag == url) {
+        if (tag != null && tag.equals(url)) {
             return;
         }
         view.setTag(url);
@@ -210,7 +208,7 @@ public class JustawayApplication extends Application {
      */
     private static final String QUICK_MODE = "quickMode";
 
-    public void setQuickMod (Boolean quickMode) {
+    public void setQuickMod(Boolean quickMode) {
         SharedPreferences preferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
         Editor editor = preferences.edit();
         editor.putBoolean(QUICK_MODE, quickMode);
@@ -219,8 +217,7 @@ public class JustawayApplication extends Application {
 
     public Boolean getQuickMode() {
         SharedPreferences preferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
-        Boolean quickMode = preferences.getBoolean(QUICK_MODE, false);
-        return quickMode;
+        return preferences.getBoolean(QUICK_MODE, false);
     }
 
     /**
@@ -283,7 +280,7 @@ public class JustawayApplication extends Application {
      * @return Twitterアクセストークン有無
      */
     public Boolean hasAccessToken() {
-        return getAccessToken() != null ? true : false;
+        return getAccessToken() != null;
     }
 
     /**
@@ -394,20 +391,11 @@ public class JustawayApplication extends Application {
         if (status.isFavorited()) {
             return true;
         }
-        if (mIsFavMap.get(status.getId()) != null) {
+        if (mIsFavMap.get(status.getId())) {
             return true;
         }
         Status retweet = status.getRetweetedStatus();
-        if (retweet == null) {
-            return false;
-        }
-        if (retweet.isFavorited()) {
-            return true;
-        }
-        if (mIsFavMap.get(retweet.getId()) != null) {
-            return true;
-        }
-        return false;
+        return retweet != null && ( mIsFavMap.get(retweet.getId()) || retweet.isFavorited() );
     }
 
     public void setRtId(Long sourceId, Long retweetId) {
@@ -562,13 +550,13 @@ public class JustawayApplication extends Application {
         // ツイート内のURLへアクセスできるようにメニューに展開する
         URLEntity[] urls = source.getURLEntities();
         for (URLEntity url : urls) {
-            menu.add(0, CONTEXT_MENU_LINK_ID, 0, url.getExpandedURL().toString());
+            menu.add(0, CONTEXT_MENU_LINK_ID, 0, url.getExpandedURL());
         }
 
         // ツイート内のURL(画像)へアクセスできるようにメニューに展開する
         URLEntity[] medias = source.getMediaEntities();
         for (URLEntity url : medias) {
-            menu.add(0, CONTEXT_MENU_LINK_ID, 0, url.getExpandedURL().toString());
+            menu.add(0, CONTEXT_MENU_LINK_ID, 0, url.getExpandedURL());
         }
 
         // ツイート内のハッシュタグを検索できるようにメニューに展開する
