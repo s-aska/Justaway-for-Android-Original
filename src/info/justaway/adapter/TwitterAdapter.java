@@ -21,7 +21,6 @@ import twitter4j.Status;
 import twitter4j.URLEntity;
 import twitter4j.User;
 
-import android.R.color;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -92,7 +91,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
 
     public void replaceStatus(Status status) {
         for (Row row : statuses) {
-            if (row.isDirectMessage() != true && row.getStatus().getId() == status.getId()) {
+            if (!row.isDirectMessage() && row.getStatus().getId() == status.getId()) {
                 row.setStatus(status);
                 notifyDataSetChanged();
                 break;
@@ -102,7 +101,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
 
     public void removeStatus(long statusId) {
         for (Row row : statuses) {
-            if (row.isDirectMessage() != true && row.getStatus().getId() == statusId) {
+            if (!row.isDirectMessage() && row.getStatus().getId() == statusId) {
                 remove(row);
                 break;
             }
@@ -144,7 +143,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         }
 
         // 表示すべきデータの取得
-        Row row = (Row) statuses.get(position);
+        Row row = statuses.get(position);
 
         if (row.isDirectMessage()) {
             DirectMessage message = row.getMessage();
@@ -160,11 +159,11 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
 
             Status retweet = status.getRetweetedStatus();
             if (row.isFavorite()) {
-                renderStatus(view, row, status, null, row.getSource());
+                renderStatus(view, status, null, row.getSource());
             } else if (retweet == null) {
-                renderStatus(view, row, status, null, null);
+                renderStatus(view, status, null, null);
             } else {
-                renderStatus(view, row, retweet, status, null);
+                renderStatus(view, retweet, status, null);
             }
         }
 
@@ -233,10 +232,9 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         mApplication.displayRoundedImage(message.getSender().getBiggerProfileImageURL(), icon);
         view.findViewById(R.id.action).setVisibility(View.GONE);
         view.findViewById(R.id.fontello_lock).setVisibility(View.INVISIBLE);
-        // view.findViewById(R.id.is_favorited).setVisibility(View.GONE);
     }
 
-    private void renderStatus(View view, final Row row, final Status status, Status retweet,
+    private void renderStatus(View view, final Status status, Status retweet,
                               User favorite) {
 
         final Status source = retweet != null ? retweet : status;
@@ -303,7 +301,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                 } else {
                     mApplication.doRetweet(status.getId());
                     do_retweet.setTextColor(mContext.getResources()
-                            .getColor(color.holo_green_light));
+                            .getColor(R.color.holo_green_light));
                 }
             }
         });
@@ -317,19 +315,19 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                     do_retweet.setTextColor(Color.parseColor("#666666"));
                 } else {
                     mApplication.doFavorite(status.getId());
-                    do_fav.setTextColor(mContext.getResources().getColor(color.holo_orange_light));
+                    do_fav.setTextColor(mContext.getResources().getColor(R.color.holo_orange_light));
                 }
             }
         });
 
         if (mApplication.getRtId(status) != null) {
-            do_retweet.setTextColor(mContext.getResources().getColor(color.holo_green_light));
+            do_retweet.setTextColor(mContext.getResources().getColor(R.color.holo_green_light));
         } else {
             do_retweet.setTextColor(Color.parseColor("#666666"));
         }
 
         if (mApplication.isFav(status)) {
-            do_fav.setTextColor(mContext.getResources().getColor(color.holo_orange_light));
+            do_fav.setTextColor(mContext.getResources().getColor(R.color.holo_orange_light));
         } else {
             do_fav.setTextColor(Color.parseColor("#666666"));
         }
@@ -353,7 +351,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         // favの場合
         if (favorite != null) {
             actionIcon.setText(R.string.fontello_star);
-            actionIcon.setTextColor(mContext.getResources().getColor(color.holo_orange_light));
+            actionIcon.setTextColor(mContext.getResources().getColor(R.color.holo_orange_light));
             actionByName.setText(favorite.getName());
             actionByScreenName.setText("@" + favorite.getScreenName());
             view.findViewById(R.id.retweet).setVisibility(View.GONE);
@@ -365,7 +363,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             // 自分のツイート
             if (userId == status.getUser().getId()) {
                 actionIcon.setText(R.string.fontello_retweet);
-                actionIcon.setTextColor(mContext.getResources().getColor(color.holo_green_light));
+                actionIcon.setTextColor(mContext.getResources().getColor(R.color.holo_green_light));
                 actionByName.setText(retweet.getUser().getName());
                 actionByScreenName.setText("@" + retweet.getUser().getScreenName());
                 view.findViewById(R.id.retweet).setVisibility(View.GONE);
@@ -385,7 +383,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             // 自分へのリプ
             if (userId == status.getInReplyToUserId()) {
                 actionIcon.setText(R.string.fontello_at);
-                actionIcon.setTextColor(mContext.getResources().getColor(color.holo_red_light));
+                actionIcon.setTextColor(mContext.getResources().getColor(R.color.holo_red_light));
                 actionByName.setText(status.getUser().getName());
                 actionByScreenName.setText("@" + status.getUser().getScreenName());
                 view.findViewById(R.id.action).setVisibility(View.VISIBLE);
@@ -440,7 +438,6 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             Matcher instagram_matcher = instagram_pattern.matcher(url.getExpandedURL());
             if (instagram_matcher.find()) {
                 imageUrls.add(url.getExpandedURL() + "media?size=l");
-                continue;
             }
         }
         ((TextView) view.findViewById(R.id.status)).setText(statusString);

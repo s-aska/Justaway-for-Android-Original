@@ -16,14 +16,12 @@ import android.widget.CheckBox;
 public class SubscribeUserListAdapter extends ArrayAdapter<UserList> {
 
     private ArrayList<UserList> userLists = new ArrayList<UserList>();
-    private Context context;
     private LayoutInflater inflater;
     private int layout;
 
     public SubscribeUserListAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId);
         this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        this.context = context;
         this.layout = textViewResourceId;
     }
 
@@ -43,12 +41,14 @@ public class SubscribeUserListAdapter extends ArrayAdapter<UserList> {
             view = inflater.inflate(this.layout, null);
         }
 
-        UserList userList = (UserList) userLists.get(position);
+        UserList userList = userLists.get(position);
 
         CheckBox checkbox = (CheckBox) view;
-        checkbox.setText(userList.getName());
-        checkbox.setChecked(JustawayApplication.getApplication().existsTab(userList.getId()));
-        checkbox.setTag(userList.getId());
+        if (checkbox != null) {
+            checkbox.setText(userList.getName());
+            checkbox.setChecked(JustawayApplication.getApplication().existsTab(userList.getId()));
+            checkbox.setTag(userList.getId());
+        }
 
         return view;
     }

@@ -20,9 +20,6 @@ import info.justaway.R;
 import twitter4j.URLEntity;
 import twitter4j.User;
 
-/**
- * Created by teshi on 2013/12/18.
- */
 public class FriendListAdapter extends ArrayAdapter<User> {
     private JustawayApplication mApplication;
     private ArrayList<User> users = new ArrayList<User>();
