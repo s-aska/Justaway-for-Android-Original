@@ -16,9 +16,6 @@ import info.justaway.ProfileActivity;
 import info.justaway.R;
 import twitter4j.UserList;
 
-/**
- * Created by teshi on 2013/12/21.
- */
 public class UserListAdapter extends ArrayAdapter<UserList> {
 
     private JustawayApplication mApplication;
@@ -26,7 +23,6 @@ public class UserListAdapter extends ArrayAdapter<UserList> {
     private Context context;
     private LayoutInflater inflater;
     private int layout;
-
 
     public UserListAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId);
