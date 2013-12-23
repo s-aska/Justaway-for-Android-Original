@@ -280,6 +280,9 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
             case REQUEST_CHOOSE_USER_LIST:
                 if (resultCode == RESULT_OK) {
                     Bundle bundle = data.getExtras();
+                    if (bundle == null) {
+                        return;
+                    }
                     ArrayList<Integer> lists = bundle.getIntegerArrayList("lists");
                     ArrayList<Integer> tabs = new ArrayList<Integer>();
                     // 後々タブ設定画面に標準のタブを含める
@@ -288,17 +291,14 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                     tabs.add(-3);
                     tabs.addAll(lists);
                     mApplication.saveTabs(tabs);
-                    mApplication.setLists(lists);
                     initTab();
                 } else if (resultCode == RESULT_CANCELED) {
-                    ArrayList<Integer> lists = new ArrayList<Integer>();
                     ArrayList<Integer> tabs = new ArrayList<Integer>();
                     // 後々タブ設定画面に標準のタブを含める
                     tabs.add(-1);
                     tabs.add(-2);
                     tabs.add(-3);
                     mApplication.saveTabs(tabs);
-                    mApplication.setLists(lists);
                     initTab();
                 }
                 break;
@@ -367,10 +367,8 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
         setViewPager(viewPager);
 
         mSectionsPagerAdapter.addTab(TimelineFragment.class, null, "Home", TAB_ID_TIMELINE);
-        mSectionsPagerAdapter.addTab(InteractionsFragment.class, null, "Home",
-                TAB_ID_INTERACTIONS);
-        mSectionsPagerAdapter.addTab(DirectMessageFragment.class, null, "Home",
-                TAB_ID_DIRECTMESSAGE);
+        mSectionsPagerAdapter.addTab(InteractionsFragment.class, null, "Home", TAB_ID_INTERACTIONS);
+        mSectionsPagerAdapter.addTab(DirectMessageFragment.class, null, "Home", TAB_ID_DIRECTMESSAGE);
         initTab();
 
         findViewById(R.id.footer).setVisibility(View.VISIBLE);
@@ -438,7 +436,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
      */
     public void onNewInteractions(Boolean autoScroll) {
         // 表示中のタブかつ自動スクロール時はハイライトしない
-        if (viewPager.getCurrentItem() == 1 && autoScroll == true) {
+        if (viewPager.getCurrentItem() == 1 && autoScroll) {
             return;
         }
         Button button = (Button) findViewById(R.id.action_interactions);
@@ -450,7 +448,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
      */
     public void onNewDirectMessage(Boolean autoScroll) {
         // 表示中のタブかつ自動スクロール時はハイライトしない
-        if (viewPager.getCurrentItem() == 2 && autoScroll == true) {
+        if (viewPager.getCurrentItem() == 2 && autoScroll) {
             return;
         }
         Button button = (Button) findViewById(R.id.action_directmessage);
@@ -463,7 +461,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
     public void onNewListStatus(int listId, Boolean autoScroll) {
         // 表示中のタブかつ自動スクロール時はハイライトしない
         int position = mSectionsPagerAdapter.findPositionById(listId);
-        if (viewPager.getCurrentItem() == position && autoScroll == true) {
+        if (viewPager.getCurrentItem() == position && autoScroll) {
             return;
         }
         Log.d("Justaway", "listId: " + listId);
@@ -595,7 +593,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             EditText editText = (EditText) findViewById(R.id.editStatus);
-            if (editText.getText().length() > 0) {
+            if (editText != null && editText.getText() != null && editText.getText().length() > 0) {
                 editText.setText("");
                 mApplication.setInReplyToStatusId((long) 0);
                 return false;
@@ -646,10 +644,10 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                  */
                 int count = mSectionsPagerAdapter.getCount();
                 for (int id = 0; id < count; id++) {
-                    BaseFragment fragmen = (BaseFragment) mSectionsPagerAdapter
+                    BaseFragment fragment = (BaseFragment) mSectionsPagerAdapter
                             .findFragmentByPosition(id);
-                    if (fragmen != null) {
-                        fragmen.add(Row.newStatus(status));
+                    if (fragment != null) {
+                        fragment.add(Row.newStatus(status));
                     }
                 }
             }
@@ -659,10 +657,10 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                 super.onDeletionNotice(statusDeletionNotice);
                 int count = mSectionsPagerAdapter.getCount();
                 for (int id = 0; id < count; id++) {
-                    BaseFragment fragmen = (BaseFragment) mSectionsPagerAdapter
+                    BaseFragment fragment = (BaseFragment) mSectionsPagerAdapter
                             .findFragmentByPosition(id);
-                    if (fragmen != null) {
-                        fragmen.removeStatus(statusDeletionNotice.getStatusId());
+                    if (fragment != null) {
+                        fragment.removeStatus(statusDeletionNotice.getStatusId());
                     }
                 }
             }
@@ -675,9 +673,9 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                     return;
                 }
                 Row row = Row.newFavorite(source, target, status);
-                BaseFragment fragmen = (BaseFragment) mSectionsPagerAdapter
+                BaseFragment fragment = (BaseFragment) mSectionsPagerAdapter
                         .findFragmentById(TAB_ID_INTERACTIONS);
-                new RefetchFavoriteStatus(fragmen).execute(row);
+                new RefetchFavoriteStatus(fragment).execute(row);
             }
 
             @Override
@@ -704,20 +702,20 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
             @Override
             public void onDirectMessage(DirectMessage directMessage) {
                 super.onDirectMessage(directMessage);
-                BaseFragment fragmen = (BaseFragment) mSectionsPagerAdapter
+                BaseFragment fragment = (BaseFragment) mSectionsPagerAdapter
                         .findFragmentById(TAB_ID_DIRECTMESSAGE);
-                if (fragmen != null) {
-                    fragmen.add(Row.newDirectMessage(directMessage));
+                if (fragment != null) {
+                    fragment.add(Row.newDirectMessage(directMessage));
                 }
             }
 
             @Override
             public void onDeletionNotice(long directMessageId, long userId) {
                 super.onDeletionNotice(directMessageId, userId);
-                DirectMessageFragment fragmen = (DirectMessageFragment) mSectionsPagerAdapter
+                DirectMessageFragment fragment = (DirectMessageFragment) mSectionsPagerAdapter
                         .findFragmentById(TAB_ID_DIRECTMESSAGE);
-                if (fragmen != null) {
-                    fragmen.remove(directMessageId);
+                if (fragment != null) {
+                    fragment.remove(directMessageId);
                 }
             }
         };
@@ -743,7 +741,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                 EditText status = (EditText) findViewById(R.id.editStatus);
                 status.setText("");
             } else {
-                mApplication.showToast("残念~！もう一回！！");
+                JustawayApplication.showToast("残念~！もう一回！！");
             }
         }
     }
@@ -762,10 +760,10 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
     public void doDestroyDirectMessage(Long id) {
         new DestroyDirectMessageTask().execute(id);
         // 自分宛のDMを消してもStreaming APIで拾えないで自力で消す
-        DirectMessageFragment fragmen = (DirectMessageFragment) mSectionsPagerAdapter
+        DirectMessageFragment fragment = (DirectMessageFragment) mSectionsPagerAdapter
                 .findFragmentById(TAB_ID_DIRECTMESSAGE);
-        if (fragmen != null) {
-            fragmen.remove(id);
+        if (fragment != null) {
+            fragment.remove(id);
         }
     }
 }

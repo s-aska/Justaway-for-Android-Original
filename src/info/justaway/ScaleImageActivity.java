@@ -30,11 +30,21 @@ public class ScaleImageActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Bundle args = getIntent().getExtras();
+        if (args == null) {
+            return;
+        }
+
+        String url = args.getString("url");
+
         requestWindowFeature(Window.FEATURE_NO_TITLE);
+
         imageView = new ScaleImageView(this);
         imageView.setActivity(this);
-        String url = getIntent().getExtras().getString("url");
+
         ImageLoader.getInstance().displayImage(url, imageView);
+
         setContentView(imageView);
     }
 
@@ -51,6 +61,9 @@ public class ScaleImageActivity extends Activity {
             imageView.setDrawingCacheEnabled(false);
             imageView.setDrawingCacheEnabled(true);
             Bitmap bitmap = imageView.getDrawingCache(false);
+            if (bitmap == null) {
+                return false;
+            }
             File root = new File(Environment.getExternalStorageDirectory(), "/Download/");
             try {
                 File file = new File(root, new Date().getTime() + ".jpg");
