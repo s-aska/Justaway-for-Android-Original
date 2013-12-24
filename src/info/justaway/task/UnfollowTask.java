@@ -19,7 +19,7 @@ public class UnfollowTask extends AsyncTask<Long, Void, Boolean> {
 
     @Override
     protected void onPostExecute(Boolean success) {
-        if (success == true) {
+        if (success) {
             JustawayApplication.showToast("フォローを解除しました");
         }
     }
