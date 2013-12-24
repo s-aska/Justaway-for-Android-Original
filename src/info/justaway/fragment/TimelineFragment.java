@@ -7,7 +7,6 @@ import info.justaway.model.Row;
 import info.justaway.task.TimelineLoader;
 import twitter4j.ResponseList;
 import twitter4j.Status;
-import twitter4j.User;
 
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;

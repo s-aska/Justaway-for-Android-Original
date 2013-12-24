@@ -5,7 +5,6 @@ import info.justaway.MainActivity;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.model.Row;
-import twitter4j.Status;
 
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -59,7 +58,7 @@ public abstract class BaseFragment extends ListFragment {
         if (listView == null) {
             return false;
         }
-        return listView.getFirstVisiblePosition() == 0 ? true : false;
+        return listView.getFirstVisiblePosition() == 0;
     }
 
     /**
@@ -83,21 +82,21 @@ public abstract class BaseFragment extends ListFragment {
         });
     }
 
-    public void replaceStatus(final Status status) {
-        final ListView listView = getListView();
-        if (listView == null) {
-            return;
-        }
-
-        listView.post(new Runnable() {
-            @Override
-            public void run() {
-
-                TwitterAdapter adapter = (TwitterAdapter) listView.getAdapter();
-                adapter.replaceStatus(status);
-            }
-        });
-    }
+//    public void replaceStatus(final Status status) {
+//        final ListView listView = getListView();
+//        if (listView == null) {
+//            return;
+//        }
+//
+//        listView.post(new Runnable() {
+//            @Override
+//            public void run() {
+//
+//                TwitterAdapter adapter = (TwitterAdapter) listView.getAdapter();
+//                adapter.replaceStatus(status);
+//            }
+//        });
+//    }
 
     public void onCreateContextMenu(ContextMenu menu, View view, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, view, menuInfo);
