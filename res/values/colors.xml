@@ -3,9 +3,9 @@
     <color name="menu_background">#2b2b2b</color>
     <color name="menu_active_background">#1f1f1f</color>
     <color name="background">#101112</color>
-    <color name="holo_green_light">#33b5e5</color>
-    <color name="holo_orange_light">#33b5e5</color>
-    <color name="holo_red_light">#33b5e5</color>
-    <color name="holo_blue_bright">#33b5e5</color>
-    <color name="holo_blue_light">#33b5e5</color>
+    <color name="holo_green_light">#ff99cc00</color>
+    <color name="holo_orange_light">#ffffbb33</color>
+    <color name="holo_red_light">#ffff4444</color>
+    <color name="holo_blue_bright">#ff00ddff</color>
+    <color name="holo_blue_light">#ff33b5e5</color>
 </resources>
