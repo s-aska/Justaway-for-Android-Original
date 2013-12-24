@@ -57,8 +57,6 @@ public class TalkFragment extends DialogFragment {
         if (statusId > 0) {
             Twitter twitter = JustawayApplication.getApplication().getTwitter();
             new LoadTalk(twitter, adapter).execute(statusId);
-        } else {
-            JustawayApplication.showToast("statusIdがありません");
         }
 
         return dialog;

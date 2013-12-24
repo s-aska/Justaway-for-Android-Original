@@ -1,6 +1,7 @@
 package info.justaway.task;
 
 import info.justaway.JustawayApplication;
+import info.justaway.R;
 
 import android.os.AsyncTask;
 
@@ -19,9 +20,9 @@ public class UnRetweetTask extends AsyncTask<Long, Void, twitter4j.Status> {
     @Override
     protected void onPostExecute(twitter4j.Status status) {
         if (status != null) {
-            JustawayApplication.showToast("公式RT解除に成功しました>゜))彡");
+            JustawayApplication.showToast(R.string.toast_destroy_retweet_success);
         } else {
-            JustawayApplication.showToast("公式RT解除に失敗しました＞＜");
+            JustawayApplication.showToast(R.string.toast_destroy_retweet_failure);
         }
     }
 }

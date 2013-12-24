@@ -15,7 +15,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class SigninActivity extends Activity {
+public class SignInActivity extends Activity {
 
     private String mCallbackURL;
     private Twitter mTwitter;
@@ -96,9 +96,9 @@ public class SigninActivity extends Activity {
         @Override
         protected void onPostExecute(Boolean success) {
             if (success) {
-                showToast("認証が完了しましあt！１ これであ");
+                JustawayApplication.showToast(R.string.toast_sign_in_success);
             } else {
-                showToast("OAuthAccessTokenの取得に失敗しました＞＜");
+                JustawayApplication.showToast(R.string.toast_sign_in_failure);
             }
         }
     }
@@ -111,9 +111,5 @@ public class SigninActivity extends Activity {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();
-    }
-
-    private void showToast(String text) {
-        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
 }

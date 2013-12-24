@@ -1,10 +1,11 @@
 package info.justaway.task;
 
 import info.justaway.JustawayApplication;
+import info.justaway.R;
 
 import android.os.AsyncTask;
 
-public class UnfollowTask extends AsyncTask<Long, Void, Boolean> {
+public class DestroyFriendshipTask extends AsyncTask<Long, Void, Boolean> {
 
     @Override
     protected Boolean doInBackground(Long... params) {
@@ -20,7 +21,7 @@ public class UnfollowTask extends AsyncTask<Long, Void, Boolean> {
     @Override
     protected void onPostExecute(Boolean success) {
         if (success) {
-            JustawayApplication.showToast("フォローを解除しました");
+            JustawayApplication.showToast(R.string.toast_destroy_friendship_success);
         }
     }
 }

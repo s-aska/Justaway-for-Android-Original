@@ -25,7 +25,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
-                android:text="@string/updateProfileImage" />
+                android:text="@string/update_profile_image" />
         </LinearLayout>
 
         <LinearLayout

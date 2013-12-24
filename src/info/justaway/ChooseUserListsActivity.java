@@ -66,21 +66,6 @@ public class ChooseUserListsActivity extends FragmentActivity implements
     public void onLoaderReset(Loader<ResponseList<UserList>> arg0) {
     }
 
-    // public void onCreateContextMenu(ContextMenu menu, View view,
-    // ContextMenuInfo menuInfo) {
-    // super.onCreateContextMenu(menu, view, menuInfo);
-    //
-    // AdapterContextMenuInfo info = (AdapterContextMenuInfo) menuInfo;
-    // ListView listView = (ListView) view;
-    // UserList userList = (UserList) listView.getItemAtPosition(info.position);
-    //
-    // int id = userList.getId();
-    //
-    // lists.add(id);
-    //
-    // JustawayApplication.showToast("戻ったら沢山スワイプしてみよう。(id:" + id + ")");
-    // }
-
     /**
      * finish前に色々セットしておく、ここでセットした値は onActivityResult で取れる
      */

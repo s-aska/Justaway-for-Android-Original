@@ -110,14 +110,14 @@ public class PostActivity extends Activity {
             @Override
             public void onClick(View v) {
                 showProgressDialog("送信中！！１１１１１");
-                StatusUpdate super_sugoi = new StatusUpdate(mEditText.getText().toString());
+                StatusUpdate superSugoi = new StatusUpdate(mEditText.getText().toString());
                 if (inReplyToStatusId > 0) {
-                    super_sugoi.setInReplyToStatusId(inReplyToStatusId);
+                    superSugoi.setInReplyToStatusId(inReplyToStatusId);
                 }
                 if (imgPath != null) {
-                    super_sugoi.setMedia(imgPath);
+                    superSugoi.setMedia(imgPath);
                 }
-                new PostTask().execute(super_sugoi);
+                new PostTask().execute(superSugoi);
             }
         });
 
@@ -228,7 +228,7 @@ public class PostActivity extends Activity {
             return;
         }
         this.imgPath = path;
-        showToast("画像セットok");
+        JustawayApplication.showToast(R.string.toast_set_image_success);
         mImgButton.setTextColor(getResources().getColor(R.color.holo_blue_bright));
     }
 
@@ -252,7 +252,7 @@ public class PostActivity extends Activity {
                 mEditText.setText("");
                 finish();
             } else {
-                showToast("残念~！もう一回！！");
+                JustawayApplication.showToast(R.string.toast_update_status_failure);
             }
         }
     }

@@ -84,16 +84,15 @@ public class UserListFragment extends BaseFragment implements
             return;
         }
         ResponseList<Status> statuses = response.getStatues();
-        if (statuses != null) {
-            TwitterAdapter adapter = (TwitterAdapter) getListAdapter();
-            adapter.clear();
-            for (twitter4j.Status status : statuses) {
-                adapter.add(Row.newStatus(status));
-                // 最初のツイートに登場ユーザーをStreaming APIからの取り込み対象にすることでAPI節約!!!
-                members.append(status.getUser().getId(), true);
-            }
-        } else {
-            JustawayApplication.showToast("UserListStatusesの取得に失敗しました＞＜");
+        if (statuses == null) {
+            return;
+        }
+        TwitterAdapter adapter = (TwitterAdapter) getListAdapter();
+        adapter.clear();
+        for (twitter4j.Status status : statuses) {
+            adapter.add(Row.newStatus(status));
+            // 最初のツイートに登場ユーザーをStreaming APIからの取り込み対象にすることでAPI節約!!!
+            members.append(status.getUser().getId(), true);
         }
         // Listメンバー取り込み(API Limitが厳しい為、20件迄)
         ResponseList<User> listMembers = response.getMembers();

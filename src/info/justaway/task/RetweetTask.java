@@ -1,9 +1,9 @@
 package info.justaway.task;
 
 import info.justaway.JustawayApplication;
+import info.justaway.R;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 public class RetweetTask extends AsyncTask<Long, Void, twitter4j.Status> {
 
@@ -20,11 +20,10 @@ public class RetweetTask extends AsyncTask<Long, Void, twitter4j.Status> {
     @Override
     protected void onPostExecute(twitter4j.Status status) {
         if (status != null) {
-            Log.d("Justaway", "[onPostExecute]" + status.getRetweetedStatus().getId() + " => " + status.getId());
             JustawayApplication.getApplication().setRtId(status.getRetweetedStatus().getId(), status.getId());
-            JustawayApplication.showToast("RTに成功しました>゜))彡");
+            JustawayApplication.showToast(R.string.toast_retweet_success);
         } else {
-            JustawayApplication.showToast("RTに失敗しました＞＜");
+            JustawayApplication.showToast(R.string.toast_retweet_failure);
         }
     }
 }

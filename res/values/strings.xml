@@ -3,9 +3,9 @@
 
     <string name="app_name">Justaway</string>
     <string name="action_settings">Settings</string>
-    <string name="onore">プロフィール</string>
+    <string name="profile">プロフィール</string>
     <string name="user_list">リスト</string>
-    <string name="signout">サインアウト</string>
+    <string name="sign_out">サインアウト</string>
     <string name="search">サーチ</string>
     <string name="twitter_callback_url">justaway://twitter</string>
     <string name="tweet_count">140</string>
@@ -16,7 +16,7 @@
     <string name="followers">フォロワー</string>
     <string name="listed">リスト</string>
     <string name="favourites">お気に入り</string>
-    <string name="createdAt">Twitter開始日</string>
+    <string name="created_at">Twitter開始日</string>
     <string name="description_icon">Profile Icon</string>
     <string name="open_twitter">Twitterで開く</string>
     <string name="open_favstar">Favstarで開く</string>
@@ -26,6 +26,34 @@
     <string name="web_site">Web</string>
     <string name="bio">自己紹介</string>
     <string name="save">保存</string>
-    <string name="updateProfileImage">画像を変更</string>
+    <string name="update_profile_image">画像を変更</string>
+    <string name="toast_set_image_success">画像セットok</string>
+    <string name="toast_load_data_failure">読み込みに失敗しました:;(∩´﹏`∩);:</string>
+    <string name="toast_update_status_failure">残念~！もう一回！</string>
+    <string name="toast_follow_success">フォローしました</string>
+    <string name="toast_favorite_success">ふぁぼに成功しました>゜))彡</string>
+    <string name="toast_favorite_failure">ふぁぼに失敗しました</string>
+    <string name="toast_destroy_status_success">ツイ消しに成功しました>゜))彡</string>
+    <string name="toast_destroy_status_failure">ツイ消しに失敗しました</string>
+    <string name="toast_destroy_direct_message_success">DM削除に成功しました>゜))彡</string>
+    <string name="toast_destroy_direct_message_failure">DM削除に失敗しました</string>
+    <string name="toast_retweet_success">RTに成功しました>゜))彡</string>
+    <string name="toast_retweet_failure">RTに失敗しました</string>
+    <string name="toast_destroy_favorite_success">あんふぁぼに成功しました>゜))彡</string>
+    <string name="toast_destroy_favorite_failure">あんふぁぼに失敗しました</string>
+    <string name="toast_destroy_friendship_success">フォロー解除に成功しました>゜))彡</string>
+    <string name="toast_destroy_friendship_failure">フォロー解除に失敗しました</string>
+    <string name="toast_destroy_retweet_success">公式RT解除に成功しました>゜))彡</string>
+    <string name="toast_destroy_retweet_failure">公式RT解除に失敗しました</string>
+    <string name="toast_update_profile_success">プロフィールを保存しました</string>
+    <string name="toast_update_profile_failure">プロフィールの保存に失敗しました</string>
+    <string name="toast_save_image_success">画像を保存しました</string>
+    <string name="toast_sign_in_success">認証が完了しましあt！１ これであ</string>
+    <string name="toast_sign_in_failure">OAuthAccessTokenの取得に失敗しました＞＜</string>
+    <string name="toast_update_profile_image_success">プロフィール画像を公開しました</string>
+    <string name="toast_update_profile_image_failure">プロフィール画像の公開に失敗しました</string>
+    <string name="confirm_update_profile_image">プロフィール画像を変更しますか？</string>
+    <string name="button_apply">適用</string>
+    <string name="button_cancel">キャンセル</string>
 
 </resources>

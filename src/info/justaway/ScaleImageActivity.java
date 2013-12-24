@@ -74,7 +74,7 @@ public class ScaleImageActivity extends Activity {
                 String[] paths = {file.getPath()};
                 String[] types = {"image/jpeg"};
                 MediaScannerConnection.scanFile(getApplicationContext(), paths, types, null);
-                JustawayApplication.showToast("保存しました！！！！１１１１");
+                JustawayApplication.showToast(R.string.toast_save_image_success);
                 finish();
             } catch (Exception e) {
                 e.printStackTrace();

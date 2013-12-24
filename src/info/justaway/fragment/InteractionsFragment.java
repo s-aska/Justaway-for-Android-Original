@@ -93,14 +93,13 @@ public class InteractionsFragment extends BaseFragment implements
 
     @Override
     public void onLoadFinished(Loader<ResponseList<Status>> arg0, ResponseList<Status> statuses) {
-        if (statuses != null) {
-            TwitterAdapter adapter = (TwitterAdapter) getListAdapter();
-            adapter.clear();
-            for (twitter4j.Status status : statuses) {
-                adapter.add(Row.newStatus(status));
-            }
-        } else {
-            JustawayApplication.showToast("Mentionsの取得に失敗しました＞＜");
+        if (statuses == null) {
+            return;
+        }
+        TwitterAdapter adapter = (TwitterAdapter) getListAdapter();
+        adapter.clear();
+        for (twitter4j.Status status : statuses) {
+            adapter.add(Row.newStatus(status));
         }
     }
 

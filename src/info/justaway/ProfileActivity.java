@@ -98,12 +98,12 @@ public class ProfileActivity extends FragmentActivity implements
     @Override
     public void onLoadFinished(Loader<Profile> arg0, Profile profile) {
         if (profile == null) {
-            JustawayApplication.showToast("読み込みに失敗しました:;(∩´﹏`∩);:");
+            JustawayApplication.showToast(R.string.toast_load_data_failure);
             return;
         }
         user = profile.getUser();
         if (user == null) {
-            JustawayApplication.showToast("読み込みに失敗しました:;(∩´﹏`∩);:");
+            JustawayApplication.showToast(R.string.toast_load_data_failure);
             return;
         }
         ((TextView) findViewById(R.id.favouritesCount)).setText(String.valueOf(user
@@ -257,7 +257,7 @@ public class ProfileActivity extends FragmentActivity implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Intent intent = null;
+        Intent intent;
         switch (item.getItemId()) {
             case R.id.open_twitter:
                 intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/"

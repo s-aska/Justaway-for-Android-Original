@@ -13,7 +13,6 @@ import android.support.v4.content.Loader;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import java.io.File;
 
@@ -72,7 +71,7 @@ public class EditProfileActivity extends FragmentActivity implements LoaderManag
         JustawayApplication application = JustawayApplication.getApplication();
         if (user == null) {
             application.resetAccessToken();
-            Intent intent = new Intent(this, SigninActivity.class);
+            Intent intent = new Intent(this, SignInActivity.class);
             startActivity(intent);
             finish();
         } else {
@@ -109,10 +108,10 @@ public class EditProfileActivity extends FragmentActivity implements LoaderManag
         protected void onPostExecute(User user) {
             // dismissProgressDialog();
             if (user != null) {
-                showToast("プロフィールを保存しました");
+                JustawayApplication.showToast(R.string.toast_update_profile_success);
                 finish();
             } else {
-                showToast("プロフィールの保存に失敗しました");
+                JustawayApplication.showToast(R.string.toast_update_profile_failure);
             }
         }
     }
@@ -121,6 +120,10 @@ public class EditProfileActivity extends FragmentActivity implements LoaderManag
         ContentResolver cr = getContentResolver();
         String[] columns = {MediaStore.Images.Media.DATA};
         Cursor c = cr.query(uri, columns, null, null, null);
+        if (c == null) {
+            return null;
+        }
+
         c.moveToFirst();
         File path = new File(c.getString(0));
         if (!path.exists()) {
@@ -141,9 +144,5 @@ public class EditProfileActivity extends FragmentActivity implements LoaderManag
                 dialog.show(getSupportFragmentManager(), "dialog");
             }
         }
-    }
-
-    private void showToast(String text) {
-        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
 }

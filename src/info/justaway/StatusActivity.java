@@ -65,8 +65,6 @@ public class StatusActivity extends FragmentActivity {
             Twitter twitter = JustawayApplication.getApplication().getTwitter();
             showProgressDialog("Loading...");
             new LoadTalk(twitter, adapter).execute(statusId);
-        } else {
-            JustawayApplication.showToast("statusIdがありません");
         }
     }
 
@@ -124,7 +122,7 @@ public class StatusActivity extends FragmentActivity {
                     new LoadTalk(twitter, adapter).execute(inReplyToStatusId);
                 }
             } else {
-                JustawayApplication.showToast(":;(∩´﹏`∩);:");
+                JustawayApplication.showToast(R.string.toast_load_data_failure);
             }
         }
     }

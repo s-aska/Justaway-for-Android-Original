@@ -1,6 +1,7 @@
 package info.justaway.task;
 
 import info.justaway.JustawayApplication;
+import info.justaway.R;
 
 import android.os.AsyncTask;
 
@@ -20,9 +21,9 @@ public class DestroyDirectMessageTask extends AsyncTask<Long, Void, Boolean> {
     @Override
     protected void onPostExecute(Boolean success) {
         if (success) {
-            JustawayApplication.showToast("DM削除に成功しました>゜))彡");
+            JustawayApplication.showToast(R.string.toast_destroy_direct_message_success);
         } else {
-            JustawayApplication.showToast("DM削除に失敗しました＞＜");
+            JustawayApplication.showToast(R.string.toast_destroy_direct_message_failure);
         }
     }
 }

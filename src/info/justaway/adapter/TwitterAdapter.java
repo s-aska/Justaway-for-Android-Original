@@ -43,7 +43,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     private int mLayout;
     private Boolean isMain;
     private static final int LIMIT = 100;
-    private static final SimpleDateFormat date_format = new SimpleDateFormat("yyyy/MM'/'dd' 'HH':'mm':'ss",
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM'/'dd' 'HH':'mm':'ss",
             Locale.ENGLISH);
 
     public TwitterAdapter(Context context, int textViewResourceId) {
@@ -495,6 +495,6 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     }
 
     private String getAbsoluteTime(Date date) {
-        return date_format.format(date);
+        return dateFormat.format(date);
     }
 }

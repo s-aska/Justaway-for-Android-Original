@@ -30,7 +30,7 @@ public class UpdateProfileImageFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Builder builder = new Builder(getActivity());
 
-        builder.setTitle("プロフィール画像を変更しますか？");
+        builder.setTitle(R.string.confirm_update_profile_image);
 
         // LinearLayoutを被せないとサイズを調整できない
         LinearLayout layout = new LinearLayout(getActivity());
@@ -44,7 +44,7 @@ public class UpdateProfileImageFragment extends DialogFragment {
         layout.addView(image);
         builder.setView(layout);
 
-        builder.setPositiveButton("適用",
+        builder.setPositiveButton(getString(R.string.button_apply),
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -52,7 +52,7 @@ public class UpdateProfileImageFragment extends DialogFragment {
                         dismiss();
                     }
                 });
-        builder.setNegativeButton("キャンセル",
+        builder.setNegativeButton(getString(R.string.button_cancel),
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -79,9 +79,9 @@ public class UpdateProfileImageFragment extends DialogFragment {
         protected void onPostExecute(User user) {
             // dismissProgressDialog();
             if (user != null) {
-                JustawayApplication.showToast("プロフィール画像が公開されました");
+                JustawayApplication.showToast(R.string.toast_update_profile_image_success);
             } else {
-                JustawayApplication.showToast("失敗しました");
+                JustawayApplication.showToast(R.string.toast_update_profile_image_failure);
             }
         }
     }

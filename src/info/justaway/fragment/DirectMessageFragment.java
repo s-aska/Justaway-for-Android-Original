@@ -87,14 +87,13 @@ public class DirectMessageFragment extends BaseFragment implements
     @Override
     public void onLoadFinished(Loader<ResponseList<DirectMessage>> arg0,
                                ResponseList<DirectMessage> statuses) {
-        if (statuses != null) {
-            TwitterAdapter adapter = (TwitterAdapter) getListAdapter();
-            adapter.clear();
-            for (DirectMessage status : statuses) {
-                adapter.add(Row.newDirectMessage(status));
-            }
-        } else {
-            JustawayApplication.showToast("DirectMessagesの取得に失敗しました＞＜");
+        if (statuses == null) {
+            return;
+        }
+        TwitterAdapter adapter = (TwitterAdapter) getListAdapter();
+        adapter.clear();
+        for (DirectMessage status : statuses) {
+            adapter.add(Row.newDirectMessage(status));
         }
     }
 
