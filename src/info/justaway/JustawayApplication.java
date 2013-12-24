@@ -391,11 +391,11 @@ public class JustawayApplication extends Application {
         if (status.isFavorited()) {
             return true;
         }
-        if (mIsFavMap.get(status.getId())) {
+        if (mIsFavMap.get(status.getId()) != null) {
             return true;
         }
         Status retweet = status.getRetweetedStatus();
-        return retweet != null && ( mIsFavMap.get(retweet.getId()) || retweet.isFavorited() );
+        return retweet != null && ( ( mIsFavMap.get(retweet.getId()) != null ) || retweet.isFavorited() );
     }
 
     public void setRtId(Long sourceId, Long retweetId) {
