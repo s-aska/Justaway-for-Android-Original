@@ -21,22 +21,22 @@ import twitter4j.User;
 
 public class EditProfileActivity extends FragmentActivity implements LoaderManager.LoaderCallbacks<User> {
 
-    private EditText name;
-    private EditText location;
-    private EditText url;
-    private EditText description;
-    private ImageView icon;
+    private EditText mName;
+    private EditText mLocation;
+    private EditText mUrl;
+    private EditText mDescription;
+    private ImageView mIcon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
 
-        name = ((EditText) findViewById(R.id.name));
-        location = ((EditText) findViewById(R.id.location));
-        url = ((EditText) findViewById(R.id.webSite));
-        description = ((EditText) findViewById(R.id.bio));
-        icon = ((ImageView) findViewById(R.id.icon));
+        mName = ((EditText) findViewById(R.id.name));
+        mLocation = ((EditText) findViewById(R.id.location));
+        mUrl = ((EditText) findViewById(R.id.webSite));
+        mDescription = ((EditText) findViewById(R.id.bio));
+        mIcon = ((ImageView) findViewById(R.id.icon));
 
         findViewById(R.id.updateProfileImage).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,11 +75,11 @@ public class EditProfileActivity extends FragmentActivity implements LoaderManag
             startActivity(intent);
             finish();
         } else {
-            name.setText(user.getName());
-            location.setText(user.getLocation());
-            url.setText(user.getURLEntity().getExpandedURL());
-            description.setText(user.getDescription());
-            application.displayRoundedImage(user.getOriginalProfileImageURL(), icon);
+            mName.setText(user.getName());
+            mLocation.setText(user.getLocation());
+            mUrl.setText(user.getURLEntity().getExpandedURL());
+            mDescription.setText(user.getDescription());
+            application.displayRoundedImage(user.getOriginalProfileImageURL(), mIcon);
         }
     }
 
@@ -93,10 +93,10 @@ public class EditProfileActivity extends FragmentActivity implements LoaderManag
         protected User doInBackground(Void... params) {
             try {
                 User user = JustawayApplication.getApplication().getTwitter().updateProfile(
-                        name.getText().toString(),
-                        url.getText().toString(),
-                        location.getText().toString(),
-                        description.getText().toString());
+                        mName.getText().toString(),
+                        mUrl.getText().toString(),
+                        mLocation.getText().toString(),
+                        mDescription.getText().toString());
                 return user;
             } catch (Exception e) {
                 e.printStackTrace();

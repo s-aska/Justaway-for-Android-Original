@@ -49,27 +49,13 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
 
     private JustawayApplication mApplication;
     private SectionsPagerAdapter mSectionsPagerAdapter;
-    private ViewPager viewPager;
+    private ViewPager mViewPager;
     private ProgressDialog mProgressDialog;
-    private final int REQUEST_CHOOSE_USER_LIST = 100;
-    private final int TAB_ID_TIMELINE = -1;
-    private final int TAB_ID_INTERACTIONS = -2;
-    private final int TAB_ID_DIRECT_MESSAGE = -3;
+    private static final int REQUEST_CHOOSE_USER_LIST = 100;
+    private static final int TAB_ID_TIMELINE = -1;
+    private static final int TAB_ID_INTERACTIONS = -2;
+    private static final int TAB_ID_DIRECT_MESSAGE = -3;
 
-    /**
-     * タブビューを実現するためのもの、とても大事 サポートパッケージv4から、2系でも使えるパッケージを使用
-     */
-    public ViewPager getViewPager() {
-        return viewPager;
-    }
-
-    public void setViewPager(ViewPager viewPager) {
-        this.viewPager = viewPager;
-    }
-
-    /**
-     * @param savedInstanceState
-     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -102,7 +88,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
         Typeface fontello = Typeface.createFromAsset(getAssets(), "fontello.ttf");
         Button home = (Button) findViewById(R.id.action_timeline);
         Button interactions = (Button) findViewById(R.id.action_interactions);
-        Button directMessage = (Button) findViewById(R.id.action_directmessage);
+        Button directMessage = (Button) findViewById(R.id.action_direct_message);
         Button tweet = (Button) findViewById(R.id.action_tweet);
         Button send = (Button) findViewById(R.id.send);
         home.setTypeface(fontello);
@@ -315,9 +301,9 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                 if (f == null) {
                     return;
                 }
-                int id = viewPager.getCurrentItem();
+                int id = mViewPager.getCurrentItem();
                 if (id != position) {
-                    viewPager.setCurrentItem(position);
+                    mViewPager.setCurrentItem(position);
                     if (f.isTop()) {
                         showTopView();
                     }
@@ -362,9 +348,8 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
         /**
          * スワイプで動かせるタブを実装するのに最低限必要な実装
          */
-        ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-        mSectionsPagerAdapter = new SectionsPagerAdapter(this, viewPager);
-        setViewPager(viewPager);
+        mViewPager = (ViewPager) findViewById(R.id.pager);
+        mSectionsPagerAdapter = new SectionsPagerAdapter(this, mViewPager);
 
         mSectionsPagerAdapter.addTab(TimelineFragment.class, null, "Home", TAB_ID_TIMELINE);
         mSectionsPagerAdapter.addTab(InteractionsFragment.class, null, "Home", TAB_ID_INTERACTIONS);
@@ -378,12 +363,12 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
          * あまりに使いづらいの上限を増やしている、指定値＋前後のタブまでが保持されるようになる
          * デフォルト値は1（表示しているタブの前後までしか保持されない）
          */
-        viewPager.setOffscreenPageLimit(10);
+        mViewPager.setOffscreenPageLimit(10);
 
         /**
          * スワイプ移動でも移動先が未読アプしている場合、アピ解除判定を行う
          */
-        viewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+        mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
                 BaseFragment f = mSectionsPagerAdapter.findFragmentByPosition(position);
@@ -424,7 +409,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
      */
     public void onNewTimeline(Boolean autoScroll) {
         // 表示中のタブかつ自動スクロール時はハイライトしない
-        if (viewPager.getCurrentItem() == 0 && autoScroll == true) {
+        if (mViewPager.getCurrentItem() == 0 && autoScroll == true) {
             return;
         }
         Button button = (Button) findViewById(R.id.action_timeline);
@@ -436,7 +421,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
      */
     public void onNewInteractions(Boolean autoScroll) {
         // 表示中のタブかつ自動スクロール時はハイライトしない
-        if (viewPager.getCurrentItem() == 1 && autoScroll) {
+        if (mViewPager.getCurrentItem() == 1 && autoScroll) {
             return;
         }
         Button button = (Button) findViewById(R.id.action_interactions);
@@ -448,10 +433,10 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
      */
     public void onNewDirectMessage(Boolean autoScroll) {
         // 表示中のタブかつ自動スクロール時はハイライトしない
-        if (viewPager.getCurrentItem() == 2 && autoScroll) {
+        if (mViewPager.getCurrentItem() == 2 && autoScroll) {
             return;
         }
-        Button button = (Button) findViewById(R.id.action_directmessage);
+        Button button = (Button) findViewById(R.id.action_direct_message);
         button.setTextColor(getResources().getColor(color.holo_blue_bright));
     }
 
@@ -461,7 +446,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
     public void onNewListStatus(int listId, Boolean autoScroll) {
         // 表示中のタブかつ自動スクロール時はハイライトしない
         int position = mSectionsPagerAdapter.findPositionById(listId);
-        if (viewPager.getCurrentItem() == position && autoScroll) {
+        if (mViewPager.getCurrentItem() == position && autoScroll) {
             return;
         }
         Log.d("Justaway", "listId: " + listId);
@@ -478,7 +463,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
      */
     public void showTopView() {
         LinearLayout tab_menus = (LinearLayout) findViewById(R.id.tab_menus);
-        Button button = (Button) tab_menus.getChildAt(viewPager.getCurrentItem());
+        Button button = (Button) tab_menus.getChildAt(mViewPager.getCurrentItem());
         if (button != null) {
             button.setTextColor(getResources().getColor(color.white));
         }

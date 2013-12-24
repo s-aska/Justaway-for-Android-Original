@@ -13,20 +13,20 @@ import twitter4j.User;
 
 public class UserListStatusesLoader extends AbstractAsyncTaskLoader<UserListStatusesWithMembers> {
 
-    private int userListId;
+    private int mUserListId;
 
     public UserListStatusesLoader(Context context, int userListId) {
         super(context);
-        this.userListId = userListId;
+        this.mUserListId = userListId;
     }
 
     @Override
     public UserListStatusesWithMembers loadInBackground() {
         try {
             Twitter twitter = JustawayApplication.getApplication().getTwitter();
-            ResponseList<Status> statuses = twitter.getUserListStatuses(userListId,
+            ResponseList<Status> statuses = twitter.getUserListStatuses(mUserListId,
                     new Paging(1, 40));
-            ResponseList<User> members = twitter.getUserListMembers(userListId, 0);
+            ResponseList<User> members = twitter.getUserListMembers(mUserListId, 0);
             return new UserListStatusesWithMembers(statuses, members);
         } catch (TwitterException e) {
             e.printStackTrace();

@@ -37,12 +37,12 @@ import twitter4j.User;
 public class TwitterAdapter extends ArrayAdapter<Row> {
     private JustawayApplication mApplication;
     private Context mContext;
-    private ArrayList<Row> statuses = new ArrayList<Row>();
+    private ArrayList<Row> mStatuses = new ArrayList<Row>();
     private LayoutInflater mInflater;
     private int mLayout;
     private Boolean isMain;
     private static final int LIMIT = 100;
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM'/'dd' 'HH':'mm':'ss",
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy/MM'/'dd' 'HH':'mm':'ss",
             Locale.ENGLISH);
 
     public TwitterAdapter(Context context, int textViewResourceId) {
@@ -58,7 +58,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     public void add(Row row) {
         super.add(row);
         this.filter(row);
-        this.statuses.add(row);
+        this.mStatuses.add(row);
         this.limitation();
     }
 
@@ -66,14 +66,14 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     public void insert(Row row, int index) {
         super.insert(row, index);
         this.filter(row);
-        this.statuses.add(index, row);
+        this.mStatuses.add(index, row);
         this.limitation();
     }
 
     @Override
     public void remove(Row row) {
         super.remove(row);
-        this.statuses.remove(row);
+        this.mStatuses.remove(row);
     }
 
     private void filter(Row row) {
@@ -89,7 +89,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     }
 
     public void replaceStatus(Status status) {
-        for (Row row : statuses) {
+        for (Row row : mStatuses) {
             if (!row.isDirectMessage() && row.getStatus().getId() == status.getId()) {
                 row.setStatus(status);
                 notifyDataSetChanged();
@@ -99,7 +99,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     }
 
     public void removeStatus(long statusId) {
-        for (Row row : statuses) {
+        for (Row row : mStatuses) {
             if (!row.isDirectMessage() && row.getStatus().getId() == statusId) {
                 remove(row);
                 break;
@@ -108,7 +108,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     }
 
     public void removeDirectMessage(long directMessageId) {
-        for (Row row : statuses) {
+        for (Row row : mStatuses) {
             if (row.isDirectMessage() && row.getMessage().getId() == directMessageId) {
                 remove(row);
                 break;
@@ -117,11 +117,11 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     }
 
     public void limitation() {
-        int size = this.statuses.size();
+        int size = this.mStatuses.size();
         if (size > LIMIT) {
             int count = size - LIMIT;
             for (int i = 0; i < count; i++) {
-                super.remove(this.statuses.remove(size - i - 1));
+                super.remove(this.mStatuses.remove(size - i - 1));
             }
         }
     }
@@ -129,7 +129,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     @Override
     public void clear() {
         super.clear();
-        this.statuses.clear();
+        this.mStatuses.clear();
     }
 
     @Override
@@ -142,7 +142,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         }
 
         // 表示すべきデータの取得
-        Row row = statuses.get(position);
+        Row row = mStatuses.get(position);
 
         if (row.isDirectMessage()) {
             DirectMessage message = row.getMessage();
@@ -494,6 +494,6 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     }
 
     private String getAbsoluteTime(Date date) {
-        return dateFormat.format(date);
+        return DATE_FORMAT.format(date);
     }
 }

@@ -19,13 +19,13 @@ import twitter4j.User;
 public class UserListFragment extends BaseFragment implements
         LoaderManager.LoaderCallbacks<UserListStatusesWithMembers> {
 
-    private int userListId;
-    private LongSparseArray<Boolean> members = new LongSparseArray<Boolean>();
+    private int mUserListId;
+    private LongSparseArray<Boolean> mMembers = new LongSparseArray<Boolean>();
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        userListId = getArguments().getInt("userListId");
+        mUserListId = getArguments().getInt("userListId");
         getLoaderManager().initLoader(0, null, this);
     }
 
@@ -40,7 +40,7 @@ public class UserListFragment extends BaseFragment implements
             return;
         }
 
-        if (members.get(row.getStatus().getUser().getId()) == null) {
+        if (mMembers.get(row.getStatus().getUser().getId()) == null) {
             return;
         }
         listView.post(new Runnable() {
@@ -62,9 +62,9 @@ public class UserListFragment extends BaseFragment implements
                 MainActivity activity = (MainActivity) getActivity();
                 if (position != 0 || y != 0) {
                     listView.setSelectionFromTop(position + 1, y);
-                    activity.onNewListStatus(userListId, false);
+                    activity.onNewListStatus(mUserListId, false);
                 } else {
-                    activity.onNewListStatus(userListId, true);
+                    activity.onNewListStatus(mUserListId, true);
                 }
             }
         });
@@ -72,7 +72,7 @@ public class UserListFragment extends BaseFragment implements
 
     @Override
     public Loader<UserListStatusesWithMembers> onCreateLoader(int arg0, Bundle args) {
-        return new UserListStatusesLoader(getActivity(), userListId);
+        return new UserListStatusesLoader(getActivity(), mUserListId);
     }
 
     @Override
@@ -90,13 +90,13 @@ public class UserListFragment extends BaseFragment implements
         for (twitter4j.Status status : statuses) {
             adapter.add(Row.newStatus(status));
             // 最初のツイートに登場ユーザーをStreaming APIからの取り込み対象にすることでAPI節約!!!
-            members.append(status.getUser().getId(), true);
+            mMembers.append(status.getUser().getId(), true);
         }
         // Listメンバー取り込み(API Limitが厳しい為、20件迄)
         ResponseList<User> listMembers = response.getMembers();
         if (listMembers != null) {
             for (User user : listMembers) {
-                members.append(user.getId(), true);
+                mMembers.append(user.getId(), true);
             }
         }
     }

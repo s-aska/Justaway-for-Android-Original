@@ -39,8 +39,8 @@ public class PostActivity extends Activity {
     private Button mImgButton;
     private Button mSuddenlyButton;
     private ProgressDialog mProgressDialog;
-    private Long inReplyToStatusId;
-    private File imgPath;
+    private Long mInReplyToStatusId;
+    private File mImgPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +71,7 @@ public class PostActivity extends Activity {
         if (selection > 0) {
             mEditText.setSelection(selection);
         }
-        inReplyToStatusId = intent.getLongExtra("inReplyToStatusId", 0);
+        mInReplyToStatusId = intent.getLongExtra("inReplyToStatusId", 0);
 
         if (Intent.ACTION_VIEW.equals(intent.getAction())) {
             String text = intent.getData().getQueryParameter("text");
@@ -111,11 +111,11 @@ public class PostActivity extends Activity {
             public void onClick(View v) {
                 showProgressDialog("送信中！！１１１１１");
                 StatusUpdate superSugoi = new StatusUpdate(mEditText.getText().toString());
-                if (inReplyToStatusId > 0) {
-                    superSugoi.setInReplyToStatusId(inReplyToStatusId);
+                if (mInReplyToStatusId > 0) {
+                    superSugoi.setInReplyToStatusId(mInReplyToStatusId);
                 }
-                if (imgPath != null) {
-                    superSugoi.setMedia(imgPath);
+                if (mImgPath != null) {
+                    superSugoi.setMedia(mImgPath);
                 }
                 new PostTask().execute(superSugoi);
             }
@@ -227,7 +227,7 @@ public class PostActivity extends Activity {
         if (!path.exists()) {
             return;
         }
-        this.imgPath = path;
+        this.mImgPath = path;
         JustawayApplication.showToast(R.string.toast_set_image_success);
         mImgButton.setTextColor(getResources().getColor(R.color.holo_blue_bright));
     }

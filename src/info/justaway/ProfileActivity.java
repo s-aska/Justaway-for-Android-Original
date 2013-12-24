@@ -28,51 +28,32 @@ import info.justaway.fragment.profile.UserTimelineFragment;
 import info.justaway.model.Profile;
 import info.justaway.task.ShowUserLoader;
 import twitter4j.Relationship;
-import twitter4j.Twitter;
 import twitter4j.User;
 
 public class ProfileActivity extends FragmentActivity implements
         LoaderManager.LoaderCallbacks<Profile> {
 
-    private Twitter twitter;
-    private ImageView banner;
-    private User user;
-    private int currentPosition = 0;
-    private int blue;
-    private int white;
-
-    /**
-     * Twitter REST API用のインスタンス
-     */
-    public Twitter getTwitter() {
-        return twitter;
-    }
-
-    public void setTwitter(Twitter twitter) {
-        this.twitter = twitter;
-    }
+    private ImageView mBanner;
+    private User mUser;
+    private int mCurrentPosition = 0;
+    private final int mColorBlue = getResources().getColor(R.color.holo_blue_light);
+    private final int mColorWhite = getResources().getColor(android.R.color.secondary_text_dark);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        JustawayApplication application = JustawayApplication.getApplication();
+        mBanner = (ImageView) findViewById(R.id.banner);
+        mBanner.setImageResource(R.drawable.suzuri);
 
-        twitter = application.getTwitter();
-        banner = (ImageView) findViewById(R.id.banner);
-        banner.setImageResource(R.drawable.suzuri);
-
-        blue = getResources().getColor(R.color.holo_blue_light);
-        white = getResources().getColor(android.R.color.secondary_text_dark);
-
-        ((TextView) findViewById(R.id.statusesCount)).setTextColor(blue);
-        ((TextView) findViewById(R.id.statusesCountLabel)).setTextColor(blue);
+        ((TextView) findViewById(R.id.statusesCount)).setTextColor(mColorBlue);
+        ((TextView) findViewById(R.id.statusesCountLabel)).setTextColor(mColorBlue);
 
         // インテント経由での起動をサポート
         Intent intent = getIntent();
         Bundle args = new Bundle(1);
-        String screenName = null;
+        String screenName;
         if (Intent.ACTION_VIEW.equals(intent.getAction())) {
             screenName = intent.getData().getLastPathSegment();
         } else {
@@ -101,25 +82,25 @@ public class ProfileActivity extends FragmentActivity implements
             JustawayApplication.showToast(R.string.toast_load_data_failure);
             return;
         }
-        user = profile.getUser();
-        if (user == null) {
+        mUser = profile.getUser();
+        if (mUser == null) {
             JustawayApplication.showToast(R.string.toast_load_data_failure);
             return;
         }
-        ((TextView) findViewById(R.id.favouritesCount)).setText(String.valueOf(user
+        ((TextView) findViewById(R.id.favouritesCount)).setText(String.valueOf(mUser
                 .getFavouritesCount()));
-        ((TextView) findViewById(R.id.statusesCount)).setText(String.valueOf(user
+        ((TextView) findViewById(R.id.statusesCount)).setText(String.valueOf(mUser
                 .getStatusesCount()));
-        ((TextView) findViewById(R.id.friendsCount)).setText(String.valueOf(user
+        ((TextView) findViewById(R.id.friendsCount)).setText(String.valueOf(mUser
                 .getFriendsCount()));
-        ((TextView) findViewById(R.id.followersCount)).setText(String.valueOf(user
+        ((TextView) findViewById(R.id.followersCount)).setText(String.valueOf(mUser
                 .getFollowersCount()));
-        ((TextView) findViewById(R.id.listedCount)).setText(String.valueOf(user
+        ((TextView) findViewById(R.id.listedCount)).setText(String.valueOf(mUser
                 .getListedCount()));
 
-        String bannerUrl = user.getProfileBannerMobileRetinaURL();
+        String bannerUrl = mUser.getProfileBannerMobileRetinaURL();
         if (bannerUrl != null) {
-            JustawayApplication.getApplication().displayImage(bannerUrl, banner);
+            JustawayApplication.getApplication().displayImage(bannerUrl, mBanner);
         }
 
         Relationship relationship = profile.getRelationship();
@@ -131,7 +112,7 @@ public class ProfileActivity extends FragmentActivity implements
         SectionsPagerAdapter pagerAdapter = new SectionsPagerAdapter(this, viewPager);
 
         Bundle args = new Bundle();
-        args.putSerializable("user", user);
+        args.putSerializable("user", mUser);
         args.putSerializable("relationship", relationship);
         pagerAdapter.addTab(SummaryFragment.class, args);
         pagerAdapter.addTab(DescriptionFragment.class, args);
@@ -152,7 +133,7 @@ public class ProfileActivity extends FragmentActivity implements
         SectionsPagerAdapter listPagerAdapter = new SectionsPagerAdapter(this, listViewPager);
 
         Bundle listArgs = new Bundle();
-        listArgs.putSerializable("user", user);
+        listArgs.putSerializable("user", mUser);
         listPagerAdapter.addTab(UserTimelineFragment.class, listArgs);
         listPagerAdapter.addTab(FollowingListFragment.class, listArgs);
         listPagerAdapter.addTab(FollowersListFragment.class, listArgs);
@@ -165,51 +146,51 @@ public class ProfileActivity extends FragmentActivity implements
             public void onPageSelected(int position) {
                 switch (position) {
                     case 0:
-                        ((TextView) findViewById(R.id.statusesCount)).setTextColor(blue);
-                        ((TextView) findViewById(R.id.statusesCountLabel)).setTextColor(blue);
+                        ((TextView) findViewById(R.id.statusesCount)).setTextColor(mColorBlue);
+                        ((TextView) findViewById(R.id.statusesCountLabel)).setTextColor(mColorBlue);
                         break;
                     case 1:
-                        ((TextView) findViewById(R.id.friendsCount)).setTextColor(blue);
-                        ((TextView) findViewById(R.id.friendsCountLabel)).setTextColor(blue);
+                        ((TextView) findViewById(R.id.friendsCount)).setTextColor(mColorBlue);
+                        ((TextView) findViewById(R.id.friendsCountLabel)).setTextColor(mColorBlue);
                         break;
                     case 2:
-                        ((TextView) findViewById(R.id.followersCount)).setTextColor(blue);
-                        ((TextView) findViewById(R.id.followersCountLabel)).setTextColor(blue);
+                        ((TextView) findViewById(R.id.followersCount)).setTextColor(mColorBlue);
+                        ((TextView) findViewById(R.id.followersCountLabel)).setTextColor(mColorBlue);
                         break;
                     case 3:
-                        ((TextView) findViewById(R.id.listedCount)).setTextColor(blue);
-                        ((TextView) findViewById(R.id.listedCountLabel)).setTextColor(blue);
+                        ((TextView) findViewById(R.id.listedCount)).setTextColor(mColorBlue);
+                        ((TextView) findViewById(R.id.listedCountLabel)).setTextColor(mColorBlue);
                         break;
                     case 4:
-                        ((TextView) findViewById(R.id.favouritesCount)).setTextColor(blue);
-                        ((TextView) findViewById(R.id.favouritesCountLabel)).setTextColor(blue);
+                        ((TextView) findViewById(R.id.favouritesCount)).setTextColor(mColorBlue);
+                        ((TextView) findViewById(R.id.favouritesCountLabel)).setTextColor(mColorBlue);
                         break;
                 }
 
                 // 青くなってるのを取り消す処理
-                switch (currentPosition) {
+                switch (mCurrentPosition) {
                     case 0:
-                        ((TextView) findViewById(R.id.statusesCount)).setTextColor(white);
-                        ((TextView) findViewById(R.id.statusesCountLabel)).setTextColor(white);
+                        ((TextView) findViewById(R.id.statusesCount)).setTextColor(mColorWhite);
+                        ((TextView) findViewById(R.id.statusesCountLabel)).setTextColor(mColorWhite);
                         break;
                     case 1:
-                        ((TextView) findViewById(R.id.friendsCount)).setTextColor(white);
-                        ((TextView) findViewById(R.id.friendsCountLabel)).setTextColor(white);
+                        ((TextView) findViewById(R.id.friendsCount)).setTextColor(mColorWhite);
+                        ((TextView) findViewById(R.id.friendsCountLabel)).setTextColor(mColorWhite);
                         break;
                     case 2:
-                        ((TextView) findViewById(R.id.followersCount)).setTextColor(white);
-                        ((TextView) findViewById(R.id.followersCountLabel)).setTextColor(white);
+                        ((TextView) findViewById(R.id.followersCount)).setTextColor(mColorWhite);
+                        ((TextView) findViewById(R.id.followersCountLabel)).setTextColor(mColorWhite);
                         break;
                     case 3:
-                        ((TextView) findViewById(R.id.listedCount)).setTextColor(white);
-                        ((TextView) findViewById(R.id.listedCountLabel)).setTextColor(white);
+                        ((TextView) findViewById(R.id.listedCount)).setTextColor(mColorWhite);
+                        ((TextView) findViewById(R.id.listedCountLabel)).setTextColor(mColorWhite);
                         break;
                     case 4:
-                        ((TextView) findViewById(R.id.favouritesCount)).setTextColor(white);
-                        ((TextView) findViewById(R.id.favouritesCountLabel)).setTextColor(white);
+                        ((TextView) findViewById(R.id.favouritesCount)).setTextColor(mColorWhite);
+                        ((TextView) findViewById(R.id.favouritesCountLabel)).setTextColor(mColorWhite);
                         break;
                 }
-                currentPosition = position;
+                mCurrentPosition = position;
             }
         });
 
@@ -261,17 +242,17 @@ public class ProfileActivity extends FragmentActivity implements
         switch (item.getItemId()) {
             case R.id.open_twitter:
                 intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/"
-                        + user.getScreenName()));
+                        + mUser.getScreenName()));
                 startActivity(intent);
                 break;
             case R.id.open_favstar:
                 intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://ja.favstar.fm/users/"
-                        + user.getScreenName() + "/recent"));
+                        + mUser.getScreenName() + "/recent"));
                 startActivity(intent);
                 break;
             case R.id.open_twilog:
                 intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://twilog.org/"
-                        + user.getScreenName()));
+                        + mUser.getScreenName()));
                 startActivity(intent);
                 break;
         }

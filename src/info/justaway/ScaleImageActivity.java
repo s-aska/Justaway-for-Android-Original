@@ -25,7 +25,7 @@ import info.justaway.view.ScaleImageView;
  */
 public class ScaleImageActivity extends Activity {
 
-    private ScaleImageView imageView;
+    private ScaleImageView mImageView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,12 +40,12 @@ public class ScaleImageActivity extends Activity {
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        imageView = new ScaleImageView(this);
-        imageView.setActivity(this);
+        mImageView = new ScaleImageView(this);
+        mImageView.setActivity(this);
 
-        ImageLoader.getInstance().displayImage(url, imageView);
+        ImageLoader.getInstance().displayImage(url, mImageView);
 
-        setContentView(imageView);
+        setContentView(mImageView);
     }
 
     @Override
@@ -58,9 +58,9 @@ public class ScaleImageActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
         if (itemId == R.id.save) {
-            imageView.setDrawingCacheEnabled(false);
-            imageView.setDrawingCacheEnabled(true);
-            Bitmap bitmap = imageView.getDrawingCache(false);
+            mImageView.setDrawingCacheEnabled(false);
+            mImageView.setDrawingCacheEnabled(true);
+            Bitmap bitmap = mImageView.getDrawingCache(false);
             if (bitmap == null) {
                 return false;
             }
