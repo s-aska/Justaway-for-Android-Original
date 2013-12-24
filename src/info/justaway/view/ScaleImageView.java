@@ -38,8 +38,6 @@ public class ScaleImageView extends ImageView implements OnTouchListener {
     private int mPrevMoveY;
     private GestureDetector mDetector;
 
-    String TAG = "ScaleImageView";
-
     public ScaleImageView(Context context, AttributeSet attr) {
         super(context, attr);
         this.mContext = context;
@@ -111,8 +109,8 @@ public class ScaleImageView extends ImageView implements OnTouchListener {
         int r_norm = r - l;
         mScale = (float) r_norm / (float) mIntrinsicWidth;
 
-        int paddingHeight = 0;
-        int paddingWidth = 0;
+        int paddingHeight;
+        int paddingWidth;
         // scaling vertical
         if (mScale * mIntrinsicHeight > mHeight) {
             mScale = (float) mHeight / (float) mIntrinsicHeight;
@@ -209,7 +207,7 @@ public class ScaleImageView extends ImageView implements OnTouchListener {
         return FloatMath.sqrt(x * x + y * y);
     }
 
-    private float dispDistance() {
+    private float displayDistance() {
         return FloatMath.sqrt(mWidth * mWidth + mHeight * mHeight);
     }
 
@@ -235,7 +233,7 @@ public class ScaleImageView extends ImageView implements OnTouchListener {
             case MotionEvent.ACTION_MOVE:
                 if (touchCount >= 2 && isScaling) {
                     float dist = distance(event.getX(0), event.getX(1), event.getY(0), event.getY(1));
-                    float scale = (dist - mPrevDistance) / dispDistance();
+                    float scale = (dist - mPrevDistance) / displayDistance();
                     mPrevDistance = dist;
                     scale += 1;
                     scale = scale * scale;

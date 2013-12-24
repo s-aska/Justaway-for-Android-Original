@@ -1,6 +1,7 @@
 package info.justaway.task;
 
 import info.justaway.JustawayApplication;
+import info.justaway.R;
 
 import android.os.AsyncTask;
 
@@ -22,9 +23,9 @@ public class FavoriteTask extends AsyncTask<Long, Void, Boolean> {
     @Override
     protected void onPostExecute(Boolean success) {
         if (success) {
-            JustawayApplication.showToast("ふぁぼに成功しました>゜))彡");
+            JustawayApplication.showToast(R.string.toast_favorite_success);
         } else {
-            JustawayApplication.showToast("ふぁぼに失敗しました＞＜");
+            JustawayApplication.showToast(R.string.toast_favorite_failure);
         }
     }
 }

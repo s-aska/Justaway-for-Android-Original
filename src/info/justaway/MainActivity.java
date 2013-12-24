@@ -32,7 +32,7 @@ import info.justaway.fragment.TimelineFragment;
 import info.justaway.fragment.UserListFragment;
 import info.justaway.model.Row;
 import info.justaway.task.DestroyDirectMessageTask;
-import info.justaway.task.RefetchFavoriteStatus;
+import info.justaway.task.ReFetchFavoriteStatus;
 import info.justaway.task.VerifyCredentialsLoader;
 import twitter4j.DirectMessage;
 import twitter4j.Status;
@@ -54,7 +54,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
     private final int REQUEST_CHOOSE_USER_LIST = 100;
     private final int TAB_ID_TIMELINE = -1;
     private final int TAB_ID_INTERACTIONS = -2;
-    private final int TAB_ID_DIRECTMESSAGE = -3;
+    private final int TAB_ID_DIRECT_MESSAGE = -3;
 
     /**
      * タブビューを実現するためのもの、とても大事 サポートパッケージv4から、2系でも使えるパッケージを使用
@@ -82,7 +82,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
 
         // アクセストークンがない場合に認証用のアクティビティを起動する
         if (!mApplication.hasAccessToken()) {
-            Intent intent = new Intent(this, SigninActivity.class);
+            Intent intent = new Intent(this, SignInActivity.class);
             startActivity(intent);
             finish();
         } else if (mApplication.getUserId() < 0 || mApplication.getScreenName() == null) {
@@ -102,17 +102,17 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
         Typeface fontello = Typeface.createFromAsset(getAssets(), "fontello.ttf");
         Button home = (Button) findViewById(R.id.action_timeline);
         Button interactions = (Button) findViewById(R.id.action_interactions);
-        Button directmessage = (Button) findViewById(R.id.action_directmessage);
+        Button directMessage = (Button) findViewById(R.id.action_directmessage);
         Button tweet = (Button) findViewById(R.id.action_tweet);
         Button send = (Button) findViewById(R.id.send);
         home.setTypeface(fontello);
         interactions.setTypeface(fontello);
-        directmessage.setTypeface(fontello);
+        directMessage.setTypeface(fontello);
         tweet.setTypeface(fontello);
         send.setTypeface(fontello);
         home.setOnClickListener(tabMenuOnClickListener(0));
         interactions.setOnClickListener(tabMenuOnClickListener(1));
-        directmessage.setOnClickListener(tabMenuOnClickListener(2));
+        directMessage.setOnClickListener(tabMenuOnClickListener(2));
         tweet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -346,7 +346,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
         // VerifyCredentialsLoaderが失敗する場合も考慮
         if (user == null) {
             mApplication.resetAccessToken();
-            Intent intent = new Intent(this, SigninActivity.class);
+            Intent intent = new Intent(this, SignInActivity.class);
             startActivity(intent);
             finish();
         } else {
@@ -368,7 +368,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
 
         mSectionsPagerAdapter.addTab(TimelineFragment.class, null, "Home", TAB_ID_TIMELINE);
         mSectionsPagerAdapter.addTab(InteractionsFragment.class, null, "Home", TAB_ID_INTERACTIONS);
-        mSectionsPagerAdapter.addTab(DirectMessageFragment.class, null, "Home", TAB_ID_DIRECTMESSAGE);
+        mSectionsPagerAdapter.addTab(DirectMessageFragment.class, null, "Home", TAB_ID_DIRECT_MESSAGE);
         initTab();
 
         findViewById(R.id.footer).setVisibility(View.VISIBLE);
@@ -675,7 +675,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                 Row row = Row.newFavorite(source, target, status);
                 BaseFragment fragment = (BaseFragment) mSectionsPagerAdapter
                         .findFragmentById(TAB_ID_INTERACTIONS);
-                new RefetchFavoriteStatus(fragment).execute(row);
+                new ReFetchFavoriteStatus(fragment).execute(row);
             }
 
             @Override
@@ -703,7 +703,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
             public void onDirectMessage(DirectMessage directMessage) {
                 super.onDirectMessage(directMessage);
                 BaseFragment fragment = (BaseFragment) mSectionsPagerAdapter
-                        .findFragmentById(TAB_ID_DIRECTMESSAGE);
+                        .findFragmentById(TAB_ID_DIRECT_MESSAGE);
                 if (fragment != null) {
                     fragment.add(Row.newDirectMessage(directMessage));
                 }
@@ -713,7 +713,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
             public void onDeletionNotice(long directMessageId, long userId) {
                 super.onDeletionNotice(directMessageId, userId);
                 DirectMessageFragment fragment = (DirectMessageFragment) mSectionsPagerAdapter
-                        .findFragmentById(TAB_ID_DIRECTMESSAGE);
+                        .findFragmentById(TAB_ID_DIRECT_MESSAGE);
                 if (fragment != null) {
                     fragment.remove(directMessageId);
                 }
@@ -741,7 +741,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                 EditText status = (EditText) findViewById(R.id.editStatus);
                 status.setText("");
             } else {
-                JustawayApplication.showToast("残念~！もう一回！！");
+                JustawayApplication.showToast(R.string.toast_update_status_failure);
             }
         }
     }
@@ -761,7 +761,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
         new DestroyDirectMessageTask().execute(id);
         // 自分宛のDMを消してもStreaming APIで拾えないで自力で消す
         DirectMessageFragment fragment = (DirectMessageFragment) mSectionsPagerAdapter
-                .findFragmentById(TAB_ID_DIRECTMESSAGE);
+                .findFragmentById(TAB_ID_DIRECT_MESSAGE);
         if (fragment != null) {
             fragment.remove(id);
         }

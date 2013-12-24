@@ -6,13 +6,13 @@ import info.justaway.model.Row;
 
 import android.os.AsyncTask;
 
-public class RefetchFavoriteStatus extends AsyncTask<Row, Void, twitter4j.Status> {
+public class ReFetchFavoriteStatus extends AsyncTask<Row, Void, twitter4j.Status> {
 
     private BaseFragment fragment;
     private Row row;
     // TODO: use http://cdn.api.twitter.com/1/urls/count.json
 
-    public RefetchFavoriteStatus(BaseFragment fragment) {
+    public ReFetchFavoriteStatus(BaseFragment fragment) {
         super();
         this.fragment = fragment;
     }

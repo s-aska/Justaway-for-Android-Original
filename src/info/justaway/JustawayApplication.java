@@ -165,6 +165,11 @@ public class JustawayApplication extends Application {
         Toast.makeText(sApplication, text, Toast.LENGTH_SHORT).show();
     }
 
+    public static void showToast(int id) {
+        String text = sApplication.getString(id);
+        Toast.makeText(sApplication, text, Toast.LENGTH_SHORT).show();
+    }
+
     /**
      * タブ管理
      */

@@ -13,8 +13,8 @@ import info.justaway.EditProfileActivity;
 import info.justaway.JustawayApplication;
 import info.justaway.R;
 import info.justaway.ScaleImageActivity;
+import info.justaway.task.DestroyFriendshipTask;
 import info.justaway.task.FollowTask;
-import info.justaway.task.UnfollowTask;
 import twitter4j.Relationship;
 import twitter4j.User;
 
@@ -75,7 +75,7 @@ public class SummaryFragment extends Fragment {
             follow.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    new UnfollowTask().execute(user.getId());
+                    new DestroyFriendshipTask().execute(user.getId());
                 }
             });
         } else {

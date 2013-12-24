@@ -21,7 +21,6 @@ import twitter4j.URLEntity;
 import twitter4j.User;
 
 public class FriendListAdapter extends ArrayAdapter<User> {
-    private JustawayApplication mApplication;
     private ArrayList<User> users = new ArrayList<User>();
     private Context context;
     private LayoutInflater inflater;
@@ -32,7 +31,6 @@ public class FriendListAdapter extends ArrayAdapter<User> {
         this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.context = context;
         this.layout = textViewResourceId;
-        this.mApplication = (JustawayApplication) context.getApplicationContext();
     }
 
     @Override
@@ -55,7 +53,7 @@ public class FriendListAdapter extends ArrayAdapter<User> {
 
         ImageView icon = (ImageView) view.findViewById(R.id.icon);
         String iconUrl = user.getBiggerProfileImageURL();
-        mApplication.displayRoundedImage(iconUrl, icon);
+        JustawayApplication.getApplication().displayRoundedImage(iconUrl, icon);
 
         ((TextView) view.findViewById(R.id.display_name)).setText(user.getName());
         ((TextView) view.findViewById(R.id.screen_name)).setText("@" + user.getScreenName());

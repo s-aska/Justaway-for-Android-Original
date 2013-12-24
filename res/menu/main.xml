@@ -9,7 +9,7 @@
         android:id="@+id/onore"
         android:orderInCategory="100"
         android:showAsAction="never"
-        android:title="@string/onore" />
+        android:title="@string/profile" />
     <item
         android:id="@+id/search"
         android:orderInCategory="100"
@@ -19,6 +19,6 @@
         android:id="@+id/signout"
         android:orderInCategory="100"
         android:showAsAction="never"
-        android:title="@string/signout" />
+        android:title="@string/sign_out" />
 
 </menu>

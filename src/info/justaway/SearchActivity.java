@@ -156,7 +156,7 @@ public class SearchActivity extends FragmentActivity {
         @Override
         protected void onPostExecute(QueryResult queryResult) {
             if (queryResult == null) {
-                JustawayApplication.showToast("失敗です！規制かな？");
+                JustawayApplication.showToast(R.string.toast_load_data_failure);
                 return;
             }
             if (queryResult.hasNext()) {
