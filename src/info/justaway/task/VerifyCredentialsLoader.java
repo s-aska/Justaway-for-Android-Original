@@ -1,11 +1,11 @@
 package info.justaway.task;
 
+import android.content.Context;
+
 import info.justaway.JustawayApplication;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.User;
-
-import android.content.Context;
 
 public class VerifyCredentialsLoader extends AbstractAsyncTaskLoader<User> {
 

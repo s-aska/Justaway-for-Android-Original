@@ -1,5 +1,7 @@
 package info.justaway.task;
 
+import android.content.Context;
+
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -8,8 +10,6 @@ import twitter4j.DirectMessage;
 import twitter4j.ResponseList;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
-
-import android.content.Context;
 
 public class DirectMessageLoader extends AbstractAsyncTaskLoader<ResponseList<DirectMessage>> {
 

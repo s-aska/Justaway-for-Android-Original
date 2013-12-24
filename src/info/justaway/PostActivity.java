@@ -1,11 +1,6 @@
 package info.justaway;
 
 
-import java.io.File;
-
-import twitter4j.StatusUpdate;
-import twitter4j.Twitter;
-
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
@@ -29,6 +24,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.File;
+
+import twitter4j.StatusUpdate;
+import twitter4j.Twitter;
 
 public class PostActivity extends Activity {
 

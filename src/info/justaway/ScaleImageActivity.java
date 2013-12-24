@@ -1,13 +1,5 @@
 package info.justaway;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.util.Date;
-
-import com.nostra13.universalimageloader.core.ImageLoader;
-
-import info.justaway.view.ScaleImageView;
-
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
@@ -17,6 +9,14 @@ import android.os.Environment;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
+
+import com.nostra13.universalimageloader.core.ImageLoader;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.Date;
+
+import info.justaway.view.ScaleImageView;
 
 /**
  * 画像の拡大表示用のActivity、かぶせて使う

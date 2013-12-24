@@ -15,8 +15,13 @@
  *******************************************************************************/
 package info.justaway.display;
 
-import android.graphics.*;
+import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
+import android.graphics.BitmapShader;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.RectF;
+import android.graphics.Shader;
 import android.widget.ImageView;
 
 import com.nostra13.universalimageloader.core.assist.LoadedFrom;
