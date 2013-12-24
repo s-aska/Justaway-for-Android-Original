@@ -19,7 +19,7 @@ public class DestroyStatusTask extends AsyncTask<Long, Void, Boolean> {
 
     @Override
     protected void onPostExecute(Boolean success) {
-        if (success == true) {
+        if (success) {
             JustawayApplication.showToast("ツイ消しに成功しました>゜))彡");
         } else {
             JustawayApplication.showToast("ツイ消しに失敗しました＞＜");

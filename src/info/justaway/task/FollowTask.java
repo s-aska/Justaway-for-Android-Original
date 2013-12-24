@@ -19,7 +19,7 @@ public class FollowTask extends AsyncTask<Long, Void, Boolean> {
 
     @Override
     protected void onPostExecute(Boolean success) {
-        if (success == true) {
+        if (success) {
             JustawayApplication.showToast("フォローしました");
         }
     }

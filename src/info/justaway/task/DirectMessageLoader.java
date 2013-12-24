@@ -30,8 +30,8 @@ public class DirectMessageLoader extends AbstractAsyncTaskLoader<ResponseList<Di
 
                 @Override
                 public int compare(DirectMessage arg0, DirectMessage arg1) {
-                    return ((DirectMessage) arg1).getCreatedAt().compareTo(
-                            ((DirectMessage) arg0).getCreatedAt());
+                    return arg1.getCreatedAt().compareTo(
+                            arg0.getCreatedAt());
                 }
             });
             return statuses;

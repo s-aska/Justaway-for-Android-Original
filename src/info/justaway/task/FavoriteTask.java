@@ -21,7 +21,7 @@ public class FavoriteTask extends AsyncTask<Long, Void, Boolean> {
 
     @Override
     protected void onPostExecute(Boolean success) {
-        if (success == true) {
+        if (success) {
             JustawayApplication.showToast("ふぁぼに成功しました>゜))彡");
         } else {
             JustawayApplication.showToast("ふぁぼに失敗しました＞＜");

@@ -19,7 +19,7 @@ public class UnFavoriteTask extends AsyncTask<Long, Void, Boolean> {
 
     @Override
     protected void onPostExecute(Boolean success) {
-        if (success == true) {
+        if (success) {
             JustawayApplication.showToast("あんふぁぼに成功しました>゜))彡");
         } else {
             JustawayApplication.showToast("あんふぁぼに失敗しました＞＜");
