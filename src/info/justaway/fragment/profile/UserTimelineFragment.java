@@ -1,6 +1,5 @@
 package info.justaway.fragment.profile;
 
-import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -29,25 +28,20 @@ import twitter4j.User;
  */
 public class UserTimelineFragment extends Fragment {
 
-    private TwitterAdapter adapter;
-    private ListView listView;
+    private TwitterAdapter mAdapter;
     private ProgressBar mFooter;
-    private Context context;
-    private int currentPage = 1;
-    private int nextPage = 1;
-    private User user;
+    private User mUser;
+    private Boolean mAutoLoader = false;
+    private int mPage = 1;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.list, container, false);
 
-        JustawayApplication application = JustawayApplication.getApplication();
-        context = getActivity();
-
-        user = (User) getArguments().getSerializable("user");
+        mUser = (User) getArguments().getSerializable("user");
 
         // リストビューの設定
-        listView = (ListView) v.findViewById(R.id.listView);
+        ListView listView = (ListView) v.findViewById(R.id.listView);
 
         // コンテキストメニューを使える様にする為の指定、但しデフォルトではロングタップで開く
         registerForContextMenu(listView);
@@ -56,8 +50,8 @@ public class UserTimelineFragment extends Fragment {
         mFooter.setVisibility(View.GONE);
 
         // Status(ツイート)をViewに描写するアダプター
-        adapter = new TwitterAdapter(context, R.layout.row_tweet);
-        listView.setAdapter(adapter);
+        mAdapter = new TwitterAdapter(getActivity(), R.layout.row_tweet);
+        listView.setAdapter(mAdapter);
 
         // シングルタップでコンテキストメニューを開くための指定
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -66,7 +60,7 @@ public class UserTimelineFragment extends Fragment {
                 view.showContextMenu();
             }
         });
-        new UserTimelineTask().execute(user.getScreenName().toString());
+        new UserTimelineTask().execute(mUser.getScreenName());
 
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {
 
@@ -86,13 +80,11 @@ public class UserTimelineFragment extends Fragment {
     }
 
     private void additionalReading() {
-        // 次のページあるのか確認
-        if (currentPage != nextPage) {
-            mFooter.setVisibility(View.VISIBLE);
-            currentPage++;
-            new UserTimelineTask().execute(user.getScreenName().toString());
+        if (!mAutoLoader) {
+            return;
         }
-        return;
+        mFooter.setVisibility(View.VISIBLE);
+        new UserTimelineTask().execute(mUser.getScreenName());
     }
 
     public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo) {
@@ -122,7 +114,7 @@ public class UserTimelineFragment extends Fragment {
         @Override
         protected ResponseList<twitter4j.Status> doInBackground(String... params) {
             try {
-                ResponseList<twitter4j.Status> statuses = JustawayApplication.getApplication().getTwitter().getUserTimeline(params[0], new Paging(nextPage));
+                ResponseList<twitter4j.Status> statuses = JustawayApplication.getApplication().getTwitter().getUserTimeline(params[0], new Paging(mPage));
                 return statuses;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -132,13 +124,15 @@ public class UserTimelineFragment extends Fragment {
 
         @Override
         protected void onPostExecute(ResponseList<twitter4j.Status> statuses) {
-            if (statuses == null) return;
-
-            for (twitter4j.Status status : statuses) {
-                adapter.add(Row.newStatus(status));
-            }
             mFooter.setVisibility(View.GONE);
-            nextPage++;
+            if (statuses == null || statuses.size() == 0) {
+                return;
+            }
+            for (twitter4j.Status status : statuses) {
+                mAdapter.add(Row.newStatus(status));
+            }
+            mPage++;
+            mAutoLoader = true;
         }
     }
 }
