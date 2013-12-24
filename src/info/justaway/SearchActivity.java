@@ -23,48 +23,43 @@ import info.justaway.adapter.TwitterAdapter;
 import info.justaway.model.Row;
 import twitter4j.Query;
 import twitter4j.QueryResult;
-import twitter4j.Twitter;
 
 public class SearchActivity extends FragmentActivity {
 
-    private Context context;
-    private Twitter twitter;
-    private EditText searchWords;
-    private TwitterAdapter adapter;
-    private ListView listView;
+    private Context mContext;
+    private EditText mSearchWords;
+    private TwitterAdapter mAdapter;
+    private ListView mListView;
     private ProgressBar mFooter;
-    private Query nextQuery;
+    private Query mNextQuery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-        context = this;
-
-        final JustawayApplication application = JustawayApplication.getApplication();
-        twitter = application.getTwitter();
+        mContext = this;
 
         Button search = (Button) findViewById(R.id.search);
         Button tweet = (Button) findViewById(R.id.tweet);
-        Typeface fontello = Typeface.createFromAsset(context.getAssets(), "fontello.ttf");
+        Typeface fontello = Typeface.createFromAsset(mContext.getAssets(), "fontello.ttf");
         search.setTypeface(fontello);
         tweet.setTypeface(fontello);
 
-        searchWords = (EditText) findViewById(R.id.searchWords);
+        mSearchWords = (EditText) findViewById(R.id.searchWords);
         mFooter = (ProgressBar) findViewById(R.id.guruguru);
         mFooter.setVisibility(View.GONE);
-        listView = (ListView) findViewById(R.id.listView);
-        listView.setVisibility(View.GONE);
+        mListView = (ListView) findViewById(R.id.listView);
+        mListView.setVisibility(View.GONE);
 
         // コンテキストメニューを使える様にする為の指定、但しデフォルトではロングタップで開く
-        registerForContextMenu(listView);
+        registerForContextMenu(mListView);
 
         // Status(ツイート)をViewに描写するアダプター
-        adapter = new TwitterAdapter(context, R.layout.row_tweet);
-        listView.setAdapter(adapter);
+        mAdapter = new TwitterAdapter(mContext, R.layout.row_tweet);
+        mListView.setAdapter(mAdapter);
 
         // シングルタップでコンテキストメニューを開くための指定
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 view.showContextMenu();
@@ -74,22 +69,22 @@ public class SearchActivity extends FragmentActivity {
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Query query = new Query(searchWords.getText().toString());
+                Query query = new Query(mSearchWords.getText().toString());
                 InputMethodManager inputMethodManager =
                         (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                adapter.clear();
-                listView.setVisibility(View.GONE);
+                mAdapter.clear();
+                mListView.setVisibility(View.GONE);
                 mFooter.setVisibility(View.VISIBLE);
-                nextQuery = null;
+                mNextQuery = null;
                 new SearchTask().execute(query);
             }
         });
         tweet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(context, PostActivity.class);
-                intent.putExtra("status", " " + searchWords.getText().toString());
+                Intent intent = new Intent(mContext, PostActivity.class);
+                intent.putExtra("status", " " + mSearchWords.getText().toString());
                 startActivity(intent);
             }
         });
@@ -97,13 +92,13 @@ public class SearchActivity extends FragmentActivity {
         Intent intent = getIntent();
         String query = intent.getStringExtra("query");
         if (query != null) {
-            searchWords.setText(query);
+            mSearchWords.setText(query);
             search.performClick();
         } else {
-            application.showKeyboard(searchWords);
+            JustawayApplication.getApplication().showKeyboard(mSearchWords);
         }
 
-        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+        mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
 
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -120,10 +115,10 @@ public class SearchActivity extends FragmentActivity {
     }
 
     private void additionalReading() {
-        if (nextQuery != null) {
+        if (mNextQuery != null) {
             mFooter.setVisibility(View.VISIBLE);
-            new SearchTask().execute(nextQuery);
-            nextQuery = null;
+            new SearchTask().execute(mNextQuery);
+            mNextQuery = null;
         }
     }
 
@@ -145,7 +140,7 @@ public class SearchActivity extends FragmentActivity {
         protected QueryResult doInBackground(Query... params) {
             Query query = params[0];
             try {
-                QueryResult queryResult = twitter.search(query);
+                QueryResult queryResult = JustawayApplication.getApplication().getTwitter().search(query);
                 return queryResult;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -160,24 +155,24 @@ public class SearchActivity extends FragmentActivity {
                 return;
             }
             if (queryResult.hasNext()) {
-                nextQuery = queryResult.nextQuery();
+                mNextQuery = queryResult.nextQuery();
             }
-            int count = adapter.getCount();
+            int count = mAdapter.getCount();
             List<twitter4j.Status> statuses = queryResult.getTweets();
             for (twitter4j.Status status : statuses) {
-                adapter.add(Row.newStatus(status));
+                mAdapter.add(Row.newStatus(status));
             }
 
-            listView.setVisibility(View.VISIBLE);
+            mListView.setVisibility(View.VISIBLE);
             if (count == 0) {
-                listView.setSelection(0);
+                mListView.setSelection(0);
             }
             mFooter.setVisibility(View.GONE);
 
             // インテント経由で検索時にうまく閉じてくれないので入れている
             InputMethodManager inputMethodManager =
                     (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            inputMethodManager.hideSoftInputFromWindow(searchWords.getWindowToken(), 0);
+            inputMethodManager.hideSoftInputFromWindow(mSearchWords.getWindowToken(), 0);
         }
     }
 }

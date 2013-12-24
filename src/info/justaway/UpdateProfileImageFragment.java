@@ -18,12 +18,12 @@ import static android.app.AlertDialog.Builder;
 
 public class UpdateProfileImageFragment extends DialogFragment {
 
-    private File imgPath;
-    private Uri uri;
+    private File mImgPath;
+    private Uri mUri;
 
     public UpdateProfileImageFragment(File imgPath, Uri uri) {
-        this.imgPath = imgPath;
-        this.uri = uri;
+        this.mImgPath = imgPath;
+        this.mUri = uri;
     }
 
     @Override
@@ -40,7 +40,7 @@ public class UpdateProfileImageFragment extends DialogFragment {
         image.setLayoutParams(new LinearLayout.LayoutParams(
                 340,
                 340));
-        JustawayApplication.getApplication().displayImage(uri.toString(), image);
+        JustawayApplication.getApplication().displayImage(mUri.toString(), image);
         layout.addView(image);
         builder.setView(layout);
 
@@ -67,7 +67,7 @@ public class UpdateProfileImageFragment extends DialogFragment {
         @Override
         protected User doInBackground(Void... params) {
             try {
-                User user = JustawayApplication.getApplication().getTwitter().updateProfileImage(imgPath);
+                User user = JustawayApplication.getApplication().getTwitter().updateProfileImage(mImgPath);
                 return user;
             } catch (Exception e) {
                 e.printStackTrace();

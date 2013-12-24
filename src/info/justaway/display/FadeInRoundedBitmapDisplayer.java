@@ -29,17 +29,17 @@ import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
 
 public class FadeInRoundedBitmapDisplayer implements BitmapDisplayer {
 
-    private final int roundPixels;
+    private final int mRoundPixels;
 
     public FadeInRoundedBitmapDisplayer(int roundPixels) {
-        this.roundPixels = roundPixels;
+        this.mRoundPixels = roundPixels;
     }
 
     @Override
     public Bitmap display(Bitmap bitmap, ImageView imageView, LoadedFrom loadedFrom) {
         Bitmap roundedBitmap;
         try {
-            roundedBitmap = transform(bitmap, roundPixels);
+            roundedBitmap = transform(bitmap, mRoundPixels);
         } catch (OutOfMemoryError e) {
             roundedBitmap = bitmap;
         }

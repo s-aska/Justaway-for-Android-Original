@@ -14,20 +14,20 @@ import twitter4j.UserList;
 
 public class SubscribeUserListAdapter extends ArrayAdapter<UserList> {
 
-    private ArrayList<UserList> userLists = new ArrayList<UserList>();
-    private LayoutInflater inflater;
-    private int layout;
+    private ArrayList<UserList> mUserLists = new ArrayList<UserList>();
+    private LayoutInflater mInflater;
+    private int mLayout;
 
     public SubscribeUserListAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId);
-        this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        this.layout = textViewResourceId;
+        this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.mLayout = textViewResourceId;
     }
 
     @Override
     public void add(UserList userList) {
         super.add(userList);
-        userLists.add(userList);
+        mUserLists.add(userList);
     }
 
     @Override
@@ -37,10 +37,10 @@ public class SubscribeUserListAdapter extends ArrayAdapter<UserList> {
         View view = convertView;
         if (view == null) {
             // 受け取ったビューがnullなら新しくビューを生成
-            view = inflater.inflate(this.layout, null);
+            view = mInflater.inflate(this.mLayout, null);
         }
 
-        UserList userList = userLists.get(position);
+        UserList userList = mUserLists.get(position);
 
         CheckBox checkbox = (CheckBox) view;
         if (checkbox != null) {

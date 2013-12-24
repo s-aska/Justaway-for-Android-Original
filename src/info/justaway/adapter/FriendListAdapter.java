@@ -21,22 +21,22 @@ import twitter4j.URLEntity;
 import twitter4j.User;
 
 public class FriendListAdapter extends ArrayAdapter<User> {
-    private ArrayList<User> users = new ArrayList<User>();
-    private Context context;
-    private LayoutInflater inflater;
-    private int layout;
+    private ArrayList<User> mUsers = new ArrayList<User>();
+    private Context mContext;
+    private LayoutInflater mInflater;
+    private int mLayout;
 
     public FriendListAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId);
-        this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        this.context = context;
-        this.layout = textViewResourceId;
+        this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        this.mContext = context;
+        this.mLayout = textViewResourceId;
     }
 
     @Override
     public void add(User user) {
         super.add(user);
-        users.add(user);
+        mUsers.add(user);
     }
 
     @Override
@@ -46,10 +46,10 @@ public class FriendListAdapter extends ArrayAdapter<User> {
         View view = convertView;
         if (view == null) {
             // 受け取ったビューがnullなら新しくビューを生成
-            view = inflater.inflate(this.layout, null);
+            view = mInflater.inflate(this.mLayout, null);
         }
 
-        final User user = users.get(position);
+        final User user = mUsers.get(position);
 
         ImageView icon = (ImageView) view.findViewById(R.id.icon);
         String iconUrl = user.getBiggerProfileImageURL();
@@ -76,7 +76,7 @@ public class FriendListAdapter extends ArrayAdapter<User> {
             description.setVisibility(View.GONE);
         }
 
-        Typeface fontello = Typeface.createFromAsset(context.getAssets(), "fontello.ttf");
+        Typeface fontello = Typeface.createFromAsset(mContext.getAssets(), "fontello.ttf");
 
         if (user.isProtected()) {
             ((TextView) view.findViewById(R.id.fontello_lock)).setTypeface(fontello);
@@ -90,7 +90,7 @@ public class FriendListAdapter extends ArrayAdapter<User> {
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), ProfileActivity.class);
                 intent.putExtra("screenName", user.getScreenName());
-                context.startActivity(intent);
+                mContext.startActivity(intent);
             }
         });
 

@@ -19,7 +19,7 @@ import twitter4j.UserList;
 public class ChooseUserListsActivity extends FragmentActivity implements
         LoaderManager.LoaderCallbacks<ResponseList<UserList>> {
 
-    private SubscribeUserListAdapter adapter;
+    private SubscribeUserListAdapter mAdapter;
 
     // private ArrayList<Integer> lists = new ArrayList<Integer>();
 
@@ -30,9 +30,9 @@ public class ChooseUserListsActivity extends FragmentActivity implements
 
         ListView listView = (ListView) findViewById(R.id.list);
 
-        adapter = new SubscribeUserListAdapter(this, R.layout.row_subscribe_user_list);
+        mAdapter = new SubscribeUserListAdapter(this, R.layout.row_subscribe_user_list);
 
-        listView.setAdapter(adapter);
+        listView.setAdapter(mAdapter);
 
         // registerForContextMenu(listView);
 
@@ -55,9 +55,9 @@ public class ChooseUserListsActivity extends FragmentActivity implements
 
     @Override
     public void onLoadFinished(Loader<ResponseList<UserList>> arg0, ResponseList<UserList> userLists) {
-        if (userLists != null && adapter != null) {
+        if (userLists != null && mAdapter != null) {
             for (UserList userList : userLists) {
-                adapter.add(userList);
+                mAdapter.add(userList);
             }
         }
     }
