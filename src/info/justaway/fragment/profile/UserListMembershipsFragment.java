@@ -21,23 +21,21 @@ import twitter4j.UserList;
  * Created by teshi on 2013/12/21.
  */
 public class UserListMembershipsFragment extends Fragment {
-    private UserListAdapter adapter;
-    private long userId;
-    private long cursor = -1;
-    private ListView listView;
+    private UserListAdapter mAdapter;
+    private long mUserId;
+    private long mCursor = -1;
     private ProgressBar mFooter;
-    private int currentPage = 1;
-    private int nextPage = 1;
+    private Boolean mAutoLoader = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.list, container, false);
 
         User user = (User) getArguments().getSerializable("user");
-        userId = user.getId();
+        mUserId = user.getId();
 
         // リストビューの設定
-        listView = (ListView) v.findViewById(R.id.listView);
+        ListView listView = (ListView) v.findViewById(R.id.listView);
 
         // コンテキストメニューを使える様にする為の指定、但しデフォルトではロングタップで開く
         registerForContextMenu(listView);
@@ -46,10 +44,10 @@ public class UserListMembershipsFragment extends Fragment {
         mFooter.setVisibility(View.GONE);
 
         // Status(ツイート)をViewに描写するアダプター
-        adapter = new UserListAdapter(getActivity(), R.layout.row_user_list);
-        listView.setAdapter(adapter);
+        mAdapter = new UserListAdapter(getActivity(), R.layout.row_user_list);
+        listView.setAdapter(mAdapter);
 
-        new FriendsListTask().execute(userId);
+        new FriendsListTask().execute(mUserId);
 
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {
 
@@ -69,21 +67,19 @@ public class UserListMembershipsFragment extends Fragment {
     }
 
     private void additionalReading() {
-        // 次のページあるのか確認
-        if (currentPage != nextPage) {
-            mFooter.setVisibility(View.VISIBLE);
-            currentPage++;
-            new FriendsListTask().execute(userId);
+        if (!mAutoLoader) {
+            return;
         }
-        return;
+        mFooter.setVisibility(View.VISIBLE);
+        new FriendsListTask().execute(mUserId);
     }
 
     private class FriendsListTask extends AsyncTask<Long, Void, PagableResponseList<UserList>> {
         @Override
         protected PagableResponseList<UserList> doInBackground(Long... params) {
             try {
-                PagableResponseList<UserList> userLists = JustawayApplication.getApplication().getTwitter().getUserListMemberships(params[0], cursor);
-                cursor = userLists.getNextCursor();
+                PagableResponseList<UserList> userLists = JustawayApplication.getApplication().getTwitter().getUserListMemberships(params[0], mCursor);
+                mCursor = userLists.getNextCursor();
                 return userLists;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -93,13 +89,16 @@ public class UserListMembershipsFragment extends Fragment {
 
         @Override
         protected void onPostExecute(PagableResponseList<UserList> userLists) {
-            if (userLists == null) return;
-
-            for (UserList userlist : userLists) {
-                adapter.add(userlist);
-            }
             mFooter.setVisibility(View.GONE);
-            nextPage++;
+            if (userLists == null) {
+                return;
+            }
+            for (UserList userlist : userLists) {
+                mAdapter.add(userlist);
+            }
+            if (userLists.hasNext()) {
+                mAutoLoader = true;
+            }
         }
     }
 }

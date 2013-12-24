@@ -36,13 +36,16 @@ public class ProfileActivity extends FragmentActivity implements
     private ImageView mBanner;
     private User mUser;
     private int mCurrentPosition = 0;
-    private final int mColorBlue = getResources().getColor(R.color.holo_blue_light);
-    private final int mColorWhite = getResources().getColor(android.R.color.secondary_text_dark);
+    private int mColorBlue;
+    private int mColorWhite;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+
+        mColorBlue = getResources().getColor(R.color.holo_blue_light);
+        mColorWhite = getResources().getColor(android.R.color.secondary_text_dark);
 
         mBanner = (ImageView) findViewById(R.id.banner);
         mBanner.setImageResource(R.drawable.suzuri);

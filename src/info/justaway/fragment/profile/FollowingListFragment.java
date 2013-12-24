@@ -17,23 +17,21 @@ import twitter4j.PagableResponseList;
 import twitter4j.User;
 
 public class FollowingListFragment extends Fragment {
-    private FriendListAdapter adapter;
-    private long userId;
-    private long cursor = -1;
-    private ListView listView;
+    private FriendListAdapter mAdapter;
+    private long mUserId;
+    private long mCursor = -1;
     private ProgressBar mFooter;
-    private int currentPage = 1;
-    private int nextPage = 1;
+    private Boolean mAutoLoader = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.list, container, false);
 
         User user = (User) getArguments().getSerializable("user");
-        userId = user.getId();
+        mUserId = user.getId();
 
         // リストビューの設定
-        listView = (ListView) v.findViewById(R.id.listView);
+        ListView listView = (ListView) v.findViewById(R.id.listView);
 
         // コンテキストメニューを使える様にする為の指定、但しデフォルトではロングタップで開く
         registerForContextMenu(listView);
@@ -42,10 +40,10 @@ public class FollowingListFragment extends Fragment {
         mFooter.setVisibility(View.GONE);
 
         // Status(ツイート)をViewに描写するアダプター
-        adapter = new FriendListAdapter(getActivity(), R.layout.row_user);
-        listView.setAdapter(adapter);
+        mAdapter = new FriendListAdapter(getActivity(), R.layout.row_user);
+        listView.setAdapter(mAdapter);
 
-        new FriendsListTask().execute(userId);
+        new FriendsListTask().execute(mUserId);
 
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {
 
@@ -65,21 +63,19 @@ public class FollowingListFragment extends Fragment {
     }
 
     private void additionalReading() {
-        // 次のページあるのか確認
-        if (currentPage != nextPage) {
-            mFooter.setVisibility(View.VISIBLE);
-            currentPage++;
-            new FriendsListTask().execute(userId);
+        if (!mAutoLoader) {
+            return;
         }
-        return;
+        mFooter.setVisibility(View.VISIBLE);
+        new FriendsListTask().execute(mUserId);
     }
 
     private class FriendsListTask extends AsyncTask<Long, Void, PagableResponseList<User>> {
         @Override
         protected PagableResponseList<User> doInBackground(Long... params) {
             try {
-                PagableResponseList<User> friendsList = JustawayApplication.getApplication().getTwitter().getFriendsList(params[0], cursor);
-                cursor = friendsList.getNextCursor();
+                PagableResponseList<User> friendsList = JustawayApplication.getApplication().getTwitter().getFriendsList(params[0], mCursor);
+                mCursor = friendsList.getNextCursor();
                 return friendsList;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -89,13 +85,16 @@ public class FollowingListFragment extends Fragment {
 
         @Override
         protected void onPostExecute(PagableResponseList<User> friendsList) {
-            if (friendsList == null) return;
-
-            for (User friendUser : friendsList) {
-                adapter.add(friendUser);
-            }
             mFooter.setVisibility(View.GONE);
-            nextPage++;
+            if (friendsList == null) {
+                return;
+            }
+            for (User friendUser : friendsList) {
+                mAdapter.add(friendUser);
+            }
+            if (friendsList.hasNext()) {
+                mAutoLoader = true;
+            }
         }
     }
 }
