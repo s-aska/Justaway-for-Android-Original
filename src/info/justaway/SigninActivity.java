@@ -1,10 +1,5 @@
 package info.justaway;
 
-import twitter4j.Twitter;
-import twitter4j.TwitterException;
-import twitter4j.auth.AccessToken;
-import twitter4j.auth.RequestToken;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -13,7 +8,11 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.auth.AccessToken;
+import twitter4j.auth.RequestToken;
 
 public class SignInActivity extends Activity {
 

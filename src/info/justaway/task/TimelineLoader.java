@@ -1,13 +1,12 @@
 package info.justaway.task;
 
-import info.justaway.JustawayApplication;
+import android.content.Context;
 
+import info.justaway.JustawayApplication;
 import twitter4j.ResponseList;
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
-
-import android.content.Context;
 
 public class TimelineLoader extends AbstractAsyncTaskLoader<ResponseList<Status>> {
 

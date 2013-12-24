@@ -1,26 +1,5 @@
 package info.justaway.adapter;
 
-import info.justaway.JustawayApplication;
-import info.justaway.PostActivity;
-import info.justaway.ScaleImageActivity;
-import info.justaway.MainActivity;
-import info.justaway.ProfileActivity;
-import info.justaway.R;
-import info.justaway.model.Row;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import twitter4j.DirectMessage;
-import twitter4j.MediaEntity;
-import twitter4j.Status;
-import twitter4j.URLEntity;
-import twitter4j.User;
-
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -34,6 +13,26 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import info.justaway.JustawayApplication;
+import info.justaway.MainActivity;
+import info.justaway.PostActivity;
+import info.justaway.ProfileActivity;
+import info.justaway.R;
+import info.justaway.ScaleImageActivity;
+import info.justaway.model.Row;
+import twitter4j.DirectMessage;
+import twitter4j.MediaEntity;
+import twitter4j.Status;
+import twitter4j.URLEntity;
+import twitter4j.User;
 
 public class TwitterAdapter extends ArrayAdapter<Row> {
     private JustawayApplication mApplication;
@@ -424,7 +423,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             Pattern p = Pattern.compile(url.getURL());
             Matcher m = p.matcher(statusString);
             statusString = m.replaceAll(url.getExpandedURL());
-            
+
             Matcher twitpic_matcher = twitpic_pattern.matcher(url.getExpandedURL());
             if (twitpic_matcher.find()) {
                 imageUrls.add("http://twitpic.com/show/full/" + twitpic_matcher.group(1));

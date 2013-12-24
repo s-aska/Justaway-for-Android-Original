@@ -31,7 +31,7 @@ public class DescriptionFragment extends Fragment {
 
         if (user.getDescription() != null && user.getDescription().length() > 0) {
             String descriptionString = user.getDescription();
-            if (user.getDescriptionURLEntities()!= null) {
+            if (user.getDescriptionURLEntities() != null) {
                 URLEntity[] urls = user.getDescriptionURLEntities();
                 for (URLEntity descriptionUrl : urls) {
                     Pattern p = Pattern.compile(descriptionUrl.getURL());

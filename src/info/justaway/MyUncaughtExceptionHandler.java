@@ -1,11 +1,5 @@
 package info.justaway;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.PrintWriter;
-import java.lang.Thread.UncaughtExceptionHandler;
-
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
@@ -16,6 +10,12 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.os.Build;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.PrintWriter;
+import java.lang.Thread.UncaughtExceptionHandler;
 
 public class MyUncaughtExceptionHandler implements UncaughtExceptionHandler {
 

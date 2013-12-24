@@ -1,5 +1,11 @@
 package info.justaway.fragment;
 
+import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
+import android.view.View;
+import android.widget.ListView;
+
 import info.justaway.JustawayApplication;
 import info.justaway.MainActivity;
 import info.justaway.adapter.TwitterAdapter;
@@ -7,12 +13,6 @@ import info.justaway.model.Row;
 import info.justaway.task.TimelineLoader;
 import twitter4j.ResponseList;
 import twitter4j.Status;
-
-import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
-import android.view.View;
-import android.widget.ListView;
 
 /**
  * タイムライン、すべての始まり

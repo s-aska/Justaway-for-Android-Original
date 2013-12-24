@@ -400,7 +400,7 @@ public class JustawayApplication extends Application {
             return true;
         }
         Status retweet = status.getRetweetedStatus();
-        return retweet != null && ( ( mIsFavMap.get(retweet.getId()) != null ) || retweet.isFavorited() );
+        return retweet != null && ((mIsFavMap.get(retweet.getId()) != null) || retweet.isFavorited());
     }
 
     public void setRtId(Long sourceId, Long retweetId) {

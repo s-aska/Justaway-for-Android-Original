@@ -1,9 +1,9 @@
 package info.justaway.task;
 
+import android.os.AsyncTask;
+
 import info.justaway.JustawayApplication;
 import info.justaway.R;
-
-import android.os.AsyncTask;
 
 public class DestroyStatusTask extends AsyncTask<Long, Void, Boolean> {
 

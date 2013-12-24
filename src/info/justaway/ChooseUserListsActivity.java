@@ -1,12 +1,5 @@
 package info.justaway;
 
-import java.util.ArrayList;
-
-import info.justaway.adapter.SubscribeUserListAdapter;
-import info.justaway.task.UserListsLoader;
-import twitter4j.ResponseList;
-import twitter4j.UserList;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -15,6 +8,13 @@ import android.support.v4.content.Loader;
 import android.view.KeyEvent;
 import android.widget.CheckBox;
 import android.widget.ListView;
+
+import java.util.ArrayList;
+
+import info.justaway.adapter.SubscribeUserListAdapter;
+import info.justaway.task.UserListsLoader;
+import twitter4j.ResponseList;
+import twitter4j.UserList;
 
 public class ChooseUserListsActivity extends FragmentActivity implements
         LoaderManager.LoaderCallbacks<ResponseList<UserList>> {
