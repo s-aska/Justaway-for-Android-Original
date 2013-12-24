@@ -33,7 +33,7 @@ public class DirectMessageFragment extends BaseFragment implements
             return;
         }
 
-        if (row.isDirectMessage() == false) {
+        if (!row.isDirectMessage()) {
             return;
         }
 

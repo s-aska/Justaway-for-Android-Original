@@ -7,7 +7,6 @@ import info.justaway.model.Row;
 import info.justaway.task.InteractionsLoader;
 import twitter4j.ResponseList;
 import twitter4j.Status;
-import twitter4j.User;
 
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -101,7 +100,7 @@ public class InteractionsFragment extends BaseFragment implements
                 adapter.add(Row.newStatus(status));
             }
         } else {
-            JustawayApplication.showToast("Meationsの取得に失敗しました＞＜");
+            JustawayApplication.showToast("Mentionsの取得に失敗しました＞＜");
         }
     }
 
