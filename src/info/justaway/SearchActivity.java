@@ -125,7 +125,6 @@ public class SearchActivity extends FragmentActivity {
             new SearchTask().execute(nextQuery);
             nextQuery = null;
         }
-        return;
     }
 
     @Override

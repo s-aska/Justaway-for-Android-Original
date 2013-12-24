@@ -537,7 +537,7 @@ public class JustawayApplication extends Application {
                 menu.add(0, CONTEXT_MENU_RM_ID, 0, "ツイ消し");
             }
         } else if (application.getRtId(status) == null) {
-            if (application.isFav(status) == false) {
+            if (!application.isFav(status)) {
                 menu.add(0, CONTEXT_MENU_FAVRT_ID, 0, "ふぁぼ＆公式RT");
             }
             menu.add(0, CONTEXT_MENU_RT_ID, 0, "公式RT");
