@@ -724,9 +724,9 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
     public class UpdateStatusTask extends AsyncTask<StatusUpdate, Void, Boolean> {
         @Override
         protected Boolean doInBackground(StatusUpdate... params) {
-            StatusUpdate super_sugoi = params[0];
+            StatusUpdate superSugoi = params[0];
             try {
-                mApplication.getTwitter().updateStatus(super_sugoi);
+                mApplication.getTwitter().updateStatus(superSugoi);
                 return true;
             } catch (Exception e) {
                 e.printStackTrace();

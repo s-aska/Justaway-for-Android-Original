@@ -78,11 +78,10 @@ public class UpdateProfileImageFragment extends DialogFragment {
         @Override
         protected void onPostExecute(User user) {
             // dismissProgressDialog();
-            JustawayApplication application = JustawayApplication.getApplication();
             if (user != null) {
-                application.showToast("プロフィール画像が公開されました");
+                JustawayApplication.showToast("プロフィール画像が公開されました");
             } else {
-                application.showToast("失敗しました");
+                JustawayApplication.showToast("失敗しました");
             }
         }
     }

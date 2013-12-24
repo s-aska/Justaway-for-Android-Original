@@ -2,7 +2,6 @@ package info.justaway;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -38,7 +37,6 @@ public class ProfileActivity extends FragmentActivity implements
     private Twitter twitter;
     private ImageView banner;
     private User user;
-    private JustawayApplication application;
     private int currentPosition = 0;
     private int blue;
     private int white;
@@ -59,17 +57,17 @@ public class ProfileActivity extends FragmentActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        application = JustawayApplication.getApplication();
+        JustawayApplication application = JustawayApplication.getApplication();
 
         twitter = application.getTwitter();
         banner = (ImageView) findViewById(R.id.banner);
         banner.setImageResource(R.drawable.suzuri);
 
-        blue = getResources().getColor(android.R.color.holo_blue_light);
+        blue = getResources().getColor(R.color.holo_blue_light);
         white = getResources().getColor(android.R.color.secondary_text_dark);
 
-        ((TextView) findViewById(R.id.statusesCount)).setTextColor(Color.parseColor("#33b5e5"));
-        ((TextView) findViewById(R.id.statusesCountLabel)).setTextColor(Color.parseColor("#33b5e5"));
+        ((TextView) findViewById(R.id.statusesCount)).setTextColor(blue);
+        ((TextView) findViewById(R.id.statusesCountLabel)).setTextColor(blue);
 
         // インテント経由での起動をサポート
         Intent intent = getIntent();
@@ -100,12 +98,12 @@ public class ProfileActivity extends FragmentActivity implements
     @Override
     public void onLoadFinished(Loader<Profile> arg0, Profile profile) {
         if (profile == null) {
-            application.showToast("読み込みに失敗しました:;(∩´﹏`∩);:");
+            JustawayApplication.showToast("読み込みに失敗しました:;(∩´﹏`∩);:");
             return;
         }
         user = profile.getUser();
         if (user == null) {
-            application.showToast("読み込みに失敗しました:;(∩´﹏`∩);:");
+            JustawayApplication.showToast("読み込みに失敗しました:;(∩´﹏`∩);:");
             return;
         }
         ((TextView) findViewById(R.id.favouritesCount)).setText(String.valueOf(user

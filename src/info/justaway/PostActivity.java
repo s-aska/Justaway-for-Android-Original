@@ -6,11 +6,9 @@ import java.io.File;
 import twitter4j.StatusUpdate;
 import twitter4j.Twitter;
 
-import android.R.color;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
@@ -43,8 +41,6 @@ public class PostActivity extends Activity {
     private ProgressDialog mProgressDialog;
     private Long inReplyToStatusId;
     private File imgPath;
-
-    final Context c = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,8 +128,7 @@ public class PostActivity extends Activity {
                 int selectStart = mEditText.getSelectionStart();
                 int selectEnd = mEditText.getSelectionEnd();
 
-                String totsuzen = "";
-                System.out.println(selectStart + " " + selectEnd);
+                String totsuzen;
                 if (selectStart != selectEnd) {
                     totsuzen = text.substring(selectStart, selectEnd) + "\n";
                 } else {
@@ -141,10 +136,10 @@ public class PostActivity extends Activity {
                 }
 
                 int i;
-                String ue = "";
-                String shita = "";
+                String top = "";
+                String under = "";
                 int j = 0;
-                String gentotsu = "";
+                String generateTotsu = "";
 
                 // 改行文字がある場所を見つけて上と下を作る
                 for (i = 0; totsuzen.charAt(i) != '\n'; i++) {
@@ -152,8 +147,8 @@ public class PostActivity extends Activity {
                     if (0xffff < codeunit) {
                         i++;
                     }
-                    ue += "人";
-                    shita += "^Y";
+                    top += "人";
+                    under += "^Y";
                 }
                 // 突然死したいテキストの文字をひとつづつ見る
                 for (i = 0; totsuzen.length() > i; i++) {
@@ -162,13 +157,13 @@ public class PostActivity extends Activity {
                         String gen = "＞ " + totsuzen.substring(j, i) + " ＜\n";
                         i++;
                         j = i;
-                        gentotsu = gentotsu.concat(gen);
+                        generateTotsu = generateTotsu.concat(gen);
                     }
                 }
                 if (selectStart != selectEnd) {
-                    mEditText.setText(text.substring(0, selectStart) + "＿" + ue + "＿\n" + gentotsu + "￣" + shita + "￣" + text.substring(selectEnd));
+                    mEditText.setText(text.substring(0, selectStart) + "＿" + top + "＿\n" + generateTotsu + "￣" + under + "￣" + text.substring(selectEnd));
                 } else {
-                    mEditText.setText("＿" + ue + "＿\n" + gentotsu + "￣" + shita + "￣");
+                    mEditText.setText("＿" + top + "＿\n" + generateTotsu + "￣" + under + "￣");
                 }
             }
         });
@@ -234,7 +229,7 @@ public class PostActivity extends Activity {
         }
         this.imgPath = path;
         showToast("画像セットok");
-        mImgButton.setTextColor(getResources().getColor(color.holo_blue_bright));
+        mImgButton.setTextColor(getResources().getColor(R.color.holo_blue_bright));
     }
 
     private class PostTask extends AsyncTask<StatusUpdate, Void, Boolean> {
