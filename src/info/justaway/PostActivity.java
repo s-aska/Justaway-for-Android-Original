@@ -109,7 +109,7 @@ public class PostActivity extends Activity {
         mTweetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showProgressDialog("送信中！！１１１１１");
+                showProgressDialog(getString(R.string.progress_sending));
                 StatusUpdate superSugoi = new StatusUpdate(mEditText.getText().toString());
                 if (mInReplyToStatusId > 0) {
                     superSugoi.setInReplyToStatusId(mInReplyToStatusId);
