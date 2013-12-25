@@ -55,5 +55,6 @@
     <string name="confirm_update_profile_image">プロフィール画像を変更しますか？</string>
     <string name="button_apply">適用</string>
     <string name="button_cancel">キャンセル</string>
+    <string name="profile_pointer">●  ○</string>
 
 </resources>

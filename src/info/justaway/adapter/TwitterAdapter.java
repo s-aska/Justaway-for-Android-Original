@@ -196,9 +196,9 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                     String text = "D " + message.getSender().getScreenName() + " ";
                     if (mContext.getClass().getName().equals("info.justaway.MainActivity")) {
                         MainActivity activity = (MainActivity) mContext;
-                        View singleLineTweet = activity.findViewById(R.id.singleLineTweet);
+                        View singleLineTweet = activity.findViewById(R.id.quick_tweet_layout);
                         if (singleLineTweet != null && singleLineTweet.getVisibility() == View.VISIBLE) {
-                            EditText editStatus = (EditText) activity.findViewById(R.id.editStatus);
+                            EditText editStatus = (EditText) activity.findViewById(R.id.quick_tweet_edit);
                             editStatus.setText(text);
                             editStatus.setSelection(text.length());
                             editStatus.requestFocus();
@@ -271,9 +271,9 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                 String text = "@" + source.getUser().getScreenName() + " ";
                 if (mContext.getClass().getName().equals("info.justaway.MainActivity")) {
                     MainActivity activity = (MainActivity) mContext;
-                    View singleLineTweet = activity.findViewById(R.id.singleLineTweet);
+                    View singleLineTweet = activity.findViewById(R.id.quick_tweet_layout);
                     if (singleLineTweet != null && singleLineTweet.getVisibility() == View.VISIBLE) {
-                        EditText editStatus = (EditText) activity.findViewById(R.id.editStatus);
+                        EditText editStatus = (EditText) activity.findViewById(R.id.quick_tweet_edit);
                         editStatus.setText(text);
                         editStatus.setSelection(text.length());
                         editStatus.requestFocus();

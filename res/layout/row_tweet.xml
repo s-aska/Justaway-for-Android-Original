@@ -124,7 +124,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dip"
                 android:layout_marginTop="10dip"
-                android:orientation="vertical"></LinearLayout>
+                android:orientation="vertical"/>
 
             <TableLayout
                 android:id="@+id/menu_and_via"
