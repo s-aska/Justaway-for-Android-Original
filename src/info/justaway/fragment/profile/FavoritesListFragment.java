@@ -127,7 +127,7 @@ public class FavoritesListFragment extends Fragment {
 
             if (statuses == null || statuses.size() == 0) {
                 return;
-            };
+            }
 
             for (twitter4j.Status status : statuses) {
                 mAdapter.add(Row.newStatus(status));
