@@ -587,9 +587,9 @@ public class JustawayApplication extends Application {
         Intent intent;
         String text;
         EditText editStatus = null;
-        View singleLineTweet = activity.findViewById(R.id.singleLineTweet);
+        View singleLineTweet = activity.findViewById(R.id.quick_tweet_layout);
         if (singleLineTweet != null && singleLineTweet.getVisibility() == View.VISIBLE) {
-            editStatus = (EditText) activity.findViewById(R.id.editStatus);
+            editStatus = (EditText) activity.findViewById(R.id.quick_tweet_edit);
         }
 
         switch (item.getItemId()) {

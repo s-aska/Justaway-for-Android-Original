@@ -16,7 +16,7 @@
             android:orientation="vertical">
 
             <LinearLayout
-                android:id="@+id/viewWait"
+                android:id="@+id/view_wait"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
                 android:layout_gravity="center">
@@ -41,7 +41,7 @@
                 android:textSize="23sp" />
 
             <TextView
-                android:id="@+id/screenName"
+                android:id="@+id/screen_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -53,7 +53,7 @@
                 android:textSize="18sp" />
 
             <TextView
-                android:id="@+id/followedBy"
+                android:id="@+id/followed_by"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
