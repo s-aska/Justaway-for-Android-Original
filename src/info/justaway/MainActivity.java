@@ -137,7 +137,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                 EditText status = (EditText) findViewById(R.id.quick_tweet_edit);
                 String msg = status.getText().toString();
                 if (msg != null && msg.length() > 0) {
-                    showProgressDialog("送信中！！１１１１１");
+                    showProgressDialog(getString(R.string.progress_sending));
                     StatusUpdate super_sugoi = new StatusUpdate(msg);
                     Long inReplyToStatusId = mApplication.getInReplyToStatusId();
                     if (inReplyToStatusId != null && inReplyToStatusId > 0) {

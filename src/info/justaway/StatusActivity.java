@@ -63,7 +63,7 @@ public class StatusActivity extends FragmentActivity {
 
         if (statusId > 0) {
             Twitter twitter = JustawayApplication.getApplication().getTwitter();
-            showProgressDialog("Loading...");
+            showProgressDialog(getString(R.string.progress_loading));
             new LoadTalk(twitter, adapter).execute(statusId);
         }
     }
