@@ -55,5 +55,8 @@
     <string name="confirm_update_profile_image">プロフィール画像を変更しますか？</string>
     <string name="button_apply">適用</string>
     <string name="button_cancel">キャンセル</string>
+    <string name="profile_pointer">●  ○</string>
+    <string name="progress_sending">送信中！！１１１１１</string>
+    <string name="progress_loading">受信中！！１１１１１</string>
 
 </resources>

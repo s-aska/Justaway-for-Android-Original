@@ -103,8 +103,8 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), PostActivity.class);
-                if (findViewById(R.id.singleLineTweet).getVisibility() == View.VISIBLE) {
-                    EditText status = (EditText) findViewById(R.id.editStatus);
+                if (findViewById(R.id.quick_tweet_layout).getVisibility() == View.VISIBLE) {
+                    EditText status = (EditText) findViewById(R.id.quick_tweet_edit);
                     String msg = status.getText().toString();
                     if (msg != null && msg.length() > 0) {
                         Long inReplyToStatusId = mApplication.getInReplyToStatusId();
@@ -123,7 +123,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
         tweet.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-                if (findViewById(R.id.singleLineTweet).getVisibility() == View.VISIBLE) {
+                if (findViewById(R.id.quick_tweet_layout).getVisibility() == View.VISIBLE) {
                     hideQuickPanel();
                 } else {
                     showQuickPanel();
@@ -134,10 +134,10 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                EditText status = (EditText) findViewById(R.id.editStatus);
+                EditText status = (EditText) findViewById(R.id.quick_tweet_edit);
                 String msg = status.getText().toString();
                 if (msg != null && msg.length() > 0) {
-                    showProgressDialog("送信中！！１１１１１");
+                    showProgressDialog(getString(R.string.progress_sending));
                     StatusUpdate super_sugoi = new StatusUpdate(msg);
                     Long inReplyToStatusId = mApplication.getInReplyToStatusId();
                     if (inReplyToStatusId != null && inReplyToStatusId > 0) {
@@ -161,8 +161,8 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
     }
 
     public void showQuickPanel() {
-        findViewById(R.id.singleLineTweet).setVisibility(View.VISIBLE);
-        EditText editStatus = (EditText) findViewById(R.id.editStatus);
+        findViewById(R.id.quick_tweet_layout).setVisibility(View.VISIBLE);
+        EditText editStatus = (EditText) findViewById(R.id.quick_tweet_edit);
         editStatus.setFocusable(true);
         editStatus.setFocusableInTouchMode(true);
         editStatus.setEnabled(true);
@@ -170,12 +170,12 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
     }
 
     public void hideQuickPanel() {
-        EditText editStatus = (EditText) findViewById(R.id.editStatus);
+        EditText editStatus = (EditText) findViewById(R.id.quick_tweet_edit);
         editStatus.setFocusable(false);
         editStatus.setFocusableInTouchMode(false);
         editStatus.setEnabled(false);
         editStatus.clearFocus();
-        findViewById(R.id.singleLineTweet).setVisibility(View.GONE);
+        findViewById(R.id.quick_tweet_layout).setVisibility(View.GONE);
         mApplication.setInReplyToStatusId((long) 0);
         mApplication.setQuickMod(false);
     }
@@ -577,7 +577,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            EditText editText = (EditText) findViewById(R.id.editStatus);
+            EditText editText = (EditText) findViewById(R.id.quick_tweet_edit);
             if (editText != null && editText.getText() != null && editText.getText().length() > 0) {
                 editText.setText("");
                 mApplication.setInReplyToStatusId((long) 0);
@@ -597,10 +597,10 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
-        if (itemId == R.id.signout) {
+        if (itemId == R.id.sign_out) {
             JustawayApplication.getApplication().resetAccessToken();
             finish();
-        } else if (itemId == R.id.onore) {
+        } else if (itemId == R.id.profile) {
             Intent intent = new Intent(this, ProfileActivity.class);
             intent.putExtra("screenName", mApplication.getScreenName());
             startActivity(intent);
@@ -723,7 +723,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
         protected void onPostExecute(Boolean success) {
             dismissProgressDialog();
             if (success) {
-                EditText status = (EditText) findViewById(R.id.editStatus);
+                EditText status = (EditText) findViewById(R.id.quick_tweet_edit);
                 status.setText("");
             } else {
                 JustawayApplication.showToast(R.string.toast_update_status_failure);

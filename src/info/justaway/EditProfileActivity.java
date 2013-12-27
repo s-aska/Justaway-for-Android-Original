@@ -34,11 +34,11 @@ public class EditProfileActivity extends FragmentActivity implements LoaderManag
 
         mName = ((EditText) findViewById(R.id.name));
         mLocation = ((EditText) findViewById(R.id.location));
-        mUrl = ((EditText) findViewById(R.id.webSite));
+        mUrl = ((EditText) findViewById(R.id.web_site));
         mDescription = ((EditText) findViewById(R.id.bio));
         mIcon = ((ImageView) findViewById(R.id.icon));
 
-        findViewById(R.id.updateProfileImage).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.update_profile_image).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(Intent.ACTION_PICK);

@@ -39,7 +39,7 @@ public class FavoritesListFragment extends Fragment {
         mUser = (User) getArguments().getSerializable("user");
 
         // リストビューの設定
-        ListView listView = (ListView) v.findViewById(R.id.listView);
+        ListView listView = (ListView) v.findViewById(R.id.list_view);
 
         // コンテキストメニューを使える様にする為の指定、但しデフォルトではロングタップで開く
         registerForContextMenu(listView);
@@ -127,7 +127,7 @@ public class FavoritesListFragment extends Fragment {
 
             if (statuses == null || statuses.size() == 0) {
                 return;
-            };
+            }
 
             for (twitter4j.Status status : statuses) {
                 mAdapter.add(Row.newStatus(status));
