@@ -89,7 +89,7 @@
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
-        <activity android:name=".ProfileActivity"></activity>
+        <activity android:name=".ProfileActivity"/>
         <activity
             android:name=".StatusActivity"
             android:theme="@style/Theme.MyTrans">
@@ -97,9 +97,15 @@
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
                     android:host="twitter.com"
+                    android:pathPattern="/.*/status/.*"
+                    android:scheme="http" />
+                <data
+                    android:host="twitter.com"
+                    android:pathPattern="/.*/status/.*"
                     android:scheme="https" />
             </intent-filter>
         </activity>
