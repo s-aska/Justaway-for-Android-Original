@@ -48,6 +48,7 @@ import twitter4j.UserStreamAdapter;
 public class MainActivity extends FragmentActivity implements LoaderManager.LoaderCallbacks<User> {
 
     private JustawayApplication mApplication;
+    private TwitterStream mTwitterStream;
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
     private ProgressDialog mProgressDialog;
@@ -248,15 +249,12 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
 
     @Override
     protected void onDestroy() {
-
-        // ちゃんと接続を切らないとアプリが凍結されるらしい
-        TwitterStream twitterStream = mApplication.getTwitterStream();
-        if (twitterStream != null) {
-            twitterStream.cleanUp();
-            twitterStream.shutdown();
-        }
-
         super.onDestroy();
+
+        if (mTwitterStream != null) {
+            mTwitterStream.cleanUp();
+            mTwitterStream.shutdown();
+        }
     }
 
     @Override
@@ -394,9 +392,9 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
             showQuickPanel();
         }
 
-        TwitterStream twitterStream = mApplication.getTwitterStream();
-        twitterStream.addListener(getUserStreamAdapter());
-        twitterStream.user();
+        mTwitterStream = mApplication.getTwitterStream();
+        mTwitterStream.addListener(getUserStreamAdapter());
+        mTwitterStream.user();
     }
 
     @Override

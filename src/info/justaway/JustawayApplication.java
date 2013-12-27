@@ -125,12 +125,6 @@ public class JustawayApplication extends Application {
     @Override
     public void onTerminate() {
         super.onTerminate();
-
-        // ちゃんと接続を切らないとアプリが凍結されるらしい
-        if (twitterStream != null) {
-            twitterStream.cleanUp();
-            twitterStream.shutdown();
-        }
     }
 
     /*
@@ -233,7 +227,7 @@ public class JustawayApplication extends Application {
     private static final String PREF_NAME = "twitter_access_token";
     private AccessToken accessToken;
     private Twitter twitter;
-    private TwitterStream twitterStream;
+//    private TwitterStream twitterStream;
     private String screenName;
     private long userId = -1L;
 
@@ -350,10 +344,6 @@ public class JustawayApplication extends Application {
      * @return TwitterStreamインスタンス
      */
     public TwitterStream getTwitterStream() {
-        // キャッシュしておく
-        if (twitterStream != null) {
-            return twitterStream;
-        }
         AccessToken token = getAccessToken();
         if (token == null) {
             return null;
@@ -362,9 +352,7 @@ public class JustawayApplication extends Application {
         twitter4j.conf.Configuration conf = confbuilder.setOAuthConsumerKey(getConsumerKey())
                 .setOAuthConsumerSecret(getConsumerSecret()).setOAuthAccessToken(token.getToken())
                 .setOAuthAccessTokenSecret(token.getTokenSecret()).build();
-        TwitterStream twitterStream = new TwitterStreamFactory(conf).getInstance();
-        this.twitterStream = twitterStream;
-        return twitterStream;
+        return new TwitterStreamFactory(conf).getInstance();
     }
 
     /**
