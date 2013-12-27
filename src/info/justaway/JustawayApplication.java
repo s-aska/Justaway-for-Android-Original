@@ -96,7 +96,7 @@ public class JustawayApplication extends Application {
                 .build();
 
         // 例外発生時の処理を指定（スタックトレースを保存）
-        Thread.setDefaultUncaughtExceptionHandler(new MyUncaughtExceptionHandler(sApplication));
+//        Thread.setDefaultUncaughtExceptionHandler(new MyUncaughtExceptionHandler(sApplication));
     }
 
     public void displayImage(String url, ImageView view) {
