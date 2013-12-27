@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/scrollView"
+    android:id="@+id/scroll_view"
     android:layout_height="match_parent"
     android:layout_width="match_parent">
 
@@ -38,7 +38,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:text="●  ○"
+                    android:text="@string/profile_pointer"
                     android:textSize="8sp"/>
                 </LinearLayout>
         </FrameLayout>
@@ -59,14 +59,14 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/statusesCount"
+                    android:id="@+id/statuses_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:paddingBottom="2dip" />
 
                 <TextView
-                    android:id="@+id/statusesCountLabel"
+                    android:id="@+id/statuses_count_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -81,14 +81,14 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/friendsCount"
+                    android:id="@+id/friends_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:paddingBottom="2dip" />
 
                 <TextView
-                    android:id="@+id/friendsCountLabel"
+                    android:id="@+id/friends_count_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -103,14 +103,14 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/followersCount"
+                    android:id="@+id/followers_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:paddingBottom="2dip" />
 
                 <TextView
-                    android:id="@+id/followersCountLabel"
+                    android:id="@+id/followers_count_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -125,14 +125,14 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/listedCount"
+                    android:id="@+id/listed_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:paddingBottom="2dip" />
 
                 <TextView
-                    android:id="@+id/listedCountLabel"
+                    android:id="@+id/listed_count_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -147,14 +147,14 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/favouritesCount"
+                    android:id="@+id/favourites_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:paddingBottom="2dip" />
 
                 <TextView
-                    android:id="@+id/favouritesCountLabel"
+                    android:id="@+id/favourites_count_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -163,7 +163,7 @@
         </LinearLayout>
 
         <android.support.v4.view.ViewPager
-            android:id="@+id/listPager"
+            android:id="@+id/list_pager"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 

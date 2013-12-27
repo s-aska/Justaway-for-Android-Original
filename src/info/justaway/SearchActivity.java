@@ -48,7 +48,7 @@ public class SearchActivity extends FragmentActivity {
         mSearchWords = (EditText) findViewById(R.id.searchWords);
         mFooter = (ProgressBar) findViewById(R.id.guruguru);
         mFooter.setVisibility(View.GONE);
-        mListView = (ListView) findViewById(R.id.listView);
+        mListView = (ListView) findViewById(R.id.list_view);
         mListView.setVisibility(View.GONE);
 
         // コンテキストメニューを使える様にする為の指定、但しデフォルトではロングタップで開く

@@ -21,7 +21,7 @@
                 android:paddingRight="6dip" />
 
             <Button
-                android:id="@+id/updateProfileImage"
+                android:id="@+id/update_profile_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
@@ -34,7 +34,7 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/nameLabel"
+                android:id="@+id/name_label"
                 android:layout_width="64dip"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -53,7 +53,7 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/locationLabel"
+                android:id="@+id/location_label"
                 android:layout_width="64dip"
                 android:layout_height="wrap_content"
                 android:gravity="center"
@@ -72,14 +72,14 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/webSiteLabel"
+                android:id="@+id/web_site_label"
                 android:layout_width="64dip"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="@string/web_site" />
 
             <EditText
-                android:id="@+id/webSite"
+                android:id="@+id/web_site"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />
@@ -91,7 +91,7 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/bioLabel"
+                android:id="@+id/bio_label"
                 android:layout_width="64dip"
                 android:layout_height="wrap_content"
                 android:gravity="center"

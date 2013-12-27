@@ -21,14 +21,14 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/singleLineTweet"
+        android:id="@+id/quick_tweet_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="gone"
         android:background="@color/menu_background">
 
         <info.justaway.view.ClearEditText
-            android:id="@+id/editStatus"
+            android:id="@+id/quick_tweet_edit"
             android:layout_width="1dip"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -55,7 +55,7 @@
         <TableRow>
 
             <HorizontalScrollView
-                android:id="@+id/ScrollView"
+                android:id="@+id/scroll_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1">

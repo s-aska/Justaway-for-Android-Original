@@ -34,8 +34,8 @@ public class SummaryFragment extends Fragment {
 
         ImageView icon = (ImageView) v.findViewById(R.id.icon);
         TextView name = (TextView) v.findViewById(R.id.name);
-        TextView screenName = (TextView) v.findViewById(R.id.screenName);
-        TextView followedBy = (TextView) v.findViewById(R.id.followedBy);
+        TextView screenName = (TextView) v.findViewById(R.id.screen_name);
+        TextView followedBy = (TextView) v.findViewById(R.id.followed_by);
         TextView follow = (TextView) v.findViewById(R.id.follow);
 
         String iconUrl = user.getBiggerProfileImageURL();
