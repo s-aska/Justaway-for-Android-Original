@@ -85,6 +85,7 @@ public class UserTimelineFragment extends Fragment {
             return;
         }
         mFooter.setVisibility(View.VISIBLE);
+        mAutoLoader = false;
         new UserTimelineTask().execute(mUser.getScreenName());
     }
 
