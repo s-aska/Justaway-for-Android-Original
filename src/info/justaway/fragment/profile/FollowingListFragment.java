@@ -68,6 +68,7 @@ public class FollowingListFragment extends Fragment {
             return;
         }
         mFooter.setVisibility(View.VISIBLE);
+        mAutoLoader = false;
         new FriendsListTask().execute(mUserId);
     }
 
