@@ -27,7 +27,7 @@ import twitter4j.User;
  */
 public class FavoritesListFragment extends Fragment {
     private TwitterAdapter mAdapter;
-    private ListView listView;
+    private ListView mListView;
     private ProgressBar mFooter;
     private Boolean mAutoLoader = false;
     private int mPage = 1;
@@ -40,20 +40,20 @@ public class FavoritesListFragment extends Fragment {
         mUser = (User) getArguments().getSerializable("user");
 
         // リストビューの設定
-        listView = (ListView) v.findViewById(R.id.list_view);
-        listView.setVisibility(View.GONE);
+        mListView = (ListView) v.findViewById(R.id.list_view);
+        mListView.setVisibility(View.GONE);
 
         // コンテキストメニューを使える様にする為の指定、但しデフォルトではロングタップで開く
-        registerForContextMenu(listView);
+        registerForContextMenu(mListView);
 
         mFooter = (ProgressBar) v.findViewById(R.id.guruguru);
 
         // Status(ツイート)をViewに描写するアダプター
         mAdapter = new TwitterAdapter(getActivity(), R.layout.row_tweet);
-        listView.setAdapter(mAdapter);
+        mListView.setAdapter(mAdapter);
 
         // シングルタップでコンテキストメニューを開くための指定
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 view.showContextMenu();
@@ -61,7 +61,7 @@ public class FavoritesListFragment extends Fragment {
         });
         new FavoritesListTask().execute(mUser.getScreenName());
 
-        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+        mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
 
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -135,7 +135,7 @@ public class FavoritesListFragment extends Fragment {
             }
             mPage++;
             mAutoLoader = true;
-            listView.setVisibility(View.VISIBLE);
+            mListView.setVisibility(View.VISIBLE);
         }
     }
 }
