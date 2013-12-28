@@ -24,7 +24,7 @@ public class UserListMembershipsFragment extends Fragment {
     private UserListAdapter mAdapter;
     private long mUserId;
     private long mCursor = -1;
-    private ListView listView;
+    private ListView mListView;
     private ProgressBar mFooter;
     private Boolean mAutoLoader = false;
 
@@ -36,21 +36,21 @@ public class UserListMembershipsFragment extends Fragment {
         mUserId = user.getId();
 
         // リストビューの設定
-        listView = (ListView) v.findViewById(R.id.list_view);
-        listView.setVisibility(View.GONE);
+        mListView = (ListView) v.findViewById(R.id.list_view);
+        mListView.setVisibility(View.GONE);
 
         // コンテキストメニューを使える様にする為の指定、但しデフォルトではロングタップで開く
-        registerForContextMenu(listView);
+        registerForContextMenu(mListView);
 
         mFooter = (ProgressBar) v.findViewById(R.id.guruguru);
 
         // Status(ツイート)をViewに描写するアダプター
         mAdapter = new UserListAdapter(getActivity(), R.layout.row_user_list);
-        listView.setAdapter(mAdapter);
+        mListView.setAdapter(mAdapter);
 
         new FriendsListTask().execute(mUserId);
 
-        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+        mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
 
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -100,7 +100,7 @@ public class UserListMembershipsFragment extends Fragment {
             if (userLists.hasNext()) {
                 mAutoLoader = true;
             }
-            listView.setVisibility(View.VISIBLE);
+            mListView.setVisibility(View.VISIBLE);
         }
     }
 }
