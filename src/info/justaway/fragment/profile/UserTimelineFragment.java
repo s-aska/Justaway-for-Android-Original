@@ -29,6 +29,7 @@ import twitter4j.User;
 public class UserTimelineFragment extends Fragment {
 
     private TwitterAdapter mAdapter;
+    private ListView listView;
     private ProgressBar mFooter;
     private User mUser;
     private Boolean mAutoLoader = false;
@@ -41,13 +42,13 @@ public class UserTimelineFragment extends Fragment {
         mUser = (User) getArguments().getSerializable("user");
 
         // リストビューの設定
-        ListView listView = (ListView) v.findViewById(R.id.list_view);
+        listView = (ListView) v.findViewById(R.id.list_view);
+        listView.setVisibility(View.GONE);
 
         // コンテキストメニューを使える様にする為の指定、但しデフォルトではロングタップで開く
         registerForContextMenu(listView);
 
         mFooter = (ProgressBar) v.findViewById(R.id.guruguru);
-        mFooter.setVisibility(View.GONE);
 
         // Status(ツイート)をViewに描写するアダプター
         mAdapter = new TwitterAdapter(getActivity(), R.layout.row_tweet);
@@ -133,6 +134,7 @@ public class UserTimelineFragment extends Fragment {
             }
             mPage++;
             mAutoLoader = true;
+            listView.setVisibility(View.VISIBLE);
         }
     }
 }

@@ -24,6 +24,7 @@ public class UserListMembershipsFragment extends Fragment {
     private UserListAdapter mAdapter;
     private long mUserId;
     private long mCursor = -1;
+    private ListView listView;
     private ProgressBar mFooter;
     private Boolean mAutoLoader = false;
 
@@ -35,13 +36,13 @@ public class UserListMembershipsFragment extends Fragment {
         mUserId = user.getId();
 
         // リストビューの設定
-        ListView listView = (ListView) v.findViewById(R.id.list_view);
+        listView = (ListView) v.findViewById(R.id.list_view);
+        listView.setVisibility(View.GONE);
 
         // コンテキストメニューを使える様にする為の指定、但しデフォルトではロングタップで開く
         registerForContextMenu(listView);
 
         mFooter = (ProgressBar) v.findViewById(R.id.guruguru);
-        mFooter.setVisibility(View.GONE);
 
         // Status(ツイート)をViewに描写するアダプター
         mAdapter = new UserListAdapter(getActivity(), R.layout.row_user_list);
@@ -99,6 +100,7 @@ public class UserListMembershipsFragment extends Fragment {
             if (userLists.hasNext()) {
                 mAutoLoader = true;
             }
+            listView.setVisibility(View.VISIBLE);
         }
     }
 }
