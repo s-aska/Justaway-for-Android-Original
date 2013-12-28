@@ -72,6 +72,7 @@ public class UserListMembershipsFragment extends Fragment {
             return;
         }
         mFooter.setVisibility(View.VISIBLE);
+        mAutoLoader = false;
         new FriendsListTask().execute(mUserId);
     }
 
