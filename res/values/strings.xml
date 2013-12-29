@@ -58,5 +58,8 @@
     <string name="profile_pointer">●  ○</string>
     <string name="progress_sending">送信中！！１１１１１</string>
     <string name="progress_loading">受信中！！１１１１１</string>
+    <string name="button_follow">フォローする</string>
+    <string name="button_unfollow">フォロー解除</string>
+    <string name="button_edit_profile">プロフィールを編集する</string>
 
 </resources>
