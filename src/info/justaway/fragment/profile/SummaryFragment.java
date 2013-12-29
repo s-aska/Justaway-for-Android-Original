@@ -23,20 +23,24 @@ import twitter4j.User;
  */
 public class SummaryFragment extends Fragment {
 
+    private boolean mFollowFlg;
+    private boolean mRuntimeFlg;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_profile_summary, container, false);
+        final View v = inflater.inflate(R.layout.fragment_profile_summary, container, false);
 
-        JustawayApplication application = JustawayApplication.getApplication();
+        final JustawayApplication application = JustawayApplication.getApplication();
 
         final User user = (User) getArguments().getSerializable("user");
-        Relationship relationship = (Relationship) getArguments().getSerializable("relationship");
+        final Relationship relationship = (Relationship) getArguments().getSerializable("relationship");
+        mFollowFlg = relationship.isSourceFollowingTarget();
 
         ImageView icon = (ImageView) v.findViewById(R.id.icon);
         TextView name = (TextView) v.findViewById(R.id.name);
         TextView screenName = (TextView) v.findViewById(R.id.screen_name);
         TextView followedBy = (TextView) v.findViewById(R.id.followed_by);
-        TextView follow = (TextView) v.findViewById(R.id.follow);
+        final TextView follow = (TextView) v.findViewById(R.id.follow);
 
         String iconUrl = user.getBiggerProfileImageURL();
         application.displayRoundedImage(iconUrl, icon);
@@ -62,32 +66,52 @@ public class SummaryFragment extends Fragment {
 
         follow.setVisibility(View.VISIBLE);
         if (user.getId() == application.getUserId()) {
-            follow.setText("プロフィールを編集する");
-            follow.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+            follow.setText(R.string.button_edit_profile);
+        } else if (relationship.isSourceFollowingTarget()) {
+            follow.setText(R.string.button_unfollow);
+        } else {
+            follow.setText(R.string.button_follow);
+        }
+        follow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mRuntimeFlg) {
+                    return;
+                }
+                if (user.getId() == application.getUserId()) {
                     Intent intent = new Intent(getActivity(), EditProfileActivity.class);
                     startActivity(intent);
+                } else if (mFollowFlg) {
+                    mRuntimeFlg = true;
+                    DestroyFriendshipTask task = new DestroyFriendshipTask() {
+                        @Override
+                        protected void onPostExecute(Boolean success) {
+                            if (success) {
+                                JustawayApplication.showToast(R.string.toast_destroy_friendship_success);
+                                follow.setText(R.string.button_follow);
+                                mFollowFlg = false;
+                                mRuntimeFlg = false;
+                            }
+                        }
+                    };
+                    task.execute(user.getId());
+                } else {
+                    mRuntimeFlg = true;
+                    FollowTask task = new FollowTask() {
+                        @Override
+                        protected void onPostExecute(Boolean success) {
+                            if (success) {
+                                JustawayApplication.showToast(R.string.toast_follow_success);
+                                follow.setText(R.string.button_unfollow);
+                                mFollowFlg = true;
+                                mRuntimeFlg = false;
+                            }
+                        }
+                    };
+                    task.execute(user.getId());
                 }
-            });
-        } else if (relationship.isSourceFollowingTarget()) {
-            follow.setText("フォローを解除");
-            follow.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    new DestroyFriendshipTask().execute(user.getId());
-                }
-            });
-        } else {
-            follow.setText("フォローする");
-            follow.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    new FollowTask().execute(user.getId());
-                }
-            });
-        }
-
+            }
+        });
         return v;
     }
 }
