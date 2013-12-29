@@ -21,8 +21,6 @@ public class ChooseUserListsActivity extends FragmentActivity implements
 
     private SubscribeUserListAdapter mAdapter;
 
-    // private ArrayList<Integer> lists = new ArrayList<Integer>();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,17 +31,6 @@ public class ChooseUserListsActivity extends FragmentActivity implements
         mAdapter = new SubscribeUserListAdapter(this, R.layout.row_subscribe_user_list);
 
         listView.setAdapter(mAdapter);
-
-        // registerForContextMenu(listView);
-
-        // listView.setOnItemClickListener(new AdapterView.OnItemClickListener()
-        // {
-        // @Override
-        // public void onItemClick(AdapterView<?> parent, View view, int
-        // position, long id) {
-        // view.showContextMenu();
-        // }
-        // });
 
         getSupportLoaderManager().initLoader(0, null, this);
     }
@@ -80,7 +67,7 @@ public class ChooseUserListsActivity extends FragmentActivity implements
             int count = listView.getChildCount();
             for (int i = 0; i < count; i++) {
                 CheckBox checkbox = (CheckBox) listView.getChildAt(i);
-                if (checkbox.isChecked()) {
+                if (checkbox != null && checkbox.isChecked()) {
                     lists.add((Integer) checkbox.getTag());
                 }
             }
