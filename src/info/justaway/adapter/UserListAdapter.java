@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import info.justaway.JustawayApplication;
 import info.justaway.ProfileActivity;
 import info.justaway.R;
+import info.justaway.UserListActivity;
 import twitter4j.UserList;
 
 public class UserListAdapter extends ArrayAdapter<UserList> {
@@ -64,6 +65,15 @@ public class UserListAdapter extends ArrayAdapter<UserList> {
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), ProfileActivity.class);
                 intent.putExtra("screenName", userList.getUser().getScreenName());
+                mContext.startActivity(intent);
+            }
+        });
+
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), UserListActivity.class);
+                intent.putExtra("listId", userList.getId());
                 mContext.startActivity(intent);
             }
         });
