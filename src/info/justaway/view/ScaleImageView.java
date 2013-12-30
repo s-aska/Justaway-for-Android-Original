@@ -32,7 +32,8 @@ public class ScaleImageView extends ImageView implements OnTouchListener {
     private float mMinScale;
 
     private float mPrevDistance;
-    private boolean isScaling;
+    private boolean mIsScaling;
+    private boolean mIsInitializedScaling;
 
     private int mPrevMoveX;
     private int mPrevMoveY;
@@ -126,7 +127,12 @@ public class ScaleImageView extends ImageView implements OnTouchListener {
         mMatrix.postTranslate(paddingWidth, paddingHeight);
 
         setImageMatrix(mMatrix);
-        zoomTo(mScale, mWidth / 2, mHeight / 2);
+
+        if (!mIsInitializedScaling) {
+            mIsInitializedScaling = true;
+            zoomTo(mScale, mWidth / 2, mHeight / 2);
+        }
+
         cutting();
         Boolean isChanges = super.setFrame(l, t, r, b);
         if (mMinScale != mScale) {
@@ -229,13 +235,13 @@ public class ScaleImageView extends ImageView implements OnTouchListener {
                     float distance = distance(event.getX(0), event.getX(1), event.getY(0),
                             event.getY(1));
                     mPrevDistance = distance;
-                    isScaling = true;
+                    mIsScaling = true;
                 } else {
                     mPrevMoveX = (int) event.getX();
                     mPrevMoveY = (int) event.getY();
                 }
             case MotionEvent.ACTION_MOVE:
-                if (touchCount >= 2 && isScaling) {
+                if (touchCount >= 2 && mIsScaling) {
                     float dist = distance(event.getX(0), event.getX(1), event.getY(0), event.getY(1));
                     float scale = (dist - mPrevDistance) / displayDistance();
                     mPrevDistance = dist;
@@ -243,7 +249,7 @@ public class ScaleImageView extends ImageView implements OnTouchListener {
                     scale = scale * scale;
                     zoomTo(scale, mWidth / 2, mHeight / 2);
                     cutting();
-                } else if (!isScaling) {
+                } else if (!mIsScaling) {
                     int distanceX = mPrevMoveX - (int) event.getX();
                     int distanceY = mPrevMoveY - (int) event.getY();
                     mPrevMoveX = (int) event.getX();
@@ -256,7 +262,7 @@ public class ScaleImageView extends ImageView implements OnTouchListener {
             case MotionEvent.ACTION_POINTER_UP:
             case MotionEvent.ACTION_POINTER_2_UP:
                 if (event.getPointerCount() <= 1) {
-                    isScaling = false;
+                    mIsScaling = false;
                 }
                 break;
         }
