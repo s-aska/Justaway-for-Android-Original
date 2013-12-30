@@ -126,10 +126,14 @@ public class ScaleImageView extends ImageView implements OnTouchListener {
         mMatrix.postTranslate(paddingWidth, paddingHeight);
 
         setImageMatrix(mMatrix);
-        mMinScale = mScale;
         zoomTo(mScale, mWidth / 2, mHeight / 2);
         cutting();
-        return super.setFrame(l, t, r, b);
+        Boolean isChanges = super.setFrame(l, t, r, b);
+        if (mMinScale != mScale) {
+            mMinScale = mScale;
+            isChanges = true;
+        }
+        return isChanges;
     }
 
     protected float getValue(Matrix matrix, int whichValue) {
@@ -155,7 +159,7 @@ public class ScaleImageView extends ImageView implements OnTouchListener {
             float scale = mMinScale / getScale();
             zoomTo(scale, x, y);
         } else {
-            float scale = MAX_SCALE / getScale();
+            float scale = 2f / getScale();
             zoomTo(scale, x, y);
         }
     }
