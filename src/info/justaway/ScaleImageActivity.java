@@ -1,11 +1,16 @@
 package info.justaway;
 
-import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
@@ -15,7 +20,10 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import info.justaway.task.PhotoLoader;
 import info.justaway.view.ScaleImageView;
 
 /**
@@ -23,7 +31,7 @@ import info.justaway.view.ScaleImageView;
  *
  * @author aska
  */
-public class ScaleImageActivity extends Activity {
+public class ScaleImageActivity extends FragmentActivity implements LoaderManager.LoaderCallbacks<String> {
 
     private ScaleImageView mImageView;
 
@@ -31,21 +39,62 @@ public class ScaleImageActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Bundle args = getIntent().getExtras();
-        if (args == null) {
-            return;
-        }
-
-        String url = args.getString("url");
-
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         mImageView = new ScaleImageView(this);
         mImageView.setActivity(this);
 
-        ImageLoader.getInstance().displayImage(url, mImageView);
-
         setContentView(mImageView);
+
+        // インテント経由での起動をサポート
+        Intent intent = getIntent();
+        String url;
+        if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+            Uri data = intent.getData();
+            if (data == null) {
+                return;
+            }
+            url = data.toString();
+        } else {
+            Bundle args = intent.getExtras();
+            if (args == null) {
+                return;
+            }
+            url = args.getString("url");
+        }
+
+        if (url == null) {
+            return;
+        }
+
+        Pattern pattern = Pattern.compile("https?://twitter\\.com/\\w+/status/(\\d+)/photo/(\\d+)/?.*");
+        Matcher matcher = pattern.matcher(url);
+        if (matcher.find()) {
+            Bundle args = new Bundle(1);
+            args.putLong("statusId", Long.valueOf(matcher.group(1)));
+            args.putInt("index", Integer.valueOf(matcher.group(2)));
+            getSupportLoaderManager().initLoader(0, args, this);
+            return;
+        }
+
+        ImageLoader.getInstance().displayImage(url, mImageView);
+    }
+
+    @Override
+    public Loader<String> onCreateLoader(int id, Bundle args) {
+        long statusId = args.getLong("statusId");
+        int index = args.getInt("index");
+        return new PhotoLoader(this, statusId, index);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<String> loader, String url) {
+        ImageLoader.getInstance().displayImage(url, mImageView);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<String> arg0) {
+
     }
 
     @Override

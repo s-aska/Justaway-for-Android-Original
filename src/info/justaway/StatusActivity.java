@@ -2,6 +2,7 @@ package info.justaway;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -33,6 +34,27 @@ public class StatusActivity extends FragmentActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
 
+        // インテント経由での起動をサポート
+        Intent intent = getIntent();
+        long statusId;
+        if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+            Uri uri = intent.getData();
+            if (uri == null || uri.getPath() == null) {
+                return;
+            }
+            if (uri.getPath().contains("photo")) {
+                Intent scaleImage = new Intent(this, ScaleImageActivity.class);
+                scaleImage.putExtra("url", uri.toString());
+                startActivity(scaleImage);
+                finish();
+                return;
+            } else {
+                statusId = Long.parseLong(uri.getLastPathSegment());
+            }
+        } else {
+            statusId = intent.getLongExtra("id", -1L);
+        }
+
         setContentView(R.layout.activity_status);
 
         ListView listView = (ListView) findViewById(R.id.list);
@@ -51,15 +73,6 @@ public class StatusActivity extends FragmentActivity {
                 view.showContextMenu();
             }
         });
-
-        // インテント経由での起動をサポート
-        Intent intent = getIntent();
-        long statusId;
-        if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-            statusId = Long.parseLong(intent.getData().getLastPathSegment());
-        } else {
-            statusId = intent.getLongExtra("id", -1L);
-        }
 
         if (statusId > 0) {
             Twitter twitter = JustawayApplication.getApplication().getTwitter();

@@ -89,7 +89,7 @@
                 <data android:mimeType="text/plain" />
             </intent-filter>
         </activity>
-        <activity android:name=".ProfileActivity"/>
+        <activity android:name=".ProfileActivity" />
         <activity
             android:name=".StatusActivity"
             android:theme="@style/Theme.MyTrans">
@@ -109,12 +109,12 @@
                     android:scheme="https" />
             </intent-filter>
         </activity>
-        <activity android:name=".ChooseUserListsActivity"></activity>
+        <activity android:name=".ChooseUserListsActivity"/>
         <activity
             android:name=".ScaleImageActivity"
-            android:theme="@android:style/Theme.Translucent"></activity>
-        <activity android:name=".SearchActivity"></activity>
-        <activity android:name=".EditProfileActivity"></activity>
+            android:theme="@android:style/Theme.Translucent"/>
+        <activity android:name=".SearchActivity"/>
+        <activity android:name=".EditProfileActivity"/>
     </application>
 
 </manifest>
