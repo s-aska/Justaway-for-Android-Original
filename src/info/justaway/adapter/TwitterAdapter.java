@@ -88,6 +88,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         }
     }
 
+    @SuppressWarnings("unused")
     public void replaceStatus(Status status) {
         for (Row row : mStatuses) {
             if (!row.isDirectMessage() && row.getStatus().getId() == status.getId()) {
@@ -236,7 +237,6 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     private void renderStatus(View view, final Status status, Status retweet,
                               User favorite) {
 
-        final Status source = retweet != null ? retweet : status;
         long userId = JustawayApplication.getApplication().getUserId();
 
         Typeface fontello = Typeface.createFromAsset(mContext.getAssets(), "fontello.ttf");
