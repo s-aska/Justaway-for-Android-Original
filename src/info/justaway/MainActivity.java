@@ -26,12 +26,13 @@ import android.widget.LinearLayout;
 import java.util.ArrayList;
 
 import info.justaway.fragment.BaseFragment;
-import info.justaway.fragment.DirectMessageFragment;
+import info.justaway.fragment.DirectMessagesFragment;
 import info.justaway.fragment.InteractionsFragment;
 import info.justaway.fragment.TimelineFragment;
 import info.justaway.fragment.UserListFragment;
 import info.justaway.model.Row;
 import info.justaway.task.DestroyDirectMessageTask;
+import info.justaway.task.LoadUserListsTask;
 import info.justaway.task.ReFetchFavoriteStatus;
 import info.justaway.task.VerifyCredentialsLoader;
 import twitter4j.DirectMessage;
@@ -52,6 +53,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
     private ProgressDialog mProgressDialog;
+    private static String sDefaultListName;
     private static final int REQUEST_CHOOSE_USER_LIST = 100;
     private static final int TAB_ID_TIMELINE = -1;
     private static final int TAB_ID_INTERACTIONS = -2;
@@ -61,6 +63,8 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        sDefaultListName = getString(R.string.title_default_list);
 
         mApplication = JustawayApplication.getApplication();
 
@@ -80,6 +84,9 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
         } else {
             setup();
         }
+
+        // ユーザーリストの一覧をアプリケーションのメンバ変数に読み込んでおく
+        new LoadUserListsTask().execute();
 
         /**
          * 違うタブだったら移動、同じタブだったら最上部にスクロールという美しい実装
@@ -228,7 +235,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                 tab_menus.addView(button);
                 Bundle args = new Bundle();
                 args.putInt("userListId", tab);
-                mSectionsPagerAdapter.addTab(UserListFragment.class, args, "list", tab);
+                mSectionsPagerAdapter.addTab(UserListFragment.class, args, sDefaultListName, tab);
             }
         }
         mSectionsPagerAdapter.notifyDataSetChanged();
@@ -349,9 +356,9 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mSectionsPagerAdapter = new SectionsPagerAdapter(this, mViewPager);
 
-        mSectionsPagerAdapter.addTab(TimelineFragment.class, null, "Home", TAB_ID_TIMELINE);
-        mSectionsPagerAdapter.addTab(InteractionsFragment.class, null, "Home", TAB_ID_INTERACTIONS);
-        mSectionsPagerAdapter.addTab(DirectMessageFragment.class, null, "Home", TAB_ID_DIRECT_MESSAGE);
+        mSectionsPagerAdapter.addTab(TimelineFragment.class, null, getString(R.string.title_main), TAB_ID_TIMELINE);
+        mSectionsPagerAdapter.addTab(InteractionsFragment.class, null, getString(R.string.title_interactions), TAB_ID_INTERACTIONS);
+        mSectionsPagerAdapter.addTab(DirectMessagesFragment.class, null, getString(R.string.title_direct_messages), TAB_ID_DIRECT_MESSAGE);
         initTab();
 
         findViewById(R.id.footer).setVisibility(View.VISIBLE);
@@ -385,6 +392,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                                 R.color.menu_background));
                     }
                 }
+                setTitle(mSectionsPagerAdapter.getPageTitle(position));
             }
         });
 
@@ -407,7 +415,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
      */
     public void onNewTimeline(Boolean autoScroll) {
         // 表示中のタブかつ自動スクロール時はハイライトしない
-        if (mViewPager.getCurrentItem() == 0 && autoScroll == true) {
+        if (mViewPager.getCurrentItem() == 0 && autoScroll) {
             return;
         }
         Button button = (Button) findViewById(R.id.action_timeline);
@@ -476,10 +484,10 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
         private final ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
 
         private static final class TabInfo {
-            private final Class<?> clazz;
-            private final Bundle args;
-            private final String tabTitle;
-            private final int id;
+            private final Class<?> mClazz;
+            private final Bundle mArgs;
+            private String mTabTitle;
+            private final int mId;
 
             /**
              * タブ内のActivity、引数を設定する。
@@ -489,10 +497,10 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
              * @param tabTitle タブに表示するタイトル
              */
             TabInfo(Class<?> clazz, Bundle args, String tabTitle, int id) {
-                this.clazz = clazz;
-                this.args = args;
-                this.tabTitle = tabTitle;
-                this.id = id;
+                this.mClazz = clazz;
+                this.mArgs = args;
+                this.mTabTitle = tabTitle;
+                this.mId = id;
             }
         }
 
@@ -506,12 +514,12 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
         @Override
         public BaseFragment getItem(int position) {
             TabInfo info = mTabs.get(position);
-            return (BaseFragment) Fragment.instantiate(mContext, info.clazz.getName(), info.args);
+            return (BaseFragment) Fragment.instantiate(mContext, info.mClazz.getName(), info.mArgs);
         }
 
         @Override
         public long getItemId(int position) {
-            return mTabs.get(position).id;
+            return mTabs.get(position).mId;
         }
 
         @Override
@@ -526,7 +534,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
         public int findPositionById(int id) {
             int position = 0;
             for (TabInfo tab : mTabs) {
-                if (tab.id == id) {
+                if (tab.mId == id) {
                     return position;
                 }
                 position++;
@@ -537,7 +545,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
         public BaseFragment findFragmentById(int id) {
             int position = 0;
             for (TabInfo tab : mTabs) {
-                if (tab.id == id) {
+                if (tab.mId == id) {
                     return (BaseFragment) instantiateItem(mViewPager, position);
                 }
                 position++;
@@ -559,6 +567,20 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
 
         public void removeTab(int position) {
             mTabs.remove(position);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            TabInfo tab = mTabs.get(position);
+            JustawayApplication application = JustawayApplication.getApplication();
+            if (tab.mTabTitle.equals(sDefaultListName)) {
+                int userListId = tab.mArgs.getInt("userListId");
+                String listName = application.getUserListName(userListId);
+                if (listName != null) {
+                    tab.mTabTitle = sDefaultListName + " " + listName;
+                }
+            }
+            return tab.mTabTitle;
         }
 
         @Override
@@ -695,7 +717,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
             @Override
             public void onDeletionNotice(long directMessageId, long userId) {
                 super.onDeletionNotice(directMessageId, userId);
-                DirectMessageFragment fragment = (DirectMessageFragment) mSectionsPagerAdapter
+                DirectMessagesFragment fragment = (DirectMessagesFragment) mSectionsPagerAdapter
                         .findFragmentById(TAB_ID_DIRECT_MESSAGE);
                 if (fragment != null) {
                     fragment.remove(directMessageId);
@@ -743,7 +765,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
     public void doDestroyDirectMessage(Long id) {
         new DestroyDirectMessageTask().execute(id);
         // 自分宛のDMを消してもStreaming APIで拾えないで自力で消す
-        DirectMessageFragment fragment = (DirectMessageFragment) mSectionsPagerAdapter
+        DirectMessagesFragment fragment = (DirectMessagesFragment) mSectionsPagerAdapter
                 .findFragmentById(TAB_ID_DIRECT_MESSAGE);
         if (fragment != null) {
             fragment.remove(id);

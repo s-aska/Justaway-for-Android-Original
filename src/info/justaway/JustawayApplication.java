@@ -37,12 +37,14 @@ import info.justaway.task.RetweetTask;
 import info.justaway.task.UnFavoriteTask;
 import info.justaway.task.UnRetweetTask;
 import twitter4j.HashtagEntity;
+import twitter4j.ResponseList;
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
 import twitter4j.TwitterStream;
 import twitter4j.TwitterStreamFactory;
 import twitter4j.URLEntity;
+import twitter4j.UserList;
 import twitter4j.UserMentionEntity;
 import twitter4j.auth.AccessToken;
 import twitter4j.conf.ConfigurationBuilder;
@@ -57,6 +59,27 @@ public class JustawayApplication extends Application {
     private static JustawayApplication sApplication;
     private static ImageLoader mImageLoader;
     private static DisplayImageOptions mRoundedDisplayImageOptions;
+    private ResponseList<UserList> mUserLists;
+
+    public ResponseList<UserList> getUserLists() {
+        return mUserLists;
+    }
+
+    public void setUserLists(ResponseList<UserList> userLists) {
+        mUserLists = userLists;
+    }
+
+    public String getUserListName(int id) {
+        if (mUserLists == null) {
+            return null;
+        }
+        for (UserList userList: mUserLists) {
+            if (userList.getId() == id) {
+                return userList.getName();
+            }
+        }
+        return null;
+    }
 
     /**
      * 毎回キャストしなくて良いように

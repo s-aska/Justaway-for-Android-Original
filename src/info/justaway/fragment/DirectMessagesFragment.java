@@ -9,11 +9,11 @@ import android.widget.ListView;
 import info.justaway.MainActivity;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.model.Row;
-import info.justaway.task.DirectMessageLoader;
+import info.justaway.task.DirectMessagesLoader;
 import twitter4j.DirectMessage;
 import twitter4j.ResponseList;
 
-public class DirectMessageFragment extends BaseFragment implements
+public class DirectMessagesFragment extends BaseFragment implements
         LoaderManager.LoaderCallbacks<ResponseList<DirectMessage>> {
 
     @Override
@@ -79,7 +79,7 @@ public class DirectMessageFragment extends BaseFragment implements
 
     @Override
     public Loader<ResponseList<DirectMessage>> onCreateLoader(int arg0, Bundle arg1) {
-        return new DirectMessageLoader(getActivity());
+        return new DirectMessagesLoader(getActivity());
     }
 
     @Override

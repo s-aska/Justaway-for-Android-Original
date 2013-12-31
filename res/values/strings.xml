@@ -55,12 +55,22 @@
     <string name="confirm_update_profile_image">プロフィール画像を変更しますか？</string>
     <string name="button_apply">適用</string>
     <string name="button_cancel">キャンセル</string>
-    <string name="profile_pointer">●  ○</string>
+    <string name="profile_pointer">●　○</string>
+    <string name="profile_pointer_right">○　●</string>
     <string name="progress_sending">送信中！！１１１１１</string>
     <string name="progress_loading">受信中！！１１１１１</string>
     <string name="button_follow">フォローする</string>
     <string name="button_unfollow">フォロー解除</string>
     <string name="button_edit_profile">プロフィールを編集する</string>
     <string name="followed_by_target">フォローされています</string>
+    <string name="title_main">Justaway</string>
+    <string name="title_interactions">Justaway - @</string>
+    <string name="title_direct_messages">Justaway - DM</string>
+    <string name="title_default_list">Justaway -</string>
+    <string name="title_search">サーチ</string>
+    <string name="title_post">投稿</string>
+    <string name="title_profile">プロフィール</string>
+    <string name="title_edit_profile">プロフィール編集</string>
+    <string name="title_choose_user_lists">リストを選んでバック</string>
 
 </resources>

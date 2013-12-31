@@ -11,9 +11,9 @@ import twitter4j.ResponseList;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
-public class DirectMessageLoader extends AbstractAsyncTaskLoader<ResponseList<DirectMessage>> {
+public class DirectMessagesLoader extends AbstractAsyncTaskLoader<ResponseList<DirectMessage>> {
 
-    public DirectMessageLoader(Context context) {
+    public DirectMessagesLoader(Context context) {
         super(context);
     }
 
