@@ -1,16 +1,17 @@
 package info.justaway.fragment;
 
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
+import android.support.v4.app.Fragment;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
 import info.justaway.BaseActivity;
-import info.justaway.JustawayApplication;
 import info.justaway.MainActivity;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
@@ -19,7 +20,26 @@ import info.justaway.model.Row;
 /**
  * タブのベースクラス
  */
-public abstract class BaseFragment extends ListFragment {
+public abstract class BaseFragment extends Fragment {
+
+    private TwitterAdapter mAdapter;
+    private ListView mListView;
+
+    public ListView getListView() {
+        return mListView;
+    }
+
+    public TwitterAdapter getListAdapter() {
+        return mAdapter;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.list, container, false);
+        mListView = (ListView) v.findViewById(R.id.list_view);
+        v.findViewById(R.id.guruguru).setVisibility(View.GONE);
+        return v;
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -33,8 +53,9 @@ public abstract class BaseFragment extends ListFragment {
         registerForContextMenu(listView);
 
         // Status(ツイート)をViewに描写するアダプター
-        TwitterAdapter adapter = new TwitterAdapter(activity, R.layout.row_tweet);
-        setListAdapter(adapter);
+        mAdapter = new TwitterAdapter(activity, R.layout.row_tweet);
+
+        listView.setAdapter(mAdapter);
 
         // シングルタップでコンテキストメニューを開くための指定
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

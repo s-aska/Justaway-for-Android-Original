@@ -96,7 +96,7 @@ public class InteractionsFragment extends BaseFragment implements
         if (statuses == null) {
             return;
         }
-        TwitterAdapter adapter = (TwitterAdapter) getListAdapter();
+        TwitterAdapter adapter = getListAdapter();
         adapter.clear();
         for (twitter4j.Status status : statuses) {
             adapter.add(Row.newStatus(status));

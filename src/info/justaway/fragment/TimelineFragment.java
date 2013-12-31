@@ -1,29 +1,67 @@
 package info.justaway.fragment;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import info.justaway.JustawayApplication;
 import info.justaway.MainActivity;
+import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.model.Row;
-import info.justaway.task.TimelineLoader;
+import twitter4j.Paging;
 import twitter4j.ResponseList;
 import twitter4j.Status;
 
 /**
  * タイムライン、すべての始まり
  */
-public class TimelineFragment extends BaseFragment implements
-        LoaderManager.LoaderCallbacks<ResponseList<Status>> {
+public class TimelineFragment extends BaseFragment {
+
+    private Boolean mAutoLoader = false;
+    private long mMaxId = 0L;
+    private ProgressBar mFooter;
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View v = super.onCreateView(inflater, container, savedInstanceState);
+        mFooter = (ProgressBar) v.findViewById(R.id.guruguru);
+        return v;
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getLoaderManager().initLoader(0, null, this);
+        ListView listView = getListView();
+        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                // 最後までスクロールされたかどうかの判定
+                if (totalItemCount == firstVisibleItem + visibleItemCount) {
+                    additionalReading();
+                }
+            }
+        });
+        new HomeTimelineTask().execute();
+    }
+
+    private void additionalReading() {
+        if (!mAutoLoader) {
+            return;
+        }
+        mFooter.setVisibility(View.VISIBLE);
+        mAutoLoader = false;
+        new HomeTimelineTask().execute();
     }
 
     /**
@@ -68,24 +106,35 @@ public class TimelineFragment extends BaseFragment implements
         });
     }
 
-    @Override
-    public Loader<ResponseList<Status>> onCreateLoader(int arg0, Bundle arg1) {
-        return new TimelineLoader(getActivity());
-    }
-
-    @Override
-    public void onLoadFinished(Loader<ResponseList<Status>> arg0, ResponseList<Status> statuses) {
-        if (statuses == null) {
-            return;
+    private class HomeTimelineTask extends AsyncTask<Void, Void, ResponseList<Status>> {
+        @Override
+        protected ResponseList<twitter4j.Status> doInBackground(Void... params) {
+            try {
+                Paging paging = new Paging();
+                if (mMaxId > 0) {
+                    paging.setMaxId(mMaxId - 1);
+                }
+                return JustawayApplication.getApplication().getTwitter().getHomeTimeline(paging);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
         }
-        TwitterAdapter adapter = (TwitterAdapter) getListAdapter();
-        adapter.clear();
-        for (twitter4j.Status status : statuses) {
-            adapter.add(Row.newStatus(status));
-        }
-    }
 
-    @Override
-    public void onLoaderReset(Loader<ResponseList<Status>> arg0) {
+        @Override
+        protected void onPostExecute(ResponseList<twitter4j.Status> statuses) {
+            mFooter.setVisibility(View.GONE);
+            if (statuses == null || statuses.size() == 0) {
+                return;
+            }
+            TwitterAdapter adapter = getListAdapter();
+            for (twitter4j.Status status : statuses) {
+                if (mMaxId == 0L || mMaxId > status.getId()) {
+                    mMaxId = status.getId();
+                }
+                adapter.extentionAdd(Row.newStatus(status));
+            }
+            mAutoLoader = true;
+        }
     }
 }

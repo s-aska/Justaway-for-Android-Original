@@ -41,7 +41,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     private LayoutInflater mInflater;
     private int mLayout;
     private Boolean isMain;
-    private static final int LIMIT = 100;
+    private int mLimit = 100;
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy/MM'/'dd' 'HH':'mm':'ss",
             Locale.ENGLISH);
 
@@ -52,6 +52,13 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         this.mLayout = textViewResourceId;
         this.mApplication = (JustawayApplication) context.getApplicationContext();
         this.isMain = mContext.getClass().getName().equals("info.justaway.MainActivity");
+    }
+
+    public void extentionAdd(Row row) {
+        super.add(row);
+        this.filter(row);
+        this.mStatuses.add(row);
+        mLimit++;
     }
 
     @Override
@@ -119,8 +126,8 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
 
     public void limitation() {
         int size = this.mStatuses.size();
-        if (size > LIMIT) {
-            int count = size - LIMIT;
+        if (size > mLimit) {
+            int count = size - mLimit;
             for (int i = 0; i < count; i++) {
                 super.remove(this.mStatuses.remove(size - i - 1));
             }
