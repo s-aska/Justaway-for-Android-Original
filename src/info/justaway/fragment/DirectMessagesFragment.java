@@ -88,7 +88,7 @@ public class DirectMessagesFragment extends BaseFragment implements
         if (statuses == null) {
             return;
         }
-        TwitterAdapter adapter = (TwitterAdapter) getListAdapter();
+        TwitterAdapter adapter = getListAdapter();
         adapter.clear();
         for (DirectMessage status : statuses) {
             adapter.add(Row.newDirectMessage(status));
