@@ -96,7 +96,9 @@ public class JustawayApplication extends Application {
                 .build();
 
         // 例外発生時の処理を指定（スタックトレースを保存）
-//        Thread.setDefaultUncaughtExceptionHandler(new MyUncaughtExceptionHandler(sApplication));
+        if (BuildConfig.DEBUG) {
+            Thread.setDefaultUncaughtExceptionHandler(new MyUncaughtExceptionHandler(sApplication));
+        }
     }
 
     public void displayImage(String url, ImageView view) {
@@ -227,7 +229,7 @@ public class JustawayApplication extends Application {
     private static final String PREF_NAME = "twitter_access_token";
     private AccessToken accessToken;
     private Twitter twitter;
-//    private TwitterStream twitterStream;
+    //    private TwitterStream twitterStream;
     private String screenName;
     private long userId = -1L;
 
