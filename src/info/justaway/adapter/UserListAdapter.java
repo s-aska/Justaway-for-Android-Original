@@ -74,6 +74,7 @@ public class UserListAdapter extends ArrayAdapter<UserList> {
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), UserListActivity.class);
                 intent.putExtra("listId", userList.getId());
+                intent.putExtra("listName", userList.getName());
                 mContext.startActivity(intent);
             }
         });

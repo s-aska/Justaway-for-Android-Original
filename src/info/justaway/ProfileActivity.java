@@ -64,7 +64,6 @@ public class ProfileActivity extends FragmentActivity implements
         }
         args.putString("screenName", screenName);
         getSupportLoaderManager().initLoader(0, args, this);
-
     }
 
     @Override
@@ -124,9 +123,9 @@ public class ProfileActivity extends FragmentActivity implements
             @Override
             public void onPageSelected(int position) {
                 if (position == 0) {
-                    ((TextView) findViewById(R.id.symbol)).setText("●  ○");
+                    ((TextView) findViewById(R.id.symbol)).setText(getString(R.string.profile_pointer));
                 } else {
-                    ((TextView) findViewById(R.id.symbol)).setText("○  ●");
+                    ((TextView) findViewById(R.id.symbol)).setText(getString(R.string.profile_pointer_right));
                 }
             }
         });

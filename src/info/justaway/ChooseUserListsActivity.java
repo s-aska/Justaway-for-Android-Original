@@ -32,7 +32,15 @@ public class ChooseUserListsActivity extends FragmentActivity implements
 
         listView.setAdapter(mAdapter);
 
-        getSupportLoaderManager().initLoader(0, null, this);
+        // 起動時に読み込んだユーザーリストがある場合は新たにAPIを叩かない
+        ResponseList<UserList> userLists = JustawayApplication.getApplication().getUserLists();
+        if (userLists != null) {
+            for (UserList userList : userLists) {
+                mAdapter.add(userList);
+            }
+        } else {
+            getSupportLoaderManager().initLoader(0, null, this);
+        }
     }
 
     @Override
@@ -42,7 +50,7 @@ public class ChooseUserListsActivity extends FragmentActivity implements
 
     @Override
     public void onLoadFinished(Loader<ResponseList<UserList>> arg0, ResponseList<UserList> userLists) {
-        if (userLists != null && mAdapter != null) {
+        if (userLists != null) {
             for (UserList userList : userLists) {
                 mAdapter.add(userList);
             }

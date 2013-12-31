@@ -55,6 +55,8 @@ public class UserListActivity extends FragmentActivity {
 
         new UserListMembersTask().execute(mListId);
 
+        setTitle(intent.getStringExtra("listName"));
+
         mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
 
             @Override
