@@ -196,18 +196,18 @@ public class BaseActivity extends FragmentActivity {
                 startActivity(intent);
                 return true;
             case CONTEXT_MENU_QT_ID:
-                text = " https://twitter.com/" + status.getUser().getScreenName()
-                        + "/status/" + String.valueOf(status.getId());
+                text = " https://twitter.com/" + source.getUser().getScreenName()
+                        + "/status/" + String.valueOf(source.getId());
                 if (editStatus != null) {
                     editStatus.requestFocus();
                     editStatus.setText(text);
-                    setInReplyToStatusId(status.getId());
+                    setInReplyToStatusId(source.getId());
                     application.showKeyboard(editStatus);
                     return true;
                 }
                 intent = new Intent(this, PostActivity.class);
                 intent.putExtra("status", text);
-                intent.putExtra("inReplyToStatusId", status.getId());
+                intent.putExtra("inReplyToStatusId", source.getId());
                 startActivity(intent);
                 return true;
             case CONTEXT_MENU_DM_ID:

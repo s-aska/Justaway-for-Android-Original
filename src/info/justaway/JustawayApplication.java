@@ -454,7 +454,7 @@ public class JustawayApplication extends Application {
                 InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 inputMethodManager.showSoftInput(view, 0);
             }
-        }, 200);
+        }, 600);
     }
 
     @SuppressWarnings("unused")
