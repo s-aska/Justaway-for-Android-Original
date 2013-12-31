@@ -298,10 +298,6 @@ public class PostActivity extends Activity {
         return true;
     }
 
-    private void showToast(String text) {
-        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
-    }
-
     private void showProgressDialog(String message) {
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setMessage(message);
