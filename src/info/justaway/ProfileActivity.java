@@ -30,7 +30,7 @@ import info.justaway.task.ShowUserLoader;
 import twitter4j.Relationship;
 import twitter4j.User;
 
-public class ProfileActivity extends FragmentActivity implements
+public class ProfileActivity extends BaseActivity implements
         LoaderManager.LoaderCallbacks<Profile> {
 
     private ImageView mBanner;

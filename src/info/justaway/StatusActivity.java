@@ -22,7 +22,7 @@ import twitter4j.Twitter;
 /**
  * Created by aska on 2013/12/21.
  */
-public class StatusActivity extends FragmentActivity {
+public class StatusActivity extends BaseActivity {
 
     private ProgressDialog mProgressDialog;
 
@@ -83,13 +83,7 @@ public class StatusActivity extends FragmentActivity {
 
     public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, view, menuInfo);
-        JustawayApplication application = JustawayApplication.getApplication();
-        application.onCreateContextMenuForStatus(menu, view, menuInfo);
-    }
-
-    public boolean onContextItemSelected(MenuItem item) {
-        JustawayApplication application = JustawayApplication.getApplication();
-        return application.onContextItemSelected(this, item);
+        onCreateContextMenuForStatus(menu, view, menuInfo);
     }
 
     private void showProgressDialog(String message) {

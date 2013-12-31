@@ -24,7 +24,7 @@ import info.justaway.model.Row;
 import twitter4j.Query;
 import twitter4j.QueryResult;
 
-public class SearchActivity extends FragmentActivity {
+public class SearchActivity extends BaseActivity {
 
     private Context mContext;
     private EditText mSearchWords;
@@ -125,14 +125,7 @@ public class SearchActivity extends FragmentActivity {
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        JustawayApplication application = JustawayApplication.getApplication();
-        application.onCreateContextMenuForStatus(menu, v, menuInfo);
-    }
-
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        JustawayApplication application = JustawayApplication.getApplication();
-        return application.onContextItemSelected(this, item);
+        onCreateContextMenuForStatus(menu, v, menuInfo);
     }
 
     private class SearchTask extends AsyncTask<Query, Void, QueryResult> {

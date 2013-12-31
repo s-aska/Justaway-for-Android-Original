@@ -203,7 +203,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                             editStatus.setSelection(text.length());
                             editStatus.requestFocus();
                             mApplication.showKeyboard(editStatus);
-                            mApplication.setInReplyToStatusId((long) 0);
+                            activity.setInReplyToStatusId((long) 0);
                             return;
                         }
                     }
@@ -278,7 +278,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                         editStatus.setSelection(text.length());
                         editStatus.requestFocus();
                         mApplication.showKeyboard(editStatus);
-                        mApplication.setInReplyToStatusId(status.getId());
+                        activity.setInReplyToStatusId(status.getId());
                         return;
                     }
                 }
