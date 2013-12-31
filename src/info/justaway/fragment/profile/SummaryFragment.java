@@ -19,7 +19,7 @@ import twitter4j.Relationship;
 import twitter4j.User;
 
 /**
- * Created by aska on 2013/12/04.
+ * プロフィール上部の左面
  */
 public class SummaryFragment extends Fragment {
 
@@ -29,11 +29,18 @@ public class SummaryFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View v = inflater.inflate(R.layout.fragment_profile_summary, container, false);
+        if (v == null) {
+            return null;
+        }
 
         final JustawayApplication application = JustawayApplication.getApplication();
 
         final User user = (User) getArguments().getSerializable("user");
         final Relationship relationship = (Relationship) getArguments().getSerializable("relationship");
+        if (user == null || relationship == null) {
+            return null;
+        }
+
         mFollowFlg = relationship.isSourceFollowingTarget();
 
         ImageView icon = (ImageView) v.findViewById(R.id.icon);

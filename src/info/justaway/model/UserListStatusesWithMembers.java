@@ -5,28 +5,20 @@ import twitter4j.Status;
 import twitter4j.User;
 
 public class UserListStatusesWithMembers {
-    private ResponseList<Status> statuses;
-    private ResponseList<User> members;
+    private ResponseList<Status> mStatuses;
+    private ResponseList<User> mMembers;
 
     public UserListStatusesWithMembers(ResponseList<Status> statues, ResponseList<User> members) {
         super();
-        this.statuses = statues;
-        this.members = members;
+        this.mStatuses = statues;
+        this.mMembers = members;
     }
 
     public ResponseList<Status> getStatues() {
-        return statuses;
-    }
-
-    public void setStatues(ResponseList<Status> statues) {
-        this.statuses = statues;
+        return mStatuses;
     }
 
     public ResponseList<User> getMembers() {
-        return members;
-    }
-
-    public void setMembers(ResponseList<User> members) {
-        this.members = members;
+        return mMembers;
     }
 }

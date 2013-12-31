@@ -27,8 +27,15 @@ public class FollowingListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.list, container, false);
+        if (v == null) {
+            return null;
+        }
 
         User user = (User) getArguments().getSerializable("user");
+        if (user == null) {
+            return null;
+        }
+
         mUserId = user.getId();
 
         // リストビューの設定

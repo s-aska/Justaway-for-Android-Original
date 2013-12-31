@@ -36,6 +36,10 @@ public abstract class BaseFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.list, container, false);
+        if (v == null) {
+            return null;
+        }
+
         mListView = (ListView) v.findViewById(R.id.list_view);
         v.findViewById(R.id.guruguru).setVisibility(View.GONE);
         return v;
@@ -77,10 +81,7 @@ public abstract class BaseFragment extends Fragment {
 
     public Boolean isTop() {
         ListView listView = getListView();
-        if (listView == null) {
-            return false;
-        }
-        return listView.getFirstVisiblePosition() == 0;
+        return listView != null && listView.getFirstVisiblePosition() == 0;
     }
 
     /**

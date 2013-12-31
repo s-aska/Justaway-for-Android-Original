@@ -47,6 +47,9 @@ public class UserListAdapter extends ArrayAdapter<UserList> {
         if (view == null) {
             // 受け取ったビューがnullなら新しくビューを生成
             view = mInflater.inflate(this.mLayout, null);
+            if (view == null) {
+                return null;
+            }
         }
 
         final UserList userList = mUserLists.get(position);
