@@ -268,7 +268,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, PostActivity.class);
-                String text = "@" + source.getUser().getScreenName() + " ";
+                String text = "@" + status.getUser().getScreenName() + " ";
                 if (mContext.getClass().getName().equals("info.justaway.MainActivity")) {
                     MainActivity activity = (MainActivity) mContext;
                     View singleLineTweet = activity.findViewById(R.id.quick_tweet_layout);
