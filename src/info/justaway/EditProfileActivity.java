@@ -92,6 +92,7 @@ public class EditProfileActivity extends FragmentActivity implements LoaderManag
         @Override
         protected User doInBackground(Void... params) {
             try {
+                //noinspection ConstantConditions
                 User user = JustawayApplication.getApplication().getTwitter().updateProfile(
                         mName.getText().toString(),
                         mUrl.getText().toString(),

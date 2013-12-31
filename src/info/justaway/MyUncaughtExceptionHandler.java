@@ -27,6 +27,7 @@ public class MyUncaughtExceptionHandler implements UncaughtExceptionHandler {
     private static ActivityManager.MemoryInfo sMemoryInfo = new ActivityManager.MemoryInfo();
     private UncaughtExceptionHandler mDefaultUEH;
 
+    @SuppressWarnings("ConstantConditions")
     public MyUncaughtExceptionHandler(Context context) {
         sContext = context;
         try {
@@ -81,13 +82,16 @@ public class MyUncaughtExceptionHandler implements UncaughtExceptionHandler {
         }
     }
 
-    public static final void showBugReportDialogIfExist(final Activity activity) {
+    public static void showBugReportDialogIfExist(final Activity activity) {
         File bugFile = activity.getFileStreamPath(BUG_FILE);
         if (!bugFile.exists())
             return;
 
         File writeFile = activity.getFileStreamPath(BUG_FILE + ".txt");
-        bugFile.renameTo(writeFile);
+        boolean result = bugFile.renameTo(writeFile);
+        if (!result) {
+            return;
+        }
 
         final StringBuilder body = new StringBuilder();
         String firstLine = null;

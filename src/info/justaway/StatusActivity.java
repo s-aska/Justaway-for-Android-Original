@@ -5,9 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -20,7 +18,7 @@ import twitter4j.Status;
 import twitter4j.Twitter;
 
 /**
- * Created by aska on 2013/12/21.
+ * ツイート表示用のアクティビティ
  */
 public class StatusActivity extends BaseActivity {
 

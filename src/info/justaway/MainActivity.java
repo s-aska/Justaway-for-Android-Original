@@ -13,7 +13,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -113,7 +112,10 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
                 Intent intent = new Intent(v.getContext(), PostActivity.class);
                 if (findViewById(R.id.quick_tweet_layout).getVisibility() == View.VISIBLE) {
                     EditText status = (EditText) findViewById(R.id.quick_tweet_edit);
-                    String msg = status.getText().toString();
+                    if (status == null) {
+                        return;
+                    }
+                    String msg = status.getText() != null ? status.getText().toString() : null;
                     if (msg != null && msg.length() > 0) {
                         Long inReplyToStatusId = getInReplyToStatusId();
                         intent.putExtra("status", msg);
@@ -143,7 +145,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
             @Override
             public void onClick(View v) {
                 EditText status = (EditText) findViewById(R.id.quick_tweet_edit);
-                String msg = status.getText().toString();
+                String msg = status.getText() != null ? status.getText().toString() : null;
                 if (msg != null && msg.length() > 0) {
                     showProgressDialog(getString(R.string.progress_sending));
                     StatusUpdate super_sugoi = new StatusUpdate(msg);
@@ -163,6 +165,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
         super.onSaveInstanceState(outState);
     }
 
+    @SuppressWarnings("NullableProblems")
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
@@ -195,7 +198,10 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
         // 4つめ以降のタブを消す
         if (count > 3) {
             for (int position = count - 1; position > 2; position--) {
-                tab_menus.removeView(tab_menus.getChildAt(position));
+                View view = tab_menus.getChildAt(position);
+                if (view != null) {
+                    tab_menus.removeView(view);
+                }
                 mSectionsPagerAdapter.removeTab(position);
             }
             mSectionsPagerAdapter.notifyDataSetChanged();
@@ -206,13 +212,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
         for (Integer tab : tabs) {
             Typeface fontello = Typeface.createFromAsset(getAssets(), "fontello.ttf");
             // 標準のタブを動的に生成する時に実装する
-            if (tab == -1) {
-
-            } else if (tab == -2) {
-
-            } else if (tab == -3) {
-
-            } else if (tab > 0) {
+            if (tab > 0) {
                 Button button = new Button(this);
                 button.setWidth(60);
                 button.setTypeface(fontello);
@@ -321,10 +321,6 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
 
     /**
      * 認証済みのユーザーアカウントを取得
-     *
-     * @param id
-     * @param args
-     * @return User 認証済みのユーザー
      */
     @Override
     public Loader<User> onCreateLoader(int id, Bundle args) {
@@ -384,6 +380,9 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
                 int count = tab_menus.getChildCount();
                 for (int i = 0; i < count; i++) {
                     Button button = (Button) tab_menus.getChildAt(i);
+                    if (button == null) {
+                        continue;
+                    }
                     if (i == position) {
                         button.setBackgroundColor(getResources().getColor(
                                 R.color.menu_active_background));
@@ -455,12 +454,12 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
         if (mViewPager.getCurrentItem() == position && autoScroll) {
             return;
         }
-        Log.d("Justaway", "listId: " + listId);
-        Log.d("Justaway", "position: " + position);
         if (position >= 0) {
             LinearLayout tab_menus = (LinearLayout) findViewById(R.id.tab_menus);
             Button button = (Button) tab_menus.getChildAt(position);
-            button.setTextColor(getResources().getColor(color.holo_blue_bright));
+            if (button != null) {
+                button.setTextColor(getResources().getColor(color.holo_blue_bright));
+            }
         }
     }
 
@@ -649,7 +648,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
                  */
                 int count = mSectionsPagerAdapter.getCount();
                 for (int id = 0; id < count; id++) {
-                    BaseFragment fragment = (BaseFragment) mSectionsPagerAdapter
+                    BaseFragment fragment = mSectionsPagerAdapter
                             .findFragmentByPosition(id);
                     if (fragment != null) {
                         fragment.add(Row.newStatus(status));
@@ -662,7 +661,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
                 super.onDeletionNotice(statusDeletionNotice);
                 int count = mSectionsPagerAdapter.getCount();
                 for (int id = 0; id < count; id++) {
-                    BaseFragment fragment = (BaseFragment) mSectionsPagerAdapter
+                    BaseFragment fragment = mSectionsPagerAdapter
                             .findFragmentByPosition(id);
                     if (fragment != null) {
                         fragment.removeStatus(statusDeletionNotice.getStatusId());
@@ -678,7 +677,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
                     return;
                 }
                 Row row = Row.newFavorite(source, target, status);
-                BaseFragment fragment = (BaseFragment) mSectionsPagerAdapter
+                BaseFragment fragment = mSectionsPagerAdapter
                         .findFragmentById(TAB_ID_INTERACTIONS);
                 new ReFetchFavoriteStatus(fragment).execute(row);
             }
@@ -707,7 +706,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
             @Override
             public void onDirectMessage(DirectMessage directMessage) {
                 super.onDirectMessage(directMessage);
-                BaseFragment fragment = (BaseFragment) mSectionsPagerAdapter
+                BaseFragment fragment = mSectionsPagerAdapter
                         .findFragmentById(TAB_ID_DIRECT_MESSAGE);
                 if (fragment != null) {
                     fragment.add(Row.newDirectMessage(directMessage));

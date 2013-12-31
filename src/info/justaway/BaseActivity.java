@@ -20,6 +20,8 @@ import twitter4j.UserMentionEntity;
 
 public class BaseActivity extends FragmentActivity {
 
+    static final int CLOSED_MENU_DELAY = 800;
+
     static final int CONTEXT_MENU_REPLY_ID = 1;
     static final int CONTEXT_MENU_FAV_ID = 2;
     static final int CONTEXT_MENU_FAVRT_ID = 3;
@@ -139,10 +141,7 @@ public class BaseActivity extends FragmentActivity {
         JustawayApplication application = JustawayApplication.getApplication();
         Row row = mSelectedRow;
         Status status = row.getStatus();
-        if (status == null) {
-            return false;
-        }
-        Status retweet = status.getRetweetedStatus();
+        Status retweet = status != null ? status.getRetweetedStatus() : null;
         Status source = retweet != null ? retweet : status;
         Intent intent;
         String text;
@@ -153,6 +152,31 @@ public class BaseActivity extends FragmentActivity {
         }
 
         switch (item.getItemId()) {
+            case CONTEXT_MENU_DM_ID:
+                text = "D " + row.getMessage().getSenderScreenName() + " ";
+                if (editStatus != null) {
+                    editStatus.requestFocus();
+                    editStatus.setText(text);
+                    editStatus.setSelection(text.length());
+                    application.showKeyboard(editStatus, CLOSED_MENU_DELAY);
+                    return true;
+                }
+                intent = new Intent(this, PostActivity.class);
+                intent.putExtra("status", text);
+                intent.putExtra("selection", text.length());
+                startActivity(intent);
+                return true;
+            case CONTEXT_MENU_RM_DM_ID:
+                MainActivity mainActivity = (MainActivity) this;
+                mainActivity.doDestroyDirectMessage(row.getMessage().getId());
+                return true;
+        }
+
+        if (status == null) {
+            return true;
+        }
+
+        switch (item.getItemId()) {
             case CONTEXT_MENU_REPLY_ID:
                 text = "@" + source.getUser().getScreenName() + " ";
                 if (editStatus != null) {
@@ -160,7 +184,7 @@ public class BaseActivity extends FragmentActivity {
                     editStatus.setText(text);
                     editStatus.setSelection(text.length());
                     setInReplyToStatusId(status.getId());
-                    application.showKeyboard(editStatus);
+                    application.showKeyboard(editStatus, CLOSED_MENU_DELAY);
                     return true;
                 }
                 intent = new Intent(this, PostActivity.class);
@@ -186,7 +210,7 @@ public class BaseActivity extends FragmentActivity {
                     editStatus.setText(text);
                     editStatus.setSelection(text.length());
                     setInReplyToStatusId(status.getId());
-                    application.showKeyboard(editStatus);
+                    application.showKeyboard(editStatus, CLOSED_MENU_DELAY);
                     return true;
                 }
                 intent = new Intent(this, PostActivity.class);
@@ -202,30 +226,13 @@ public class BaseActivity extends FragmentActivity {
                     editStatus.requestFocus();
                     editStatus.setText(text);
                     setInReplyToStatusId(source.getId());
-                    application.showKeyboard(editStatus);
+                    application.showKeyboard(editStatus, CLOSED_MENU_DELAY);
                     return true;
                 }
                 intent = new Intent(this, PostActivity.class);
                 intent.putExtra("status", text);
                 intent.putExtra("inReplyToStatusId", source.getId());
                 startActivity(intent);
-                return true;
-            case CONTEXT_MENU_DM_ID:
-                text = "D " + row.getMessage().getSenderScreenName() + " ";
-                if (editStatus != null) {
-                    editStatus.requestFocus();
-                    editStatus.setText(text);
-                    editStatus.setSelection(text.length());
-                    application.showKeyboard(editStatus);
-                    return true;
-                }
-                intent = new Intent(this, PostActivity.class);
-                intent.putExtra("status", text);
-                intent.putExtra("selection", text.length());
-                startActivity(intent);
-                return true;
-            case CONTEXT_MENU_RM_DM_ID:
-//                activity.doDestroyDirectMessage(row.getMessage().getId());
                 return true;
             case CONTEXT_MENU_RM_ID:
                 application.doDestroyStatus(row.getStatus().getId());

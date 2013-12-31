@@ -16,7 +16,7 @@ import android.widget.ImageView;
 public class ScaleImageView extends ImageView implements OnTouchListener {
     private Activity mActivity;
     private Context mContext;
-    private float MAX_SCALE = 10f;
+    private static final float MAX_SCALE = 10f;
 
     private Matrix mMatrix;
     private final float[] mMatrixValues = new float[9];
@@ -28,7 +28,6 @@ public class ScaleImageView extends ImageView implements OnTouchListener {
     private int mIntrinsicWidth;
     private int mIntrinsicHeight;
 
-    private float mScale;
     private float mMinScale;
 
     private float mPrevDistance;
@@ -39,6 +38,7 @@ public class ScaleImageView extends ImageView implements OnTouchListener {
     private int mPrevMoveY;
     private GestureDetector mDetector;
 
+    @SuppressWarnings("unused")
     public ScaleImageView(Context context, AttributeSet attr) {
         super(context, attr);
         this.mContext = context;
@@ -108,19 +108,19 @@ public class ScaleImageView extends ImageView implements OnTouchListener {
 
         mMatrix.reset();
         int r_norm = r - l;
-        mScale = (float) r_norm / (float) mIntrinsicWidth;
+        float scale = (float) r_norm / (float) mIntrinsicWidth;
 
         int paddingHeight;
         int paddingWidth;
         // scaling vertical
-        if (mScale * mIntrinsicHeight > mHeight) {
-            mScale = (float) mHeight / (float) mIntrinsicHeight;
-            mMatrix.postScale(mScale, mScale);
+        if (scale * mIntrinsicHeight > mHeight) {
+            scale = (float) mHeight / (float) mIntrinsicHeight;
+            mMatrix.postScale(scale, scale);
             paddingWidth = (r - mWidth) / 2;
             paddingHeight = 0;
             // scaling horizontal
         } else {
-            mMatrix.postScale(mScale, mScale);
+            mMatrix.postScale(scale, scale);
             paddingHeight = (b - mHeight) / 2;
             paddingWidth = 0;
         }
@@ -130,13 +130,13 @@ public class ScaleImageView extends ImageView implements OnTouchListener {
 
         if (!mIsInitializedScaling) {
             mIsInitializedScaling = true;
-            zoomTo(mScale, mWidth / 2, mHeight / 2);
+            zoomTo(scale, mWidth / 2, mHeight / 2);
         }
 
         cutting();
         Boolean isChanges = super.setFrame(l, t, r, b);
-        if (mMinScale != mScale) {
-            mMinScale = mScale;
+        if (mMinScale != scale) {
+            mMinScale = scale;
             isChanges = true;
         }
         return isChanges;
@@ -221,20 +221,20 @@ public class ScaleImageView extends ImageView implements OnTouchListener {
         return FloatMath.sqrt(mWidth * mWidth + mHeight * mHeight);
     }
 
+    @SuppressWarnings("NullableProblems")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        if (event == null) {
+            return true;
+        }
         if (mDetector.onTouchEvent(event)) {
             return true;
         }
         int touchCount = event.getPointerCount();
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-            case MotionEvent.ACTION_POINTER_1_DOWN:
-            case MotionEvent.ACTION_POINTER_2_DOWN:
                 if (touchCount >= 2) {
-                    float distance = distance(event.getX(0), event.getX(1), event.getY(0),
-                            event.getY(1));
-                    mPrevDistance = distance;
+                    mPrevDistance = distance(event.getX(0), event.getX(1), event.getY(0), event.getY(1));
                     mIsScaling = true;
                 } else {
                     mPrevMoveX = (int) event.getX();
@@ -260,7 +260,6 @@ public class ScaleImageView extends ImageView implements OnTouchListener {
                 break;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_POINTER_UP:
-            case MotionEvent.ACTION_POINTER_2_UP:
                 if (event.getPointerCount() <= 1) {
                     mIsScaling = false;
                 }

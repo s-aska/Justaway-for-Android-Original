@@ -47,6 +47,9 @@ public class FriendListAdapter extends ArrayAdapter<User> {
         if (view == null) {
             // 受け取ったビューがnullなら新しくビューを生成
             view = mInflater.inflate(this.mLayout, null);
+            if (view == null) {
+                return null;
+            }
         }
 
         final User user = mUsers.get(position);

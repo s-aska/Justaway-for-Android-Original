@@ -57,7 +57,7 @@ public class ProfileActivity extends BaseActivity implements
         Intent intent = getIntent();
         Bundle args = new Bundle(1);
         String screenName;
-        if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+        if (Intent.ACTION_VIEW.equals(intent.getAction()) && intent.getData() != null) {
             screenName = intent.getData().getLastPathSegment();
         } else {
             screenName = intent.getStringExtra("screenName");

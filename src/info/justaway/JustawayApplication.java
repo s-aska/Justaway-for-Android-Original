@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
@@ -213,7 +212,7 @@ public class JustawayApplication extends Application {
         return false;
     }
 
-    /*
+    /**
      * クックモードの記憶
      */
     private static final String QUICK_MODE = "quickMode";
@@ -236,19 +235,18 @@ public class JustawayApplication extends Application {
     private static final String TOKEN = "token";
     private static final String TOKEN_SECRET = "token_secret";
     private static final String PREF_NAME = "twitter_access_token";
-    private AccessToken accessToken;
-    private Twitter twitter;
-    //    private TwitterStream twitterStream;
-    private String screenName;
-    private long userId = -1L;
+    private AccessToken mAccessToken;
+    private Twitter mTwitter;
+    private String mScreenName;
+    private long mUserId = -1L;
 
     public long getUserId() {
-        if (userId != -1L) {
-            return userId;
+        if (mUserId != -1L) {
+            return mUserId;
         }
         SharedPreferences preferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        userId = preferences.getLong("user_id", -1L);
-        return userId;
+        mUserId = preferences.getLong("user_id", -1L);
+        return mUserId;
     }
 
     public void setUserId(long userId) {
@@ -256,16 +254,16 @@ public class JustawayApplication extends Application {
         Editor editor = preferences.edit();
         editor.putLong("user_id", userId);
         editor.commit();
-        this.userId = userId;
+        this.mUserId = userId;
     }
 
     public String getScreenName() {
-        if (screenName != null) {
-            return screenName;
+        if (mScreenName != null) {
+            return mScreenName;
         }
         SharedPreferences preferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        screenName = preferences.getString("screen_name", null);
-        return screenName;
+        mScreenName = preferences.getString("screen_name", null);
+        return mScreenName;
     }
 
     public void setScreenName(String screenName) {
@@ -273,7 +271,7 @@ public class JustawayApplication extends Application {
         Editor editor = preferences.edit();
         editor.putString("screen_name", screenName);
         editor.commit();
-        this.screenName = screenName;
+        this.mScreenName = screenName;
     }
 
     private String getConsumerKey() {
@@ -300,15 +298,15 @@ public class JustawayApplication extends Application {
      */
     private AccessToken getAccessToken() {
         // キャッシュしておく
-        if (accessToken != null) {
-            return accessToken;
+        if (mAccessToken != null) {
+            return mAccessToken;
         }
         SharedPreferences preferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         String token = preferences.getString(TOKEN, null);
         String tokenSecret = preferences.getString(TOKEN_SECRET, null);
         if (token != null && tokenSecret != null) {
-            this.accessToken = new AccessToken(token, tokenSecret);
-            return accessToken;
+            this.mAccessToken = new AccessToken(token, tokenSecret);
+            return mAccessToken;
         } else {
             return null;
         }
@@ -325,7 +323,7 @@ public class JustawayApplication extends Application {
         editor.putString(TOKEN, accessToken.getToken());
         editor.putString(TOKEN_SECRET, accessToken.getTokenSecret());
         editor.commit();
-        this.accessToken = accessToken;
+        this.mAccessToken = accessToken;
     }
 
     /**
@@ -334,8 +332,8 @@ public class JustawayApplication extends Application {
      * @return Twitterインスタンス
      */
     public Twitter getTwitter() {
-        if (twitter != null) {
-            return twitter;
+        if (mTwitter != null) {
+            return mTwitter;
         }
         TwitterFactory factory = new TwitterFactory();
         Twitter twitter = factory.getInstance();
@@ -344,7 +342,7 @@ public class JustawayApplication extends Application {
         if (token != null) {
             twitter.setOAuthAccessToken(token);
             // アクセストークンまである時だけキャッシュしておく
-            this.twitter = twitter;
+            this.mTwitter = twitter;
         }
         return twitter;
     }
@@ -359,8 +357,8 @@ public class JustawayApplication extends Application {
         if (token == null) {
             return null;
         }
-        ConfigurationBuilder confbuilder = new ConfigurationBuilder();
-        twitter4j.conf.Configuration conf = confbuilder.setOAuthConsumerKey(getConsumerKey())
+        ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+        twitter4j.conf.Configuration conf = configurationBuilder.setOAuthConsumerKey(getConsumerKey())
                 .setOAuthConsumerSecret(getConsumerSecret()).setOAuthAccessToken(token.getToken())
                 .setOAuthAccessTokenSecret(token.getTokenSecret()).build();
         return new TwitterStreamFactory(conf).getInstance();
@@ -377,7 +375,7 @@ public class JustawayApplication extends Application {
         editor.remove("user_id");
         editor.remove("screen_name");
         editor.commit();
-        this.accessToken = null;
+        this.mAccessToken = null;
     }
 
     private HashMap<Long, Boolean> mIsFavMap = new HashMap<Long, Boolean>();
@@ -409,7 +407,6 @@ public class JustawayApplication extends Application {
     public Long getRtId(Status status) {
         Long id = mRtIdMap.get(status.getId());
         if (id != null) {
-            Log.d("Justaway", "[getRtId] " + status.getId() + " => " + id);
             return id;
         }
         return null;
@@ -426,7 +423,6 @@ public class JustawayApplication extends Application {
     }
 
     public void doRetweet(Long id) {
-        Log.d("Justaway", "[doRetweet] " + id + " => 0 (temp)");
         JustawayApplication.getApplication().setRtId(id, (long) 0);
         new RetweetTask().execute(id);
     }
@@ -436,7 +432,6 @@ public class JustawayApplication extends Application {
         if (retweetId == null) {
             return;
         }
-        Log.d("Justaway", "[doDestroyRetweet] " + sourceId + " => " + retweetId);
         mRtIdMap.remove(sourceId);
         if (retweetId > 0) {
             new UnRetweetTask().execute(retweetId);
@@ -448,13 +443,17 @@ public class JustawayApplication extends Application {
     }
 
     public void showKeyboard(final View view) {
+        showKeyboard(view, 200);
+    }
+
+    public void showKeyboard(final View view, int delay) {
         view.postDelayed(new Runnable() {
             @Override
             public void run() {
                 InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 inputMethodManager.showSoftInput(view, 0);
             }
-        }, 1000);
+        }, delay);
     }
 
     @SuppressWarnings("unused")

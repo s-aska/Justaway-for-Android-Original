@@ -6,13 +6,16 @@ import android.view.KeyEvent;
 import android.widget.EditText;
 
 /**
- * Created by aska on 2013/12/14.
+ * バックキーでフォーカスが外れるEditTextの拡張
  */
 public class ClearEditText extends EditText {
+
+    @SuppressWarnings("unused")
     public ClearEditText(Context context) {
         super(context);
     }
 
+    @SuppressWarnings("unused")
     public ClearEditText(Context context, AttributeSet attrs) {
         super(context, attrs);
     }

@@ -17,7 +17,7 @@ import twitter4j.PagableResponseList;
 import twitter4j.User;
 
 /**
- * Created by teshi on 2013/12/20.
+ * フォロワー一覧
  */
 public class FollowersListFragment extends Fragment {
 
@@ -31,8 +31,15 @@ public class FollowersListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.list, container, false);
+        if (v == null) {
+            return null;
+        }
 
         User user = (User) getArguments().getSerializable("user");
+        if (user == null) {
+            return null;
+        }
+
         mUserId = user.getId();
 
         // リストビューの設定
