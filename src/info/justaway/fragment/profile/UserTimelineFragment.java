@@ -13,6 +13,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
+import info.justaway.BaseActivity;
 import info.justaway.JustawayApplication;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
@@ -80,6 +81,17 @@ public class UserTimelineFragment extends Fragment {
         return v;
     }
 
+    public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, view, menuInfo);
+        BaseActivity baseActivity = (BaseActivity) getActivity();
+        baseActivity.onCreateContextMenuForStatus(menu, view, menuInfo);
+    }
+
+    public boolean onContextItemSelected(MenuItem item) {
+        BaseActivity baseActivity = (BaseActivity) getActivity();
+        return baseActivity.onContextItemSelected(item);
+    }
+
     private void additionalReading() {
         if (!mAutoLoader) {
             return;
@@ -87,29 +99,6 @@ public class UserTimelineFragment extends Fragment {
         mFooter.setVisibility(View.VISIBLE);
         mAutoLoader = false;
         new UserTimelineTask().execute(mUser.getScreenName());
-    }
-
-    public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, view, menuInfo);
-        JustawayApplication application = JustawayApplication.getApplication();
-        application.onCreateContextMenuForStatus(menu, view, menuInfo);
-
-        // DialogFragment内でContextMenuを使うにはこれが必要
-        MenuItem.OnMenuItemClickListener listener = new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                onContextItemSelected(item);
-                return true;
-            }
-        };
-
-        for (int i = 0, n = menu.size(); i < n; i++)
-            menu.getItem(i).setOnMenuItemClickListener(listener);
-    }
-
-    public boolean onContextItemSelected(MenuItem item) {
-        JustawayApplication application = JustawayApplication.getApplication();
-        return application.onContextItemSelected(getActivity(), item);
     }
 
     private class UserTimelineTask extends AsyncTask<String, Void, ResponseList<Status>> {

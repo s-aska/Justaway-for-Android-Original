@@ -46,7 +46,7 @@ import twitter4j.UserStreamAdapter;
 /**
  * @author aska
  */
-public class MainActivity extends FragmentActivity implements LoaderManager.LoaderCallbacks<User> {
+public class MainActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<User> {
 
     private JustawayApplication mApplication;
     private TwitterStream mTwitterStream;
@@ -115,7 +115,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                     EditText status = (EditText) findViewById(R.id.quick_tweet_edit);
                     String msg = status.getText().toString();
                     if (msg != null && msg.length() > 0) {
-                        Long inReplyToStatusId = mApplication.getInReplyToStatusId();
+                        Long inReplyToStatusId = getInReplyToStatusId();
                         intent.putExtra("status", msg);
                         intent.putExtra("selection", msg.length());
                         if (inReplyToStatusId != null && inReplyToStatusId > 0) {
@@ -147,10 +147,10 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                 if (msg != null && msg.length() > 0) {
                     showProgressDialog(getString(R.string.progress_sending));
                     StatusUpdate super_sugoi = new StatusUpdate(msg);
-                    Long inReplyToStatusId = mApplication.getInReplyToStatusId();
+                    Long inReplyToStatusId = getInReplyToStatusId();
                     if (inReplyToStatusId != null && inReplyToStatusId > 0) {
                         super_sugoi.setInReplyToStatusId(inReplyToStatusId);
-                        mApplication.setInReplyToStatusId((long) 0);
+                        setInReplyToStatusId((long) 0);
                     }
                     new UpdateStatusTask().execute(super_sugoi);
                 }
@@ -184,7 +184,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
         editStatus.setEnabled(false);
         editStatus.clearFocus();
         findViewById(R.id.quick_tweet_layout).setVisibility(View.GONE);
-        mApplication.setInReplyToStatusId((long) 0);
+        setInReplyToStatusId((long) 0);
         mApplication.setQuickMod(false);
     }
 
@@ -600,7 +600,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
             EditText editText = (EditText) findViewById(R.id.quick_tweet_edit);
             if (editText != null && editText.getText() != null && editText.getText().length() > 0) {
                 editText.setText("");
-                mApplication.setInReplyToStatusId((long) 0);
+                setInReplyToStatusId((long) 0);
                 return false;
             }
             finish();

@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import info.justaway.BaseActivity;
 import info.justaway.JustawayApplication;
 import info.justaway.MainActivity;
 import info.justaway.R;
@@ -100,12 +101,12 @@ public abstract class BaseFragment extends ListFragment {
 
     public void onCreateContextMenu(ContextMenu menu, View view, ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, view, menuInfo);
-        JustawayApplication application = JustawayApplication.getApplication();
-        application.onCreateContextMenuForStatus(menu, view, menuInfo);
+        BaseActivity baseActivity = (BaseActivity) getActivity();
+        baseActivity.onCreateContextMenuForStatus(menu, view, menuInfo);
     }
 
     public boolean onContextItemSelected(MenuItem item) {
-        JustawayApplication application = JustawayApplication.getApplication();
-        return application.onContextItemSelected(getActivity(), item);
+        BaseActivity baseActivity = (BaseActivity) getActivity();
+        return baseActivity.onContextItemSelected(item);
     }
 }
