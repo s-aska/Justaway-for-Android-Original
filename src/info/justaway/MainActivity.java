@@ -2,14 +2,10 @@ package info.justaway;
 
 import android.R.color;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
@@ -24,6 +20,7 @@ import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 
+import info.justaway.adapter.MainPagerAdapter;
 import info.justaway.fragment.BaseFragment;
 import info.justaway.fragment.DirectMessagesFragment;
 import info.justaway.fragment.InteractionsFragment;
@@ -49,7 +46,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
 
     private JustawayApplication mApplication;
     private TwitterStream mTwitterStream;
-    private SectionsPagerAdapter mSectionsPagerAdapter;
+    private MainPagerAdapter mMainPagerAdapter;
     private ViewPager mViewPager;
     private ProgressDialog mProgressDialog;
     private static String sDefaultListName;
@@ -84,7 +81,10 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
             setup();
         }
 
-        // ユーザーリストの一覧をアプリケーションのメンバ変数に読み込んでおく
+        /**
+         * ユーザーリストの一覧をアプリケーションのメンバ変数に読み込んでおく
+         * これがないと最新のリスト名を表示できない
+         */
         new LoadUserListsTask().execute();
 
         /**
@@ -191,7 +191,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
         mApplication.setQuickMod(false);
     }
 
-    public void initTab() {
+    public void setupTab() {
         LinearLayout tab_menus = (LinearLayout) findViewById(R.id.tab_menus);
 
         int count = tab_menus.getChildCount();
@@ -202,9 +202,9 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
                 if (view != null) {
                     tab_menus.removeView(view);
                 }
-                mSectionsPagerAdapter.removeTab(position);
+                mMainPagerAdapter.removeTab(position);
             }
-            mSectionsPagerAdapter.notifyDataSetChanged();
+            mMainPagerAdapter.notifyDataSetChanged();
         }
 
         ArrayList<Integer> tabs = mApplication.loadTabs();
@@ -225,7 +225,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
 
                     @Override
                     public boolean onLongClick(View v) {
-                        UserListFragment f = (UserListFragment) mSectionsPagerAdapter
+                        UserListFragment f = (UserListFragment) mMainPagerAdapter
                                 .findFragmentByPosition(fp);
                         f.reload();
                         return false;
@@ -235,10 +235,10 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
                 tab_menus.addView(button);
                 Bundle args = new Bundle();
                 args.putInt("userListId", tab);
-                mSectionsPagerAdapter.addTab(UserListFragment.class, args, sDefaultListName, tab);
+                mMainPagerAdapter.addTab(UserListFragment.class, args, sDefaultListName, tab);
             }
         }
-        mSectionsPagerAdapter.notifyDataSetChanged();
+        mMainPagerAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -282,7 +282,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
                     tabs.add(-3);
                     tabs.addAll(lists);
                     mApplication.saveTabs(tabs);
-                    initTab();
+                    setupTab();
                 } else if (resultCode == RESULT_CANCELED) {
                     ArrayList<Integer> tabs = new ArrayList<Integer>();
                     // 後々タブ設定画面に標準のタブを含める
@@ -290,7 +290,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
                     tabs.add(-2);
                     tabs.add(-3);
                     mApplication.saveTabs(tabs);
-                    initTab();
+                    setupTab();
                 }
                 break;
             default:
@@ -302,7 +302,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                BaseFragment f = mSectionsPagerAdapter.findFragmentByPosition(position);
+                BaseFragment f = mMainPagerAdapter.findFragmentByPosition(position);
                 if (f == null) {
                     return;
                 }
@@ -350,12 +350,12 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
          * スワイプで動かせるタブを実装するのに最低限必要な実装
          */
         mViewPager = (ViewPager) findViewById(R.id.pager);
-        mSectionsPagerAdapter = new SectionsPagerAdapter(this, mViewPager);
+        mMainPagerAdapter = new MainPagerAdapter(this, mViewPager);
 
-        mSectionsPagerAdapter.addTab(TimelineFragment.class, null, getString(R.string.title_main), TAB_ID_TIMELINE);
-        mSectionsPagerAdapter.addTab(InteractionsFragment.class, null, getString(R.string.title_interactions), TAB_ID_INTERACTIONS);
-        mSectionsPagerAdapter.addTab(DirectMessagesFragment.class, null, getString(R.string.title_direct_messages), TAB_ID_DIRECT_MESSAGE);
-        initTab();
+        mMainPagerAdapter.addTab(TimelineFragment.class, null, getString(R.string.title_main), TAB_ID_TIMELINE);
+        mMainPagerAdapter.addTab(InteractionsFragment.class, null, getString(R.string.title_interactions), TAB_ID_INTERACTIONS);
+        mMainPagerAdapter.addTab(DirectMessagesFragment.class, null, getString(R.string.title_direct_messages), TAB_ID_DIRECT_MESSAGE);
+        setupTab();
 
         findViewById(R.id.footer).setVisibility(View.VISIBLE);
 
@@ -372,7 +372,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
         mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                BaseFragment f = mSectionsPagerAdapter.findFragmentByPosition(position);
+                BaseFragment f = mMainPagerAdapter.findFragmentByPosition(position);
                 if (f.isTop()) {
                     showTopView();
                 }
@@ -391,7 +391,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
                                 R.color.menu_background));
                     }
                 }
-                setTitle(mSectionsPagerAdapter.getPageTitle(position));
+                setTitle(mMainPagerAdapter.getPageTitle(position));
             }
         });
 
@@ -450,7 +450,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
      */
     public void onNewListStatus(int listId, Boolean autoScroll) {
         // 表示中のタブかつ自動スクロール時はハイライトしない
-        int position = mSectionsPagerAdapter.findPositionById(listId);
+        int position = mMainPagerAdapter.findPositionById(listId);
         if (mViewPager.getCurrentItem() == position && autoScroll) {
             return;
         }
@@ -471,121 +471,6 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
         Button button = (Button) tab_menus.getChildAt(mViewPager.getCurrentItem());
         if (button != null) {
             button.setTextColor(getResources().getColor(color.white));
-        }
-    }
-
-    /**
-     * タブの切替毎に必要なFragmentを取得するためのAdapterクラス
-     */
-    public static class SectionsPagerAdapter extends FragmentPagerAdapter {
-        private final Context mContext;
-        private final ViewPager mViewPager;
-        private final ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
-
-        private static final class TabInfo {
-            private final Class<?> mClazz;
-            private final Bundle mArgs;
-            private String mTabTitle;
-            private final int mId;
-
-            /**
-             * タブ内のActivity、引数を設定する。
-             *
-             * @param clazz    タブ内のv4.Fragment
-             * @param args     タブ内のv4.Fragmentに対する引数
-             * @param tabTitle タブに表示するタイトル
-             */
-            TabInfo(Class<?> clazz, Bundle args, String tabTitle, int id) {
-                this.mClazz = clazz;
-                this.mArgs = args;
-                this.mTabTitle = tabTitle;
-                this.mId = id;
-            }
-        }
-
-        public SectionsPagerAdapter(FragmentActivity context, ViewPager viewPager) {
-            super(context.getSupportFragmentManager());
-            viewPager.setAdapter(this);
-            mContext = context;
-            mViewPager = viewPager;
-        }
-
-        @Override
-        public BaseFragment getItem(int position) {
-            TabInfo info = mTabs.get(position);
-            return (BaseFragment) Fragment.instantiate(mContext, info.mClazz.getName(), info.mArgs);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return mTabs.get(position).mId;
-        }
-
-        @Override
-        public int getItemPosition(Object object) {
-            return POSITION_NONE;
-        }
-
-        public BaseFragment findFragmentByPosition(int position) {
-            return (BaseFragment) instantiateItem(mViewPager, position);
-        }
-
-        public int findPositionById(int id) {
-            int position = 0;
-            for (TabInfo tab : mTabs) {
-                if (tab.mId == id) {
-                    return position;
-                }
-                position++;
-            }
-            return -1;
-        }
-
-        public BaseFragment findFragmentById(int id) {
-            int position = 0;
-            for (TabInfo tab : mTabs) {
-                if (tab.mId == id) {
-                    return (BaseFragment) instantiateItem(mViewPager, position);
-                }
-                position++;
-            }
-            return null;
-        }
-
-        /**
-         * タブ内に起動するActivity、引数、タイトルを設定する
-         *
-         * @param clazz    起動するv4.Fragmentクラス
-         * @param args     v4.Fragmentに対する引数
-         * @param tabTitle タブのタイトル
-         */
-        public void addTab(Class<?> clazz, Bundle args, String tabTitle, Integer id) {
-            TabInfo info = new TabInfo(clazz, args, tabTitle, id);
-            mTabs.add(info);
-        }
-
-        public void removeTab(int position) {
-            mTabs.remove(position);
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            TabInfo tab = mTabs.get(position);
-            JustawayApplication application = JustawayApplication.getApplication();
-            if (tab.mTabTitle.equals(sDefaultListName)) {
-                int userListId = tab.mArgs.getInt("userListId");
-                String listName = application.getUserListName(userListId);
-                if (listName != null) {
-                    tab.mTabTitle = sDefaultListName + " " + listName;
-                }
-            }
-            return tab.mTabTitle;
-        }
-
-        @Override
-        public int getCount() {
-            // タブ数
-            return mTabs.size();
         }
     }
 
@@ -646,9 +531,9 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
                 /**
                  * ツイートを表示するかどうかはFragmentに任せる
                  */
-                int count = mSectionsPagerAdapter.getCount();
+                int count = mMainPagerAdapter.getCount();
                 for (int id = 0; id < count; id++) {
-                    BaseFragment fragment = mSectionsPagerAdapter
+                    BaseFragment fragment = mMainPagerAdapter
                             .findFragmentByPosition(id);
                     if (fragment != null) {
                         fragment.add(Row.newStatus(status));
@@ -659,9 +544,9 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
             @Override
             public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
                 super.onDeletionNotice(statusDeletionNotice);
-                int count = mSectionsPagerAdapter.getCount();
+                int count = mMainPagerAdapter.getCount();
                 for (int id = 0; id < count; id++) {
-                    BaseFragment fragment = mSectionsPagerAdapter
+                    BaseFragment fragment = mMainPagerAdapter
                             .findFragmentByPosition(id);
                     if (fragment != null) {
                         fragment.removeStatus(statusDeletionNotice.getStatusId());
@@ -677,7 +562,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
                     return;
                 }
                 Row row = Row.newFavorite(source, target, status);
-                BaseFragment fragment = mSectionsPagerAdapter
+                BaseFragment fragment = mMainPagerAdapter
                         .findFragmentById(TAB_ID_INTERACTIONS);
                 new ReFetchFavoriteStatus(fragment).execute(row);
             }
@@ -706,7 +591,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
             @Override
             public void onDirectMessage(DirectMessage directMessage) {
                 super.onDirectMessage(directMessage);
-                BaseFragment fragment = mSectionsPagerAdapter
+                BaseFragment fragment = mMainPagerAdapter
                         .findFragmentById(TAB_ID_DIRECT_MESSAGE);
                 if (fragment != null) {
                     fragment.add(Row.newDirectMessage(directMessage));
@@ -716,7 +601,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
             @Override
             public void onDeletionNotice(long directMessageId, long userId) {
                 super.onDeletionNotice(directMessageId, userId);
-                DirectMessagesFragment fragment = (DirectMessagesFragment) mSectionsPagerAdapter
+                DirectMessagesFragment fragment = (DirectMessagesFragment) mMainPagerAdapter
                         .findFragmentById(TAB_ID_DIRECT_MESSAGE);
                 if (fragment != null) {
                     fragment.remove(directMessageId);
@@ -764,7 +649,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
     public void doDestroyDirectMessage(Long id) {
         new DestroyDirectMessageTask().execute(id);
         // 自分宛のDMを消してもStreaming APIで拾えないで自力で消す
-        DirectMessagesFragment fragment = (DirectMessagesFragment) mSectionsPagerAdapter
+        DirectMessagesFragment fragment = (DirectMessagesFragment) mMainPagerAdapter
                 .findFragmentById(TAB_ID_DIRECT_MESSAGE);
         if (fragment != null) {
             fragment.remove(id);
