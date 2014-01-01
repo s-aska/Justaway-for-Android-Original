@@ -1,12 +1,8 @@
 package info.justaway;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
@@ -16,8 +12,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-
+import info.justaway.adapter.SimplePagerAdapter;
 import info.justaway.fragment.profile.DescriptionFragment;
 import info.justaway.fragment.profile.FavoritesListFragment;
 import info.justaway.fragment.profile.FollowersListFragment;
@@ -73,6 +68,29 @@ public class ProfileActivity extends BaseActivity implements
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Intent intent;
+        switch (item.getItemId()) {
+            case R.id.open_twitter:
+                intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/"
+                        + mUser.getScreenName()));
+                startActivity(intent);
+                break;
+            case R.id.open_favstar:
+                intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://ja.favstar.fm/users/"
+                        + mUser.getScreenName() + "/recent"));
+                startActivity(intent);
+                break;
+            case R.id.open_twilog:
+                intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://twilog.org/"
+                        + mUser.getScreenName()));
+                startActivity(intent);
+                break;
+        }
+        return true;
+    }
+
+    @Override
     public Loader<Profile> onCreateLoader(int arg0, Bundle args) {
         String screenName = args.getString("screenName");
         return new ShowUserLoader(this, screenName);
@@ -111,7 +129,7 @@ public class ProfileActivity extends BaseActivity implements
          * スワイプで動かせるタブを実装するのに最低限必要な実装
          */
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-        SectionsPagerAdapter pagerAdapter = new SectionsPagerAdapter(this, viewPager);
+        SimplePagerAdapter pagerAdapter = new SimplePagerAdapter(this, viewPager);
 
         Bundle args = new Bundle();
         args.putSerializable("user", mUser);
@@ -132,7 +150,7 @@ public class ProfileActivity extends BaseActivity implements
 
         // ユーザリスト用のタブ
         final ViewPager listViewPager = (ViewPager) findViewById(R.id.list_pager);
-        SectionsPagerAdapter listPagerAdapter = new SectionsPagerAdapter(this, listViewPager);
+        SimplePagerAdapter listPagerAdapter = new SimplePagerAdapter(this, listViewPager);
 
         Bundle listArgs = new Bundle();
         listArgs.putSerializable("user", mUser);
@@ -237,83 +255,4 @@ public class ProfileActivity extends BaseActivity implements
     @Override
     public void onLoaderReset(Loader<Profile> arg0) {
     }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        Intent intent;
-        switch (item.getItemId()) {
-            case R.id.open_twitter:
-                intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/"
-                        + mUser.getScreenName()));
-                startActivity(intent);
-                break;
-            case R.id.open_favstar:
-                intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://ja.favstar.fm/users/"
-                        + mUser.getScreenName() + "/recent"));
-                startActivity(intent);
-                break;
-            case R.id.open_twilog:
-                intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://twilog.org/"
-                        + mUser.getScreenName()));
-                startActivity(intent);
-                break;
-        }
-        return true;
-    }
-
-    /**
-     * タブの切替毎に必要なFragmentを取得するためのAdapterクラス
-     */
-    public static class SectionsPagerAdapter extends FragmentPagerAdapter {
-        private final Context mContext;
-        private final ViewPager mViewPager;
-        private final ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
-
-        private static final class TabInfo {
-            private final Class<?> clazz;
-            private final Bundle args;
-
-            /**
-             * タブ内のActivity、引数を設定する。
-             *
-             * @param clazz タブ内のv4.Fragment
-             * @param args  タブ内のv4.Fragmentに対する引数
-             */
-            TabInfo(Class<?> clazz, Bundle args) {
-                this.clazz = clazz;
-                this.args = args;
-            }
-        }
-
-        public SectionsPagerAdapter(FragmentActivity context, ViewPager viewPager) {
-            super(context.getSupportFragmentManager());
-            viewPager.setAdapter(this);
-            mContext = context;
-            mViewPager = viewPager;
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            TabInfo info = mTabs.get(position);
-            return Fragment.instantiate(mContext, info.clazz.getName(), info.args);
-        }
-
-        /**
-         * タブ内に起動するActivity、引数、タイトルを設定する
-         *
-         * @param clazz 起動するv4.Fragmentクラス
-         * @param args  v4.Fragmentに対する引数
-         */
-        public void addTab(Class<?> clazz, Bundle args) {
-            TabInfo info = new TabInfo(clazz, args);
-            mTabs.add(info);
-        }
-
-        @Override
-        public int getCount() {
-            // タブ数
-            return mTabs.size();
-        }
-    }
-
 }
