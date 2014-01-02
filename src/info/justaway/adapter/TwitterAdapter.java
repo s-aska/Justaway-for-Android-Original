@@ -54,7 +54,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         this.isMain = mContext.getClass().getName().equals("info.justaway.MainActivity");
     }
 
-    public void extentionAdd(Row row) {
+    public void extensionAdd(Row row) {
         super.add(row);
         this.filter(row);
         this.mStatuses.add(row);

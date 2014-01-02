@@ -132,7 +132,7 @@ public class TimelineFragment extends BaseFragment {
                 if (mMaxId == 0L || mMaxId > status.getId()) {
                     mMaxId = status.getId();
                 }
-                adapter.extentionAdd(Row.newStatus(status));
+                adapter.extensionAdd(Row.newStatus(status));
             }
             mAutoLoader = true;
         }
