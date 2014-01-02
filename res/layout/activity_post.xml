@@ -43,6 +43,14 @@
                     android:background="@color/menu_background"
                     android:text="@string/fontello_picture"
                     android:textSize="22sp" />
+
+                <Button
+                    android:id="@+id/draft"
+                    android:layout_width="58dip"
+                    android:layout_height="wrap_content"
+                    android:background="@color/menu_background"
+                    android:text="@string/fontello_star"
+                    android:textSize="22sp" />
             </LinearLayout>
 
             <LinearLayout
