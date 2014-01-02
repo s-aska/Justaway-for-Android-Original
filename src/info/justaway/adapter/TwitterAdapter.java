@@ -424,7 +424,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         ArrayList<String> imageUrls = new ArrayList<String>();
         Pattern twitpic_pattern = Pattern.compile("^http://twitpic\\.com/(\\w+)$");
         Pattern twipple_pattern = Pattern.compile("^http://p\\.twipple\\.jp/(\\w+)$");
-        Pattern instagram_pattern = Pattern.compile("^http://instagram\\.com/p/(\\w+)/$");
+        Pattern instagram_pattern = Pattern.compile("^http://instagram\\.com/p/([^/]+)/$");
         String statusString = status.getText();
         for (URLEntity url : urls) {
             Pattern p = Pattern.compile(url.getURL());
