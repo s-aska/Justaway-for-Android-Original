@@ -11,6 +11,7 @@
     <string name="tweet_count">140</string>
     <string name="tweet_clear">クリア</string>
     <string name="tweet_battery">バッテリー残量</string>
+    <string name="tweet_draft">編集中のツイートがあります。保存しますか？</string>
     <string name="tweets">ツイート</string>
     <string name="following">フォロー</string>
     <string name="followers">フォロワー</string>
@@ -26,6 +27,7 @@
     <string name="web_site">Web</string>
     <string name="bio">自己紹介</string>
     <string name="save">保存</string>
+    <string name="destroy">破棄</string>
     <string name="update_profile_image">画像を変更</string>
     <string name="toast_set_image_success">画像セットok</string>
     <string name="toast_load_data_failure">読み込みに失敗しました:;(∩´﹏`∩);:</string>

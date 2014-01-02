@@ -35,7 +35,7 @@ public class TalkFragment extends DialogFragment {
         dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
-        dialog.setContentView(R.layout.fragment_talk);
+        dialog.setContentView(R.layout.fragment);
 
         ListView listView = (ListView) dialog.findViewById(R.id.list);
 

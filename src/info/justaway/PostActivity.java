@@ -2,10 +2,15 @@ package info.justaway;
 
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -15,37 +20,50 @@ import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import twitter4j.StatusUpdate;
 import twitter4j.Twitter;
 
-public class PostActivity extends Activity {
+public class PostActivity extends FragmentActivity {
 
+    private Context mContext;
     private Twitter mTwitter;
     private EditText mEditText;
     private TextView mTextView;
     private Button mTweetButton;
     private Button mImgButton;
     private Button mSuddenlyButton;
+    private Button mDraftButton;
     private ProgressDialog mProgressDialog;
     private Long mInReplyToStatusId;
     private File mImgPath;
+    private DraftFragment mDraftDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post);
+        mContext = this;
 
         JustawayApplication application = JustawayApplication.getApplication();
 
@@ -56,6 +74,7 @@ public class PostActivity extends Activity {
         mTweetButton = (Button) findViewById(R.id.tweet);
         mImgButton = (Button) findViewById(R.id.img);
         mSuddenlyButton = (Button) findViewById(R.id.suddenly);
+        mDraftButton = (Button) findViewById(R.id.draft);
         mTwitter = application.getTwitter();
 
         mTweetButton.setTypeface(fontello);
@@ -177,6 +196,14 @@ public class PostActivity extends Activity {
             }
         });
 
+        mDraftButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDraftDialog = new DraftFragment();
+                mDraftDialog.show(getSupportFragmentManager(), "dialog");
+            }
+        });
+
         // 文字数をカウントしてボタンを制御する
         mEditText.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -264,6 +291,42 @@ public class PostActivity extends Activity {
     }
 
     @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (mEditText.getText().length() != 0) {
+                new AlertDialog.Builder(PostActivity.this)
+                        .setTitle(R.string.tweet_draft)
+                        .setPositiveButton(
+                                R.string.destroy,
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        finish();
+                                    }
+                                })
+                        .setNegativeButton(
+                                R.string.save,
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        // 下書きとして保存する
+                                        SaveLoadTraining saveLoadTraining = new SaveLoadTraining();
+                                        ArrayList<String> draftList = saveLoadTraining.loadArray();
+                                        draftList.add(mEditText.getText().toString());
+                                        saveLoadTraining.saveArray(draftList);
+
+                                        finish();
+                                    }
+                                })
+                        .show();
+            }
+            return true;
+        }
+        return false;
+
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.tweet_clear:
@@ -307,5 +370,126 @@ public class PostActivity extends Activity {
     private void dismissProgressDialog() {
         if (mProgressDialog != null)
             mProgressDialog.dismiss();
+    }
+
+    public class DraftFragment extends DialogFragment {
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+            Activity activity = getActivity();
+            Dialog dialog = new Dialog(activity);
+            dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+            dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
+            dialog.setContentView(R.layout.fragment);
+            ListView listView = (ListView) dialog.findViewById(R.id.list);
+
+            // 下書きをViewに描写するアダプター
+            DraftAdapter adapter = new DraftAdapter(activity, R.layout.row_draft);
+            listView.setAdapter(adapter);
+
+            SaveLoadTraining saveLoadTraining = new SaveLoadTraining();
+            ArrayList<String> draftList = saveLoadTraining.loadArray();
+
+            for (String draft : draftList) {
+                adapter.add(draft);
+            }
+
+            return dialog;
+        }
+    }
+
+    public class DraftAdapter extends ArrayAdapter<String> {
+
+        private ArrayList<String> mDraftLists = new ArrayList<String>();
+        private Context mContext;
+        private LayoutInflater mInflater;
+        private int mLayout;
+
+        public DraftAdapter(Context context, int textViewResourceId) {
+            super(context, textViewResourceId);
+            this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            this.mContext = context;
+            this.mLayout = textViewResourceId;
+        }
+
+        @Override
+        public void add(String draft) {
+            super.add(draft);
+            mDraftLists.add(draft);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+
+            // ビューを受け取る
+            View view = convertView;
+            if (view == null) {
+                // 受け取ったビューがnullなら新しくビューを生成
+                view = mInflater.inflate(this.mLayout, null);
+            }
+
+            final String draft = mDraftLists.get(position);
+
+            ((TextView) view.findViewById(R.id.draft)).setText(draft);
+
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mEditText.setText(draft);
+                    mDraftDialog.dismiss();
+                    // TODO: 選択したものを下書きから削除
+                }
+            });
+
+            // TODO: 下書き削除ボタン
+
+            return view;
+        }
+    }
+
+    /**
+     * SharedPreferencesにArrayListを突っ込む
+     */
+    public class SaveLoadTraining {
+
+        private Context context;
+        public static final String PREFS_NAME = "ListFile";
+        private ArrayList<String> list;
+
+        public SaveLoadTraining() {
+            this.context = mContext;
+        }
+
+        public void saveArray(ArrayList<String> list) {
+            this.list = list;
+
+            SharedPreferences settings = context.getSharedPreferences(PREFS_NAME, 0);
+            SharedPreferences.Editor editor = settings.edit();
+
+            int size = list.size();
+            editor.putInt("list_size", size);
+
+            for (int i = 0; i < size; i++) {
+                editor.remove("list_" + i);
+            }
+            for (int i = 0; i < size; i++) {
+                editor.putString("list_" + i, list.get(i));
+            }
+            editor.commit();
+        }
+
+        public ArrayList<String> loadArray() {
+            SharedPreferences file = context.getSharedPreferences(PREFS_NAME, 0);
+            list = new ArrayList<String>();
+            int size = file.getInt("list_size", 0);
+
+            for (int i = 0; i < size; i++) {
+                String draft = file.getString("list_" + i, null);
+                list.add(draft);
+            }
+            return list;
+        }
     }
 }
