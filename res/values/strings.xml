@@ -29,7 +29,7 @@
     <string name="save">保存</string>
     <string name="destroy">破棄</string>
     <string name="update_profile_image">画像を変更</string>
-    <string name="format_user_created_at">'Twitter開始日：'yyyy年MM月dd日</string>
+    <string name="format_user_created_at">\'Twitter開始日：\'yyyy年MM月dd日</string>
     <string name="toast_set_image_success">画像セットok</string>
     <string name="toast_load_data_failure">読み込みに失敗しました:;(∩´﹏`∩);:</string>
     <string name="toast_update_status_failure">残念~！もう一回！</string>
