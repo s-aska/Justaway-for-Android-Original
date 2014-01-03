@@ -18,6 +18,8 @@ import twitter4j.User;
 
 public class DescriptionFragment extends Fragment {
 
+    private static SimpleDateFormat mSimpleDateFormat;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_profile_description, container, false);
@@ -26,14 +28,23 @@ public class DescriptionFragment extends Fragment {
         }
 
         User user = (User) getArguments().getSerializable("user");
+        if (user == null) {
+            return null;
+        }
 
         TextView description = (TextView) v.findViewById(R.id.description);
         TextView location = (TextView) v.findViewById(R.id.location);
         TextView url = (TextView) v.findViewById(R.id.url);
         TextView start = (TextView) v.findViewById(R.id.start);
 
+        /**
+         * プロフィール
+         */
         if (user.getDescription() != null && user.getDescription().length() > 0) {
             String descriptionString = user.getDescription();
+            /**
+             * 短縮URLの展開
+             */
             if (user.getDescriptionURLEntities() != null) {
                 URLEntity[] urls = user.getDescriptionURLEntities();
                 for (URLEntity descriptionUrl : urls) {
@@ -48,6 +59,9 @@ public class DescriptionFragment extends Fragment {
             description.setVisibility(View.GONE);
         }
 
+        /**
+         * 現在地
+         */
         if (user.getLocation() != null && user.getLocation().length() > 0) {
             location.setText(user.getLocation());
             location.setVisibility(View.VISIBLE);
@@ -55,6 +69,9 @@ public class DescriptionFragment extends Fragment {
             location.setVisibility(View.GONE);
         }
 
+        /**
+         * WebSite
+         */
         if (user.getURL() != null && user.getURL().length() > 0) {
             if (user.getURLEntity() != null) {
                 url.setText(user.getURLEntity().getExpandedURL());
@@ -66,8 +83,14 @@ public class DescriptionFragment extends Fragment {
             url.setVisibility(View.GONE);
         }
 
-        SimpleDateFormat date_format = new SimpleDateFormat("yyyy年MM月dd日", Locale.ENGLISH);
-        start.setText("Twitter開始日：" + date_format.format(user.getCreatedAt()));
+        /**
+         * Twitter開始日
+         */
+        if (mSimpleDateFormat == null) {
+            mSimpleDateFormat = new SimpleDateFormat(getString(R.string.format_user_created_at), Locale.ENGLISH);
+        }
+
+        start.setText(mSimpleDateFormat.format(user.getCreatedAt()));
 
         return v;
     }
