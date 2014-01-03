@@ -80,6 +80,7 @@ public class PostActivity extends FragmentActivity {
         mTweetButton.setTypeface(fontello);
         mImgButton.setTypeface(fontello);
         mSuddenlyButton.setTypeface(fontello);
+        mDraftButton.setTypeface(fontello);
 
         Intent intent = getIntent();
         String status = intent.getStringExtra("status");
