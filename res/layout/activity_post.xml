@@ -49,7 +49,7 @@
                     android:layout_width="58dip"
                     android:layout_height="wrap_content"
                     android:background="@color/menu_background"
-                    android:text="@string/fontello_tag"
+                    android:text="@string/fontello_archive"
                     android:textSize="22sp" />
             </LinearLayout>
 
