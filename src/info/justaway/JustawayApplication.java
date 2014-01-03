@@ -423,7 +423,7 @@ public class JustawayApplication extends Application {
     }
 
     public void doRetweet(Long id) {
-        JustawayApplication.getApplication().setRtId(id, (long) 0);
+        sApplication.setRtId(id, (long) 0);
         new RetweetTask().execute(id);
     }
 
