@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -89,7 +88,6 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             Status retweet = status.getRetweetedStatus();
             long userId = mApplication.getUserId();
             if (retweet != null && status.getUser().getId() == userId) {
-                Log.d("Justaway", "[filter]" + retweet.getId() + " => " + status.getId());
                 mApplication.setRtId(retweet.getId(), status.getId());
             }
         }
@@ -186,7 +184,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         Typeface fontello = Typeface.createFromAsset(mContext.getAssets(), "fontello.ttf");
         long userId = JustawayApplication.getApplication().getUserId();
 
-        TextView do_reply = (TextView) view.findViewById(R.id.do_reply);
+        TextView doReply = (TextView) view.findViewById(R.id.do_reply);
         view.findViewById(R.id.do_retweet).setVisibility(View.GONE);
         view.findViewById(R.id.do_fav).setVisibility(View.GONE);
         view.findViewById(R.id.retweet_count).setVisibility(View.GONE);
@@ -194,11 +192,11 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         view.findViewById(R.id.menu_and_via).setVisibility(View.VISIBLE);
 
         if (message.getSender().getId() == userId) {
-            do_reply.setVisibility(View.GONE);
+            doReply.setVisibility(View.GONE);
         } else {
-            do_reply.setVisibility(View.VISIBLE);
-            do_reply.setTypeface(fontello);
-            do_reply.setOnClickListener(new View.OnClickListener() {
+            doReply.setVisibility(View.VISIBLE);
+            doReply.setTypeface(fontello);
+            doReply.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     String text = "D " + message.getSender().getScreenName() + " ";
@@ -237,6 +235,14 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         view.findViewById(R.id.images).setVisibility(View.GONE);
         ImageView icon = (ImageView) view.findViewById(R.id.icon);
         mApplication.displayRoundedImage(message.getSender().getBiggerProfileImageURL(), icon);
+        icon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(), ProfileActivity.class);
+                intent.putExtra("screenName", message.getSender().getScreenName());
+                mContext.startActivity(intent);
+            }
+        });
         view.findViewById(R.id.action).setVisibility(View.GONE);
         view.findViewById(R.id.fontello_lock).setVisibility(View.INVISIBLE);
     }
@@ -248,30 +254,30 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
 
         Typeface fontello = Typeface.createFromAsset(mContext.getAssets(), "fontello.ttf");
 
-        final TextView do_reply = (TextView) view.findViewById(R.id.do_reply);
-        final TextView do_retweet = (TextView) view.findViewById(R.id.do_retweet);
-        final TextView do_fav = (TextView) view.findViewById(R.id.do_fav);
-        TextView retweet_count = (TextView) view.findViewById(R.id.retweet_count);
-        TextView fav_count = (TextView) view.findViewById(R.id.fav_count);
+        final TextView doReply = (TextView) view.findViewById(R.id.do_reply);
+        final TextView doRetweet = (TextView) view.findViewById(R.id.do_retweet);
+        final TextView doFav = (TextView) view.findViewById(R.id.do_fav);
+        TextView retweetCount = (TextView) view.findViewById(R.id.retweet_count);
+        TextView favCount = (TextView) view.findViewById(R.id.fav_count);
 
         if (status.getFavoriteCount() > 0) {
-            fav_count.setText(String.valueOf(status.getFavoriteCount()));
-            fav_count.setVisibility(View.VISIBLE);
+            favCount.setText(String.valueOf(status.getFavoriteCount()));
+            favCount.setVisibility(View.VISIBLE);
         } else {
-            fav_count.setText("0");
-            fav_count.setVisibility(View.INVISIBLE);
+            favCount.setText("0");
+            favCount.setVisibility(View.INVISIBLE);
         }
 
         if (status.getRetweetCount() > 0) {
-            retweet_count.setText(String.valueOf(status.getRetweetCount()));
-            retweet_count.setVisibility(View.VISIBLE);
+            retweetCount.setText(String.valueOf(status.getRetweetCount()));
+            retweetCount.setVisibility(View.VISIBLE);
         } else {
-            retweet_count.setText("0");
-            retweet_count.setVisibility(View.INVISIBLE);
+            retweetCount.setText("0");
+            retweetCount.setVisibility(View.INVISIBLE);
         }
 
-        do_reply.setTypeface(fontello);
-        do_reply.setOnClickListener(new View.OnClickListener() {
+        doReply.setTypeface(fontello);
+        doReply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(mContext, PostActivity.class);
@@ -296,46 +302,46 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             }
         });
 
-        do_retweet.setTypeface(fontello);
-        do_retweet.setOnClickListener(new View.OnClickListener() {
+        doRetweet.setTypeface(fontello);
+        doRetweet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Long id = mApplication.getRtId(status);
                 if (id != null) {
                     mApplication.doDestroyRetweet(status.getId());
-                    do_retweet.setTextColor(Color.parseColor("#666666"));
+                    doRetweet.setTextColor(Color.parseColor("#666666"));
                 } else {
                     mApplication.doRetweet(status.getId());
-                    do_retweet.setTextColor(mContext.getResources()
+                    doRetweet.setTextColor(mContext.getResources()
                             .getColor(R.color.holo_green_light));
                 }
             }
         });
 
-        do_fav.setTypeface(fontello);
-        do_fav.setOnClickListener(new View.OnClickListener() {
+        doFav.setTypeface(fontello);
+        doFav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mApplication.isFav(status)) {
                     mApplication.doDestroyFavorite(status.getId());
-                    do_retweet.setTextColor(Color.parseColor("#666666"));
+                    doRetweet.setTextColor(Color.parseColor("#666666"));
                 } else {
                     mApplication.doFavorite(status.getId());
-                    do_fav.setTextColor(mContext.getResources().getColor(R.color.holo_orange_light));
+                    doFav.setTextColor(mContext.getResources().getColor(R.color.holo_orange_light));
                 }
             }
         });
 
         if (mApplication.getRtId(status) != null) {
-            do_retweet.setTextColor(mContext.getResources().getColor(R.color.holo_green_light));
+            doRetweet.setTextColor(mContext.getResources().getColor(R.color.holo_green_light));
         } else {
-            do_retweet.setTextColor(Color.parseColor("#666666"));
+            doRetweet.setTextColor(Color.parseColor("#666666"));
         }
 
         if (mApplication.isFav(status)) {
-            do_fav.setTextColor(mContext.getResources().getColor(R.color.holo_orange_light));
+            doFav.setTextColor(mContext.getResources().getColor(R.color.holo_orange_light));
         } else {
-            do_fav.setTextColor(Color.parseColor("#666666"));
+            doFav.setTextColor(Color.parseColor("#666666"));
         }
 
         ((TextView) view.findViewById(R.id.display_name)).setText(status.getUser().getName());
