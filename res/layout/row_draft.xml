@@ -3,11 +3,37 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="horizontal"
               android:layout_width="match_parent"
-              android:layout_height="match_parent">
+              android:layout_height="match_parent"
+              android:gravity="center_vertical"
+              android:paddingTop="8dip"
+              android:paddingBottom="8dip"
+              android:paddingLeft="8dp"
+              android:paddingRight="8dp">
 
-    <TextView
-        android:id="@+id/draft"
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_weight="1">
 
+        <TextView
+            android:id="@+id/draft"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="8dp"
+        android:gravity="right">
+
+        <TextView
+            android:id="@+id/trash"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/fontello_trash"
+            android:textColor="#666666"
+            android:textSize="28sp"/>
+    </LinearLayout>
 </LinearLayout>

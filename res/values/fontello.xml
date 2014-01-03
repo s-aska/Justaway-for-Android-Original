@@ -20,5 +20,6 @@
     <string name="fontello_search"></string>
     <string name="fontello_tag"></string>
     <string name="fontello_archive"></string>
+    <string name="fontello_trash"></string>
 
 </resources>
