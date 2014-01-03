@@ -320,6 +320,8 @@ public class PostActivity extends FragmentActivity {
                                     }
                                 })
                         .show();
+            } else {
+                finish();
             }
             return true;
         }
