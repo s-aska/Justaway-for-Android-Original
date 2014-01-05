@@ -15,6 +15,7 @@ import android.widget.ProgressBar;
 
 import info.justaway.BaseActivity;
 import info.justaway.JustawayApplication;
+import info.justaway.ProfileActivity;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.model.Row;
@@ -67,6 +68,7 @@ public class UserTimelineFragment extends Fragment {
         });
         new UserTimelineTask().execute(mUser.getScreenName());
 
+        final ProfileActivity profileActivity = (ProfileActivity) getActivity();
         mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
 
             @Override
@@ -78,6 +80,9 @@ public class UserTimelineFragment extends Fragment {
                 // 最後までスクロールされたかどうかの判定
                 if (totalItemCount == firstVisibleItem + visibleItemCount) {
                     additionalReading();
+                }
+                if (firstVisibleItem > 2) {
+                    profileActivity.findViewById(R.id.frame).setVisibility(View.GONE);
                 }
             }
         });
