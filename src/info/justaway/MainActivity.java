@@ -398,7 +398,9 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
         if (mApplication.getQuickMode()) {
             showQuickPanel();
         }
+    }
 
+    public void setupStream() {
         mTwitterStream = mApplication.getTwitterStream();
         mTwitterStream.addListener(getUserStreamAdapter());
         mTwitterStream.user();

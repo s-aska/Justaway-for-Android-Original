@@ -26,6 +26,7 @@ public class TimelineFragment extends BaseFragment {
     private Boolean mAutoLoader = false;
     private long mMaxId = 0L;
     private ProgressBar mFooter;
+    private Boolean mStreamingStarted = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -138,6 +139,11 @@ public class TimelineFragment extends BaseFragment {
                 adapter.extensionAdd(Row.newStatus(status));
             }
             mAutoLoader = true;
+            if (!mStreamingStarted) {
+                MainActivity activity = (MainActivity) getActivity();
+                activity.setupStream();
+                mStreamingStarted = true;
+            }
         }
     }
 }
