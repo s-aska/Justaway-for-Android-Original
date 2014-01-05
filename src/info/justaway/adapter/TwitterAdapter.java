@@ -1,9 +1,15 @@
 package info.justaway.adapter;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -308,12 +314,113 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             public void onClick(View v) {
                 Long id = mApplication.getRtId(status);
                 if (id != null) {
-                    mApplication.doDestroyRetweet(status.getId());
-                    doRetweet.setTextColor(Color.parseColor("#666666"));
+                    DialogFragment dialog = new DialogFragment() {
+                        @Override
+                        public Dialog onCreateDialog(Bundle savedInstanceState) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                            builder.setTitle(R.string.confirm_destroy_retweet);
+                            builder.setMessage(status.getText());
+                            builder.setPositiveButton(getString(R.string.button_destroy_retweet),
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            mApplication.doDestroyRetweet(status.getId());
+                                            doRetweet.setTextColor(Color.parseColor("#666666"));
+                                            dismiss();
+                                        }
+                                    });
+                            builder.setNegativeButton(getString(R.string.button_cancel),
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dismiss();
+                                        }
+                                    });
+
+                            return builder.create();
+                        }
+                    };
+                    FragmentActivity activity = (FragmentActivity) mContext;
+                    dialog.show(activity.getSupportFragmentManager(), "dialog");
                 } else {
-                    mApplication.doRetweet(status.getId());
-                    doRetweet.setTextColor(mContext.getResources()
-                            .getColor(R.color.holo_green_light));
+                    DialogFragment dialog = new DialogFragment() {
+
+                        /**
+                         * ダイアログ閉じたあとの処理を定義できるようにしておく
+                         */
+                        private Runnable mOnDismiss;
+
+                        @Override
+                        public Dialog onCreateDialog(Bundle savedInstanceState) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                            builder.setTitle(R.string.confirm_retweet);
+                            builder.setMessage(status.getText());
+                            builder.setNeutralButton(getString(R.string.button_quote),
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            FragmentActivity activity = (FragmentActivity) mContext;
+                                            EditText editStatus = null;
+                                            View singleLineTweet = activity.findViewById(R.id.quick_tweet_layout);
+                                            if (singleLineTweet != null && singleLineTweet.getVisibility() == View.VISIBLE) {
+                                                editStatus = (EditText) activity.findViewById(R.id.quick_tweet_edit);
+                                            }
+                                            String text = " https://twitter.com/"
+                                                    + status.getUser().getScreenName()
+                                                    + "/status/" + String.valueOf(status.getId());
+                                            if (editStatus != null) {
+                                                editStatus.requestFocus();
+                                                editStatus.setText(text);
+                                                /**
+                                                 * ダイアログ閉じた後じゃないとキーボードを出せない
+                                                 */
+                                                final View view = editStatus;
+                                                mOnDismiss = new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        mApplication.showKeyboard(view);
+                                                    }
+                                                };
+                                                return;
+                                            }
+                                            Intent intent = new Intent(activity, PostActivity.class);
+                                            intent.putExtra("status", text);
+                                            intent.putExtra("inReplyToStatusId", status.getId());
+                                            startActivity(intent);
+                                            dismiss();
+                                        }
+                                    });
+                            builder.setPositiveButton(getString(R.string.button_retweet),
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            mApplication.doRetweet(status.getId());
+                                            doRetweet.setTextColor(mContext.getResources()
+                                                    .getColor(R.color.holo_green_light));
+                                            dismiss();
+                                        }
+                                    });
+                            builder.setNegativeButton(getString(R.string.button_cancel),
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dismiss();
+                                        }
+                                    });
+
+                            return builder.create();
+                        }
+
+                        @Override
+                        public void onDismiss(DialogInterface dialog) {
+                            super.onDismiss(dialog);
+                            if (mOnDismiss != null) {
+                                mOnDismiss.run();
+                            }
+                        }
+                    };
+                    FragmentActivity activity = (FragmentActivity) mContext;
+                    dialog.show(activity.getSupportFragmentManager(), "dialog");
                 }
             }
         });
