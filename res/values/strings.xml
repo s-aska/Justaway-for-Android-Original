@@ -56,8 +56,13 @@
     <string name="toast_update_profile_image_success">プロフィール画像を公開しました</string>
     <string name="toast_update_profile_image_failure">プロフィール画像の公開に失敗しました</string>
     <string name="confirm_update_profile_image">プロフィール画像を変更しますか？</string>
+    <string name="confirm_retweet">リツイートしますか？</string>
+    <string name="confirm_destroy_retweet">リツイートを取り消しますか？</string>
     <string name="button_apply">適用</string>
     <string name="button_cancel">キャンセル</string>
+    <string name="button_retweet">リツイート</string>
+    <string name="button_destroy_retweet">取り消す</string>
+    <string name="button_quote">引用</string>
     <string name="profile_pointer">●　○</string>
     <string name="profile_pointer_right">○　●</string>
     <string name="progress_sending">送信中！！１１１１１</string>
