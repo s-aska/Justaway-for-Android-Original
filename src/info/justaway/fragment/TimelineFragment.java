@@ -96,6 +96,9 @@ public class TimelineFragment extends BaseFragment {
 
                 // 少しでもスクロールさせている時は画面を動かさない様にスクロー位置を復元する
                 MainActivity activity = (MainActivity) getActivity();
+                if (activity == null) {
+                    return;
+                }
                 if (position != 0 || y != 0) {
                     listView.setSelectionFromTop(position + 1, y);
                     activity.onNewTimeline(false);
