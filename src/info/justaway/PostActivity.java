@@ -87,6 +87,7 @@ public class PostActivity extends FragmentActivity {
         String status = intent.getStringExtra("status");
         if (status != null) {
             mEditText.setText(status);
+            updateCount(status);
         }
         int selection = intent.getIntExtra("selection", 0);
         if (selection > 0) {
@@ -209,25 +210,7 @@ public class PostActivity extends FragmentActivity {
         // 文字数をカウントしてボタンを制御する
         mEditText.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                int textColor;
-                String str = s.toString();
-                int length = 140 - str.codePointCount(0, str.length());
-                // 140文字をオーバーした時は文字数を赤色に
-                if (length < 0) {
-                    textColor = Color.RED;
-                } else {
-                    textColor = Color.WHITE;
-                }
-                mTextView.setTextColor(textColor);
-                mTextView.setText(String.valueOf(length));
-
-                // 文字数が0文字または140文字以上の時はボタンを無効
-                if (str.codePointCount(0, str.length()) == 0
-                        || str.codePointCount(0, str.length()) > 140) {
-                    mTweetButton.setEnabled(false);
-                } else {
-                    mTweetButton.setEnabled(true);
-                }
+                updateCount(s.toString());
             }
 
             public void afterTextChanged(Editable s) {
@@ -259,6 +242,27 @@ public class PostActivity extends FragmentActivity {
         this.mImgPath = path;
         JustawayApplication.showToast(R.string.toast_set_image_success);
         mImgButton.setTextColor(getResources().getColor(R.color.holo_blue_bright));
+    }
+
+    private void updateCount(String str) {
+        int textColor;
+        int length = 140 - str.codePointCount(0, str.length());
+        // 140文字をオーバーした時は文字数を赤色に
+        if (length < 0) {
+            textColor = Color.RED;
+        } else {
+            textColor = Color.WHITE;
+        }
+        mTextView.setTextColor(textColor);
+        mTextView.setText(String.valueOf(length));
+
+        // 文字数が0文字または140文字以上の時はボタンを無効
+        if (str.codePointCount(0, str.length()) == 0
+                || str.codePointCount(0, str.length()) > 140) {
+            mTweetButton.setEnabled(false);
+        } else {
+            mTweetButton.setEnabled(true);
+        }
     }
 
     private class PostTask extends AsyncTask<StatusUpdate, Void, Boolean> {
