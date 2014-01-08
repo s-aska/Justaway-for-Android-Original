@@ -72,14 +72,11 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
             Intent intent = new Intent(this, SignInActivity.class);
             startActivity(intent);
             finish();
-        } else if (mApplication.getUserId() < 0 || mApplication.getScreenName() == null) {
-            /**
-             * onCreateLoader => onLoadFinished と繋がる
-             */
-            getSupportLoaderManager().initLoader(0, null, this);
-        } else {
+        } else if (mApplication.getUserId() > 0 && mApplication.getScreenName() != null) {
             setup();
         }
+
+        getSupportLoaderManager().initLoader(0, null, this);
 
         /**
          * ユーザーリストの一覧をアプリケーションのメンバ変数に読み込んでおく
@@ -337,10 +334,15 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
             startActivity(intent);
             finish();
         } else {
-            JustawayApplication.showToast(user.getScreenName() + " さんこんにちわ！！！！");
-            mApplication.setUserId(user.getId());
-            mApplication.setScreenName(user.getScreenName());
-            setup();
+            if (mApplication.getUserId() < 0 || mApplication.getScreenName() == null) {
+                JustawayApplication.showToast(user.getScreenName() + " さんこんにちわ！！！！");
+                mApplication.setUserId(user.getId());
+                mApplication.setScreenName(user.getScreenName());
+                setup();
+            } else {
+                mApplication.setUserId(user.getId());
+                mApplication.setScreenName(user.getScreenName());
+            }
         }
     }
 
@@ -507,8 +509,11 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
             JustawayApplication.getApplication().resetAccessToken();
             finish();
         } else if (itemId == R.id.profile) {
+            /**
+             * screenNameは変更可能なのでuserIdを使う
+             */
             Intent intent = new Intent(this, ProfileActivity.class);
-            intent.putExtra("screenName", mApplication.getScreenName());
+            intent.putExtra("userId", mApplication.getUserId());
             startActivity(intent);
         } else if (itemId == R.id.user_list) {
             Intent intent = new Intent(this, ChooseUserListsActivity.class);

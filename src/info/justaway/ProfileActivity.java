@@ -51,13 +51,16 @@ public class ProfileActivity extends BaseActivity implements
         // インテント経由での起動をサポート
         Intent intent = getIntent();
         Bundle args = new Bundle(1);
-        String screenName;
         if (Intent.ACTION_VIEW.equals(intent.getAction()) && intent.getData() != null) {
-            screenName = intent.getData().getLastPathSegment();
+            args.putString("screenName", intent.getData().getLastPathSegment());
         } else {
-            screenName = intent.getStringExtra("screenName");
+            String screenName = intent.getStringExtra("screenName");
+            if (screenName != null) {
+                args.putString("screenName", screenName);
+            } else {
+                args.putLong("userId", intent.getLongExtra("userId", 0));
+            }
         }
-        args.putString("screenName", screenName);
         getSupportLoaderManager().initLoader(0, args, this);
     }
 
@@ -93,7 +96,11 @@ public class ProfileActivity extends BaseActivity implements
     @Override
     public Loader<Profile> onCreateLoader(int arg0, Bundle args) {
         String screenName = args.getString("screenName");
-        return new ShowUserLoader(this, screenName);
+        if (screenName != null) {
+            return new ShowUserLoader(this, screenName);
+        } else {
+            return new ShowUserLoader(this, args.getLong("userId"));
+        }
     }
 
     @Override

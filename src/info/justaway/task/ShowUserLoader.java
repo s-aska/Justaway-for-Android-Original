@@ -12,18 +12,32 @@ import twitter4j.User;
 public class ShowUserLoader extends AbstractAsyncTaskLoader<Profile> {
 
     private String mScreenName;
+    private long mUserId;
 
     public ShowUserLoader(Context context, String screenName) {
         super(context);
         this.mScreenName = screenName;
     }
 
+    public ShowUserLoader(Context context, long userId) {
+        super(context);
+        this.mUserId = userId;
+    }
+
     @Override
     public Profile loadInBackground() {
         try {
-            Twitter twitter = JustawayApplication.getApplication().getTwitter();
-            User user = twitter.showUser(mScreenName);
-            Relationship relationship = twitter.showFriendship(JustawayApplication.getApplication().getScreenName(), mScreenName);
+            JustawayApplication application = JustawayApplication.getApplication();
+            Twitter twitter = application.getTwitter();
+            User user;
+            Relationship relationship;
+            if (mScreenName != null) {
+                user = twitter.showUser(mScreenName);
+                relationship = twitter.showFriendship(application.getScreenName(), mScreenName);
+            } else {
+                user = twitter.showUser(mUserId);
+                relationship = twitter.showFriendship(application.getUserId(), mUserId);
+            }
             Profile profile = new Profile();
             profile.setRelationship(relationship);
             profile.setUser(user);
