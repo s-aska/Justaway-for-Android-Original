@@ -231,8 +231,10 @@ public class ScaleImageView extends ImageView implements OnTouchListener {
             return true;
         }
         int touchCount = event.getPointerCount();
-        switch (event.getAction()) {
+        int action = event.getAction() & MotionEvent.ACTION_MASK;
+        switch (action) {
             case MotionEvent.ACTION_DOWN:
+            case MotionEvent.ACTION_POINTER_DOWN:
                 if (touchCount >= 2) {
                     mPrevDistance = distance(event.getX(0), event.getX(1), event.getY(0), event.getY(1));
                     mIsScaling = true;
