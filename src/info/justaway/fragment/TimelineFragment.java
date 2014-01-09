@@ -141,8 +141,11 @@ public class TimelineFragment extends BaseFragment {
             mAutoLoader = true;
             if (!mStreamingStarted) {
                 MainActivity activity = (MainActivity) getActivity();
-                activity.setupStream();
-                mStreamingStarted = true;
+                // アプリの終了処理中にnullになるっぽい
+                if (activity != null) {
+                    activity.setupStream();
+                    mStreamingStarted = true;
+                }
             }
         }
     }
