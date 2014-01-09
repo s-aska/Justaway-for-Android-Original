@@ -12,6 +12,7 @@
     <string name="tweet_clear">クリア</string>
     <string name="tweet_battery">バッテリー残量</string>
     <string name="tweet_draft">編集中のツイートがあります。保存しますか？</string>
+    <string name="users">ユーザー</string>
     <string name="tweets">ツイート</string>
     <string name="following">フォロー</string>
     <string name="followers">フォロワー</string>
