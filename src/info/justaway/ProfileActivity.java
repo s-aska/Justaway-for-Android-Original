@@ -74,6 +74,11 @@ public class ProfileActivity extends BaseActivity implements
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent intent;
         switch (item.getItemId()) {
+            case R.id.send_direct_messages:
+                intent = new Intent(this, PostActivity.class);
+                intent.putExtra("status", "D " + mUser.getScreenName() + " ");
+                startActivity(intent);
+                break;
             case R.id.open_twitter:
                 intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/"
                         + mUser.getScreenName()));
