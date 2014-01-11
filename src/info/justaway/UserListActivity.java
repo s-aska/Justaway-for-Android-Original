@@ -3,6 +3,7 @@ package info.justaway;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.view.View;
 import android.widget.TextView;
 
 import info.justaway.adapter.SimplePagerAdapter;
@@ -57,6 +58,19 @@ public class UserListActivity extends BaseActivity {
                 }
 
                 mCurrentPosition = position;
+            }
+        });
+
+        findViewById(R.id.users_label).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewPager.setCurrentItem(0);
+            }
+        });
+        findViewById(R.id.tweets_label).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                viewPager.setCurrentItem(1);
             }
         });
     }
