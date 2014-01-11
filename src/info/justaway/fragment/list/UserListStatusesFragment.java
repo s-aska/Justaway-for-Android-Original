@@ -78,6 +78,17 @@ public class UserListStatusesFragment extends Fragment {
         return v;
     }
 
+    public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, view, menuInfo);
+        BaseActivity baseActivity = (BaseActivity) getActivity();
+        baseActivity.onCreateContextMenuForStatus(menu, view, menuInfo);
+    }
+
+    public boolean onContextItemSelected(MenuItem item) {
+        BaseActivity baseActivity = (BaseActivity) getActivity();
+        return baseActivity.onContextItemSelected(item);
+    }
+
     private void additionalReading() {
         if (!mAutoLoader) {
             return;
