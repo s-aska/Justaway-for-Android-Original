@@ -217,18 +217,6 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
                 button.setBackgroundColor(getResources().getColor(R.color.menu_background));
                 button.setText(R.string.fontello_list);
                 button.setOnClickListener(tabMenuOnClickListener(++position));
-                final int fp = position;
-                button.setOnLongClickListener(new View.OnLongClickListener() {
-
-                    @Override
-                    public boolean onLongClick(View v) {
-                        UserListFragment f = (UserListFragment) mMainPagerAdapter
-                                .findFragmentByPosition(fp);
-                        f.reload();
-                        return false;
-                    }
-
-                });
                 tab_menus.addView(button);
                 Bundle args = new Bundle();
                 args.putInt("userListId", tab);
