@@ -37,7 +37,7 @@ public abstract class BaseFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.list, container, false);
+        View v = inflater.inflate(R.layout.pull_to_refresh_list, container, false);
         if (v == null) {
             return null;
         }
