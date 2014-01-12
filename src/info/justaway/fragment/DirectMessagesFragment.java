@@ -97,7 +97,7 @@ public class DirectMessagesFragment extends BaseFragment {
             public void run() {
 
                 // 表示している要素の位置
-                int position = listView.getFirstVisiblePosition();
+                int position = listView.getFirstVisiblePosition() - 1;
 
                 // 縦スクロール位置
                 View view = listView.getChildAt(0);
@@ -114,7 +114,7 @@ public class DirectMessagesFragment extends BaseFragment {
                     return;
                 }
                 if (position != 0 || y != 0) {
-                    listView.setSelectionFromTop(position + 1, y);
+                    listView.setSelectionFromTop(position + 2, y);
                     activity.onNewDirectMessage(false);
                 } else {
                     activity.onNewDirectMessage(true);
