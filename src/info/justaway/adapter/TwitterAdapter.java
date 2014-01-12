@@ -46,7 +46,8 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     private LayoutInflater mInflater;
     private int mLayout;
     private Boolean isMain;
-    private int mLimit = 100;
+    private static final int LIMIT = 100;
+    private int mLimit = LIMIT;
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy/MM'/'dd' 'HH':'mm':'ss",
             Locale.ENGLISH);
 
@@ -142,6 +143,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     public void clear() {
         super.clear();
         this.mStatuses.clear();
+        mLimit = LIMIT;
     }
 
     @Override
