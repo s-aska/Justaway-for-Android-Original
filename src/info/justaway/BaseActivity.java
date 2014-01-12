@@ -28,7 +28,6 @@ public class BaseActivity extends FragmentActivity {
     static final int CONTEXT_MENU_RT_ID = 4;
     static final int CONTEXT_MENU_QT_ID = 5;
     static final int CONTEXT_MENU_LINK_ID = 6;
-    static final int CONTEXT_MENU_TOFU_ID = 7;
     static final int CONTEXT_MENU_DM_ID = 8;
     static final int CONTEXT_MENU_RM_DM_ID = 9;
     static final int CONTEXT_MENU_RM_ID = 10;
@@ -38,6 +37,8 @@ public class BaseActivity extends FragmentActivity {
     static final int CONTEXT_MENU_HASH_ID = 14;
     static final int CONTEXT_MENU_AT_ID = 15;
     static final int CONTEXT_MENU_REPLY_ALL_ID = 16;
+    static final int CONTEXT_MENU_SHARE_TEXT_ID = 17;
+    static final int CONTEXT_MENU_SHARE_URL_ID = 18;
 
     /**
      * コンテキストメニュー表示時の選択したツイートをセットしている Streaming API対応で勝手に画面がスクロールされる為、
@@ -94,7 +95,7 @@ public class BaseActivity extends FragmentActivity {
         if (status.getUser().getId() == application.getUserId()) {
             if (retweet != null) {
                 if (application.getRtId(status) != null) {
-                    menu.add(0, CONTEXT_MENU_RM_RT_ID, 0, getString(R.string.context_menu_destory_retweet));
+                    menu.add(0, CONTEXT_MENU_RM_RT_ID, 0, getString(R.string.context_menu_destroy_retweet));
                 }
             } else {
                 menu.add(0, CONTEXT_MENU_RM_ID, 0, getString(R.string.context_menu_destroy_status));
@@ -132,7 +133,8 @@ public class BaseActivity extends FragmentActivity {
             menu.add(0, CONTEXT_MENU_AT_ID, 0, "@" + mention.getScreenName());
         }
 
-        menu.add(0, CONTEXT_MENU_TOFU_ID, 0, getString(R.string.context_menu_tofu_buster));
+        menu.add(0, CONTEXT_MENU_SHARE_TEXT_ID, 0, getString(R.string.context_menu_share_text));
+        menu.add(0, CONTEXT_MENU_SHARE_URL_ID, 0, getString(R.string.context_menu_share_url));
     }
 
     @Override
@@ -278,20 +280,20 @@ public class BaseActivity extends FragmentActivity {
                 intent.putExtra("screenName", item.getTitle().toString().substring(1));
                 startActivity(intent);
                 return true;
-            case CONTEXT_MENU_TOFU_ID:
-                try {
-                    intent = new Intent("com.product.kanzmrsw.tofubuster.ACTION_SHOW_TEXT");
-                    intent.putExtra(Intent.EXTRA_TEXT, status.getText());
-                    intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name));
-                    intent.putExtra("isCopyEnabled", true);
-                    startActivity(intent); // TofuBusterがインストールされていない場合、startActivityで落ちる
-                } catch (Exception e) {
-                    // 露骨な誘導
-                    intent = new Intent(
-                            Intent.ACTION_VIEW,
-                            Uri.parse("https://market.android.com/details?id=com.product.kanzmrsw.tofubuster"));
-                    startActivity(intent);
-                }
+            case CONTEXT_MENU_SHARE_TEXT_ID:
+                intent = new Intent();
+                intent.setAction(Intent.ACTION_SEND);
+                intent.setType("text/plain");
+                intent.putExtra(Intent.EXTRA_TEXT, status.getText());
+                startActivity(intent);
+                return true;
+            case CONTEXT_MENU_SHARE_URL_ID:
+                intent = new Intent();
+                intent.setAction(Intent.ACTION_SEND);
+                intent.setType("text/plain");
+                intent.putExtra(Intent.EXTRA_TEXT, "https://twitter.com/" + source.getUser().getScreenName()
+                        + "/status/" + String.valueOf(source.getId()));
+                startActivity(intent);
                 return true;
             default:
                 return true;
