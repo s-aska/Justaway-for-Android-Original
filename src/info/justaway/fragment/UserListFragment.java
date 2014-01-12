@@ -94,7 +94,7 @@ public class UserListFragment extends BaseFragment {
             public void run() {
 
                 // 表示している要素の位置
-                int position = listView.getFirstVisiblePosition();
+                int position = listView.getFirstVisiblePosition() - 1;
 
                 // 縦スクロール位置
                 View view = listView.getChildAt(0);
@@ -111,7 +111,7 @@ public class UserListFragment extends BaseFragment {
                     return;
                 }
                 if (position != 0 || y != 0) {
-                    listView.setSelectionFromTop(position + 1, y);
+                    listView.setSelectionFromTop(position + 2, y);
                     activity.onNewListStatus(mUserListId, false);
                 } else {
                     activity.onNewListStatus(mUserListId, true);
