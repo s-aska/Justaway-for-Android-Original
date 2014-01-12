@@ -92,13 +92,14 @@
     <string name="context_menu_qt">引用</string>
     <string name="context_menu_destroy_favorite">ふぁぼを解除</string>
     <string name="context_menu_create_favorite">ふぁぼ</string>
-    <string name="context_menu_destory_retweet">公式RTを解除</string>
+    <string name="context_menu_destroy_retweet">公式RTを解除</string>
     <string name="context_menu_destroy_status">ツイ消し</string>
     <string name="context_menu_favorite_and_retweet">ふぁぼ＆公式RT</string>
     <string name="context_menu_retweet">公式RT</string>
     <string name="context_menu_talk">会話を表示</string>
     <string name="context_menu_reply_direct_message">返信(DM)</string>
     <string name="context_menu_destroy_direct_message">ツイ消し(DM)</string>
-    <string name="context_menu_tofu_buster">TofuBuster</string>
+    <string name="context_menu_share_text">ツイート本文を共有</string>
+    <string name="context_menu_share_url">ツイートURLを共有</string>
 
 </resources>
