@@ -73,10 +73,20 @@ public class ProfileActivity extends BaseActivity implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Intent intent;
+        String text;
         switch (item.getItemId()) {
+            case R.id.send_reply:
+                intent = new Intent(this, PostActivity.class);
+                text = "@" + mUser.getScreenName() + " ";
+                intent.putExtra("status", text);
+                intent.putExtra("selection", text.length());
+                startActivity(intent);
+                break;
             case R.id.send_direct_messages:
                 intent = new Intent(this, PostActivity.class);
-                intent.putExtra("status", "D " + mUser.getScreenName() + " ");
+                text = "D " + mUser.getScreenName() + " ";
+                intent.putExtra("status", text);
+                intent.putExtra("selection", text.length());
                 startActivity(intent);
                 break;
             case R.id.open_twitter:

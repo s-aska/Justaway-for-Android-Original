@@ -20,6 +20,7 @@
     <string name="favourites">お気に入り</string>
     <string name="created_at">Twitter開始日</string>
     <string name="description_icon">Profile Icon</string>
+    <string name="send_reply">リプを送る</string>
     <string name="send_direct_messages">DMを送る</string>
     <string name="open_twitter">Twitterで開く</string>
     <string name="open_favstar">Favstarで開く</string>
