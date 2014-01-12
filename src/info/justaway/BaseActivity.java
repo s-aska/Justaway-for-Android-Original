@@ -66,8 +66,8 @@ public class BaseActivity extends FragmentActivity {
 
         if (row.isDirectMessage()) {
             menu.setHeaderTitle(row.getMessage().getSenderScreenName());
-            menu.add(0, CONTEXT_MENU_DM_ID, 0, getString(R.string.context_menu_reply_direct_message));
-            menu.add(0, CONTEXT_MENU_RM_DM_ID, 0, getString(R.string.context_menu_destroy_direct_message));
+            menu.add(0, CONTEXT_MENU_DM_ID, 0, R.string.context_menu_reply_direct_message);
+            menu.add(0, CONTEXT_MENU_RM_DM_ID, 0, R.string.context_menu_destroy_direct_message);
             return;
         }
         Status status = row.getStatus();
@@ -77,38 +77,38 @@ public class BaseActivity extends FragmentActivity {
         JustawayApplication application = JustawayApplication.getApplication();
 
         menu.setHeaderTitle(status.getText());
-        menu.add(0, CONTEXT_MENU_REPLY_ID, 0, getString(R.string.context_menu_reply));
+        menu.add(0, CONTEXT_MENU_REPLY_ID, 0, R.string.context_menu_reply);
 
         UserMentionEntity[] mentions = source.getUserMentionEntities();
         if (mentions.length > 1) {
-            menu.add(0, CONTEXT_MENU_REPLY_ALL_ID, 0, getString(R.string.context_menu_reply_all));
+            menu.add(0, CONTEXT_MENU_REPLY_ALL_ID, 0, R.string.context_menu_reply_all);
         }
 
-        menu.add(0, CONTEXT_MENU_QT_ID, 0, getString(R.string.context_menu_qt));
+        menu.add(0, CONTEXT_MENU_QT_ID, 0, R.string.context_menu_qt);
 
         if (application.isFav(status)) {
-            menu.add(0, CONTEXT_MENU_RM_FAV_ID, 0, getString(R.string.context_menu_destroy_favorite));
+            menu.add(0, CONTEXT_MENU_RM_FAV_ID, 0, R.string.context_menu_destroy_favorite);
         } else {
-            menu.add(0, CONTEXT_MENU_FAV_ID, 0, getString(R.string.context_menu_create_favorite));
+            menu.add(0, CONTEXT_MENU_FAV_ID, 0, R.string.context_menu_create_favorite);
         }
 
         if (status.getUser().getId() == application.getUserId()) {
             if (retweet != null) {
                 if (application.getRtId(status) != null) {
-                    menu.add(0, CONTEXT_MENU_RM_RT_ID, 0, getString(R.string.context_menu_destroy_retweet));
+                    menu.add(0, CONTEXT_MENU_RM_RT_ID, 0, R.string.context_menu_destroy_retweet);
                 }
             } else {
-                menu.add(0, CONTEXT_MENU_RM_ID, 0, getString(R.string.context_menu_destroy_status));
+                menu.add(0, CONTEXT_MENU_RM_ID, 0, R.string.context_menu_destroy_status);
             }
         } else if (application.getRtId(status) == null) {
             if (!application.isFav(status)) {
-                menu.add(0, CONTEXT_MENU_FAVRT_ID, 0, getString(R.string.context_menu_favorite_and_retweet));
+                menu.add(0, CONTEXT_MENU_FAVRT_ID, 0, R.string.context_menu_favorite_and_retweet);
             }
-            menu.add(0, CONTEXT_MENU_RT_ID, 0, getString(R.string.context_menu_retweet));
+            menu.add(0, CONTEXT_MENU_RT_ID, 0, R.string.context_menu_retweet);
         }
 
         if (source.getInReplyToStatusId() > 0) {
-            menu.add(0, CONTEXT_MENU_TALK_ID, 0, getString(R.string.context_menu_talk));
+            menu.add(0, CONTEXT_MENU_TALK_ID, 0, R.string.context_menu_talk);
         }
 
         // ツイート内のURLへアクセスできるようにメニューに展開する
@@ -133,8 +133,8 @@ public class BaseActivity extends FragmentActivity {
             menu.add(0, CONTEXT_MENU_AT_ID, 0, "@" + mention.getScreenName());
         }
 
-        menu.add(0, CONTEXT_MENU_SHARE_TEXT_ID, 0, getString(R.string.context_menu_share_text));
-        menu.add(0, CONTEXT_MENU_SHARE_URL_ID, 0, getString(R.string.context_menu_share_url));
+        menu.add(0, CONTEXT_MENU_SHARE_TEXT_ID, 0, R.string.context_menu_share_text);
+        menu.add(0, CONTEXT_MENU_SHARE_URL_ID, 0, R.string.context_menu_share_url);
     }
 
     @Override
