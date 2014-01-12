@@ -65,8 +65,8 @@ public class BaseActivity extends FragmentActivity {
 
         if (row.isDirectMessage()) {
             menu.setHeaderTitle(row.getMessage().getSenderScreenName());
-            menu.add(0, CONTEXT_MENU_DM_ID, 0, "返信(DM)");
-            menu.add(0, CONTEXT_MENU_RM_DM_ID, 0, "ツイ消し(DM)");
+            menu.add(0, CONTEXT_MENU_DM_ID, 0, getString(R.string.context_menu_reply_direct_message));
+            menu.add(0, CONTEXT_MENU_RM_DM_ID, 0, getString(R.string.context_menu_destroy_direct_message));
             return;
         }
         Status status = row.getStatus();
@@ -76,38 +76,38 @@ public class BaseActivity extends FragmentActivity {
         JustawayApplication application = JustawayApplication.getApplication();
 
         menu.setHeaderTitle(status.getText());
-        menu.add(0, CONTEXT_MENU_REPLY_ID, 0, "リプ");
+        menu.add(0, CONTEXT_MENU_REPLY_ID, 0, getString(R.string.context_menu_reply));
 
         UserMentionEntity[] mentions = source.getUserMentionEntities();
         if (mentions.length > 1) {
-            menu.add(0, CONTEXT_MENU_REPLY_ALL_ID, 0, "全員にリプ");
+            menu.add(0, CONTEXT_MENU_REPLY_ALL_ID, 0, getString(R.string.context_menu_reply_all));
         }
 
-        menu.add(0, CONTEXT_MENU_QT_ID, 0, "引用");
+        menu.add(0, CONTEXT_MENU_QT_ID, 0, getString(R.string.context_menu_qt));
 
         if (application.isFav(status)) {
-            menu.add(0, CONTEXT_MENU_RM_FAV_ID, 0, "ふぁぼを解除");
+            menu.add(0, CONTEXT_MENU_RM_FAV_ID, 0, getString(R.string.context_menu_destroy_favorite));
         } else {
-            menu.add(0, CONTEXT_MENU_FAV_ID, 0, "ふぁぼ");
+            menu.add(0, CONTEXT_MENU_FAV_ID, 0, getString(R.string.context_menu_create_favorite));
         }
 
         if (status.getUser().getId() == application.getUserId()) {
             if (retweet != null) {
                 if (application.getRtId(status) != null) {
-                    menu.add(0, CONTEXT_MENU_RM_RT_ID, 0, "公式RTを解除");
+                    menu.add(0, CONTEXT_MENU_RM_RT_ID, 0, getString(R.string.context_menu_destory_retweet));
                 }
             } else {
-                menu.add(0, CONTEXT_MENU_RM_ID, 0, "ツイ消し");
+                menu.add(0, CONTEXT_MENU_RM_ID, 0, getString(R.string.context_menu_destroy_status));
             }
         } else if (application.getRtId(status) == null) {
             if (!application.isFav(status)) {
-                menu.add(0, CONTEXT_MENU_FAVRT_ID, 0, "ふぁぼ＆公式RT");
+                menu.add(0, CONTEXT_MENU_FAVRT_ID, 0, getString(R.string.context_menu_favorite_and_retweet));
             }
-            menu.add(0, CONTEXT_MENU_RT_ID, 0, "公式RT");
+            menu.add(0, CONTEXT_MENU_RT_ID, 0, getString(R.string.context_menu_retweet));
         }
 
         if (source.getInReplyToStatusId() > 0) {
-            menu.add(0, CONTEXT_MENU_TALK_ID, 0, "会話を表示");
+            menu.add(0, CONTEXT_MENU_TALK_ID, 0, getString(R.string.context_menu_talk));
         }
 
         // ツイート内のURLへアクセスできるようにメニューに展開する
@@ -132,7 +132,7 @@ public class BaseActivity extends FragmentActivity {
             menu.add(0, CONTEXT_MENU_AT_ID, 0, "@" + mention.getScreenName());
         }
 
-        menu.add(0, CONTEXT_MENU_TOFU_ID, 0, "TofuBuster");
+        menu.add(0, CONTEXT_MENU_TOFU_ID, 0, getString(R.string.context_menu_tofu_buster));
     }
 
     @Override
@@ -282,7 +282,7 @@ public class BaseActivity extends FragmentActivity {
                 try {
                     intent = new Intent("com.product.kanzmrsw.tofubuster.ACTION_SHOW_TEXT");
                     intent.putExtra(Intent.EXTRA_TEXT, status.getText());
-                    intent.putExtra(Intent.EXTRA_SUBJECT, "Justaway");
+                    intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name));
                     intent.putExtra("isCopyEnabled", true);
                     startActivity(intent); // TofuBusterがインストールされていない場合、startActivityで落ちる
                 } catch (Exception e) {
