@@ -1,6 +1,8 @@
 package info.justaway;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -11,8 +13,11 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import java.util.List;
+
 import info.justaway.fragment.TalkFragment;
 import info.justaway.model.Row;
+import info.justaway.plugin.TwiccaPlugin;
 import twitter4j.HashtagEntity;
 import twitter4j.Status;
 import twitter4j.URLEntity;
@@ -39,6 +44,9 @@ public class BaseActivity extends FragmentActivity {
     static final int CONTEXT_MENU_REPLY_ALL_ID = 16;
     static final int CONTEXT_MENU_SHARE_TEXT_ID = 17;
     static final int CONTEXT_MENU_SHARE_URL_ID = 18;
+    static final int CONTEXT_MENU_TWICCA_SHOW_TEXT_BASE_ID = 100;
+
+    private List<ResolveInfo> mTwiccaPlugins;
 
     /**
      * コンテキストメニュー表示時の選択したツイートをセットしている Streaming API対応で勝手に画面がスクロールされる為、
@@ -135,6 +143,22 @@ public class BaseActivity extends FragmentActivity {
 
         menu.add(0, CONTEXT_MENU_SHARE_TEXT_ID, 0, R.string.context_menu_share_text);
         menu.add(0, CONTEXT_MENU_SHARE_URL_ID, 0, R.string.context_menu_share_url);
+
+        // twiccaプラグイン実装 IDは被らないように100~にしてる　
+        if (mTwiccaPlugins == null) {
+            mTwiccaPlugins = TwiccaPlugin.getResolveInfoForShowTweet(getPackageManager());
+        }
+        if (!mTwiccaPlugins.isEmpty()) {
+            PackageManager pm = getPackageManager();
+            int i = 0;
+            for (ResolveInfo resolveInfo : mTwiccaPlugins) {
+                if (pm == null || resolveInfo.activityInfo == null) {
+                    continue;
+                }
+                menu.add(0, CONTEXT_MENU_TWICCA_SHOW_TEXT_BASE_ID + i, 0, resolveInfo.activityInfo.loadLabel(pm));
+                i++;
+            }
+        }
     }
 
     @Override
@@ -178,7 +202,8 @@ public class BaseActivity extends FragmentActivity {
             return true;
         }
 
-        switch (item.getItemId()) {
+        int itemId = item.getItemId();
+        switch (itemId) {
             case CONTEXT_MENU_REPLY_ID:
                 text = "@" + source.getUser().getScreenName() + " ";
                 if (editStatus != null) {
@@ -296,6 +321,14 @@ public class BaseActivity extends FragmentActivity {
                 startActivity(intent);
                 return true;
             default:
+                if (itemId >= CONTEXT_MENU_TWICCA_SHOW_TEXT_BASE_ID) {
+                    ResolveInfo resolveInfo = mTwiccaPlugins.get(itemId - CONTEXT_MENU_TWICCA_SHOW_TEXT_BASE_ID);
+                    if (resolveInfo.activityInfo == null) {
+                        return true;
+                    }
+                    intent = TwiccaPlugin.createIntentShowTweet(status, resolveInfo.activityInfo.packageName, resolveInfo.activityInfo.name);
+                    startActivity(intent);
+                }
                 return true;
         }
     }
