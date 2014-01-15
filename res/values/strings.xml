@@ -12,6 +12,7 @@
     <string name="tweet_clear">クリア</string>
     <string name="tweet_battery">バッテリー残量</string>
     <string name="tweet_draft">編集中のツイートがあります。保存しますか？</string>
+    <string name="users">ユーザー</string>
     <string name="tweets">ツイート</string>
     <string name="following">フォロー</string>
     <string name="followers">フォロワー</string>
@@ -19,6 +20,8 @@
     <string name="favourites">お気に入り</string>
     <string name="created_at">Twitter開始日</string>
     <string name="description_icon">Profile Icon</string>
+    <string name="send_reply">リプを送る</string>
+    <string name="send_direct_messages">DMを送る</string>
     <string name="open_twitter">Twitterで開く</string>
     <string name="open_favstar">Favstarで開く</string>
     <string name="open_twilog">Twilogで開く</string>
@@ -80,5 +83,23 @@
     <string name="title_profile">プロフィール</string>
     <string name="title_edit_profile">プロフィール編集</string>
     <string name="title_choose_user_lists">リストを選んでバック</string>
+    <string name="pull_to_refresh_pull_label">画面を引き下げて更新</string>
+    <string name="pull_to_refresh_refreshing_label">読み込み中</string>
+    <string name="pull_to_refresh_release_label">指を離して更新</string>
+    <string name="pull_to_refresh_tap_label">タップして更新</string>
+    <string name="context_menu_reply">リプ</string>
+    <string name="context_menu_reply_all">全員にリプ</string>
+    <string name="context_menu_qt">引用</string>
+    <string name="context_menu_destroy_favorite">ふぁぼを解除</string>
+    <string name="context_menu_create_favorite">ふぁぼ</string>
+    <string name="context_menu_destroy_retweet">公式RTを解除</string>
+    <string name="context_menu_destroy_status">ツイ消し</string>
+    <string name="context_menu_favorite_and_retweet">ふぁぼ＆公式RT</string>
+    <string name="context_menu_retweet">公式RT</string>
+    <string name="context_menu_talk">会話を表示</string>
+    <string name="context_menu_reply_direct_message">返信(DM)</string>
+    <string name="context_menu_destroy_direct_message">ツイ消し(DM)</string>
+    <string name="context_menu_share_text">ツイート本文を共有</string>
+    <string name="context_menu_share_url">ツイートURLを共有</string>
 
 </resources>

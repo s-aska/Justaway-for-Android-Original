@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.HeaderViewListAdapter;
 import android.widget.ListView;
 
 import info.justaway.BaseActivity;
@@ -16,6 +17,7 @@ import info.justaway.MainActivity;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.model.Row;
+import info.justaway.view.PullToRefreshListView;
 
 /**
  * タブのベースクラス
@@ -23,9 +25,9 @@ import info.justaway.model.Row;
 public abstract class BaseFragment extends Fragment {
 
     private TwitterAdapter mAdapter;
-    private ListView mListView;
+    private PullToRefreshListView mListView;
 
-    public ListView getListView() {
+    public PullToRefreshListView getListView() {
         return mListView;
     }
 
@@ -35,12 +37,12 @@ public abstract class BaseFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.list, container, false);
+        View v = inflater.inflate(R.layout.pull_to_refresh_list, container, false);
         if (v == null) {
             return null;
         }
 
-        mListView = (ListView) v.findViewById(R.id.list_view);
+        mListView = (PullToRefreshListView) v.findViewById(R.id.list_view);
         v.findViewById(R.id.guruguru).setVisibility(View.GONE);
         return v;
     }
@@ -51,18 +53,20 @@ public abstract class BaseFragment extends Fragment {
 
         MainActivity activity = (MainActivity) getActivity();
 
-        ListView listView = getListView();
+//        PullToRefreshListView listView = (PullToRefreshListView) getListView();
 
         // コンテキストメニューを使える様にする為の指定、但しデフォルトではロングタップで開く
-        registerForContextMenu(listView);
+        registerForContextMenu(mListView);
 
         // Status(ツイート)をViewに描写するアダプター
         mAdapter = new TwitterAdapter(activity, R.layout.row_tweet);
 
-        listView.setAdapter(mAdapter);
+        mListView.setAdapter(mAdapter);
+        mListView.setSelection(1);
+        mListView.setVisibility(View.GONE);
 
         // シングルタップでコンテキストメニューを開くための指定
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 view.showContextMenu();
@@ -76,12 +80,12 @@ public abstract class BaseFragment extends Fragment {
             getActivity().finish();
             return;
         }
-        listView.setSelection(0);
+        listView.setSelection(1);
     }
 
     public Boolean isTop() {
         ListView listView = getListView();
-        return listView != null && listView.getFirstVisiblePosition() == 0;
+        return listView != null && listView.getFirstVisiblePosition() == 1;
     }
 
     /**
@@ -99,7 +103,8 @@ public abstract class BaseFragment extends Fragment {
             @Override
             public void run() {
 
-                TwitterAdapter adapter = (TwitterAdapter) listView.getAdapter();
+                HeaderViewListAdapter headerViewListAdapter = (HeaderViewListAdapter) listView.getAdapter();
+                TwitterAdapter adapter = (TwitterAdapter) headerViewListAdapter.getWrappedAdapter();
                 adapter.removeStatus(statusId);
             }
         });
