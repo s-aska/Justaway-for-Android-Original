@@ -9,6 +9,7 @@ buildscript {
 apply plugin: 'android'
 
 dependencies {
+    compile project(':plugins:Android-PullToRefresh:library')
     compile fileTree(dir: 'libs', include: '*.jar')
 }
 

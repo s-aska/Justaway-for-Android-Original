@@ -10,6 +10,9 @@ import android.widget.HeaderViewListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
+
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -18,7 +21,6 @@ import info.justaway.MainActivity;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.model.Row;
-import info.justaway.view.PullToRefreshListView;
 import twitter4j.DirectMessage;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
@@ -42,8 +44,8 @@ public class DirectMessagesFragment extends BaseFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        PullToRefreshListView pullToRefreshListView = getListView();
-        pullToRefreshListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+        ListView listView = getListView();
+        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
 
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -57,9 +59,11 @@ public class DirectMessagesFragment extends BaseFragment {
                 }
             }
         });
-        pullToRefreshListView.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener() {
+
+        PullToRefreshListView pullToRefreshListView = getPullToRefreshListView();
+        pullToRefreshListView.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener<ListView>() {
             @Override
-            public void onRefresh() {
+            public void onRefresh(PullToRefreshBase<ListView> refreshView) {
                 mReload = true;
                 mDirectMessagesMaxId = 0L;
                 mSentDirectMessagesMaxId = 0L;
@@ -199,7 +203,7 @@ public class DirectMessagesFragment extends BaseFragment {
                     adapter.add(Row.newDirectMessage(status));
                 }
                 mReload = false;
-                PullToRefreshListView pullToRefreshListView = getListView();
+                com.handmark.pulltorefresh.library.PullToRefreshListView pullToRefreshListView = getPullToRefreshListView();
                 pullToRefreshListView.onRefreshComplete();
                 return;
             }
