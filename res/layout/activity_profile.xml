@@ -19,7 +19,7 @@
             <ImageView
                 android:id="@+id/banner"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="180dip"
                 android:adjustViewBounds="true"
                 android:contentDescription="@string/description_icon"
                 android:scaleType="fitXY" />
