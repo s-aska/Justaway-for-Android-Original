@@ -8,6 +8,8 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -18,6 +20,7 @@ import info.justaway.JustawayApplication;
 import info.justaway.ProfileActivity;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
+import info.justaway.animation.SlideOutAnimation;
 import info.justaway.model.Row;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
@@ -35,6 +38,7 @@ public class UserTimelineFragment extends Fragment {
     private ProgressBar mFooter;
     private User mUser;
     private Boolean mAutoLoader = false;
+    private int mFrameClose = 0;
     private int mPage = 1;
 
     @Override
@@ -69,10 +73,16 @@ public class UserTimelineFragment extends Fragment {
         new UserTimelineTask().execute(mUser.getScreenName());
 
         final ProfileActivity profileActivity = (ProfileActivity) getActivity();
+        final View frame = profileActivity.findViewById(R.id.frame);
         mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
 
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
+                if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE && mFrameClose == 1) {
+                    mFrameClose = 2;
+                    SlideOutAnimation animation = new SlideOutAnimation(frame, 1000, SlideOutAnimation.COLLAPSE);
+                    frame.startAnimation(animation);
+                }
             }
 
             @Override
@@ -81,8 +91,12 @@ public class UserTimelineFragment extends Fragment {
                 if (totalItemCount == firstVisibleItem + visibleItemCount) {
                     additionalReading();
                 }
-                if (firstVisibleItem > 2) {
-                    profileActivity.findViewById(R.id.frame).setVisibility(View.GONE);
+                if (firstVisibleItem > 2 && mFrameClose == 0) {
+                    mFrameClose = 1;
+//                    Animation animation = AnimationUtils.loadAnimation(profileActivity, R.anim.scale);
+//                    profileActivity.findViewById(R.id.frame).startAnimation(animation);
+//                    profileActivity.findViewById(R.id.frame).setVisibility(View.GONE);
+
                 }
             }
         });
