@@ -1,6 +1,8 @@
 package info.justaway;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -11,8 +13,11 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import java.util.List;
+
 import info.justaway.fragment.TalkFragment;
 import info.justaway.model.Row;
+import info.justaway.plugin.TwiccaPlugin;
 import twitter4j.HashtagEntity;
 import twitter4j.Status;
 import twitter4j.URLEntity;
@@ -28,7 +33,6 @@ public class BaseActivity extends FragmentActivity {
     static final int CONTEXT_MENU_RT_ID = 4;
     static final int CONTEXT_MENU_QT_ID = 5;
     static final int CONTEXT_MENU_LINK_ID = 6;
-    static final int CONTEXT_MENU_TOFU_ID = 7;
     static final int CONTEXT_MENU_DM_ID = 8;
     static final int CONTEXT_MENU_RM_DM_ID = 9;
     static final int CONTEXT_MENU_RM_ID = 10;
@@ -38,6 +42,11 @@ public class BaseActivity extends FragmentActivity {
     static final int CONTEXT_MENU_HASH_ID = 14;
     static final int CONTEXT_MENU_AT_ID = 15;
     static final int CONTEXT_MENU_REPLY_ALL_ID = 16;
+    static final int CONTEXT_MENU_SHARE_TEXT_ID = 17;
+    static final int CONTEXT_MENU_SHARE_URL_ID = 18;
+    static final int CONTEXT_MENU_TWICCA_SHOW_TEXT_BASE_ID = 100;
+
+    private List<ResolveInfo> mTwiccaPlugins;
 
     /**
      * コンテキストメニュー表示時の選択したツイートをセットしている Streaming API対応で勝手に画面がスクロールされる為、
@@ -65,8 +74,8 @@ public class BaseActivity extends FragmentActivity {
 
         if (row.isDirectMessage()) {
             menu.setHeaderTitle(row.getMessage().getSenderScreenName());
-            menu.add(0, CONTEXT_MENU_DM_ID, 0, "返信(DM)");
-            menu.add(0, CONTEXT_MENU_RM_DM_ID, 0, "ツイ消し(DM)");
+            menu.add(0, CONTEXT_MENU_DM_ID, 0, R.string.context_menu_reply_direct_message);
+            menu.add(0, CONTEXT_MENU_RM_DM_ID, 0, R.string.context_menu_destroy_direct_message);
             return;
         }
         Status status = row.getStatus();
@@ -76,38 +85,38 @@ public class BaseActivity extends FragmentActivity {
         JustawayApplication application = JustawayApplication.getApplication();
 
         menu.setHeaderTitle(status.getText());
-        menu.add(0, CONTEXT_MENU_REPLY_ID, 0, "リプ");
+        menu.add(0, CONTEXT_MENU_REPLY_ID, 0, R.string.context_menu_reply);
 
         UserMentionEntity[] mentions = source.getUserMentionEntities();
         if (mentions.length > 1) {
-            menu.add(0, CONTEXT_MENU_REPLY_ALL_ID, 0, "全員にリプ");
+            menu.add(0, CONTEXT_MENU_REPLY_ALL_ID, 0, R.string.context_menu_reply_all);
         }
 
-        menu.add(0, CONTEXT_MENU_QT_ID, 0, "引用");
+        menu.add(0, CONTEXT_MENU_QT_ID, 0, R.string.context_menu_qt);
 
         if (application.isFav(status)) {
-            menu.add(0, CONTEXT_MENU_RM_FAV_ID, 0, "ふぁぼを解除");
+            menu.add(0, CONTEXT_MENU_RM_FAV_ID, 0, R.string.context_menu_destroy_favorite);
         } else {
-            menu.add(0, CONTEXT_MENU_FAV_ID, 0, "ふぁぼ");
+            menu.add(0, CONTEXT_MENU_FAV_ID, 0, R.string.context_menu_create_favorite);
         }
 
         if (status.getUser().getId() == application.getUserId()) {
             if (retweet != null) {
                 if (application.getRtId(status) != null) {
-                    menu.add(0, CONTEXT_MENU_RM_RT_ID, 0, "公式RTを解除");
+                    menu.add(0, CONTEXT_MENU_RM_RT_ID, 0, R.string.context_menu_destroy_retweet);
                 }
             } else {
-                menu.add(0, CONTEXT_MENU_RM_ID, 0, "ツイ消し");
+                menu.add(0, CONTEXT_MENU_RM_ID, 0, R.string.context_menu_destroy_status);
             }
         } else if (application.getRtId(status) == null) {
             if (!application.isFav(status)) {
-                menu.add(0, CONTEXT_MENU_FAVRT_ID, 0, "ふぁぼ＆公式RT");
+                menu.add(0, CONTEXT_MENU_FAVRT_ID, 0, R.string.context_menu_favorite_and_retweet);
             }
-            menu.add(0, CONTEXT_MENU_RT_ID, 0, "公式RT");
+            menu.add(0, CONTEXT_MENU_RT_ID, 0, R.string.context_menu_retweet);
         }
 
         if (source.getInReplyToStatusId() > 0) {
-            menu.add(0, CONTEXT_MENU_TALK_ID, 0, "会話を表示");
+            menu.add(0, CONTEXT_MENU_TALK_ID, 0, R.string.context_menu_talk);
         }
 
         // ツイート内のURLへアクセスできるようにメニューに展開する
@@ -132,7 +141,24 @@ public class BaseActivity extends FragmentActivity {
             menu.add(0, CONTEXT_MENU_AT_ID, 0, "@" + mention.getScreenName());
         }
 
-        menu.add(0, CONTEXT_MENU_TOFU_ID, 0, "TofuBuster");
+        menu.add(0, CONTEXT_MENU_SHARE_TEXT_ID, 0, R.string.context_menu_share_text);
+        menu.add(0, CONTEXT_MENU_SHARE_URL_ID, 0, R.string.context_menu_share_url);
+
+        // twiccaプラグイン実装 IDは被らないように100~にしてる　
+        if (mTwiccaPlugins == null) {
+            mTwiccaPlugins = TwiccaPlugin.getResolveInfoForShowTweet(getPackageManager());
+        }
+        if (!mTwiccaPlugins.isEmpty()) {
+            PackageManager pm = getPackageManager();
+            int i = 0;
+            for (ResolveInfo resolveInfo : mTwiccaPlugins) {
+                if (pm == null || resolveInfo.activityInfo == null) {
+                    continue;
+                }
+                menu.add(0, CONTEXT_MENU_TWICCA_SHOW_TEXT_BASE_ID + i, 0, resolveInfo.activityInfo.loadLabel(pm));
+                i++;
+            }
+        }
     }
 
     @Override
@@ -176,7 +202,8 @@ public class BaseActivity extends FragmentActivity {
             return true;
         }
 
-        switch (item.getItemId()) {
+        int itemId = item.getItemId();
+        switch (itemId) {
             case CONTEXT_MENU_REPLY_ID:
                 text = "@" + source.getUser().getScreenName() + " ";
                 if (editStatus != null) {
@@ -278,22 +305,30 @@ public class BaseActivity extends FragmentActivity {
                 intent.putExtra("screenName", item.getTitle().toString().substring(1));
                 startActivity(intent);
                 return true;
-            case CONTEXT_MENU_TOFU_ID:
-                try {
-                    intent = new Intent("com.product.kanzmrsw.tofubuster.ACTION_SHOW_TEXT");
-                    intent.putExtra(Intent.EXTRA_TEXT, status.getText());
-                    intent.putExtra(Intent.EXTRA_SUBJECT, "Justaway");
-                    intent.putExtra("isCopyEnabled", true);
-                    startActivity(intent); // TofuBusterがインストールされていない場合、startActivityで落ちる
-                } catch (Exception e) {
-                    // 露骨な誘導
-                    intent = new Intent(
-                            Intent.ACTION_VIEW,
-                            Uri.parse("https://market.android.com/details?id=com.product.kanzmrsw.tofubuster"));
-                    startActivity(intent);
-                }
+            case CONTEXT_MENU_SHARE_TEXT_ID:
+                intent = new Intent();
+                intent.setAction(Intent.ACTION_SEND);
+                intent.setType("text/plain");
+                intent.putExtra(Intent.EXTRA_TEXT, status.getText());
+                startActivity(intent);
+                return true;
+            case CONTEXT_MENU_SHARE_URL_ID:
+                intent = new Intent();
+                intent.setAction(Intent.ACTION_SEND);
+                intent.setType("text/plain");
+                intent.putExtra(Intent.EXTRA_TEXT, "https://twitter.com/" + source.getUser().getScreenName()
+                        + "/status/" + String.valueOf(source.getId()));
+                startActivity(intent);
                 return true;
             default:
+                if (itemId >= CONTEXT_MENU_TWICCA_SHOW_TEXT_BASE_ID) {
+                    ResolveInfo resolveInfo = mTwiccaPlugins.get(itemId - CONTEXT_MENU_TWICCA_SHOW_TEXT_BASE_ID);
+                    if (resolveInfo.activityInfo == null) {
+                        return true;
+                    }
+                    intent = TwiccaPlugin.createIntentShowTweet(status, resolveInfo.activityInfo.packageName, resolveInfo.activityInfo.name);
+                    startActivity(intent);
+                }
                 return true;
         }
     }

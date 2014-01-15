@@ -303,14 +303,6 @@ public class PostActivity extends FragmentActivity {
                 new AlertDialog.Builder(PostActivity.this)
                         .setTitle(R.string.tweet_draft)
                         .setPositiveButton(
-                                R.string.destroy,
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        finish();
-                                    }
-                                })
-                        .setNegativeButton(
                                 R.string.save,
                                 new DialogInterface.OnClickListener() {
                                     @Override
@@ -321,6 +313,14 @@ public class PostActivity extends FragmentActivity {
                                         draftList.add(mEditText.getText().toString());
                                         saveLoadTraining.saveArray(draftList);
 
+                                        finish();
+                                    }
+                                })
+                        .setNegativeButton(
+                                R.string.destroy,
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
                                         finish();
                                     }
                                 })
@@ -428,8 +428,12 @@ public class PostActivity extends FragmentActivity {
             mDraftLists.add(draft);
         }
 
+        public void remove(int position) {
+            super.remove(mDraftLists.remove(position));
+        }
+
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, View convertView, ViewGroup parent) {
 
             // ビューを受け取る
             View view = convertView;
@@ -448,12 +452,21 @@ public class PostActivity extends FragmentActivity {
                 public void onClick(View v) {
                     mEditText.setText(draft);
                     mDraftDialog.dismiss();
-                    // TODO: 選択したものを下書きから削除
+                    mDraftLists.remove(position);
+                    SaveLoadTraining saveLoadTraining = new SaveLoadTraining();
+                    saveLoadTraining.saveArray(mDraftLists);
+
                 }
             });
 
-            // TODO: 下書き削除ボタン
-
+            view.findViewById(R.id.trash).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    remove(position);
+                    SaveLoadTraining saveLoadTraining = new SaveLoadTraining();
+                    saveLoadTraining.saveArray(mDraftLists);
+                }
+            });
             return view;
         }
     }
