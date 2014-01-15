@@ -1,5 +1,7 @@
 package info.justaway.fragment.profile;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -89,33 +91,67 @@ public class SummaryFragment extends Fragment {
                     Intent intent = new Intent(getActivity(), EditProfileActivity.class);
                     startActivity(intent);
                 } else if (mFollowFlg) {
-                    mRuntimeFlg = true;
-                    DestroyFriendshipTask task = new DestroyFriendshipTask() {
-                        @Override
-                        protected void onPostExecute(Boolean success) {
-                            if (success) {
-                                JustawayApplication.showToast(R.string.toast_destroy_friendship_success);
-                                follow.setText(R.string.button_follow);
-                                mFollowFlg = false;
-                                mRuntimeFlg = false;
-                            }
-                        }
-                    };
-                    task.execute(user.getId());
+                    new AlertDialog.Builder(getActivity())
+                            .setTitle(R.string.confirm_unfollow)
+                            .setPositiveButton(
+                                    R.string.button_unfollow,
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            mRuntimeFlg = true;
+                                            DestroyFriendshipTask task = new DestroyFriendshipTask() {
+                                                @Override
+                                                protected void onPostExecute(Boolean success) {
+                                                    if (success) {
+                                                        JustawayApplication.showToast(R.string.toast_destroy_friendship_success);
+                                                        follow.setText(R.string.button_follow);
+                                                        mFollowFlg = false;
+                                                        mRuntimeFlg = false;
+                                                    }
+                                                }
+                                            };
+                                            task.execute(user.getId());
+                                        }
+                                    })
+                            .setNegativeButton(
+                                    R.string.button_cancel,
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                        }
+                                    })
+                            .show();
                 } else {
-                    mRuntimeFlg = true;
-                    FollowTask task = new FollowTask() {
-                        @Override
-                        protected void onPostExecute(Boolean success) {
-                            if (success) {
-                                JustawayApplication.showToast(R.string.toast_follow_success);
-                                follow.setText(R.string.button_unfollow);
-                                mFollowFlg = true;
-                                mRuntimeFlg = false;
-                            }
-                        }
-                    };
-                    task.execute(user.getId());
+                    new AlertDialog.Builder(getActivity())
+                            .setTitle(R.string.confirm_follow)
+                            .setPositiveButton(
+                                    R.string.button_follow,
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            mRuntimeFlg = true;
+                                            FollowTask task = new FollowTask() {
+                                                @Override
+                                                protected void onPostExecute(Boolean success) {
+                                                    if (success) {
+                                                        JustawayApplication.showToast(R.string.toast_follow_success);
+                                                        follow.setText(R.string.button_unfollow);
+                                                        mFollowFlg = true;
+                                                        mRuntimeFlg = false;
+                                                    }
+                                                }
+                                            };
+                                            task.execute(user.getId());
+                                        }
+                                    })
+                            .setNegativeButton(
+                                    R.string.button_cancel,
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                        }
+                                    })
+                            .show();
                 }
             }
         });

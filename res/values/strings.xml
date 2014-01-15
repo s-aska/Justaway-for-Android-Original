@@ -61,6 +61,8 @@
     <string name="confirm_update_profile_image">プロフィール画像を変更しますか？</string>
     <string name="confirm_retweet">リツイートしますか？</string>
     <string name="confirm_destroy_retweet">リツイートを取り消しますか？</string>
+    <string name="confirm_follow">フォローしますか？</string>
+    <string name="confirm_unfollow">フォローを解除しますか？</string>
     <string name="button_apply">適用</string>
     <string name="button_cancel">キャンセル</string>
     <string name="button_retweet">リツイート</string>
