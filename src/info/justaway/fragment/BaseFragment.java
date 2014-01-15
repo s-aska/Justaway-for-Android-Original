@@ -17,7 +17,7 @@ import info.justaway.MainActivity;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.model.Row;
-import info.justaway.view.PullToRefreshListView;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 /**
  * タブのベースクラス
@@ -25,10 +25,15 @@ import info.justaway.view.PullToRefreshListView;
 public abstract class BaseFragment extends Fragment {
 
     private TwitterAdapter mAdapter;
-    private PullToRefreshListView mListView;
+    private PullToRefreshListView mPullToRefreshListView;
+    private ListView mListView;
 
-    public PullToRefreshListView getListView() {
+    public ListView getListView() {
         return mListView;
+    }
+
+    public PullToRefreshListView getPullToRefreshListView() {
+        return mPullToRefreshListView;
     }
 
     public TwitterAdapter getListAdapter() {
@@ -42,7 +47,8 @@ public abstract class BaseFragment extends Fragment {
             return null;
         }
 
-        mListView = (PullToRefreshListView) v.findViewById(R.id.list_view);
+        mPullToRefreshListView = (PullToRefreshListView) v.findViewById(R.id.list_view);
+        mListView = mPullToRefreshListView.getRefreshableView();
         v.findViewById(R.id.guruguru).setVisibility(View.GONE);
         return v;
     }
