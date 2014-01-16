@@ -54,16 +54,14 @@ public class TimelineFragment extends BaseFragment {
                 }
             }
         });
-//        PullToRefreshListView pullToRefreshListView = getPullToRefreshListView();
-//        pullToRefreshListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
-//            @Override
-//            public void onRefresh(PullToRefreshBase<ListView> refreshView) {
-//                mReload = true;
-//                mMaxId = 0L;
-//                new HomeTimelineTask().execute();
-//            }
-//        });
 
+        new HomeTimelineTask().execute();
+    }
+
+    @Override
+    public void onRefreshStarted(View view) {
+        mReload = true;
+        mMaxId = 0L;
         new HomeTimelineTask().execute();
     }
 
@@ -121,11 +119,6 @@ public class TimelineFragment extends BaseFragment {
         });
     }
 
-    @Override
-    public void onRefreshStarted(View view) {
-
-    }
-
     private class HomeTimelineTask extends AsyncTask<Void, Void, ResponseList<Status>> {
         @Override
         protected ResponseList<twitter4j.Status> doInBackground(Void... params) {
@@ -157,8 +150,7 @@ public class TimelineFragment extends BaseFragment {
                     adapter.add(Row.newStatus(status));
                 }
                 mReload = false;
-//                PullToRefreshListView pullToRefreshListView = getPullToRefreshListView();
-//                pullToRefreshListView.onRefreshComplete();
+                getPullToRefreshLayout().setRefreshComplete();
                 return;
             }
             for (twitter4j.Status status : statuses) {

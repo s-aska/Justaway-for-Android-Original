@@ -53,16 +53,14 @@ public class InteractionsFragment extends BaseFragment {
                 }
             }
         });
-//        PullToRefreshListView pullToRefreshListView = getPullToRefreshListView();
-//        pullToRefreshListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
-//            @Override
-//            public void onRefresh(PullToRefreshBase<ListView> refreshView) {
-//                mReload = true;
-//                mMaxId = 0L;
-//                new MentionsTimelineTask().execute();
-//            }
-//        });
 
+        new MentionsTimelineTask().execute();
+    }
+
+    @Override
+    public void onRefreshStarted(View view) {
+        mReload = true;
+        mMaxId = 0L;
         new MentionsTimelineTask().execute();
     }
 
@@ -138,11 +136,6 @@ public class InteractionsFragment extends BaseFragment {
         });
     }
 
-    @Override
-    public void onRefreshStarted(View view) {
-
-    }
-
     private class MentionsTimelineTask extends AsyncTask<Void, Void, ResponseList<Status>> {
         @Override
         protected ResponseList<twitter4j.Status> doInBackground(Void... params) {
@@ -174,8 +167,7 @@ public class InteractionsFragment extends BaseFragment {
                     adapter.add(Row.newStatus(status));
                 }
                 mReload = false;
-//                com.handmark.pulltorefresh.library.PullToRefreshListView pullToRefreshListView = getPullToRefreshListView();
-//                pullToRefreshListView.onRefreshComplete();
+                getPullToRefreshLayout().setRefreshComplete();
                 return;
             }
             for (twitter4j.Status status : statuses) {

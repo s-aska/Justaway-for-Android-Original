@@ -38,6 +38,10 @@ public abstract class BaseFragment extends Fragment implements
         return mAdapter;
     }
 
+    public PullToRefreshLayout getPullToRefreshLayout() {
+        return mPullToRefreshLayout;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.pull_to_refresh_list, container, false);

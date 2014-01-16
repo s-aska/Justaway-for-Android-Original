@@ -56,17 +56,14 @@ public class DirectMessagesFragment extends BaseFragment {
             }
         });
 
-//        PullToRefreshListView pullToRefreshListView = getPullToRefreshListView();
-//        pullToRefreshListView.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener<ListView>() {
-//            @Override
-//            public void onRefresh(PullToRefreshBase<ListView> refreshView) {
-//                mReload = true;
-//                mDirectMessagesMaxId = 0L;
-//                mSentDirectMessagesMaxId = 0L;
-//                new DirectMessagesTask().execute();
-//            }
-//        });
+        new DirectMessagesTask().execute();
+    }
 
+    @Override
+    public void onRefreshStarted(View view) {
+        mReload = true;
+        mDirectMessagesMaxId = 0L;
+        mSentDirectMessagesMaxId = 0L;
         new DirectMessagesTask().execute();
     }
 
@@ -137,11 +134,6 @@ public class DirectMessagesFragment extends BaseFragment {
         });
     }
 
-    @Override
-    public void onRefreshStarted(View view) {
-
-    }
-
     private class DirectMessagesTask extends AsyncTask<Void, Void, ResponseList<DirectMessage>> {
         @Override
         protected ResponseList<DirectMessage> doInBackground(Void... params) {
@@ -203,8 +195,7 @@ public class DirectMessagesFragment extends BaseFragment {
                     adapter.add(Row.newDirectMessage(status));
                 }
                 mReload = false;
-//                com.handmark.pulltorefresh.library.PullToRefreshListView pullToRefreshListView = getPullToRefreshListView();
-//                pullToRefreshListView.onRefreshComplete();
+                getPullToRefreshLayout().setRefreshComplete();
                 return;
             }
             for (DirectMessage status : statuses) {
