@@ -1,22 +1,28 @@
 package info.justaway;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import info.justaway.adapter.TwitterAdapter;
@@ -31,7 +37,9 @@ public class SearchActivity extends BaseActivity {
     private TwitterAdapter mAdapter;
     private ListView mListView;
     private ProgressBar mFooter;
+    private View mHeader;
     private Query mNextQuery;
+    private ListView mSearchListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +59,19 @@ public class SearchActivity extends BaseActivity {
         mListView = (ListView) findViewById(R.id.list_view);
         mListView.setVisibility(View.GONE);
 
+        mSearchListView = (ListView) findViewById(R.id.search_list_view);
+        SearchWordAdapter searchWordAdapter = new SearchWordAdapter(mContext, R.layout.row_word);
+        mSearchListView.setAdapter(searchWordAdapter);
+
+        SaveLoadTraining saveLoadTraining = new SaveLoadTraining();
+        ArrayList<String> searchWords = saveLoadTraining.loadArray();
+
+        for (String searchWord : searchWords) {
+            searchWordAdapter.add(searchWord);
+        }
+
+        mHeader = View.inflate(getApplicationContext(), R.layout.row_seve_word, null);
+
         // コンテキストメニューを使える様にする為の指定、但しデフォルトではロングタップで開く
         registerForContextMenu(mListView);
 
@@ -66,6 +87,34 @@ public class SearchActivity extends BaseActivity {
             }
         });
 
+        mHeader.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new AlertDialog.Builder(SearchActivity.this)
+                        .setTitle(mSearchWords.getText().toString() + " を検索に保存しますか？")
+                        .setPositiveButton(
+                                R.string.save,
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        // 検索単語を保存する
+                                        SaveLoadTraining saveLoadTraining = new SaveLoadTraining();
+                                        ArrayList<String> searchList = saveLoadTraining.loadArray();
+                                        searchList.add(mSearchWords.getText().toString());
+                                        saveLoadTraining.saveArray(searchList);
+
+                                    }
+                                })
+                        .setNegativeButton(
+                                R.string.button_cancel,
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                    }
+                                })
+                        .show();
+            }
+        });
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -156,9 +205,13 @@ public class SearchActivity extends BaseActivity {
                 mAdapter.add(Row.newStatus(status));
             }
 
+            mListView.removeHeaderView(mHeader);
             mListView.setVisibility(View.VISIBLE);
             if (count == 0) {
                 mListView.setSelection(0);
+                mSearchListView.setVisibility(View.GONE);
+                // TODO: 既に登録されているものなら表示させない
+                mListView.addHeaderView(mHeader);
             }
             mFooter.setVisibility(View.GONE);
 
@@ -166,6 +219,112 @@ public class SearchActivity extends BaseActivity {
             InputMethodManager inputMethodManager =
                     (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             inputMethodManager.hideSoftInputFromWindow(mSearchWords.getWindowToken(), 0);
+        }
+    }
+
+    public class SearchWordAdapter extends ArrayAdapter<String> {
+
+        private ArrayList<String> mWordLists = new ArrayList<String>();
+        private Context mContext;
+        private LayoutInflater mInflater;
+        private int mLayout;
+
+        public SearchWordAdapter(Context context, int textViewResourceId) {
+            super(context, textViewResourceId);
+            this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            this.mContext = context;
+            this.mLayout = textViewResourceId;
+        }
+
+        @Override
+        public void add(String draft) {
+            super.add(draft);
+            mWordLists.add(draft);
+        }
+
+        public void remove(int position) {
+            super.remove(mWordLists.remove(position));
+        }
+
+        @Override
+        public View getView(final int position, View convertView, ViewGroup parent) {
+
+            // ビューを受け取る
+            View view = convertView;
+            if (view == null) {
+                // 受け取ったビューがnullなら新しくビューを生成
+                view = mInflater.inflate(this.mLayout, null);
+            }
+
+            final String word = mWordLists.get(position);
+
+            ((TextView) view.findViewById(R.id.word)).setText(word);
+            ((TextView) view.findViewById(R.id.trash)).setTypeface(Typeface.createFromAsset(getAssets(), "fontello.ttf"));
+
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mSearchWords.setText(word);
+                    mWordLists.remove(position);
+                    SaveLoadTraining saveLoadTraining = new SaveLoadTraining();
+                    saveLoadTraining.saveArray(mWordLists);
+
+                }
+            });
+
+            view.findViewById(R.id.trash).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    remove(position);
+                    SaveLoadTraining saveLoadTraining = new SaveLoadTraining();
+                    saveLoadTraining.saveArray(mWordLists);
+                }
+            });
+            return view;
+        }
+    }
+
+    /**
+     * SharedPreferencesにArrayListを突っ込む
+     */
+    public class SaveLoadTraining {
+
+        private Context context;
+        public static final String PREFS_NAME = "SearchListFile";
+        private ArrayList<String> list;
+
+        public SaveLoadTraining() {
+            this.context = mContext;
+        }
+
+        public void saveArray(ArrayList<String> list) {
+            this.list = list;
+
+            SharedPreferences settings = context.getSharedPreferences(PREFS_NAME, 0);
+            SharedPreferences.Editor editor = settings.edit();
+
+            int size = list.size();
+            editor.putInt("list_size", size);
+
+            for (int i = 0; i < size; i++) {
+                editor.remove("list_" + i);
+            }
+            for (int i = 0; i < size; i++) {
+                editor.putString("list_" + i, list.get(i));
+            }
+            editor.commit();
+        }
+
+        public ArrayList<String> loadArray() {
+            SharedPreferences file = context.getSharedPreferences(PREFS_NAME, 0);
+            list = new ArrayList<String>();
+            int size = file.getInt("list_size", 0);
+
+            for (int i = 0; i < size; i++) {
+                String draft = file.getString("list_" + i, null);
+                list.add(draft);
+            }
+            return list;
         }
     }
 }

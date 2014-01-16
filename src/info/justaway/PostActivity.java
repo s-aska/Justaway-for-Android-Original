@@ -75,7 +75,7 @@ public class PostActivity extends FragmentActivity {
         mTweetButton = (Button) findViewById(R.id.tweet);
         mImgButton = (Button) findViewById(R.id.img);
         mSuddenlyButton = (Button) findViewById(R.id.suddenly);
-        mDraftButton = (Button) findViewById(R.id.draft);
+        mDraftButton = (Button) findViewById(R.id.word);
         mTwitter = application.getTwitter();
 
         mTweetButton.setTypeface(mFontello);
@@ -394,7 +394,7 @@ public class PostActivity extends FragmentActivity {
             ListView listView = (ListView) dialog.findViewById(R.id.list);
 
             // 下書きをViewに描写するアダプター
-            DraftAdapter adapter = new DraftAdapter(activity, R.layout.row_draft);
+            DraftAdapter adapter = new DraftAdapter(activity, R.layout.row_word);
             listView.setAdapter(adapter);
 
             SaveLoadTraining saveLoadTraining = new SaveLoadTraining();
@@ -444,7 +444,7 @@ public class PostActivity extends FragmentActivity {
 
             final String draft = mDraftLists.get(position);
 
-            ((TextView) view.findViewById(R.id.draft)).setText(draft);
+            ((TextView) view.findViewById(R.id.word)).setText(draft);
             ((TextView) view.findViewById(R.id.trash)).setTypeface(mFontello);
 
             view.setOnClickListener(new View.OnClickListener() {
