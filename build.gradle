@@ -8,8 +8,12 @@ buildscript {
 }
 apply plugin: 'android'
 
+repositories {
+    mavenCentral()
+}
+
 dependencies {
-    compile project(':plugins:Android-PullToRefresh:library')
+    compile 'com.github.chrisbanes.actionbarpulltorefresh:library:+'
     compile fileTree(dir: 'libs', include: '*.jar')
 }
 

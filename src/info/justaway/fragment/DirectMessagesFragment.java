@@ -6,12 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.HeaderViewListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-
-import com.handmark.pulltorefresh.library.PullToRefreshBase;
-import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -60,16 +56,16 @@ public class DirectMessagesFragment extends BaseFragment {
             }
         });
 
-        PullToRefreshListView pullToRefreshListView = getPullToRefreshListView();
-        pullToRefreshListView.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener<ListView>() {
-            @Override
-            public void onRefresh(PullToRefreshBase<ListView> refreshView) {
-                mReload = true;
-                mDirectMessagesMaxId = 0L;
-                mSentDirectMessagesMaxId = 0L;
-                new DirectMessagesTask().execute();
-            }
-        });
+//        PullToRefreshListView pullToRefreshListView = getPullToRefreshListView();
+//        pullToRefreshListView.setOnRefreshListener(new PullToRefreshListView.OnRefreshListener<ListView>() {
+//            @Override
+//            public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+//                mReload = true;
+//                mDirectMessagesMaxId = 0L;
+//                mSentDirectMessagesMaxId = 0L;
+//                new DirectMessagesTask().execute();
+//            }
+//        });
 
         new DirectMessagesTask().execute();
     }
@@ -101,15 +97,14 @@ public class DirectMessagesFragment extends BaseFragment {
             public void run() {
 
                 // 表示している要素の位置
-                int position = listView.getFirstVisiblePosition() - 1;
+                int position = listView.getFirstVisiblePosition();
 
                 // 縦スクロール位置
                 View view = listView.getChildAt(0);
                 int y = view != null ? view.getTop() : 0;
 
                 // 要素を上に追加（ addだと下に追加されてしまう ）
-                HeaderViewListAdapter headerViewListAdapter = (HeaderViewListAdapter) listView.getAdapter();
-                TwitterAdapter adapter = (TwitterAdapter) headerViewListAdapter.getWrappedAdapter();
+                TwitterAdapter adapter = (TwitterAdapter) listView.getAdapter();
                 adapter.insert(row, 0);
 
                 // 少しでもスクロールさせている時は画面を動かさない様にスクロー位置を復元する
@@ -118,7 +113,7 @@ public class DirectMessagesFragment extends BaseFragment {
                     return;
                 }
                 if (position != 0 || y != 0) {
-                    listView.setSelectionFromTop(position + 2, y);
+                    listView.setSelectionFromTop(position + 1, y);
                     activity.onNewDirectMessage(false);
                 } else {
                     activity.onNewDirectMessage(true);
@@ -140,6 +135,11 @@ public class DirectMessagesFragment extends BaseFragment {
                 adapter.removeDirectMessage(directMessageId);
             }
         });
+    }
+
+    @Override
+    public void onRefreshStarted(View view) {
+
     }
 
     private class DirectMessagesTask extends AsyncTask<Void, Void, ResponseList<DirectMessage>> {
@@ -203,8 +203,8 @@ public class DirectMessagesFragment extends BaseFragment {
                     adapter.add(Row.newDirectMessage(status));
                 }
                 mReload = false;
-                com.handmark.pulltorefresh.library.PullToRefreshListView pullToRefreshListView = getPullToRefreshListView();
-                pullToRefreshListView.onRefreshComplete();
+//                com.handmark.pulltorefresh.library.PullToRefreshListView pullToRefreshListView = getPullToRefreshListView();
+//                pullToRefreshListView.onRefreshComplete();
                 return;
             }
             for (DirectMessage status : statuses) {

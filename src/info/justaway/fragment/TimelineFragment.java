@@ -6,12 +6,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.HeaderViewListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-
-import com.handmark.pulltorefresh.library.PullToRefreshBase;
-import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import info.justaway.JustawayApplication;
 import info.justaway.MainActivity;
@@ -58,15 +54,15 @@ public class TimelineFragment extends BaseFragment {
                 }
             }
         });
-        PullToRefreshListView pullToRefreshListView = getPullToRefreshListView();
-        pullToRefreshListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
-            @Override
-            public void onRefresh(PullToRefreshBase<ListView> refreshView) {
-                mReload = true;
-                mMaxId = 0L;
-                new HomeTimelineTask().execute();
-            }
-        });
+//        PullToRefreshListView pullToRefreshListView = getPullToRefreshListView();
+//        pullToRefreshListView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
+//            @Override
+//            public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+//                mReload = true;
+//                mMaxId = 0L;
+//                new HomeTimelineTask().execute();
+//            }
+//        });
 
         new HomeTimelineTask().execute();
     }
@@ -100,15 +96,14 @@ public class TimelineFragment extends BaseFragment {
             public void run() {
 
                 // 表示している要素の位置
-                int position = listView.getFirstVisiblePosition() - 1;
+                int position = listView.getFirstVisiblePosition();
 
                 // 縦スクロール位置
                 View view = listView.getChildAt(0);
                 int y = view != null ? view.getTop() : 0;
 
                 // 要素を上に追加（ addだと下に追加されてしまう ）
-                HeaderViewListAdapter headerViewListAdapter = (HeaderViewListAdapter) listView.getAdapter();
-                TwitterAdapter adapter = (TwitterAdapter) headerViewListAdapter.getWrappedAdapter();
+                TwitterAdapter adapter = (TwitterAdapter) listView.getAdapter();
                 adapter.insert(row, 0);
 
                 // 少しでもスクロールさせている時は画面を動かさない様にスクロー位置を復元する
@@ -117,13 +112,18 @@ public class TimelineFragment extends BaseFragment {
                     return;
                 }
                 if (position != 0 || y != 0) {
-                    listView.setSelectionFromTop(position + 2, y);
+                    listView.setSelectionFromTop(position + 1, y);
                     activity.onNewTimeline(false);
                 } else {
                     activity.onNewTimeline(true);
                 }
             }
         });
+    }
+
+    @Override
+    public void onRefreshStarted(View view) {
+
     }
 
     private class HomeTimelineTask extends AsyncTask<Void, Void, ResponseList<Status>> {
@@ -157,8 +157,8 @@ public class TimelineFragment extends BaseFragment {
                     adapter.add(Row.newStatus(status));
                 }
                 mReload = false;
-                PullToRefreshListView pullToRefreshListView = getPullToRefreshListView();
-                pullToRefreshListView.onRefreshComplete();
+//                PullToRefreshListView pullToRefreshListView = getPullToRefreshListView();
+//                pullToRefreshListView.onRefreshComplete();
                 return;
             }
             for (twitter4j.Status status : statuses) {
