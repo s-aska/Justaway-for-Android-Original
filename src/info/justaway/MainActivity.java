@@ -201,7 +201,6 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
                 }
                 mMainPagerAdapter.removeTab(position);
             }
-            mMainPagerAdapter.notifyDataSetChanged();
         }
 
         ArrayList<Integer> tabs = mApplication.loadTabs();

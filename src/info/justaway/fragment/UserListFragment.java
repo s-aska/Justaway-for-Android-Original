@@ -57,7 +57,9 @@ public class UserListFragment extends BaseFragment {
             }
         });
 
-        new UserListStatusesTask().execute();
+        if (mMaxId == 0L) {
+            new UserListStatusesTask().execute();
+        }
     }
 
     @Override

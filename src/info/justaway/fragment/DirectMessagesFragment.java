@@ -56,7 +56,9 @@ public class DirectMessagesFragment extends BaseFragment {
             }
         });
 
-        new DirectMessagesTask().execute();
+        if (mDirectMessagesMaxId == 0L && mSentDirectMessagesMaxId == 0L) {
+            new DirectMessagesTask().execute();
+        }
     }
 
     @Override

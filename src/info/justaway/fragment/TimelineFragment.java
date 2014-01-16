@@ -2,6 +2,7 @@ package info.justaway.fragment;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,13 +50,15 @@ public class TimelineFragment extends BaseFragment {
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                 // 最後までスクロールされたかどうかの判定
-                if (totalItemCount == firstVisibleItem + visibleItemCount) {
+                if (totalItemCount > 0 && totalItemCount == firstVisibleItem + visibleItemCount) {
                     additionalReading();
                 }
             }
         });
 
-        new HomeTimelineTask().execute();
+        if (mMaxId == 0L) {
+            new HomeTimelineTask().execute();
+        }
     }
 
     @Override
