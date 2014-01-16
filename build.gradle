@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-    compile 'com.github.chrisbanes.actionbarpulltorefresh:library:+'
+    compile project(':plugins:ActionBar-PullToRefresh:library')
     compile fileTree(dir: 'libs', include: '*.jar')
 }
 

@@ -54,7 +54,9 @@ public class InteractionsFragment extends BaseFragment {
             }
         });
 
-        new MentionsTimelineTask().execute();
+        if (mMaxId == 0L) {
+            new MentionsTimelineTask().execute();
+        }
     }
 
     @Override

@@ -50,17 +50,15 @@ public abstract class BaseFragment extends Fragment implements
         }
 
         mListView = (ListView) v.findViewById(R.id.list_view);
-        v.findViewById(R.id.guruguru).setVisibility(View.GONE);
-
         mPullToRefreshLayout = (PullToRefreshLayout) v.findViewById(R.id.ptr_layout);
+
         // Now setup the PullToRefreshLayout
         ActionBarPullToRefresh.from(getActivity())
-                // Mark All Children as pullable
                 .theseChildrenArePullable(R.id.list_view)
-                        // Set the OnRefreshListener
                 .listener(this)
-                        // Finally commit the setup to our PullToRefreshLayout
                 .setup(mPullToRefreshLayout);
+
+        v.findViewById(R.id.guruguru).setVisibility(View.GONE);
 
         return v;
     }
@@ -71,16 +69,19 @@ public abstract class BaseFragment extends Fragment implements
 
         MainActivity activity = (MainActivity) getActivity();
 
-//        PullToRefreshListView listView = (PullToRefreshListView) getListView();
-
         // コンテキストメニューを使える様にする為の指定、但しデフォルトではロングタップで開く
         registerForContextMenu(mListView);
 
-        // Status(ツイート)をViewに描写するアダプター
-        mAdapter = new TwitterAdapter(activity, R.layout.row_tweet);
+        // mMainPagerAdapter.notifyDataSetChanged() された時に
+        // onCreateView と onActivityCreated インスタンスが生きたまま呼ばれる
+        // Adapterの生成とListViewの非表示は初回だけで良い
+        if (mAdapter == null) {
+            // Status(ツイート)をViewに描写するアダプター
+            mAdapter = new TwitterAdapter(activity, R.layout.row_tweet);
+            mListView.setVisibility(View.GONE);
+        }
 
         mListView.setAdapter(mAdapter);
-        mListView.setVisibility(View.GONE);
 
         // シングルタップでコンテキストメニューを開くための指定
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
