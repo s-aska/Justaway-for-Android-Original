@@ -9,7 +9,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.HeaderViewListAdapter;
 import android.widget.ListView;
 
 import info.justaway.BaseActivity;
@@ -17,23 +16,22 @@ import info.justaway.MainActivity;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.model.Row;
-import com.handmark.pulltorefresh.library.PullToRefreshListView;
+import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
+import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout;
+import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
 
 /**
  * タブのベースクラス
  */
-public abstract class BaseFragment extends Fragment {
+public abstract class BaseFragment extends Fragment implements
+        OnRefreshListener {
 
     private TwitterAdapter mAdapter;
-    private PullToRefreshListView mPullToRefreshListView;
     private ListView mListView;
+    private PullToRefreshLayout mPullToRefreshLayout;
 
     public ListView getListView() {
         return mListView;
-    }
-
-    public PullToRefreshListView getPullToRefreshListView() {
-        return mPullToRefreshListView;
     }
 
     public TwitterAdapter getListAdapter() {
@@ -47,9 +45,19 @@ public abstract class BaseFragment extends Fragment {
             return null;
         }
 
-        mPullToRefreshListView = (PullToRefreshListView) v.findViewById(R.id.list_view);
-        mListView = mPullToRefreshListView.getRefreshableView();
+        mListView = (ListView) v.findViewById(R.id.list_view);
         v.findViewById(R.id.guruguru).setVisibility(View.GONE);
+
+        mPullToRefreshLayout = (PullToRefreshLayout) v.findViewById(R.id.ptr_layout);
+        // Now setup the PullToRefreshLayout
+        ActionBarPullToRefresh.from(getActivity())
+                // Mark All Children as pullable
+                .theseChildrenArePullable(R.id.list_view)
+                        // Set the OnRefreshListener
+                .listener(this)
+                        // Finally commit the setup to our PullToRefreshLayout
+                .setup(mPullToRefreshLayout);
+
         return v;
     }
 
@@ -68,7 +76,6 @@ public abstract class BaseFragment extends Fragment {
         mAdapter = new TwitterAdapter(activity, R.layout.row_tweet);
 
         mListView.setAdapter(mAdapter);
-        mListView.setSelection(1);
         mListView.setVisibility(View.GONE);
 
         // シングルタップでコンテキストメニューを開くための指定
@@ -86,12 +93,12 @@ public abstract class BaseFragment extends Fragment {
             getActivity().finish();
             return;
         }
-        listView.setSelection(1);
+        listView.setSelection(0);
     }
 
     public Boolean isTop() {
         ListView listView = getListView();
-        return listView != null && listView.getFirstVisiblePosition() == 1;
+        return listView != null && listView.getFirstVisiblePosition() == 0;
     }
 
     /**
@@ -109,8 +116,7 @@ public abstract class BaseFragment extends Fragment {
             @Override
             public void run() {
 
-                HeaderViewListAdapter headerViewListAdapter = (HeaderViewListAdapter) listView.getAdapter();
-                TwitterAdapter adapter = (TwitterAdapter) headerViewListAdapter.getWrappedAdapter();
+                TwitterAdapter adapter = (TwitterAdapter) listView.getAdapter();
                 adapter.removeStatus(statusId);
             }
         });

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
+<uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ptr_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:id="@+id/container"
@@ -9,13 +11,11 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <com.handmark.pulltorefresh.library.PullToRefreshListView
-            xmlns:ptr="http://schemas.android.com/apk/res-auto"
+        <ListView
             android:id="@+id/list_view"
             android:layout_height="0dip"
             android:layout_width="match_parent"
-            android:layout_weight="1"
-            ptr:ptrShowIndicator="false"/>
+            android:layout_weight="1"/>
 
         <ProgressBar
             android:id="@+id/guruguru"
@@ -23,4 +23,4 @@
             android:layout_height="wrap_content"
             android:gravity="center"/>
     </LinearLayout>
-</LinearLayout>
+</uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout>
