@@ -160,6 +160,23 @@
                     android:layout_gravity="center"
                     android:text="@string/favourites" />
             </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/collapse"
+                android:layout_width="36dip"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/collapse_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textSize="18sp"
+                    android:textColor="@color/holo_blue_light"
+                    android:text="@string/fontello_up"/>
+            </LinearLayout>
         </LinearLayout>
 
         <android.support.v4.view.ViewPager

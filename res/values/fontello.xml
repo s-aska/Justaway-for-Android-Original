@@ -21,5 +21,7 @@
     <string name="fontello_tag"></string>
     <string name="fontello_archive"></string>
     <string name="fontello_trash"></string>
+    <string name="fontello_up"></string>
+    <string name="fontello_down"></string>
 
 </resources>
