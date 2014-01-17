@@ -66,6 +66,18 @@ public class JustawayApplication extends Application {
         return null;
     }
 
+    public String getUserListScreenName(int id) {
+        if (mUserLists == null) {
+            return null;
+        }
+        for (UserList userList: mUserLists) {
+            if (userList.getId() == id) {
+                return userList.getUser().getScreenName();
+            }
+        }
+        return null;
+    }
+
     /**
      * 毎回キャストしなくて良いように
      *
