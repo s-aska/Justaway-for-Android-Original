@@ -1,4 +1,4 @@
-package info.justaway.view;
+package info.justaway.widget;
 
 import android.app.Activity;
 import android.content.Context;

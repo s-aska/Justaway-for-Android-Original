@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:background="@color/menu_background">
 
-        <info.justaway.view.ClearEditText
+        <info.justaway.widget.ClearEditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"

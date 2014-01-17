@@ -23,7 +23,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import info.justaway.task.PhotoLoader;
-import info.justaway.view.ScaleImageView;
+import info.justaway.widget.ScaleImageView;
 
 /**
  * 画像の拡大表示用のActivity、かぶせて使う

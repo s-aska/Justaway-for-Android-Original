@@ -27,7 +27,7 @@
         android:visibility="gone"
         android:background="@color/menu_background">
 
-        <info.justaway.view.ClearEditText
+        <info.justaway.widget.ClearEditText
             android:id="@+id/quick_tweet_edit"
             android:layout_width="1dip"
             android:layout_height="wrap_content"
