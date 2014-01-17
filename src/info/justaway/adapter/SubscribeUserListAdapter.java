@@ -44,7 +44,11 @@ public class SubscribeUserListAdapter extends ArrayAdapter<UserList> {
 
         CheckBox checkbox = (CheckBox) view;
         if (checkbox != null) {
-            checkbox.setText(userList.getName());
+            if (JustawayApplication.getApplication().getScreenName().equals(userList.getUser().getScreenName())) {
+                checkbox.setText(userList.getName());
+            } else {
+                checkbox.setText(userList.getUser().getScreenName()+"/"+userList.getName());
+            }
             checkbox.setChecked(JustawayApplication.getApplication().existsTab(userList.getId()));
             checkbox.setTag(userList.getId());
         }
