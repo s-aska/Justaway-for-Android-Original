@@ -1,6 +1,7 @@
 package info.justaway;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -47,6 +48,9 @@ public class ProfileActivity extends BaseActivity implements
 
         ((TextView) findViewById(R.id.statuses_count)).setTextColor(mColorBlue);
         ((TextView) findViewById(R.id.statuses_count_label)).setTextColor(mColorBlue);
+
+        Typeface fontello = Typeface.createFromAsset(getAssets(), "fontello.ttf");
+        ((TextView) findViewById(R.id.collapse_label)).setTypeface(fontello);
 
         // インテント経由での起動をサポート
         Intent intent = getIntent();
@@ -270,6 +274,19 @@ public class ProfileActivity extends BaseActivity implements
             @Override
             public void onClick(View v) {
                 listViewPager.setCurrentItem(4);
+            }
+        });
+        findViewById(R.id.collapse).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                View frame = findViewById(R.id.frame);
+                if (frame.getVisibility() == View.VISIBLE) {
+                    findViewById(R.id.frame).setVisibility(View.GONE);
+                    ((TextView) findViewById(R.id.collapse_label)).setText(R.string.fontello_down);
+                } else {
+                    findViewById(R.id.frame).setVisibility(View.VISIBLE);
+                    ((TextView) findViewById(R.id.collapse_label)).setText(R.string.fontello_up);
+                }
             }
         });
     }

@@ -37,6 +37,18 @@
       "src": "fontawesome"
     },
     {
+      "uid": "ccddff8e8670dcd130e3cb55fdfc2fd0",
+      "css": "down-open",
+      "code": 59410,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "fe6697b391355dec12f3d86d6d490397",
+      "css": "up-open",
+      "code": 59411,
+      "src": "fontawesome"
+    },
+    {
       "uid": "a2a74f5e7b7d9ba054897d8c795a326a",
       "css": "list-bullet",
       "code": 59399,
