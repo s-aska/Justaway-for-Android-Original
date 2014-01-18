@@ -88,7 +88,7 @@ public class BaseActivity extends FragmentActivity {
         menu.add(0, CONTEXT_MENU_REPLY_ID, 0, R.string.context_menu_reply);
 
         UserMentionEntity[] mentions = source.getUserMentionEntities();
-        if (mentions.length > 1 || (mentions.length == 1 && mentions[0].getId() != application.getUserId())) {
+        if (mentions.length > 1 || (mentions.length == 1 && mentions[0].getScreenName() != application.getScreenName())) {
             menu.add(0, CONTEXT_MENU_REPLY_ALL_ID, 0, R.string.context_menu_reply_all);
         }
 
@@ -203,9 +203,14 @@ public class BaseActivity extends FragmentActivity {
         }
 
         int itemId = item.getItemId();
+        UserMentionEntity[] mentions = source.getUserMentionEntities();
         switch (itemId) {
             case CONTEXT_MENU_REPLY_ID:
-                text = "@" + source.getUser().getScreenName() + " ";
+                if (source.getUser().getId() == application.getUserId() && mentions.length == 1) {
+                    text = "@" + mentions[0].getScreenName() + " ";
+                } else {
+                    text = "@" + source.getUser().getScreenName() + " ";
+                }
                 if (editStatus != null) {
                     editStatus.requestFocus();
                     editStatus.setText(text);
@@ -221,8 +226,11 @@ public class BaseActivity extends FragmentActivity {
                 startActivity(intent);
                 return true;
             case CONTEXT_MENU_REPLY_ALL_ID:
-                text = "@" + source.getUser().getScreenName() + " ";
-                UserMentionEntity[] mentions = source.getUserMentionEntities();
+                if (source.getUser().getId() == application.getUserId()) {
+                    text = "";
+                } else {
+                    text = "@" + source.getUser().getScreenName() + " ";
+                }
                 for (UserMentionEntity mention : mentions) {
                     if (source.getUser().getScreenName().equals(mention.getScreenName())) {
                         continue;

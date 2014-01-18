@@ -38,6 +38,7 @@ import twitter4j.MediaEntity;
 import twitter4j.Status;
 import twitter4j.URLEntity;
 import twitter4j.User;
+import twitter4j.UserMentionEntity;
 
 public class TwitterAdapter extends ArrayAdapter<Row> {
     private JustawayApplication mApplication;
@@ -288,8 +289,15 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         doReply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                UserMentionEntity[] mentions = status.getUserMentionEntities();
                 Intent intent = new Intent(mContext, PostActivity.class);
-                String text = "@" + status.getUser().getScreenName() + " ";
+                String text;
+                if (status.getUser().getId() == mApplication.getUserId() && mentions.length == 1) {
+                    text = "@" + mentions[0].getScreenName() + " ";
+                } else {
+                    text = "@" + status.getUser().getScreenName() + " ";
+                }
+
                 if (mContext.getClass().getName().equals("info.justaway.MainActivity")) {
                     MainActivity activity = (MainActivity) mContext;
                     View singleLineTweet = activity.findViewById(R.id.quick_tweet_layout);
