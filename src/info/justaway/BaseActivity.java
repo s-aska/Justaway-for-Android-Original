@@ -88,7 +88,7 @@ public class BaseActivity extends FragmentActivity {
         menu.add(0, CONTEXT_MENU_REPLY_ID, 0, R.string.context_menu_reply);
 
         UserMentionEntity[] mentions = source.getUserMentionEntities();
-        if (mentions.length > 1) {
+        if (mentions.length > 1 || (mentions.length == 1 && mentions[0].getId() != application.getUserId())) {
             menu.add(0, CONTEXT_MENU_REPLY_ALL_ID, 0, R.string.context_menu_reply_all);
         }
 
