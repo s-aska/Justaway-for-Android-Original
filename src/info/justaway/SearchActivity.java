@@ -264,7 +264,7 @@ public class SearchActivity extends BaseActivity {
                 return;
             }
             for (SavedSearch savedSearch : savedSearches) {
-                mSearchWordAdapter.add(savedSearch);
+                mSearchWordAdapter.insert(savedSearch, 0);
             }
         }
     }
@@ -287,6 +287,12 @@ public class SearchActivity extends BaseActivity {
         public void add(SavedSearch word) {
             super.add(word);
             mWordLists.add(word);
+        }
+
+        @Override
+        public void insert(SavedSearch word, int index) {
+            super.insert(word, index);
+            mWordLists.add(index, word);
         }
 
         public void remove(int position) {
