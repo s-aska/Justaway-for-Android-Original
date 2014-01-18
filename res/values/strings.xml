@@ -31,7 +31,7 @@
     <string name="bio">自己紹介</string>
     <string name="save">保存</string>
     <string name="destroy">破棄</string>
-    <string name="search_save">検索を保存</string>
+    <string name="save_search">検索を保存</string>
     <string name="update_profile_image">画像を変更</string>
     <string name="format_user_created_at">\'Twitter開始日：\'yyyy年MM月dd日</string>
     <string name="toast_set_image_success">画像セットok</string>
@@ -104,5 +104,7 @@
     <string name="context_menu_destroy_direct_message">ツイ消し(DM)</string>
     <string name="context_menu_share_text">ツイート本文を共有</string>
     <string name="context_menu_share_url">ツイートURLを共有</string>
+    <string name="toast_save_success">保存しました</string>
+    <string name="toast_destroy_success">削除しました</string>
 
 </resources>

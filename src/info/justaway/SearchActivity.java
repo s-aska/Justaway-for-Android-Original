@@ -1,15 +1,14 @@
 package info.justaway;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -29,15 +28,17 @@ import info.justaway.adapter.TwitterAdapter;
 import info.justaway.model.Row;
 import twitter4j.Query;
 import twitter4j.QueryResult;
+import twitter4j.ResponseList;
+import twitter4j.SavedSearch;
 
 public class SearchActivity extends BaseActivity {
 
     private Context mContext;
     private EditText mSearchWords;
     private TwitterAdapter mAdapter;
+    private SearchWordAdapter mSearchWordAdapter;
     private ListView mListView;
     private ProgressBar mFooter;
-    private View mHeader;
     private Query mNextQuery;
     private ListView mSearchListView;
 
@@ -60,17 +61,11 @@ public class SearchActivity extends BaseActivity {
         mListView.setVisibility(View.GONE);
 
         mSearchListView = (ListView) findViewById(R.id.search_list_view);
-        SearchWordAdapter searchWordAdapter = new SearchWordAdapter(mContext, R.layout.row_word);
-        mSearchListView.setAdapter(searchWordAdapter);
 
-        SaveLoadTraining saveLoadTraining = new SaveLoadTraining();
-        ArrayList<String> searchWords = saveLoadTraining.loadArray();
-
-        for (String searchWord : searchWords) {
-            searchWordAdapter.add(searchWord);
-        }
-
-        mHeader = View.inflate(getApplicationContext(), R.layout.row_seve_word, null);
+        // 保存された検索をViewに描写するアダプター
+        mSearchWordAdapter = new SearchWordAdapter(mContext, R.layout.row_word);
+        mSearchListView.setAdapter(mSearchWordAdapter);
+        new GetSavedSearchesTask().execute();
 
         // コンテキストメニューを使える様にする為の指定、但しデフォルトではロングタップで開く
         registerForContextMenu(mListView);
@@ -87,34 +82,6 @@ public class SearchActivity extends BaseActivity {
             }
         });
 
-        mHeader.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new AlertDialog.Builder(SearchActivity.this)
-                        .setTitle(mSearchWords.getText().toString() + " を検索に保存しますか？")
-                        .setPositiveButton(
-                                R.string.save,
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        // 検索単語を保存する
-                                        SaveLoadTraining saveLoadTraining = new SaveLoadTraining();
-                                        ArrayList<String> searchList = saveLoadTraining.loadArray();
-                                        searchList.add(mSearchWords.getText().toString());
-                                        saveLoadTraining.saveArray(searchList);
-
-                                    }
-                                })
-                        .setNegativeButton(
-                                R.string.button_cancel,
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                    }
-                                })
-                        .show();
-            }
-        });
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -163,6 +130,22 @@ public class SearchActivity extends BaseActivity {
         });
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.search, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.save_search:
+                new CreateSavedSearchTask().execute(mSearchWords.getText().toString());
+                break;
+        }
+        return true;
+    }
+
     private void additionalReading() {
         if (mNextQuery != null) {
             mFooter.setVisibility(View.VISIBLE);
@@ -205,13 +188,10 @@ public class SearchActivity extends BaseActivity {
                 mAdapter.add(Row.newStatus(status));
             }
 
-            mListView.removeHeaderView(mHeader);
             mListView.setVisibility(View.VISIBLE);
             if (count == 0) {
                 mListView.setSelection(0);
                 mSearchListView.setVisibility(View.GONE);
-                // TODO: 既に登録されているものなら表示させない
-                mListView.addHeaderView(mHeader);
             }
             mFooter.setVisibility(View.GONE);
 
@@ -222,9 +202,76 @@ public class SearchActivity extends BaseActivity {
         }
     }
 
-    public class SearchWordAdapter extends ArrayAdapter<String> {
+    private class CreateSavedSearchTask extends AsyncTask<String, Void, SavedSearch> {
+        @Override
+        protected SavedSearch doInBackground(String... params) {
+            String query = params[0];
+            try {
+                SavedSearch savedSearch = JustawayApplication.getApplication().getTwitter().createSavedSearch(query);
+                return savedSearch;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
 
-        private ArrayList<String> mWordLists = new ArrayList<String>();
+        @Override
+        protected void onPostExecute(SavedSearch savedSearch) {
+            if (savedSearch == null) {
+                return;
+            }
+            JustawayApplication.showToast(getString(R.string.toast_save_success));
+        }
+    }
+
+    private class DestroySavedSearchTask extends AsyncTask<Integer, Void, SavedSearch> {
+        @Override
+        protected SavedSearch doInBackground(Integer... params) {
+            Integer id = params[0];
+            try {
+                SavedSearch savedSearch = JustawayApplication.getApplication().getTwitter().destroySavedSearch(id);
+                return savedSearch;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(SavedSearch savedSearch) {
+            if (savedSearch == null) {
+                return;
+            }
+            JustawayApplication.showToast(getString(R.string.toast_destroy_success));
+        }
+    }
+
+    private class GetSavedSearchesTask extends AsyncTask<Void, Void, ResponseList<SavedSearch>> {
+        @Override
+        protected ResponseList<SavedSearch> doInBackground(Void... params) {
+            try {
+                ResponseList<SavedSearch> savedSearches = JustawayApplication.getApplication().getTwitter().getSavedSearches();
+                return savedSearches;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(ResponseList<SavedSearch> savedSearches) {
+            if (savedSearches == null) {
+                return;
+            }
+            for (SavedSearch savedSearch : savedSearches) {
+                mSearchWordAdapter.add(savedSearch);
+            }
+        }
+    }
+
+    public class SearchWordAdapter extends ArrayAdapter<SavedSearch> {
+
+        private ArrayList<SavedSearch> mWordLists = new ArrayList<SavedSearch>();
         private Context mContext;
         private LayoutInflater mInflater;
         private int mLayout;
@@ -237,9 +284,9 @@ public class SearchActivity extends BaseActivity {
         }
 
         @Override
-        public void add(String draft) {
-            super.add(draft);
-            mWordLists.add(draft);
+        public void add(SavedSearch word) {
+            super.add(word);
+            mWordLists.add(word);
         }
 
         public void remove(int position) {
@@ -256,19 +303,17 @@ public class SearchActivity extends BaseActivity {
                 view = mInflater.inflate(this.mLayout, null);
             }
 
-            final String word = mWordLists.get(position);
+            final SavedSearch word = mWordLists.get(position);
 
-            ((TextView) view.findViewById(R.id.word)).setText(word);
+            ((TextView) view.findViewById(R.id.word)).setText(word.getQuery());
             ((TextView) view.findViewById(R.id.trash)).setTypeface(Typeface.createFromAsset(getAssets(), "fontello.ttf"));
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mSearchWords.setText(word);
-                    mWordLists.remove(position);
-                    SaveLoadTraining saveLoadTraining = new SaveLoadTraining();
-                    saveLoadTraining.saveArray(mWordLists);
-
+                    mSearchWords.setText(word.getQuery());
+                    Query query = new Query(word.getQuery());
+                    new SearchTask().execute(query);
                 }
             });
 
@@ -276,55 +321,10 @@ public class SearchActivity extends BaseActivity {
                 @Override
                 public void onClick(View v) {
                     remove(position);
-                    SaveLoadTraining saveLoadTraining = new SaveLoadTraining();
-                    saveLoadTraining.saveArray(mWordLists);
+                    new DestroySavedSearchTask().execute(word.getId());
                 }
             });
             return view;
-        }
-    }
-
-    /**
-     * SharedPreferencesにArrayListを突っ込む
-     */
-    public class SaveLoadTraining {
-
-        private Context context;
-        public static final String PREFS_NAME = "SearchListFile";
-        private ArrayList<String> list;
-
-        public SaveLoadTraining() {
-            this.context = mContext;
-        }
-
-        public void saveArray(ArrayList<String> list) {
-            this.list = list;
-
-            SharedPreferences settings = context.getSharedPreferences(PREFS_NAME, 0);
-            SharedPreferences.Editor editor = settings.edit();
-
-            int size = list.size();
-            editor.putInt("list_size", size);
-
-            for (int i = 0; i < size; i++) {
-                editor.remove("list_" + i);
-            }
-            for (int i = 0; i < size; i++) {
-                editor.putString("list_" + i, list.get(i));
-            }
-            editor.commit();
-        }
-
-        public ArrayList<String> loadArray() {
-            SharedPreferences file = context.getSharedPreferences(PREFS_NAME, 0);
-            list = new ArrayList<String>();
-            int size = file.getInt("list_size", 0);
-
-            for (int i = 0; i < size; i++) {
-                String draft = file.getString("list_" + i, null);
-                list.add(draft);
-            }
-            return list;
         }
     }
 }
