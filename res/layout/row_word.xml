@@ -14,12 +14,14 @@
         android:layout_width="0dip"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:layout_gravity="center"
         android:textSize="14sp" />
 
     <TextView
         android:id="@+id/trash"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:text="@string/fontello_trash"
         android:textColor="#666666"
         android:textSize="28sp" />

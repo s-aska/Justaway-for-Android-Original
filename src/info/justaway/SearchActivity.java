@@ -1,11 +1,13 @@
 package info.justaway;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.ContextMenu;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -85,10 +87,9 @@ public class SearchActivity extends BaseActivity {
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                JustawayApplication.getApplication().hideKeyboard(mSearchWords);
+
                 Query query = new Query(mSearchWords.getText().toString());
-                InputMethodManager inputMethodManager =
-                        (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.hideSoftInputFromWindow(v.getWindowToken(), 0);
                 mAdapter.clear();
                 mListView.setVisibility(View.GONE);
                 mFooter.setVisibility(View.VISIBLE);
@@ -102,6 +103,28 @@ public class SearchActivity extends BaseActivity {
                 Intent intent = new Intent(mContext, PostActivity.class);
                 intent.putExtra("status", " " + mSearchWords.getText().toString());
                 startActivity(intent);
+            }
+        });
+
+        mSearchWords.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+
+                //EnterKeyが押されたかを判定
+                if (event.getAction() == KeyEvent.ACTION_DOWN
+                        && keyCode == KeyEvent.KEYCODE_ENTER) {
+                    JustawayApplication.getApplication().hideKeyboard(mSearchWords);
+
+                    Query query = new Query(mSearchWords.getText().toString());
+                    mAdapter.clear();
+                    mListView.setVisibility(View.GONE);
+                    mFooter.setVisibility(View.VISIBLE);
+                    mNextQuery = null;
+                    new SearchTask().execute(query);
+
+                    return true;
+                }
+                return false;
             }
         });
 
