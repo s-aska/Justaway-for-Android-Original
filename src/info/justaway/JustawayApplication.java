@@ -380,6 +380,7 @@ public class JustawayApplication extends Application {
      * アクセストークンを削除（認証失敗時などトークンが無効な場合に使用）
      */
     public void resetAccessToken() {
+        mTwitter.setOAuthAccessToken(null);
         SharedPreferences preferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         Editor editor = preferences.edit();
         editor.remove(TOKEN);
