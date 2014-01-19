@@ -106,5 +106,8 @@
     <string name="context_menu_share_url">ツイートURLを共有</string>
     <string name="toast_save_success">保存しました</string>
     <string name="toast_destroy_success">削除しました</string>
+    <string name="menu_store">Google Play</string>
+    <string name="menu_website">オフィシャルサイト</string>
+    <string name="official_website">http://justaway.info/</string>
 
 </resources>
