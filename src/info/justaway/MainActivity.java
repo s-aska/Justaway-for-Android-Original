@@ -4,6 +4,7 @@ import android.R.color;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -507,6 +508,9 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
             startActivityForResult(intent, REQUEST_CHOOSE_USER_LIST);
         } else if (itemId == R.id.search) {
             Intent intent = new Intent(this, SearchActivity.class);
+            startActivity(intent);
+        } else if (itemId == R.id.official_website) {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.official_website)));
             startActivity(intent);
         }
         return true;
