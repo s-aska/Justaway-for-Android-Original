@@ -17,6 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TableLayout;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
@@ -41,6 +42,40 @@ import twitter4j.User;
 import twitter4j.UserMentionEntity;
 
 public class TwitterAdapter extends ArrayAdapter<Row> {
+
+    static class ViewHolder {
+        LinearLayout action;
+        TextView action_icon;
+        TextView action_by_display_name;
+        TextView action_by_screen_name;
+
+        ImageView icon;
+
+        TextView display_name;
+        TextView screen_name;
+        TextView fontello_lock;
+        TextView datetime_relative;
+
+        TextView status;
+
+        LinearLayout images;
+
+        TableLayout menu_and_via;
+
+        TextView do_reply;
+        TextView do_retweet;
+        TextView retweet_count;
+        TextView do_fav;
+        TextView fav_count;
+
+        TextView via;
+        TextView datetime;
+
+        LinearLayout retweet;
+        ImageView retweet_icon;
+        TextView retweet_by;
+    }
+
     private JustawayApplication mApplication;
     private Context mContext;
     private ArrayList<Row> mStatuses = new ArrayList<Row>();
@@ -149,11 +184,45 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        ViewHolder holder;
+
         // ビューを受け取る
         View view = convertView;
+
         if (view == null) {
+
             // 受け取ったビューがnullなら新しくビューを生成
             view = mInflater.inflate(this.mLayout, null);
+            if (view == null) {
+                return null;
+            }
+
+            holder = new ViewHolder();
+            holder.action = (LinearLayout) view.findViewById(R.id.action);
+            holder.action_icon = (TextView) view.findViewById(R.id.action_icon);
+            holder.action_by_display_name = (TextView) view.findViewById(R.id.action_by_display_name);
+            holder.action_by_screen_name = (TextView) view.findViewById(R.id.action_by_screen_name);
+            holder.icon = (ImageView) view.findViewById(R.id.icon);
+            holder.display_name = (TextView) view.findViewById(R.id.display_name);
+            holder.screen_name = (TextView) view.findViewById(R.id.screen_name);
+            holder.fontello_lock = (TextView) view.findViewById(R.id.fontello_lock);
+            holder.datetime_relative = (TextView) view.findViewById(R.id.datetime_relative);
+            holder.status = (TextView) view.findViewById(R.id.status);
+            holder.images = (LinearLayout) view.findViewById(R.id.images);
+            holder.menu_and_via = (TableLayout) view.findViewById(R.id.menu_and_via);
+            holder.do_reply = (TextView) view.findViewById(R.id.do_reply);
+            holder.do_retweet = (TextView) view.findViewById(R.id.do_retweet);
+            holder.retweet_count = (TextView) view.findViewById(R.id.retweet_count);
+            holder.do_fav = (TextView) view.findViewById(R.id.do_fav);
+            holder.fav_count = (TextView) view.findViewById(R.id.fav_count);
+            holder.via = (TextView) view.findViewById(R.id.via);
+            holder.datetime = (TextView) view.findViewById(R.id.datetime);
+            holder.retweet = (LinearLayout) view.findViewById(R.id.retweet);
+            holder.retweet_icon = (ImageView) view.findViewById(R.id.retweet_icon);
+            holder.retweet_by = (TextView) view.findViewById(R.id.retweet_by);
+            view.setTag(holder);
+        } else {
+            holder = (ViewHolder) view.getTag();
         }
 
         // 表示すべきデータの取得
@@ -164,7 +233,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             if (message == null) {
                 return view;
             }
-            renderMessage(view, message);
+            renderMessage(holder, message);
         } else {
             Status status = row.getStatus();
             if (status == null) {
@@ -173,11 +242,11 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
 
             Status retweet = status.getRetweetedStatus();
             if (row.isFavorite()) {
-                renderStatus(view, status, null, row.getSource());
+                renderStatus(holder, status, null, row.getSource());
             } else if (retweet == null) {
-                renderStatus(view, status, null, null);
+                renderStatus(holder, status, null, null);
             } else {
-                renderStatus(view, retweet, status, null);
+                renderStatus(holder, retweet, status, null);
             }
         }
 
@@ -188,24 +257,23 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         return view;
     }
 
-    private void renderMessage(View view, final DirectMessage message) {
+    private void renderMessage(ViewHolder holder, final DirectMessage message) {
 
         Typeface fontello = Typeface.createFromAsset(mContext.getAssets(), "fontello.ttf");
         long userId = JustawayApplication.getApplication().getUserId();
 
-        TextView doReply = (TextView) view.findViewById(R.id.do_reply);
-        view.findViewById(R.id.do_retweet).setVisibility(View.GONE);
-        view.findViewById(R.id.do_fav).setVisibility(View.GONE);
-        view.findViewById(R.id.retweet_count).setVisibility(View.GONE);
-        view.findViewById(R.id.fav_count).setVisibility(View.GONE);
-        view.findViewById(R.id.menu_and_via).setVisibility(View.VISIBLE);
+        holder.do_retweet.setVisibility(View.GONE);
+        holder.do_fav.setVisibility(View.GONE);
+        holder.retweet_count.setVisibility(View.GONE);
+        holder.fav_count.setVisibility(View.GONE);
+        holder.menu_and_via.setVisibility(View.VISIBLE);
 
         if (message.getSender().getId() == userId) {
-            doReply.setVisibility(View.GONE);
+            holder.do_reply.setVisibility(View.GONE);
         } else {
-            doReply.setVisibility(View.VISIBLE);
-            doReply.setTypeface(fontello);
-            doReply.setOnClickListener(new View.OnClickListener() {
+            holder.do_reply.setVisibility(View.VISIBLE);
+            holder.do_reply.setTypeface(fontello);
+            holder.do_reply.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     String text = "D " + message.getSender().getScreenName() + " ";
@@ -230,21 +298,19 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             });
         }
 
-        ((TextView) view.findViewById(R.id.display_name)).setText(message.getSender().getName());
-        ((TextView) view.findViewById(R.id.screen_name)).setText("@"
+        holder.display_name.setText(message.getSender().getName());
+        holder.screen_name.setText("@"
                 + message.getSender().getScreenName());
-        ((TextView) view.findViewById(R.id.status)).setText("D " + message.getRecipientScreenName()
+        holder.status.setText("D " + message.getRecipientScreenName()
                 + " " + message.getText());
-        ((TextView) view.findViewById(R.id.datetime))
+        holder.datetime
                 .setText(getAbsoluteTime(message.getCreatedAt()));
-        ((TextView) view.findViewById(R.id.datetime_relative))
-                .setText(getRelativeTime(message.getCreatedAt()));
-        view.findViewById(R.id.via).setVisibility(View.GONE);
-        view.findViewById(R.id.retweet).setVisibility(View.GONE);
-        view.findViewById(R.id.images).setVisibility(View.GONE);
-        ImageView icon = (ImageView) view.findViewById(R.id.icon);
-        mApplication.displayRoundedImage(message.getSender().getBiggerProfileImageURL(), icon);
-        icon.setOnClickListener(new View.OnClickListener() {
+        holder.datetime_relative.setText(getRelativeTime(message.getCreatedAt()));
+        holder.via.setVisibility(View.GONE);
+        holder.retweet.setVisibility(View.GONE);
+        holder.images.setVisibility(View.GONE);
+        mApplication.displayRoundedImage(message.getSender().getBiggerProfileImageURL(), holder.icon);
+        holder.icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), ProfileActivity.class);
@@ -252,41 +318,35 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                 mContext.startActivity(intent);
             }
         });
-        view.findViewById(R.id.action).setVisibility(View.GONE);
-        view.findViewById(R.id.fontello_lock).setVisibility(View.INVISIBLE);
+        holder.action.setVisibility(View.GONE);
+        holder.fontello_lock.setVisibility(View.INVISIBLE);
     }
 
-    private void renderStatus(View view, final Status status, Status retweet,
+    private void renderStatus(final ViewHolder holder, final Status status, Status retweet,
                               User favorite) {
 
         long userId = JustawayApplication.getApplication().getUserId();
 
         Typeface fontello = Typeface.createFromAsset(mContext.getAssets(), "fontello.ttf");
 
-        final TextView doReply = (TextView) view.findViewById(R.id.do_reply);
-        final TextView doRetweet = (TextView) view.findViewById(R.id.do_retweet);
-        final TextView doFav = (TextView) view.findViewById(R.id.do_fav);
-        TextView retweetCount = (TextView) view.findViewById(R.id.retweet_count);
-        TextView favCount = (TextView) view.findViewById(R.id.fav_count);
-
         if (status.getFavoriteCount() > 0) {
-            favCount.setText(String.valueOf(status.getFavoriteCount()));
-            favCount.setVisibility(View.VISIBLE);
+            holder.fav_count.setText(String.valueOf(status.getFavoriteCount()));
+            holder.fav_count.setVisibility(View.VISIBLE);
         } else {
-            favCount.setText("0");
-            favCount.setVisibility(View.INVISIBLE);
+            holder.fav_count.setText("0");
+            holder.fav_count.setVisibility(View.INVISIBLE);
         }
 
         if (status.getRetweetCount() > 0) {
-            retweetCount.setText(String.valueOf(status.getRetweetCount()));
-            retweetCount.setVisibility(View.VISIBLE);
+            holder.retweet_count.setText(String.valueOf(status.getRetweetCount()));
+            holder.retweet_count.setVisibility(View.VISIBLE);
         } else {
-            retweetCount.setText("0");
-            retweetCount.setVisibility(View.INVISIBLE);
+            holder.retweet_count.setText("0");
+            holder.retweet_count.setVisibility(View.INVISIBLE);
         }
 
-        doReply.setTypeface(fontello);
-        doReply.setOnClickListener(new View.OnClickListener() {
+        holder.do_reply.setTypeface(fontello);
+        holder.do_reply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 UserMentionEntity[] mentions = status.getUserMentionEntities();
@@ -318,8 +378,8 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             }
         });
 
-        doRetweet.setTypeface(fontello);
-        doRetweet.setOnClickListener(new View.OnClickListener() {
+        holder.do_retweet.setTypeface(fontello);
+        holder.do_retweet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Long id = mApplication.getRtId(status);
@@ -335,7 +395,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             mApplication.doDestroyRetweet(status.getId());
-                                            doRetweet.setTextColor(Color.parseColor("#666666"));
+                                            holder.do_retweet.setTextColor(Color.parseColor("#666666"));
                                             dismiss();
                                         }
                                     });
@@ -405,7 +465,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             mApplication.doRetweet(status.getId());
-                                            doRetweet.setTextColor(mContext.getResources()
+                                            holder.do_retweet.setTextColor(mContext.getResources()
                                                     .getColor(R.color.holo_green_light));
                                             dismiss();
                                         }
@@ -435,104 +495,93 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             }
         });
 
-        doFav.setTypeface(fontello);
-        doFav.setOnClickListener(new View.OnClickListener() {
+        holder.do_fav.setTypeface(fontello);
+        holder.do_fav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mApplication.isFav(status)) {
                     mApplication.doDestroyFavorite(status.getId());
-                    doRetweet.setTextColor(Color.parseColor("#666666"));
+                    holder.do_retweet.setTextColor(Color.parseColor("#666666"));
                 } else {
                     mApplication.doFavorite(status.getId());
-                    doFav.setTextColor(mContext.getResources().getColor(R.color.holo_orange_light));
+                    holder.do_fav.setTextColor(mContext.getResources().getColor(R.color.holo_orange_light));
                 }
             }
         });
 
         if (mApplication.getRtId(status) != null) {
-            doRetweet.setTextColor(mContext.getResources().getColor(R.color.holo_green_light));
+            holder.do_retweet.setTextColor(mContext.getResources().getColor(R.color.holo_green_light));
         } else {
-            doRetweet.setTextColor(Color.parseColor("#666666"));
+            holder.do_retweet.setTextColor(Color.parseColor("#666666"));
         }
 
         if (mApplication.isFav(status)) {
-            doFav.setTextColor(mContext.getResources().getColor(R.color.holo_orange_light));
+            holder.do_fav.setTextColor(mContext.getResources().getColor(R.color.holo_orange_light));
         } else {
-            doFav.setTextColor(Color.parseColor("#666666"));
+            holder.do_fav.setTextColor(Color.parseColor("#666666"));
         }
 
-        ((TextView) view.findViewById(R.id.display_name)).setText(status.getUser().getName());
-        ((TextView) view.findViewById(R.id.screen_name)).setText("@"
-                + status.getUser().getScreenName());
-        ((TextView) view.findViewById(R.id.datetime_relative))
-                .setText(getRelativeTime(status.getCreatedAt()));
-        ((TextView) view.findViewById(R.id.datetime))
-                .setText(getAbsoluteTime(status.getCreatedAt()));
-        ((TextView) view.findViewById(R.id.via))
-                .setText("via " + getClientName(status.getSource()));
-        view.findViewById(R.id.via).setVisibility(View.VISIBLE);
+        holder.display_name.setText(status.getUser().getName());
+        holder.screen_name.setText("@" + status.getUser().getScreenName());
+        holder.datetime_relative.setText(getRelativeTime(status.getCreatedAt()));
+        holder.datetime.setText(getAbsoluteTime(status.getCreatedAt()));
+        holder.via.setText("via " + getClientName(status.getSource()));
+        holder.via.setVisibility(View.VISIBLE);
 
-        TextView actionIcon = (TextView) view.findViewById(R.id.action_icon);
-        actionIcon.setTypeface(fontello);
-        TextView actionByName = (TextView) view.findViewById(R.id.action_by_display_name);
-        TextView actionByScreenName = (TextView) view.findViewById(R.id.action_by_screen_name);
+        holder.action_icon.setTypeface(fontello);
 
         // favの場合
         if (favorite != null) {
-            actionIcon.setText(R.string.fontello_star);
-            actionIcon.setTextColor(mContext.getResources().getColor(R.color.holo_orange_light));
-            actionByName.setText(favorite.getName());
-            actionByScreenName.setText("@" + favorite.getScreenName());
-            view.findViewById(R.id.retweet).setVisibility(View.GONE);
-            view.findViewById(R.id.menu_and_via).setVisibility(View.VISIBLE);
-            view.findViewById(R.id.action).setVisibility(View.VISIBLE);
+            holder.action_icon.setText(R.string.fontello_star);
+            holder.action_icon.setTextColor(mContext.getResources().getColor(R.color.holo_orange_light));
+            holder.action_by_display_name.setText(favorite.getName());
+            holder.action_by_screen_name.setText("@" + favorite.getScreenName());
+            holder.retweet.setVisibility(View.GONE);
+            holder.menu_and_via.setVisibility(View.VISIBLE);
+            holder.action.setVisibility(View.VISIBLE);
         }
         // RTの場合
         else if (retweet != null) {
             // 自分のツイート
             if (userId == status.getUser().getId()) {
-                actionIcon.setText(R.string.fontello_retweet);
-                actionIcon.setTextColor(mContext.getResources().getColor(R.color.holo_green_light));
-                actionByName.setText(retweet.getUser().getName());
-                actionByScreenName.setText("@" + retweet.getUser().getScreenName());
-                view.findViewById(R.id.retweet).setVisibility(View.GONE);
-                view.findViewById(R.id.menu_and_via).setVisibility(View.VISIBLE);
-                view.findViewById(R.id.action).setVisibility(View.VISIBLE);
+                holder.action_icon.setText(R.string.fontello_retweet);
+                holder.action_icon.setTextColor(mContext.getResources().getColor(R.color.holo_green_light));
+                holder.action_by_display_name.setText(retweet.getUser().getName());
+                holder.action_by_screen_name.setText("@" + retweet.getUser().getScreenName());
+                holder.retweet.setVisibility(View.GONE);
+                holder.menu_and_via.setVisibility(View.VISIBLE);
+                holder.action.setVisibility(View.VISIBLE);
             } else {
-                ImageView icon = (ImageView) view.findViewById(R.id.retweet_icon);
-                mApplication.displayRoundedImage(retweet.getUser().getProfileImageURL(), icon);
-                TextView retweet_by = (TextView) view.findViewById(R.id.retweet_by);
-                retweet_by.setText("RT by "
-                        + retweet.getUser().getName() + " @" + retweet.getUser().getScreenName());
-                view.findViewById(R.id.action).setVisibility(View.GONE);
-                view.findViewById(R.id.menu_and_via).setVisibility(View.VISIBLE);
-                view.findViewById(R.id.retweet).setVisibility(View.VISIBLE);
+                mApplication.displayRoundedImage(retweet.getUser().getProfileImageURL(), holder.icon);
+                holder.retweet_by.setText("RT by " + retweet.getUser().getName() + " @" + retweet.getUser().getScreenName());
+                holder.action.setVisibility(View.GONE);
+                holder.menu_and_via.setVisibility(View.VISIBLE);
+                holder.retweet.setVisibility(View.VISIBLE);
             }
         } else {
             // 自分へのリプ
             if (userId == status.getInReplyToUserId()) {
-                actionIcon.setText(R.string.fontello_at);
-                actionIcon.setTextColor(mContext.getResources().getColor(R.color.holo_red_light));
-                actionByName.setText(status.getUser().getName());
-                actionByScreenName.setText("@" + status.getUser().getScreenName());
-                view.findViewById(R.id.action).setVisibility(View.VISIBLE);
-                view.findViewById(R.id.retweet).setVisibility(View.GONE);
+                holder.action_icon.setText(R.string.fontello_at);
+                holder.action_icon.setTextColor(mContext.getResources().getColor(R.color.holo_red_light));
+                holder.action_by_display_name.setText(status.getUser().getName());
+                holder.action_by_screen_name.setText("@" + status.getUser().getScreenName());
+                holder.action.setVisibility(View.VISIBLE);
+                holder.retweet.setVisibility(View.GONE);
             } else {
-                view.findViewById(R.id.action).setVisibility(View.GONE);
-                view.findViewById(R.id.retweet).setVisibility(View.GONE);
+                holder.action.setVisibility(View.GONE);
+                holder.retweet.setVisibility(View.GONE);
             }
-            view.findViewById(R.id.menu_and_via).setVisibility(View.VISIBLE);
+            holder.menu_and_via.setVisibility(View.VISIBLE);
         }
 
         if (status.getUser().isProtected()) {
-            ((TextView) view.findViewById(R.id.fontello_lock)).setTypeface(fontello);
-            view.findViewById(R.id.fontello_lock).setVisibility(View.VISIBLE);
+            holder.fontello_lock.setTypeface(fontello);
+            holder.fontello_lock.setVisibility(View.VISIBLE);
         } else {
-            view.findViewById(R.id.fontello_lock).setVisibility(View.INVISIBLE);
+            holder.fontello_lock.setVisibility(View.INVISIBLE);
         }
-        ImageView icon = (ImageView) view.findViewById(R.id.icon);
-        mApplication.displayRoundedImage(status.getUser().getBiggerProfileImageURL(), icon);
-        icon.setOnClickListener(new View.OnClickListener() {
+        mApplication.displayRoundedImage(status.getUser().getBiggerProfileImageURL(), holder.icon);
+        holder.icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), ProfileActivity.class);
@@ -569,18 +618,17 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                 imageUrls.add(url.getExpandedURL() + "media?size=l");
             }
         }
-        ((TextView) view.findViewById(R.id.status)).setText(statusString);
+        holder.status.setText(statusString);
 
         for (MediaEntity media : medias) {
             imageUrls.add(media.getMediaURL());
         }
-        LinearLayout images = (LinearLayout) view.findViewById(R.id.images);
-        images.removeAllViews();
+        holder.images.removeAllViews();
         if (imageUrls.size() > 0) {
             for (final String url : imageUrls) {
                 ImageView image = new ImageView(mContext);
                 image.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                images.addView(image, new LinearLayout.LayoutParams(
+                holder.images.addView(image, new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, 120));
                 mApplication.displayRoundedImage(url, image);
                 // 画像タップで拡大表示（ピンチイン・ピンチアウトいつかちゃんとやる）
@@ -593,9 +641,9 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                     }
                 });
             }
-            images.setVisibility(View.VISIBLE);
+            holder.images.setVisibility(View.VISIBLE);
         } else {
-            images.setVisibility(View.GONE);
+            holder.images.setVisibility(View.GONE);
         }
     }
 
