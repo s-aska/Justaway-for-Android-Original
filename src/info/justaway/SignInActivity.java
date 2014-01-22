@@ -30,7 +30,7 @@ public class SignInActivity extends Activity {
         mCallbackURL = getString(R.string.twitter_callback_url);
         mTwitter = application.getTwitter();
 
-        Typeface fontello = Typeface.createFromAsset(this.getAssets(), "fontello.ttf");
+        Typeface fontello = JustawayApplication.getFontello();
         TextView button = (TextView) findViewById(R.id.action_start_oauth);
         button.setTypeface(fontello);
         button.setOnClickListener(new View.OnClickListener() {

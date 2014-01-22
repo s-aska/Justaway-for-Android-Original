@@ -97,7 +97,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
          * ActionBarのタブに頼っていない為、自力でsetCurrentItemでタブを動かしている
          * タブの切替がスワイプだけで良い場合はこの処理すら不要
          */
-        Typeface fontello = Typeface.createFromAsset(getAssets(), "fontello.ttf");
+        Typeface fontello = JustawayApplication.getFontello();
         Button home = (Button) findViewById(R.id.action_timeline);
         Button interactions = (Button) findViewById(R.id.action_interactions);
         Button directMessage = (Button) findViewById(R.id.action_direct_message);
@@ -214,7 +214,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
         ArrayList<Integer> tabs = mApplication.loadTabs();
         int position = 2;
         for (Integer tab : tabs) {
-            Typeface fontello = Typeface.createFromAsset(getAssets(), "fontello.ttf");
+            Typeface fontello = JustawayApplication.getFontello();
             // 標準のタブを動的に生成する時に実装する
             if (tab > 0) {
                 Button button = new Button(this);

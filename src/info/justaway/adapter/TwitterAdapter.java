@@ -259,7 +259,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
 
     private void renderMessage(ViewHolder holder, final DirectMessage message) {
 
-        Typeface fontello = Typeface.createFromAsset(mContext.getAssets(), "fontello.ttf");
+        Typeface fontello = JustawayApplication.getFontello();
         long userId = JustawayApplication.getApplication().getUserId();
 
         holder.do_retweet.setVisibility(View.GONE);
@@ -327,7 +327,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
 
         long userId = JustawayApplication.getApplication().getUserId();
 
-        Typeface fontello = Typeface.createFromAsset(mContext.getAssets(), "fontello.ttf");
+        Typeface fontello = JustawayApplication.getFontello();
 
         if (status.getFavoriteCount() > 0) {
             holder.fav_count.setText(String.valueOf(status.getFavoriteCount()));

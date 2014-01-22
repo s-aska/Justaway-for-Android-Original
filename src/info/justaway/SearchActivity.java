@@ -52,7 +52,7 @@ public class SearchActivity extends BaseActivity {
 
         Button search = (Button) findViewById(R.id.search);
         Button tweet = (Button) findViewById(R.id.tweet);
-        Typeface fontello = Typeface.createFromAsset(mContext.getAssets(), "fontello.ttf");
+        Typeface fontello = JustawayApplication.getFontello();
         search.setTypeface(fontello);
         tweet.setTypeface(fontello);
 
@@ -335,7 +335,7 @@ public class SearchActivity extends BaseActivity {
             final SavedSearch word = mWordLists.get(position);
 
             ((TextView) view.findViewById(R.id.word)).setText(word.getQuery());
-            ((TextView) view.findViewById(R.id.trash)).setTypeface(Typeface.createFromAsset(getAssets(), "fontello.ttf"));
+            ((TextView) view.findViewById(R.id.trash)).setTypeface(JustawayApplication.getFontello());
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override

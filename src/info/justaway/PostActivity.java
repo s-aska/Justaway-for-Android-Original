@@ -58,7 +58,6 @@ public class PostActivity extends FragmentActivity {
     private Long mInReplyToStatusId;
     private File mImgPath;
     private DraftFragment mDraftDialog;
-    private Typeface mFontello;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +67,7 @@ public class PostActivity extends FragmentActivity {
 
         JustawayApplication application = JustawayApplication.getApplication();
 
-        mFontello = Typeface.createFromAsset(getAssets(), "fontello.ttf");
+        Typeface fontello = JustawayApplication.getFontello();
 
         mEditText = (EditText) findViewById(R.id.status);
         mTextView = (TextView) findViewById(R.id.count);
@@ -78,10 +77,10 @@ public class PostActivity extends FragmentActivity {
         mDraftButton = (Button) findViewById(R.id.word);
         mTwitter = application.getTwitter();
 
-        mTweetButton.setTypeface(mFontello);
-        mImgButton.setTypeface(mFontello);
-        mSuddenlyButton.setTypeface(mFontello);
-        mDraftButton.setTypeface(mFontello);
+        mTweetButton.setTypeface(fontello);
+        mImgButton.setTypeface(fontello);
+        mSuddenlyButton.setTypeface(fontello);
+        mDraftButton.setTypeface(fontello);
 
         Intent intent = getIntent();
         String status = intent.getStringExtra("status");
@@ -445,7 +444,7 @@ public class PostActivity extends FragmentActivity {
             final String draft = mDraftLists.get(position);
 
             ((TextView) view.findViewById(R.id.word)).setText(draft);
-            ((TextView) view.findViewById(R.id.trash)).setTypeface(mFontello);
+            ((TextView) view.findViewById(R.id.trash)).setTypeface(JustawayApplication.getFontello());
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
