@@ -1,4 +1,4 @@
-package info.justaway.fragment;
+package info.justaway.fragment.main;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

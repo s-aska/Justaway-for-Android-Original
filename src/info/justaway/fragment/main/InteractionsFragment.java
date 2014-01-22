@@ -1,8 +1,7 @@
-package info.justaway.fragment;
+package info.justaway.fragment.main;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.util.LongSparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,17 +17,16 @@ import info.justaway.model.Row;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
 import twitter4j.Status;
-import twitter4j.Twitter;
-import twitter4j.User;
 
-public class UserListFragment extends BaseFragment {
+/**
+ * 将来「つながり」タブ予定のタブ、現在はリプしか表示されない
+ */
+public class InteractionsFragment extends BaseFragment {
 
     private Boolean mAutoLoader = false;
     private Boolean mReload = false;
     private long mMaxId = 0L;
     private ProgressBar mFooter;
-    private int mUserListId;
-    private LongSparseArray<Boolean> mMembers = new LongSparseArray<Boolean>();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -40,7 +38,6 @@ public class UserListFragment extends BaseFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mUserListId = getArguments().getInt("userListId");
         ListView listView = getListView();
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {
 
@@ -58,7 +55,7 @@ public class UserListFragment extends BaseFragment {
         });
 
         if (mMaxId == 0L) {
-            new UserListStatusesTask().execute();
+            new MentionsTimelineTask().execute();
         }
     }
 
@@ -66,7 +63,7 @@ public class UserListFragment extends BaseFragment {
     public void onRefreshStarted(View view) {
         mReload = true;
         mMaxId = 0L;
-        new UserListStatusesTask().execute();
+        new MentionsTimelineTask().execute();
     }
 
     private void additionalReading() {
@@ -75,19 +72,42 @@ public class UserListFragment extends BaseFragment {
         }
         mFooter.setVisibility(View.VISIBLE);
         mAutoLoader = false;
-        new UserListStatusesTask().execute();
+        new MentionsTimelineTask().execute();
     }
 
-    @Override
+    private Boolean skip(Row row) {
+        if (row.isFavorite()) {
+            return false;
+        }
+        if (row.isStatus()) {
+            JustawayApplication application = JustawayApplication.getApplication();
+            Status status = row.getStatus();
+            // mentioned for me
+            if (status.getInReplyToUserId() == application.getUserId()) {
+                return false;
+            }
+            // retweeted for me
+            Status retweet = status.getRetweetedStatus();
+            if (retweet != null && retweet.getUser().getId() == application.getUserId()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * ページ最上部だと自動的に読み込まれ、スクロールしていると動かないという美しい挙動
+     */
     public void add(final Row row) {
         final ListView listView = getListView();
         if (listView == null) {
             return;
         }
 
-        if (mMembers.get(row.getStatus().getUser().getId()) == null) {
+        if (skip(row)) {
             return;
         }
+
         listView.post(new Runnable() {
             @Override
             public void run() {
@@ -110,29 +130,23 @@ public class UserListFragment extends BaseFragment {
                 }
                 if (position != 0 || y != 0) {
                     listView.setSelectionFromTop(position + 1, y);
-                    activity.onNewListStatus(mUserListId, false);
+                    activity.onNewInteractions(false);
                 } else {
-                    activity.onNewListStatus(mUserListId, true);
+                    activity.onNewInteractions(true);
                 }
             }
         });
     }
 
-    private class UserListStatusesTask extends AsyncTask<Void, Void, ResponseList<Status>> {
+    private class MentionsTimelineTask extends AsyncTask<Void, Void, ResponseList<Status>> {
         @Override
         protected ResponseList<twitter4j.Status> doInBackground(Void... params) {
             try {
-                Twitter twitter = JustawayApplication.getApplication().getTwitter();
                 Paging paging = new Paging();
                 if (mMaxId > 0) {
                     paging.setMaxId(mMaxId - 1);
-                } else {
-                    ResponseList<User> members = twitter.getUserListMembers(mUserListId, 0);
-                    for (User user : members) {
-                        mMembers.append(user.getId(), true);
-                    }
                 }
-                return twitter.getUserListStatuses(mUserListId, paging);
+                return JustawayApplication.getApplication().getTwitter().getMentionsTimeline(paging);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -163,9 +177,6 @@ public class UserListFragment extends BaseFragment {
                     mMaxId = status.getId();
                 }
                 adapter.extensionAdd(Row.newStatus(status));
-
-                // 最初のツイートに登場ユーザーをStreaming APIからの取り込み対象にすることでAPI節約!!!
-                mMembers.append(status.getUser().getId(), true);
             }
             mAutoLoader = true;
             getListView().setVisibility(View.VISIBLE);
