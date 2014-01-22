@@ -22,11 +22,11 @@ import android.widget.LinearLayout;
 import java.util.ArrayList;
 
 import info.justaway.adapter.MainPagerAdapter;
-import info.justaway.fragment.BaseFragment;
-import info.justaway.fragment.DirectMessagesFragment;
-import info.justaway.fragment.InteractionsFragment;
-import info.justaway.fragment.TimelineFragment;
-import info.justaway.fragment.UserListFragment;
+import info.justaway.fragment.main.BaseFragment;
+import info.justaway.fragment.main.DirectMessagesFragment;
+import info.justaway.fragment.main.InteractionsFragment;
+import info.justaway.fragment.main.TimelineFragment;
+import info.justaway.fragment.main.UserListFragment;
 import info.justaway.model.Row;
 import info.justaway.task.DestroyDirectMessageTask;
 import info.justaway.task.LoadUserListsTask;

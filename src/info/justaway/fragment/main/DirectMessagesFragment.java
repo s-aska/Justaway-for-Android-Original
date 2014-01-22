@@ -1,8 +1,7 @@
-package info.justaway.fragment;
+package info.justaway.fragment.main;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,25 +9,26 @@ import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
+import java.util.Collections;
+import java.util.Comparator;
+
 import info.justaway.JustawayApplication;
 import info.justaway.MainActivity;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.model.Row;
+import twitter4j.DirectMessage;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
-import twitter4j.Status;
+import twitter4j.Twitter;
 
-/**
- * タイムライン、すべての始まり
- */
-public class TimelineFragment extends BaseFragment {
+public class DirectMessagesFragment extends BaseFragment {
 
     private Boolean mAutoLoader = false;
     private Boolean mReload = false;
-    private long mMaxId = 0L;
+    private long mDirectMessagesMaxId = 0L;
+    private long mSentDirectMessagesMaxId = 0L;
     private ProgressBar mFooter;
-    private Boolean mStreamingStarted = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -50,22 +50,23 @@ public class TimelineFragment extends BaseFragment {
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                 // 最後までスクロールされたかどうかの判定
-                if (totalItemCount > 0 && totalItemCount == firstVisibleItem + visibleItemCount) {
+                if (totalItemCount == firstVisibleItem + visibleItemCount) {
                     additionalReading();
                 }
             }
         });
 
-        if (mMaxId == 0L) {
-            new HomeTimelineTask().execute();
+        if (mDirectMessagesMaxId == 0L && mSentDirectMessagesMaxId == 0L) {
+            new DirectMessagesTask().execute();
         }
     }
 
     @Override
     public void onRefreshStarted(View view) {
         mReload = true;
-        mMaxId = 0L;
-        new HomeTimelineTask().execute();
+        mDirectMessagesMaxId = 0L;
+        mSentDirectMessagesMaxId = 0L;
+        new DirectMessagesTask().execute();
     }
 
     private void additionalReading() {
@@ -74,7 +75,7 @@ public class TimelineFragment extends BaseFragment {
         }
         mFooter.setVisibility(View.VISIBLE);
         mAutoLoader = false;
-        new HomeTimelineTask().execute();
+        new DirectMessagesTask().execute();
     }
 
     /**
@@ -86,9 +87,7 @@ public class TimelineFragment extends BaseFragment {
             return;
         }
 
-        long userId = JustawayApplication.getApplication().getUserId();
-        Status retweet = row.getStatus().getRetweetedStatus();
-        if (retweet != null && retweet.getUser().getId() == userId) {
+        if (!row.isDirectMessage()) {
             return;
         }
 
@@ -114,23 +113,71 @@ public class TimelineFragment extends BaseFragment {
                 }
                 if (position != 0 || y != 0) {
                     listView.setSelectionFromTop(position + 1, y);
-                    activity.onNewTimeline(false);
+                    activity.onNewDirectMessage(false);
                 } else {
-                    activity.onNewTimeline(true);
+                    activity.onNewDirectMessage(true);
                 }
             }
         });
     }
 
-    private class HomeTimelineTask extends AsyncTask<Void, Void, ResponseList<Status>> {
+    public void remove(final long directMessageId) {
+        ListView listView = getListView();
+        if (listView == null) {
+            return;
+        }
+
+        final TwitterAdapter adapter = (TwitterAdapter) listView.getAdapter();
+        listView.post(new Runnable() {
+            @Override
+            public void run() {
+                adapter.removeDirectMessage(directMessageId);
+            }
+        });
+    }
+
+    private class DirectMessagesTask extends AsyncTask<Void, Void, ResponseList<DirectMessage>> {
         @Override
-        protected ResponseList<twitter4j.Status> doInBackground(Void... params) {
+        protected ResponseList<DirectMessage> doInBackground(Void... params) {
             try {
-                Paging paging = new Paging();
-                if (mMaxId > 0) {
-                    paging.setMaxId(mMaxId - 1);
+                Twitter twitter = JustawayApplication.getApplication().getTwitter();
+
+                // 受信したDM
+                Paging directMessagesPaging = new Paging();
+                if (mDirectMessagesMaxId > 0) {
+                    directMessagesPaging.setMaxId(mDirectMessagesMaxId - 1);
                 }
-                return JustawayApplication.getApplication().getTwitter().getHomeTimeline(paging);
+                ResponseList<DirectMessage> directMessages = twitter.getDirectMessages(directMessagesPaging);
+                for (DirectMessage directMessage : directMessages) {
+                    if (mDirectMessagesMaxId == 0L || mDirectMessagesMaxId > directMessage.getId()) {
+                        mDirectMessagesMaxId = directMessage.getId();
+                    }
+                }
+
+                // 送信したDM
+                Paging sentDirectMessagesPaging = new Paging();
+                if (mSentDirectMessagesMaxId > 0) {
+                    sentDirectMessagesPaging.setMaxId(mSentDirectMessagesMaxId - 1);
+                }
+                ResponseList<DirectMessage> sentDirectMessages = twitter.getSentDirectMessages(sentDirectMessagesPaging);
+                for (DirectMessage directMessage : sentDirectMessages) {
+                    if (mSentDirectMessagesMaxId == 0L || mSentDirectMessagesMaxId > directMessage.getId()) {
+                        mSentDirectMessagesMaxId = directMessage.getId();
+                    }
+                }
+
+                directMessages.addAll(sentDirectMessages);
+
+                // 日付でソート
+                Collections.sort(directMessages, new Comparator<DirectMessage>() {
+
+                    @Override
+                    public int compare(DirectMessage arg0, DirectMessage arg1) {
+                        return arg1.getCreatedAt().compareTo(
+                                arg0.getCreatedAt());
+                    }
+                });
+                return directMessages;
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -138,7 +185,7 @@ public class TimelineFragment extends BaseFragment {
         }
 
         @Override
-        protected void onPostExecute(ResponseList<twitter4j.Status> statuses) {
+        protected void onPostExecute(ResponseList<DirectMessage> statuses) {
             mFooter.setVisibility(View.GONE);
             if (statuses == null || statuses.size() == 0) {
                 return;
@@ -146,31 +193,17 @@ public class TimelineFragment extends BaseFragment {
             TwitterAdapter adapter = getListAdapter();
             if (mReload) {
                 adapter.clear();
-                for (twitter4j.Status status : statuses) {
-                    if (mMaxId == 0L || mMaxId > status.getId()) {
-                        mMaxId = status.getId();
-                    }
-                    adapter.add(Row.newStatus(status));
+                for (DirectMessage status : statuses) {
+                    adapter.add(Row.newDirectMessage(status));
                 }
                 mReload = false;
                 getPullToRefreshLayout().setRefreshComplete();
                 return;
             }
-            for (twitter4j.Status status : statuses) {
-                if (mMaxId == 0L || mMaxId > status.getId()) {
-                    mMaxId = status.getId();
-                }
-                adapter.extensionAdd(Row.newStatus(status));
+            for (DirectMessage status : statuses) {
+                adapter.extensionAdd(Row.newDirectMessage(status));
             }
             mAutoLoader = true;
-            if (!mStreamingStarted) {
-                MainActivity activity = (MainActivity) getActivity();
-                // アプリの終了処理中にnullになるっぽい
-                if (activity != null) {
-                    activity.setupStream();
-                    mStreamingStarted = true;
-                }
-            }
             getListView().setVisibility(View.VISIBLE);
         }
     }

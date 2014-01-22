@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 import info.justaway.JustawayApplication;
 import info.justaway.R;
-import info.justaway.fragment.BaseFragment;
+import info.justaway.fragment.main.BaseFragment;
 
 /**
  * MainActivityで使うPagerAdapter
