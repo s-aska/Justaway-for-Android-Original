@@ -16,6 +16,7 @@ import android.widget.ImageView;
 
 import java.io.File;
 
+import info.justaway.fragment.profile.UpdateProfileImageFragment;
 import info.justaway.task.VerifyCredentialsLoader;
 import twitter4j.User;
 

@@ -1,4 +1,4 @@
-package info.justaway;
+package info.justaway.fragment.profile;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -12,6 +12,8 @@ import android.widget.LinearLayout;
 
 import java.io.File;
 
+import info.justaway.JustawayApplication;
+import info.justaway.R;
 import twitter4j.User;
 
 import static android.app.AlertDialog.Builder;
