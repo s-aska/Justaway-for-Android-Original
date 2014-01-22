@@ -59,6 +59,10 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // クイックモード時に起動と同時にキーボードが出現するのを抑止
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
         setContentView(R.layout.activity_main);
 
         sDefaultListName = getString(R.string.title_default_list);
@@ -175,6 +179,7 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
         editStatus.setFocusable(true);
         editStatus.setFocusableInTouchMode(true);
         editStatus.setEnabled(true);
+        editStatus.clearFocus();
         mApplication.setQuickMod(true);
     }
 
