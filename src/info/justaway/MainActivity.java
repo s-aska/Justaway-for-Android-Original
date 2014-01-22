@@ -7,6 +7,7 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
@@ -43,7 +44,7 @@ import twitter4j.UserStreamAdapter;
 /**
  * @author aska
  */
-public class MainActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<User> {
+public class MainActivity extends FragmentActivity implements LoaderManager.LoaderCallbacks<User> {
 
     private JustawayApplication mApplication;
     private TwitterStream mTwitterStream;
@@ -55,6 +56,16 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
     private static final int TAB_ID_TIMELINE = -1;
     private static final int TAB_ID_INTERACTIONS = -2;
     private static final int TAB_ID_DIRECT_MESSAGE = -3;
+
+    private Long mInReplyToStatusId;
+
+    public Long getInReplyToStatusId() {
+        return mInReplyToStatusId;
+    }
+
+    public void setInReplyToStatusId(Long inReplyToStatusId) {
+        this.mInReplyToStatusId = inReplyToStatusId;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

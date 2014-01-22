@@ -2,6 +2,7 @@ package info.justaway;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.widget.TextView;
@@ -10,7 +11,7 @@ import info.justaway.adapter.SimplePagerAdapter;
 import info.justaway.fragment.list.UserListStatusesFragment;
 import info.justaway.fragment.list.UserMemberFragment;
 
-public class UserListActivity extends BaseActivity {
+public class UserListActivity extends FragmentActivity {
 
     private int mListId;
     private int mCurrentPosition = 0;
