@@ -301,9 +301,9 @@ public class PostActivity extends FragmentActivity {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (mEditText.getText().length() != 0) {
                 new AlertDialog.Builder(PostActivity.this)
-                        .setTitle(R.string.tweet_draft)
+                        .setTitle(R.string.confirm_save_draft)
                         .setPositiveButton(
-                                R.string.save,
+                                R.string.button_save,
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
@@ -317,7 +317,7 @@ public class PostActivity extends FragmentActivity {
                                     }
                                 })
                         .setNegativeButton(
-                                R.string.destroy,
+                                R.string.button_destroy,
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {

@@ -4,26 +4,26 @@
         android:id="@+id/send_reply"
         android:orderInCategory="100"
         android:showAsAction="never"
-        android:title="@string/send_reply" />
+        android:title="@string/menu_send_reply" />
     <item
         android:id="@+id/send_direct_messages"
         android:orderInCategory="100"
         android:showAsAction="never"
-        android:title="@string/send_direct_messages" />
+        android:title="@string/menu_send_direct_messages" />
     <item
         android:id="@+id/open_twitter"
         android:orderInCategory="100"
         android:showAsAction="never"
-        android:title="@string/open_twitter" />
+        android:title="@string/menu_open_twitter" />
     <item
         android:id="@+id/open_favstar"
         android:orderInCategory="100"
         android:showAsAction="never"
-        android:title="@string/open_favstar" />
+        android:title="@string/menu_open_favstar" />
     <item
         android:id="@+id/open_twilog"
         android:orderInCategory="100"
         android:showAsAction="never"
-        android:title="@string/open_twilog" />
+        android:title="@string/menu_open_twilog" />
 
 </menu>
