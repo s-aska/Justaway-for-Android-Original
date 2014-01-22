@@ -1,11 +1,11 @@
 package info.justaway;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -27,15 +27,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import info.justaway.adapter.TwitterAdapter;
+import info.justaway.contextmenu.TweetContextMenu;
 import info.justaway.model.Row;
 import twitter4j.Query;
 import twitter4j.QueryResult;
 import twitter4j.ResponseList;
 import twitter4j.SavedSearch;
 
-public class SearchActivity extends BaseActivity {
+public class SearchActivity extends FragmentActivity {
 
     private Context mContext;
+    private TweetContextMenu mTweetContextMenu;
     private EditText mSearchWords;
     private TwitterAdapter mAdapter;
     private SearchWordAdapter mSearchWordAdapter;
@@ -154,6 +156,17 @@ public class SearchActivity extends BaseActivity {
     }
 
     @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        mTweetContextMenu = new TweetContextMenu(this, menu, v, menuInfo);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        return mTweetContextMenu.onContextItemSelected(item);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.search, menu);
         return true;
@@ -175,12 +188,6 @@ public class SearchActivity extends BaseActivity {
             new SearchTask().execute(mNextQuery);
             mNextQuery = null;
         }
-    }
-
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        onCreateContextMenuForStatus(menu, v, menuInfo);
     }
 
     private class SearchTask extends AsyncTask<Query, Void, QueryResult> {

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
@@ -26,7 +27,7 @@ import info.justaway.task.ShowUserLoader;
 import twitter4j.Relationship;
 import twitter4j.User;
 
-public class ProfileActivity extends BaseActivity implements
+public class ProfileActivity extends FragmentActivity implements
         LoaderManager.LoaderCallbacks<Profile> {
 
     private ImageView mBanner;
