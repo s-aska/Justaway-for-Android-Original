@@ -64,7 +64,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="10dip"
-                    android:text="@string/tweet_count" />
+                    android:text="@string/label_tweet_count" />
 
                 <Button
                     android:id="@+id/tweet"

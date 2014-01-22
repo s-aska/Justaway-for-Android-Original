@@ -25,7 +25,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
-                android:text="@string/update_profile_image" />
+                android:text="@string/label_update_profile_image" />
         </LinearLayout>
 
         <LinearLayout
@@ -38,7 +38,7 @@
                 android:layout_width="64dip"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="@string/name" />
+                android:text="@string/label_name" />
 
             <EditText
                 android:id="@+id/name"
@@ -57,7 +57,7 @@
                 android:layout_width="64dip"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="@string/location" />
+                android:text="@string/label_location" />
 
             <EditText
                 android:id="@+id/location"
@@ -76,7 +76,7 @@
                 android:layout_width="64dip"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="@string/web_site" />
+                android:text="@string/label_web_site" />
 
             <EditText
                 android:id="@+id/web_site"
@@ -95,7 +95,7 @@
                 android:layout_width="64dip"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="@string/bio" />
+                android:text="@string/label_bio" />
 
             <EditText
                 android:id="@+id/bio"
@@ -109,6 +109,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
-            android:text="@string/save" />
+            android:text="@string/button_save" />
     </LinearLayout>
 </LinearLayout>

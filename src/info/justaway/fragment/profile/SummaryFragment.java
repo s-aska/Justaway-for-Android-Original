@@ -68,7 +68,7 @@ public class SummaryFragment extends Fragment {
         screenName.setText("@" + user.getScreenName());
 
         if (relationship.isSourceFollowedByTarget()) {
-            followedBy.setText(R.string.followed_by_target);
+            followedBy.setText(R.string.label_followed_by_target);
         } else {
             followedBy.setText("");
         }
