@@ -65,6 +65,9 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
 
         setContentView(R.layout.activity_main);
 
+        // クイックモード時に起動と同時に入力エリアにフォーカスするのを抑止
+        findViewById(R.id.main).requestFocus();
+
         sDefaultListName = getString(R.string.title_default_list);
 
         mApplication = JustawayApplication.getApplication();
@@ -179,7 +182,6 @@ public class MainActivity extends BaseActivity implements LoaderManager.LoaderCa
         editStatus.setFocusable(true);
         editStatus.setFocusableInTouchMode(true);
         editStatus.setEnabled(true);
-        editStatus.clearFocus();
         mApplication.setQuickMod(true);
     }
 

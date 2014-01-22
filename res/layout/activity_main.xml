@@ -1,9 +1,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
     android:background="@color/background"
+    android:focusableInTouchMode="true"
     tools:context=".MainActivity">
 
     <LinearLayout
@@ -26,12 +28,6 @@
         android:layout_height="wrap_content"
         android:visibility="gone"
         android:background="@color/menu_background">
-
-        <View
-            android:layout_width="0dip"
-            android:layout_height="0dip"
-            android:focusable="true"
-            android:focusableInTouchMode="true"><requestFocus /></View>
 
         <info.justaway.widget.ClearEditText
             android:id="@+id/quick_tweet_edit"
