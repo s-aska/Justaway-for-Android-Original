@@ -49,7 +49,7 @@ public class ProfileActivity extends BaseActivity implements
         ((TextView) findViewById(R.id.statuses_count)).setTextColor(mColorBlue);
         ((TextView) findViewById(R.id.statuses_count_label)).setTextColor(mColorBlue);
 
-        Typeface fontello = Typeface.createFromAsset(getAssets(), "fontello.ttf");
+        Typeface fontello = JustawayApplication.getFontello();
         ((TextView) findViewById(R.id.collapse_label)).setTypeface(fontello);
 
         // インテント経由での起動をサポート

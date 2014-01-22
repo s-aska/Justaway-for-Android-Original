@@ -5,10 +5,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
+import android.graphics.Typeface;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -42,8 +44,9 @@ import twitter4j.conf.ConfigurationBuilder;
 public class JustawayApplication extends Application {
 
     private static JustawayApplication sApplication;
-    private static ImageLoader mImageLoader;
-    private static DisplayImageOptions mRoundedDisplayImageOptions;
+    private static ImageLoader sImageLoader;
+    private static DisplayImageOptions sRoundedDisplayImageOptions;
+    private static Typeface sFontello;
     private ResponseList<UserList> mUserLists;
 
     public ResponseList<UserList> getUserLists() {
@@ -78,13 +81,12 @@ public class JustawayApplication extends Application {
         return null;
     }
 
-    /**
-     * 毎回キャストしなくて良いように
-     *
-     * @return アプリケーションのインスタンス
-     */
     public static JustawayApplication getApplication() {
         return sApplication;
+    }
+
+    public static Typeface getFontello() {
+        return sFontello;
     }
 
     @Override
@@ -106,14 +108,16 @@ public class JustawayApplication extends Application {
 
         ImageLoader.getInstance().init(config);
 
-        mImageLoader = ImageLoader.getInstance();
+        sImageLoader = ImageLoader.getInstance();
 
-        mRoundedDisplayImageOptions = new DisplayImageOptions.Builder()
+        sRoundedDisplayImageOptions = new DisplayImageOptions.Builder()
                 .cacheInMemory(true)
                 .cacheOnDisc(true)
                 .resetViewBeforeLoading(true)
                 .displayer(new FadeInRoundedBitmapDisplayer(5))
                 .build();
+
+        sFontello = Typeface.createFromAsset(getAssets(), "fontello.ttf");
 
         // 例外発生時の処理を指定（スタックトレースを保存）
         if (BuildConfig.DEBUG) {
@@ -127,7 +131,7 @@ public class JustawayApplication extends Application {
             return;
         }
         view.setTag(url);
-        mImageLoader.displayImage(url, view);
+        sImageLoader.displayImage(url, view);
     }
 
     public void displayRoundedImage(String url, ImageView view) {
@@ -136,7 +140,7 @@ public class JustawayApplication extends Application {
             return;
         }
         view.setTag(url);
-        mImageLoader.displayImage(url, view, mRoundedDisplayImageOptions);
+        sImageLoader.displayImage(url, view, sRoundedDisplayImageOptions);
     }
 
     /*

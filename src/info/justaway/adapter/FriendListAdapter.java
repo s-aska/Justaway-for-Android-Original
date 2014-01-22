@@ -79,8 +79,7 @@ public class FriendListAdapter extends ArrayAdapter<User> {
             description.setVisibility(View.GONE);
         }
 
-        Typeface fontello = Typeface.createFromAsset(mContext.getAssets(), "fontello.ttf");
-
+        Typeface fontello = JustawayApplication.getFontello();
         if (user.isProtected()) {
             ((TextView) view.findViewById(R.id.fontello_lock)).setTypeface(fontello);
             view.findViewById(R.id.fontello_lock).setVisibility(View.VISIBLE);
