@@ -27,6 +27,12 @@
         android:visibility="gone"
         android:background="@color/menu_background">
 
+        <View
+            android:layout_width="0dip"
+            android:layout_height="0dip"
+            android:focusable="true"
+            android:focusableInTouchMode="true"><requestFocus /></View>
+
         <info.justaway.widget.ClearEditText
             android:id="@+id/quick_tweet_edit"
             android:layout_width="1dip"
@@ -74,9 +80,7 @@
                         android:layout_height="wrap_content"
                         android:background="@color/menu_active_background"
                         android:text="@string/fontello_home"
-                        android:textSize="22sp"
-                        android:focusable="true"
-                        android:focusableInTouchMode="true"><requestFocus /></Button>
+                        android:textSize="22sp" />
 
                     <Button
                         android:id="@+id/action_interactions"
