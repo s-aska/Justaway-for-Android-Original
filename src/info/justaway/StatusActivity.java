@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.view.ContextMenu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -13,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import info.justaway.adapter.TwitterAdapter;
+import info.justaway.contextmenu.TweetContextMenu;
 import info.justaway.model.Row;
 import twitter4j.Status;
 import twitter4j.Twitter;
@@ -20,8 +23,9 @@ import twitter4j.Twitter;
 /**
  * ツイート表示用のアクティビティ
  */
-public class StatusActivity extends BaseActivity {
+public class StatusActivity extends FragmentActivity {
 
+    private TweetContextMenu mTweetContextMenu;
     private ProgressDialog mProgressDialog;
 
     @Override
@@ -79,9 +83,15 @@ public class StatusActivity extends BaseActivity {
         }
     }
 
-    public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, view, menuInfo);
-        onCreateContextMenuForStatus(menu, view, menuInfo);
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        mTweetContextMenu = new TweetContextMenu(this, menu, v, menuInfo);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        return mTweetContextMenu.onContextItemSelected(item);
     }
 
     private void showProgressDialog(String message) {

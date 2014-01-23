@@ -1,5 +1,6 @@
-package info.justaway;
+package info.justaway.contextmenu;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -15,6 +16,12 @@ import android.widget.ListView;
 
 import java.util.List;
 
+import info.justaway.JustawayApplication;
+import info.justaway.MainActivity;
+import info.justaway.PostActivity;
+import info.justaway.ProfileActivity;
+import info.justaway.R;
+import info.justaway.SearchActivity;
 import info.justaway.fragment.TalkFragment;
 import info.justaway.model.Row;
 import info.justaway.plugin.TwiccaPlugin;
@@ -23,7 +30,13 @@ import twitter4j.Status;
 import twitter4j.URLEntity;
 import twitter4j.UserMentionEntity;
 
-public class BaseActivity extends FragmentActivity {
+/**
+ * ツイート
+ */
+public class TweetContextMenu {
+
+    private Row mRow;
+    private FragmentActivity mActivity;
 
     static final int CLOSED_MENU_DELAY = 800;
 
@@ -48,39 +61,27 @@ public class BaseActivity extends FragmentActivity {
 
     private List<ResolveInfo> mTwiccaPlugins;
 
-    /**
-     * コンテキストメニュー表示時の選択したツイートをセットしている Streaming API対応で勝手に画面がスクロールされる為、
-     * positionから取得されるitemが変わってしまい、どこかに保存する必要があった
-     */
-    private Row mSelectedRow;
-    private Long mInReplyToStatusId;
-
-    public Long getInReplyToStatusId() {
-        return mInReplyToStatusId;
-    }
-
-    public void setInReplyToStatusId(Long inReplyToStatusId) {
-        this.mInReplyToStatusId = inReplyToStatusId;
-    }
-
-    public void onCreateContextMenuForStatus(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo) {
+    public TweetContextMenu(FragmentActivity activity, ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
         ListView listView = (ListView) view;
         Row row = (Row) listView.getItemAtPosition(info.position);
         if (row == null) {
             return;
         }
-        mSelectedRow = row;
+        mRow = row;
+        mActivity = activity;
 
+        // ダイレクトメッセージの場合
         if (row.isDirectMessage()) {
             menu.setHeaderTitle(row.getMessage().getSenderScreenName());
             menu.add(0, CONTEXT_MENU_DM_ID, 0, R.string.context_menu_reply_direct_message);
             menu.add(0, CONTEXT_MENU_RM_DM_ID, 0, R.string.context_menu_destroy_direct_message);
             return;
         }
-        Status status = row.getStatus();
-        Status retweet = status.getRetweetedStatus();
-        Status source = retweet != null ? retweet : status;
+
+        twitter4j.Status status = row.getStatus();
+        twitter4j.Status retweet = status.getRetweetedStatus();
+        twitter4j.Status source = retweet != null ? retweet : status;
 
         JustawayApplication application = JustawayApplication.getApplication();
 
@@ -88,7 +89,7 @@ public class BaseActivity extends FragmentActivity {
         menu.add(0, CONTEXT_MENU_REPLY_ID, 0, R.string.context_menu_reply);
 
         UserMentionEntity[] mentions = source.getUserMentionEntities();
-        if (mentions.length > 1 || (mentions.length == 1 && mentions[0].getScreenName() != application.getScreenName())) {
+        if (mentions.length > 1 || (mentions.length == 1 && !mentions[0].getScreenName().equals(application.getScreenName()))) {
             menu.add(0, CONTEXT_MENU_REPLY_ALL_ID, 0, R.string.context_menu_reply_all);
         }
 
@@ -146,10 +147,10 @@ public class BaseActivity extends FragmentActivity {
 
         // twiccaプラグイン実装 IDは被らないように100~にしてる　
         if (mTwiccaPlugins == null) {
-            mTwiccaPlugins = TwiccaPlugin.getResolveInfoForShowTweet(getPackageManager());
+            mTwiccaPlugins = TwiccaPlugin.getResolveInfoForShowTweet(mActivity.getPackageManager());
         }
         if (!mTwiccaPlugins.isEmpty()) {
-            PackageManager pm = getPackageManager();
+            PackageManager pm = mActivity.getPackageManager();
             int i = 0;
             for (ResolveInfo resolveInfo : mTwiccaPlugins) {
                 if (pm == null || resolveInfo.activityInfo == null) {
@@ -161,20 +162,18 @@ public class BaseActivity extends FragmentActivity {
         }
     }
 
-    @Override
     public boolean onContextItemSelected(MenuItem item) {
-
         JustawayApplication application = JustawayApplication.getApplication();
-        Row row = mSelectedRow;
+        Row row = mRow;
         Status status = row.getStatus();
         Status retweet = status != null ? status.getRetweetedStatus() : null;
         Status source = retweet != null ? retweet : status;
         Intent intent;
         String text;
         EditText editStatus = null;
-        View singleLineTweet = findViewById(R.id.quick_tweet_layout);
+        View singleLineTweet = mActivity.findViewById(R.id.quick_tweet_layout);
         if (singleLineTweet != null && singleLineTweet.getVisibility() == View.VISIBLE) {
-            editStatus = (EditText) findViewById(R.id.quick_tweet_edit);
+            editStatus = (EditText) mActivity.findViewById(R.id.quick_tweet_edit);
         }
 
         switch (item.getItemId()) {
@@ -187,13 +186,13 @@ public class BaseActivity extends FragmentActivity {
                     application.showKeyboard(editStatus, CLOSED_MENU_DELAY);
                     return true;
                 }
-                intent = new Intent(this, PostActivity.class);
+                intent = new Intent(mActivity, PostActivity.class);
                 intent.putExtra("status", text);
                 intent.putExtra("selection", text.length());
-                startActivity(intent);
+                mActivity.startActivity(intent);
                 return true;
             case CONTEXT_MENU_RM_DM_ID:
-                MainActivity mainActivity = (MainActivity) this;
+                MainActivity mainActivity = (MainActivity) mActivity;
                 mainActivity.doDestroyDirectMessage(row.getMessage().getId());
                 return true;
         }
@@ -215,15 +214,15 @@ public class BaseActivity extends FragmentActivity {
                     editStatus.requestFocus();
                     editStatus.setText(text);
                     editStatus.setSelection(text.length());
-                    setInReplyToStatusId(status.getId());
+                    ((MainActivity) mActivity).setInReplyToStatusId(status.getId());
                     application.showKeyboard(editStatus, CLOSED_MENU_DELAY);
                     return true;
                 }
-                intent = new Intent(this, PostActivity.class);
+                intent = new Intent(mActivity, PostActivity.class);
                 intent.putExtra("status", text);
                 intent.putExtra("selection", text.length());
                 intent.putExtra("inReplyToStatusId", status.getId());
-                startActivity(intent);
+                mActivity.startActivity(intent);
                 return true;
             case CONTEXT_MENU_REPLY_ALL_ID:
                 if (source.getUser().getId() == application.getUserId()) {
@@ -244,15 +243,15 @@ public class BaseActivity extends FragmentActivity {
                     editStatus.requestFocus();
                     editStatus.setText(text);
                     editStatus.setSelection(text.length());
-                    setInReplyToStatusId(status.getId());
+                    ((MainActivity) mActivity).setInReplyToStatusId(status.getId());
                     application.showKeyboard(editStatus, CLOSED_MENU_DELAY);
                     return true;
                 }
-                intent = new Intent(this, PostActivity.class);
+                intent = new Intent(mActivity, PostActivity.class);
                 intent.putExtra("status", text);
                 intent.putExtra("selection", text.length());
                 intent.putExtra("inReplyToStatusId", status.getId());
-                startActivity(intent);
+                mActivity.startActivity(intent);
                 return true;
             case CONTEXT_MENU_QT_ID:
                 text = " https://twitter.com/" + source.getUser().getScreenName()
@@ -260,14 +259,14 @@ public class BaseActivity extends FragmentActivity {
                 if (editStatus != null) {
                     editStatus.requestFocus();
                     editStatus.setText(text);
-                    setInReplyToStatusId(source.getId());
+                    ((MainActivity) mActivity).setInReplyToStatusId(source.getId());
                     application.showKeyboard(editStatus, CLOSED_MENU_DELAY);
                     return true;
                 }
-                intent = new Intent(this, PostActivity.class);
+                intent = new Intent(mActivity, PostActivity.class);
                 intent.putExtra("status", text);
                 intent.putExtra("inReplyToStatusId", source.getId());
-                startActivity(intent);
+                mActivity.startActivity(intent);
                 return true;
             case CONTEXT_MENU_RM_ID:
                 application.doDestroyStatus(row.getStatus().getId());
@@ -293,7 +292,7 @@ public class BaseActivity extends FragmentActivity {
                 Bundle args = new Bundle();
                 args.putLong("statusId", source.getId());
                 dialog.setArguments(args);
-                dialog.show(getSupportFragmentManager(), "dialog");
+                dialog.show(mActivity.getSupportFragmentManager(), "dialog");
                 return true;
             case CONTEXT_MENU_LINK_ID:
 
@@ -301,24 +300,24 @@ public class BaseActivity extends FragmentActivity {
                  * 現在は全てIntentでブラウザなどに飛ばしているが、 画像やツイートは自アプリで参照できるように対応する予定
                  */
                 intent = new Intent(Intent.ACTION_VIEW, Uri.parse(item.getTitle().toString()));
-                startActivity(intent);
+                mActivity.startActivity(intent);
                 return true;
             case CONTEXT_MENU_HASH_ID:
-                intent = new Intent(this, SearchActivity.class);
+                intent = new Intent(mActivity, SearchActivity.class);
                 intent.putExtra("query", item.getTitle().toString());
-                startActivity(intent);
+                mActivity.startActivity(intent);
                 return true;
             case CONTEXT_MENU_AT_ID:
-                intent = new Intent(this, ProfileActivity.class);
+                intent = new Intent(mActivity, ProfileActivity.class);
                 intent.putExtra("screenName", item.getTitle().toString().substring(1));
-                startActivity(intent);
+                mActivity.startActivity(intent);
                 return true;
             case CONTEXT_MENU_SHARE_TEXT_ID:
                 intent = new Intent();
                 intent.setAction(Intent.ACTION_SEND);
                 intent.setType("text/plain");
                 intent.putExtra(Intent.EXTRA_TEXT, status.getText());
-                startActivity(intent);
+                mActivity.startActivity(intent);
                 return true;
             case CONTEXT_MENU_SHARE_URL_ID:
                 intent = new Intent();
@@ -326,7 +325,7 @@ public class BaseActivity extends FragmentActivity {
                 intent.setType("text/plain");
                 intent.putExtra(Intent.EXTRA_TEXT, "https://twitter.com/" + source.getUser().getScreenName()
                         + "/status/" + String.valueOf(source.getId()));
-                startActivity(intent);
+                mActivity.startActivity(intent);
                 return true;
             default:
                 if (itemId >= CONTEXT_MENU_TWICCA_SHOW_TEXT_BASE_ID) {
@@ -335,7 +334,7 @@ public class BaseActivity extends FragmentActivity {
                         return true;
                     }
                     intent = TwiccaPlugin.createIntentShowTweet(status, resolveInfo.activityInfo.packageName, resolveInfo.activityInfo.name);
-                    startActivity(intent);
+                    mActivity.startActivity(intent);
                 }
                 return true;
         }

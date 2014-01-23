@@ -13,10 +13,10 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import info.justaway.BaseActivity;
 import info.justaway.JustawayApplication;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
+import info.justaway.contextmenu.TweetContextMenu;
 import info.justaway.model.Row;
 import twitter4j.Twitter;
 
@@ -26,6 +26,8 @@ import twitter4j.Twitter;
  * @author aska
  */
 public class TalkFragment extends DialogFragment {
+
+    private TweetContextMenu mTweetContextMenu;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -63,27 +65,22 @@ public class TalkFragment extends DialogFragment {
         return dialog;
     }
 
+    @Override
     public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, view, menuInfo);
-        BaseActivity baseActivity = (BaseActivity) getActivity();
-        baseActivity.onCreateContextMenuForStatus(menu, view, menuInfo);
+        mTweetContextMenu = new TweetContextMenu(getActivity(), menu, view, menuInfo);
 
         // DialogFragment内でContextMenuを使うにはこれが必要
         MenuItem.OnMenuItemClickListener listener = new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                onContextItemSelected(item);
+                mTweetContextMenu.onContextItemSelected(item);
                 return true;
             }
         };
 
         for (int i = 0, n = menu.size(); i < n; i++)
             menu.getItem(i).setOnMenuItemClickListener(listener);
-    }
-
-    public boolean onContextItemSelected(MenuItem item) {
-        BaseActivity baseActivity = (BaseActivity) getActivity();
-        return baseActivity.onContextItemSelected(item);
     }
 
     private class LoadTalk extends AsyncTask<Long, Void, twitter4j.Status> {
