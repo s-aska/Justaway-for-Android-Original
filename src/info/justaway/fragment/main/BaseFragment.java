@@ -3,7 +3,6 @@ package info.justaway.fragment.main;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -11,10 +10,10 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import info.justaway.BaseActivity;
 import info.justaway.MainActivity;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
+import info.justaway.contextmenu.TweetContextMenu;
 import info.justaway.model.Row;
 import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
 import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout;
@@ -26,6 +25,7 @@ import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
 public abstract class BaseFragment extends Fragment implements
         OnRefreshListener {
 
+    private TweetContextMenu mTweetContextMenu;
     private TwitterAdapter mAdapter;
     private ListView mListView;
     private PullToRefreshLayout mPullToRefreshLayout;
@@ -143,14 +143,14 @@ public abstract class BaseFragment extends Fragment implements
 //        });
 //    }
 
-    public void onCreateContextMenu(ContextMenu menu, View view, ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, view, menuInfo);
-        BaseActivity baseActivity = (BaseActivity) getActivity();
-        baseActivity.onCreateContextMenuForStatus(menu, view, menuInfo);
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        mTweetContextMenu = new TweetContextMenu(getActivity(), menu, v, menuInfo);
     }
 
+    @Override
     public boolean onContextItemSelected(MenuItem item) {
-        BaseActivity baseActivity = (BaseActivity) getActivity();
-        return baseActivity.onContextItemSelected(item);
+        return mTweetContextMenu.onContextItemSelected(item);
     }
 }

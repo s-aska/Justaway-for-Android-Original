@@ -13,10 +13,10 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
-import info.justaway.BaseActivity;
 import info.justaway.JustawayApplication;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
+import info.justaway.contextmenu.TweetContextMenu;
 import info.justaway.model.Row;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
@@ -29,6 +29,7 @@ import twitter4j.User;
  */
 public class UserTimelineFragment extends Fragment {
 
+    private TweetContextMenu mTweetContextMenu;
     private TwitterAdapter mAdapter;
     private ListView mListView;
     private ProgressBar mFooter;
@@ -84,15 +85,15 @@ public class UserTimelineFragment extends Fragment {
         return v;
     }
 
-    public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, view, menuInfo);
-        BaseActivity baseActivity = (BaseActivity) getActivity();
-        baseActivity.onCreateContextMenuForStatus(menu, view, menuInfo);
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        mTweetContextMenu = new TweetContextMenu(getActivity(), menu, v, menuInfo);
     }
 
+    @Override
     public boolean onContextItemSelected(MenuItem item) {
-        BaseActivity baseActivity = (BaseActivity) getActivity();
-        return baseActivity.onContextItemSelected(item);
+        return mTweetContextMenu.onContextItemSelected(item);
     }
 
     private void additionalReading() {
