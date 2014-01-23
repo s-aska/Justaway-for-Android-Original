@@ -57,8 +57,6 @@ public class PostActivity extends FragmentActivity {
     private TextView mTextView;
     private Button mTweetButton;
     private Button mImgButton;
-    private Button mSuddenlyButton;
-    private Button mDraftButton;
     private ProgressDialog mProgressDialog;
     private Long mInReplyToStatusId;
     private File mImgPath;
@@ -79,14 +77,14 @@ public class PostActivity extends FragmentActivity {
         mTextView = (TextView) findViewById(R.id.count);
         mTweetButton = (Button) findViewById(R.id.tweet);
         mImgButton = (Button) findViewById(R.id.img);
-        mSuddenlyButton = (Button) findViewById(R.id.suddenly);
-        mDraftButton = (Button) findViewById(R.id.word);
         mTwitter = application.getTwitter();
+        Button suddenlyButton = (Button) findViewById(R.id.suddenly);
+        Button draftButton = (Button) findViewById(R.id.word);
 
         mTweetButton.setTypeface(fontello);
         mImgButton.setTypeface(fontello);
-        mSuddenlyButton.setTypeface(fontello);
-        mDraftButton.setTypeface(fontello);
+        suddenlyButton.setTypeface(fontello);
+        draftButton.setTypeface(fontello);
 
         registerForContextMenu(mImgButton);
 
@@ -150,7 +148,7 @@ public class PostActivity extends FragmentActivity {
             }
         });
 
-        mSuddenlyButton.setOnClickListener(new View.OnClickListener() {
+        suddenlyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String text = mEditText.getText().toString();
@@ -204,7 +202,7 @@ public class PostActivity extends FragmentActivity {
             }
         });
 
-        mDraftButton.setOnClickListener(new View.OnClickListener() {
+        draftButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mDraftDialog = new DraftFragment();
@@ -229,9 +227,9 @@ public class PostActivity extends FragmentActivity {
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        menu.setHeaderTitle("画像選択メニュー"); //TODO:
-        menu.add(0, REQUEST_GALLERY, 0, R.string.context_menu_attach_photo);
-        menu.add(0, REQUEST_CAMERA, 0, getString(R.string.context_menu_take_photo));
+        menu.setHeaderTitle(getString(R.string.context_menu_title_photo_method));
+        menu.add(0, REQUEST_GALLERY, 0, R.string.context_menu_photo_gallery);
+        menu.add(0, REQUEST_CAMERA, 0, R.string.context_menu_photo_camera);
     }
 
     @Override
