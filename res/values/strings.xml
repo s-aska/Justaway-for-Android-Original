@@ -32,6 +32,8 @@
     <string name="context_menu_share_text">ツイート本文を共有</string>
     <string name="context_menu_share_url">ツイートURLを共有</string>
     <string name="context_menu_talk">会話を表示</string>
+    <string name="context_menu_attach_photo">画像を添付</string>
+    <string name="context_menu_take_photo">写真を撮影</string>
     <string name="description_icon">Profile Icon</string>
     <string name="format_user_created_at">\'Twitter開始日：\'yyyy年MM月dd日</string>
     <string name="label_bio">自己紹介</string>
