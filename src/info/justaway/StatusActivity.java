@@ -25,7 +25,6 @@ import twitter4j.Twitter;
  */
 public class StatusActivity extends FragmentActivity {
 
-    private TweetContextMenu mTweetContextMenu;
     private ProgressDialog mProgressDialog;
 
     @Override
@@ -86,12 +85,12 @@ public class StatusActivity extends FragmentActivity {
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        mTweetContextMenu = new TweetContextMenu(this, menu, v, menuInfo);
+        JustawayApplication.getApplication().onCreateContextMenu(this, menu, v, menuInfo);
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        return mTweetContextMenu.onContextItemSelected(item);
+        return JustawayApplication.getApplication().onContextItemSelected(item);
     }
 
     private void showProgressDialog(String message) {

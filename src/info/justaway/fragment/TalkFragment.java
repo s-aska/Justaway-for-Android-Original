@@ -27,8 +27,6 @@ import twitter4j.Twitter;
  */
 public class TalkFragment extends DialogFragment {
 
-    private TweetContextMenu mTweetContextMenu;
-
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
@@ -68,13 +66,13 @@ public class TalkFragment extends DialogFragment {
     @Override
     public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, view, menuInfo);
-        mTweetContextMenu = new TweetContextMenu(getActivity(), menu, view, menuInfo);
+        JustawayApplication.getApplication().onCreateContextMenu(getActivity(), menu, view, menuInfo);
 
         // DialogFragment内でContextMenuを使うにはこれが必要
         MenuItem.OnMenuItemClickListener listener = new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                mTweetContextMenu.onContextItemSelected(item);
+                JustawayApplication.getApplication().onContextItemSelected(item);
                 return true;
             }
         };

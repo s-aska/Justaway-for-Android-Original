@@ -29,7 +29,6 @@ import twitter4j.User;
  */
 public class UserTimelineFragment extends Fragment {
 
-    private TweetContextMenu mTweetContextMenu;
     private TwitterAdapter mAdapter;
     private ListView mListView;
     private ProgressBar mFooter;
@@ -85,15 +84,13 @@ public class UserTimelineFragment extends Fragment {
         return v;
     }
 
-    @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        mTweetContextMenu = new TweetContextMenu(getActivity(), menu, v, menuInfo);
+        JustawayApplication.getApplication().onCreateContextMenu(getActivity(), menu, v, menuInfo);
     }
 
-    @Override
     public boolean onContextItemSelected(MenuItem item) {
-        return mTweetContextMenu.onContextItemSelected(item);
+        return JustawayApplication.getApplication().onContextItemSelected(item);
     }
 
     private void additionalReading() {
