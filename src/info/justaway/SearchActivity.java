@@ -37,7 +37,6 @@ import twitter4j.SavedSearch;
 public class SearchActivity extends FragmentActivity {
 
     private Context mContext;
-    private TweetContextMenu mTweetContextMenu;
     private EditText mSearchWords;
     private TwitterAdapter mAdapter;
     private SearchWordAdapter mSearchWordAdapter;
@@ -158,12 +157,12 @@ public class SearchActivity extends FragmentActivity {
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        mTweetContextMenu = new TweetContextMenu(this, menu, v, menuInfo);
+        JustawayApplication.getApplication().onCreateContextMenu(this, menu, v, menuInfo);
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        return mTweetContextMenu.onContextItemSelected(item);
+        return JustawayApplication.getApplication().onContextItemSelected(item);
     }
 
     @Override
