@@ -16,7 +16,6 @@ import android.widget.ListView;
 import info.justaway.JustawayApplication;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
-import info.justaway.contextmenu.TweetContextMenu;
 import info.justaway.model.Row;
 import twitter4j.Twitter;
 
