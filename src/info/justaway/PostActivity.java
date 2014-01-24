@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -24,6 +25,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -46,17 +48,19 @@ import twitter4j.Twitter;
 
 public class PostActivity extends FragmentActivity {
 
+    private static final int REQUEST_GALLERY = 1;
+    private static final int REQUEST_CAMERA = 2;
+
     private Context mContext;
     private Twitter mTwitter;
     private EditText mEditText;
     private TextView mTextView;
     private Button mTweetButton;
     private Button mImgButton;
-    private Button mSuddenlyButton;
-    private Button mDraftButton;
     private ProgressDialog mProgressDialog;
     private Long mInReplyToStatusId;
     private File mImgPath;
+    private Uri mImageUri;
     private DraftFragment mDraftDialog;
 
     @Override
@@ -73,14 +77,16 @@ public class PostActivity extends FragmentActivity {
         mTextView = (TextView) findViewById(R.id.count);
         mTweetButton = (Button) findViewById(R.id.tweet);
         mImgButton = (Button) findViewById(R.id.img);
-        mSuddenlyButton = (Button) findViewById(R.id.suddenly);
-        mDraftButton = (Button) findViewById(R.id.word);
         mTwitter = application.getTwitter();
+        Button suddenlyButton = (Button) findViewById(R.id.suddenly);
+        Button draftButton = (Button) findViewById(R.id.word);
 
         mTweetButton.setTypeface(fontello);
         mImgButton.setTypeface(fontello);
-        mSuddenlyButton.setTypeface(fontello);
-        mDraftButton.setTypeface(fontello);
+        suddenlyButton.setTypeface(fontello);
+        draftButton.setTypeface(fontello);
+
+        registerForContextMenu(mImgButton);
 
         Intent intent = getIntent();
         String status = intent.getStringExtra("status");
@@ -113,7 +119,7 @@ public class PostActivity extends FragmentActivity {
         if (Intent.ACTION_SEND.equals(intent.getAction())) {
             if (intent.getExtras().get(Intent.EXTRA_STREAM) != null) {
                 Uri imgUri = (Uri) intent.getExtras().get(Intent.EXTRA_STREAM);
-                uriToFile(imgUri);
+                setImage(imgUri);
             } else {
                 String pageUri = intent.getExtras().getString(Intent.EXTRA_TEXT);
                 String pageTitle = intent.getExtras().getString(Intent.EXTRA_SUBJECT);
@@ -142,7 +148,7 @@ public class PostActivity extends FragmentActivity {
             }
         });
 
-        mSuddenlyButton.setOnClickListener(new View.OnClickListener() {
+        suddenlyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String text = mEditText.getText().toString();
@@ -192,13 +198,11 @@ public class PostActivity extends FragmentActivity {
         mImgButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_PICK);
-                intent.setType("image/*");
-                startActivityForResult(intent, 1);
+                v.showContextMenu();
             }
         });
 
-        mDraftButton.setOnClickListener(new View.OnClickListener() {
+        draftButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mDraftDialog = new DraftFragment();
@@ -221,15 +225,53 @@ public class PostActivity extends FragmentActivity {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            Uri uri = data.getData();
-            uriToFile(uri);
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        menu.setHeaderTitle(getString(R.string.context_menu_title_photo_method));
+        menu.add(0, REQUEST_GALLERY, 0, R.string.context_menu_photo_gallery);
+        menu.add(0, REQUEST_CAMERA, 0, R.string.context_menu_photo_camera);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        Intent intent;
+        switch (item.getItemId()) {
+            case REQUEST_GALLERY:
+                intent = new Intent(Intent.ACTION_PICK);
+                intent.setType("image/*");
+                startActivityForResult(intent, REQUEST_GALLERY);
+                return true;
+            case REQUEST_CAMERA:
+                String filename = System.currentTimeMillis() + ".jpg";
+                ContentValues values = new ContentValues();
+                values.put(MediaStore.Images.Media.TITLE, filename);
+                values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+                mImageUri = getContentResolver().insert(
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+                intent = new Intent();
+                intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, mImageUri);
+                startActivityForResult(intent, REQUEST_CAMERA);
+                return true;
+            default:
+                return true;
         }
     }
 
-    private void uriToFile(Uri uri) {
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == REQUEST_GALLERY) {
+                setImage(data.getData());
+            } else if (requestCode == REQUEST_CAMERA){
+                setImage(mImageUri);
+            }
+        }
+    }
+
+    private void setImage(Uri uri) {
         ContentResolver cr = getContentResolver();
         String[] columns = {MediaStore.Images.Media.DATA};
         Cursor c = cr.query(uri, columns, null, null, null);
