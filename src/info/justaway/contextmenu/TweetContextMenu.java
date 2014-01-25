@@ -21,6 +21,7 @@ import info.justaway.PostActivity;
 import info.justaway.ProfileActivity;
 import info.justaway.R;
 import info.justaway.SearchActivity;
+import info.justaway.fragment.AroundFragment;
 import info.justaway.fragment.TalkFragment;
 import info.justaway.model.Row;
 import info.justaway.plugin.TwiccaPlugin;
@@ -56,6 +57,7 @@ public class TweetContextMenu {
     static final int CONTEXT_MENU_REPLY_ALL_ID = 16;
     static final int CONTEXT_MENU_SHARE_TEXT_ID = 17;
     static final int CONTEXT_MENU_SHARE_URL_ID = 18;
+    static final int CONTEXT_MENU_AROUND_ID = 19;
     static final int CONTEXT_MENU_TWICCA_SHOW_TEXT_BASE_ID = 100;
 
     private List<ResolveInfo> mTwiccaPlugins;
@@ -118,6 +120,7 @@ public class TweetContextMenu {
         if (source.getInReplyToStatusId() > 0) {
             menu.add(0, CONTEXT_MENU_TALK_ID, 0, R.string.context_menu_talk);
         }
+        menu.add(0, CONTEXT_MENU_AROUND_ID, 0, R.string.context_menu_around);
 
         // ツイート内のURLへアクセスできるようにメニューに展開する
         URLEntity[] urls = source.getURLEntities();
@@ -141,9 +144,6 @@ public class TweetContextMenu {
             menu.add(0, CONTEXT_MENU_AT_ID, 0, "@" + mention.getScreenName());
         }
 
-        menu.add(0, CONTEXT_MENU_SHARE_TEXT_ID, 0, R.string.context_menu_share_text);
-        menu.add(0, CONTEXT_MENU_SHARE_URL_ID, 0, R.string.context_menu_share_url);
-
         // twiccaプラグイン実装 IDは被らないように100~にしてる　
         if (mTwiccaPlugins == null) {
             mTwiccaPlugins = TwiccaPlugin.getResolveInfoForShowTweet(mActivity.getPackageManager());
@@ -159,6 +159,9 @@ public class TweetContextMenu {
                 i++;
             }
         }
+
+        menu.add(0, CONTEXT_MENU_SHARE_TEXT_ID, 0, R.string.context_menu_share_text);
+        menu.add(0, CONTEXT_MENU_SHARE_URL_ID, 0, R.string.context_menu_share_url);
     }
 
     public boolean onContextItemSelected(MenuItem item) {
@@ -292,6 +295,13 @@ public class TweetContextMenu {
                 args.putLong("statusId", source.getId());
                 dialog.setArguments(args);
                 dialog.show(mActivity.getSupportFragmentManager(), "dialog");
+                return true;
+            case CONTEXT_MENU_AROUND_ID:
+                AroundFragment aroundFragment = new AroundFragment();
+                Bundle aroundArgs = new Bundle();
+                aroundArgs.putLong("statusId", source.getId());
+                aroundFragment.setArguments(aroundArgs);
+                aroundFragment.show(mActivity.getSupportFragmentManager(), "dialog");
                 return true;
             case CONTEXT_MENU_LINK_ID:
 
