@@ -20,13 +20,13 @@ import info.justaway.R;
 import twitter4j.URLEntity;
 import twitter4j.User;
 
-public class FriendListAdapter extends ArrayAdapter<User> {
+public class UserAdapter extends ArrayAdapter<User> {
     private ArrayList<User> mUsers = new ArrayList<User>();
     private Context mContext;
     private LayoutInflater mInflater;
     private int mLayout;
 
-    public FriendListAdapter(Context context, int textViewResourceId) {
+    public UserAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId);
         this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.mContext = context;

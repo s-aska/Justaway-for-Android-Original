@@ -18,7 +18,8 @@
     <string name="confirm_save_draft">編集中のツイートがあります。保存しますか？</string>
     <string name="confirm_unfollow">フォローを解除しますか？</string>
     <string name="confirm_update_profile_image">プロフィール画像を変更しますか？</string>
-    <string name="context_menu_around">前後のツイートを表示</string>
+    <string name="context_menu_show_around">前後のツイートを表示</string>
+    <string name="context_menu_show_retweeters">リツイートした人を表示</string>
     <string name="context_menu_create_favorite">ふぁぼ</string>
     <string name="context_menu_destroy_direct_message">ツイ消し(DM)</string>
     <string name="context_menu_destroy_favorite">ふぁぼを解除</string>

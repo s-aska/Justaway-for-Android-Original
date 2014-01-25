@@ -22,6 +22,7 @@ import info.justaway.ProfileActivity;
 import info.justaway.R;
 import info.justaway.SearchActivity;
 import info.justaway.fragment.AroundFragment;
+import info.justaway.fragment.RetweetersFragment;
 import info.justaway.fragment.TalkFragment;
 import info.justaway.model.Row;
 import info.justaway.plugin.TwiccaPlugin;
@@ -58,6 +59,7 @@ public class TweetContextMenu {
     static final int CONTEXT_MENU_SHARE_TEXT_ID = 17;
     static final int CONTEXT_MENU_SHARE_URL_ID = 18;
     static final int CONTEXT_MENU_AROUND_ID = 19;
+    static final int CONTEXT_MENU_RETWEETERS_ID = 20;
     static final int CONTEXT_MENU_TWICCA_SHOW_TEXT_BASE_ID = 100;
 
     private List<ResolveInfo> mTwiccaPlugins;
@@ -117,10 +119,13 @@ public class TweetContextMenu {
             menu.add(0, CONTEXT_MENU_RT_ID, 0, R.string.context_menu_retweet);
         }
 
+        if (source.getRetweetCount() > 0) {
+            menu.add(0, CONTEXT_MENU_RETWEETERS_ID, 0, R.string.context_menu_show_retweeters);
+        }
         if (source.getInReplyToStatusId() > 0) {
             menu.add(0, CONTEXT_MENU_TALK_ID, 0, R.string.context_menu_talk);
         }
-        menu.add(0, CONTEXT_MENU_AROUND_ID, 0, R.string.context_menu_around);
+        menu.add(0, CONTEXT_MENU_AROUND_ID, 0, R.string.context_menu_show_around);
 
         // ツイート内のURLへアクセスできるようにメニューに展開する
         URLEntity[] urls = source.getURLEntities();
@@ -288,6 +293,13 @@ public class TweetContextMenu {
             case CONTEXT_MENU_FAVRT_ID:
                 application.doFavorite(status.getId());
                 application.doRetweet(row.getStatus().getId());
+                return true;
+            case CONTEXT_MENU_RETWEETERS_ID:
+                RetweetersFragment retweetersFragment = new RetweetersFragment();
+                Bundle retweetsArgs = new Bundle();
+                retweetsArgs.putLong("statusId", source.getId());
+                retweetersFragment.setArguments(retweetsArgs);
+                retweetersFragment.show(mActivity.getSupportFragmentManager(), "dialog");
                 return true;
             case CONTEXT_MENU_TALK_ID:
                 TalkFragment dialog = new TalkFragment();
