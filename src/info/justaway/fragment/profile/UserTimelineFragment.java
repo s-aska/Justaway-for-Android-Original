@@ -21,28 +21,42 @@ import twitter4j.Paging;
 import twitter4j.ResponseList;
 import twitter4j.Status;
 import twitter4j.User;
+import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
+import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout;
+import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
 
 
 /**
  * ユーザーのタイムライン
  */
-public class UserTimelineFragment extends Fragment {
+public class UserTimelineFragment extends Fragment implements
+        OnRefreshListener {
 
     private TwitterAdapter mAdapter;
     private ListView mListView;
     private ProgressBar mFooter;
     private User mUser;
     private Boolean mAutoLoader = false;
+    private Boolean mReload = false;
     private int mPage = 1;
+    private PullToRefreshLayout mPullToRefreshLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.list, container, false);
+        View v = inflater.inflate(R.layout.pull_to_refresh_list, container, false);
         if (v == null) {
             return null;
         }
 
         mUser = (User) getArguments().getSerializable("user");
+
+        mPullToRefreshLayout = (PullToRefreshLayout) v.findViewById(R.id.ptr_layout);
+
+        // Now setup the PullToRefreshLayout
+        ActionBarPullToRefresh.from(getActivity())
+                .theseChildrenArePullable(R.id.list_view)
+                .listener(this)
+                .setup(mPullToRefreshLayout);
 
         // リストビューの設定
         mListView = (ListView) v.findViewById(R.id.list_view);
@@ -92,8 +106,15 @@ public class UserTimelineFragment extends Fragment {
         return JustawayApplication.getApplication().onContextItemSelected(item);
     }
 
+    @Override
+    public void onRefreshStarted(View view) {
+        mReload = true;
+        mPage = 1;
+        new UserTimelineTask().execute(mUser.getScreenName());
+    }
+
     private void additionalReading() {
-        if (!mAutoLoader) {
+        if (!mAutoLoader || mReload) {
             return;
         }
         mFooter.setVisibility(View.VISIBLE);
@@ -119,11 +140,23 @@ public class UserTimelineFragment extends Fragment {
             if (statuses == null || statuses.size() == 0) {
                 return;
             }
+
+            if (mReload) {
+                mAdapter.clear();
+                for (twitter4j.Status status : statuses) {
+                    mAdapter.add(Row.newStatus(status));
+                }
+                mReload = false;
+                mPullToRefreshLayout.setRefreshComplete();
+                return;
+            }
+
             for (twitter4j.Status status : statuses) {
                 mAdapter.add(Row.newStatus(status));
             }
             mPage++;
             mAutoLoader = true;
+            mPullToRefreshLayout.setRefreshComplete();
             mListView.setVisibility(View.VISIBLE);
         }
     }
