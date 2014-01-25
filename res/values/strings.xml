@@ -97,6 +97,7 @@
     <string name="toast_favorite_failure">ふぁぼに失敗しました</string>
     <string name="toast_favorite_success">ふぁぼに成功しました>゜))彡</string>
     <string name="toast_follow_success">フォローしました</string>
+    <string name="toast_follow_failure">フォローに失敗しました</string>
     <string name="toast_load_data_failure">読み込みに失敗しました:;(∩´﹏`∩);:</string>
     <string name="toast_retweet_failure">RTに失敗しました</string>
     <string name="toast_retweet_success">RTに成功しました>゜))彡</string>
@@ -111,5 +112,6 @@
     <string name="toast_update_profile_success">プロフィールを保存しました</string>
     <string name="toast_update_status_failure">残念~！もう一回！</string>
     <string name="twitter_callback_url">justaway://twitter</string>
+    <string name="progress_process">処理中！！１１１１１</string>
 
 </resources>
