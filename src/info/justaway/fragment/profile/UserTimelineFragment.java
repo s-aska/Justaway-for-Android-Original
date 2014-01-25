@@ -126,8 +126,7 @@ public class UserTimelineFragment extends Fragment implements
         @Override
         protected ResponseList<twitter4j.Status> doInBackground(String... params) {
             try {
-                ResponseList<twitter4j.Status> statuses = JustawayApplication.getApplication().getTwitter().getUserTimeline(params[0], new Paging(mPage));
-                return statuses;
+                return JustawayApplication.getApplication().getTwitter().getUserTimeline(params[0], new Paging(mPage));
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
