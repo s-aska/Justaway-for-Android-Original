@@ -1,6 +1,7 @@
 package info.justaway;
 
 import android.app.Application;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -51,6 +52,7 @@ public class JustawayApplication extends Application {
     private static DisplayImageOptions sRoundedDisplayImageOptions;
     private static Typeface sFontello;
     private ResponseList<UserList> mUserLists;
+    private static ProgressDialog mProgressDialog;
 
     public ResponseList<UserList> getUserLists() {
         return mUserLists;
@@ -191,6 +193,17 @@ public class JustawayApplication extends Application {
     public static void showToast(int id) {
         String text = sApplication.getString(id);
         Toast.makeText(sApplication, text, Toast.LENGTH_SHORT).show();
+    }
+
+    public static void showProgressDialog(Context context, String message) {
+        mProgressDialog = new ProgressDialog(context);
+        mProgressDialog.setMessage(message);
+        mProgressDialog.show();
+    }
+
+    public static void dismissProgressDialog() {
+        if (mProgressDialog != null)
+            mProgressDialog.dismiss();
     }
 
     /**

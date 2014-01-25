@@ -99,15 +99,19 @@ public class SummaryFragment extends Fragment {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             mRuntimeFlg = true;
+                                            JustawayApplication.showProgressDialog(getActivity(), getString(R.string.progress_process));
                                             DestroyFriendshipTask task = new DestroyFriendshipTask() {
                                                 @Override
                                                 protected void onPostExecute(Boolean success) {
+                                                    JustawayApplication.dismissProgressDialog();
                                                     if (success) {
                                                         JustawayApplication.showToast(R.string.toast_destroy_friendship_success);
                                                         follow.setText(R.string.button_follow);
                                                         mFollowFlg = false;
-                                                        mRuntimeFlg = false;
+                                                    } else {
+                                                        JustawayApplication.showToast(R.string.toast_destroy_friendship_failure);
                                                     }
+                                                    mRuntimeFlg = false;
                                                 }
                                             };
                                             task.execute(user.getId());
@@ -130,15 +134,19 @@ public class SummaryFragment extends Fragment {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             mRuntimeFlg = true;
+                                            JustawayApplication.showProgressDialog(getActivity(), getString(R.string.progress_process));
                                             FollowTask task = new FollowTask() {
                                                 @Override
                                                 protected void onPostExecute(Boolean success) {
+                                                    JustawayApplication.dismissProgressDialog();
                                                     if (success) {
                                                         JustawayApplication.showToast(R.string.toast_follow_success);
                                                         follow.setText(R.string.button_unfollow);
                                                         mFollowFlg = true;
-                                                        mRuntimeFlg = false;
+                                                    } else {
+                                                        JustawayApplication.showToast(R.string.toast_follow_failure);
                                                     }
+                                                    mRuntimeFlg = false;
                                                 }
                                             };
                                             task.execute(user.getId());
