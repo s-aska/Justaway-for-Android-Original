@@ -378,7 +378,15 @@ public class PostActivity extends FragmentActivity {
             return true;
         }
         return false;
+    }
 
+    @Override
+    public void finish() {
+        if (mWidgetMode) {
+            moveTaskToBack(true);
+        } else {
+            super.finish();
+        }
     }
 
     @Override
