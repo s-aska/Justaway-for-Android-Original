@@ -62,6 +62,7 @@ public class PostActivity extends FragmentActivity {
     private File mImgPath;
     private Uri mImageUri;
     private DraftFragment mDraftDialog;
+    private boolean mWidgetMode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,6 +90,8 @@ public class PostActivity extends FragmentActivity {
         registerForContextMenu(mImgButton);
 
         Intent intent = getIntent();
+        mWidgetMode = intent.getBooleanExtra("widget", false);
+
         String status = intent.getStringExtra("status");
         if (status != null) {
             mEditText.setText(status);
@@ -324,9 +327,12 @@ public class PostActivity extends FragmentActivity {
             dismissProgressDialog();
             if (success) {
                 mEditText.setText("");
-                finish();
             } else {
                 JustawayApplication.showToast(R.string.toast_update_status_failure);
+            }
+
+            if (!mWidgetMode) {
+                finish();
             }
         }
     }
