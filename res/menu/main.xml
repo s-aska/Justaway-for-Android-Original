@@ -16,14 +16,19 @@
         android:showAsAction="never"
         android:title="@string/menu_search" />
     <item
-        android:id="@+id/sign_out"
+        android:id="@+id/feedback"
         android:orderInCategory="100"
         android:showAsAction="never"
-        android:title="@string/menu_sign_out" />
+        android:title="@string/menu_feedback" />
     <item
         android:id="@+id/official_website"
         android:orderInCategory="100"
         android:showAsAction="never"
         android:title="@string/menu_website" />
+    <item
+        android:id="@+id/sign_out"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/menu_sign_out" />
 
 </menu>
