@@ -530,6 +530,18 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
         } else if (itemId == R.id.official_website) {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.official_website)));
             startActivity(intent);
+        } else if (itemId == R.id.feedback) {
+            View singleLineTweet = findViewById(R.id.quick_tweet_layout);
+            if (singleLineTweet != null && singleLineTweet.getVisibility() == View.VISIBLE) {
+                EditText editStatus = (EditText) findViewById(R.id.quick_tweet_edit);
+                editStatus.setText(" #justaway");
+                editStatus.requestFocus();
+                mApplication.showKeyboard(editStatus);
+                return true;
+            }
+            Intent intent = new Intent(this, PostActivity.class);
+            intent.putExtra("status", " #justaway");
+            startActivity(intent);
         }
         return true;
     }
