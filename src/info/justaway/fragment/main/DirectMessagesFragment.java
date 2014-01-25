@@ -146,6 +146,9 @@ public class DirectMessagesFragment extends BaseFragment {
                 Paging directMessagesPaging = new Paging();
                 if (mDirectMessagesMaxId > 0) {
                     directMessagesPaging.setMaxId(mDirectMessagesMaxId - 1);
+                    directMessagesPaging.setCount(200);
+                } else {
+                    directMessagesPaging.setCount(100);
                 }
                 ResponseList<DirectMessage> directMessages = twitter.getDirectMessages(directMessagesPaging);
                 for (DirectMessage directMessage : directMessages) {
@@ -158,6 +161,9 @@ public class DirectMessagesFragment extends BaseFragment {
                 Paging sentDirectMessagesPaging = new Paging();
                 if (mSentDirectMessagesMaxId > 0) {
                     sentDirectMessagesPaging.setMaxId(mSentDirectMessagesMaxId - 1);
+                    sentDirectMessagesPaging.setCount(200);
+                } else {
+                    sentDirectMessagesPaging.setCount(100);
                 }
                 ResponseList<DirectMessage> sentDirectMessages = twitter.getSentDirectMessages(sentDirectMessagesPaging);
                 for (DirectMessage directMessage : sentDirectMessages) {
