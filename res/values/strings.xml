@@ -52,6 +52,7 @@
     <string name="label_tweets">ツイート</string>
     <string name="label_update_profile_image">画像を変更</string>
     <string name="label_web_site">Web</string>
+    <string name="label_connect_with_twitter">Connect with Twitter</string>
     <string name="menu_battery_level">バッテリー残量</string>
     <string name="menu_clear">クリア</string>
     <string name="menu_open_favstar">Favstarで開く</string>
