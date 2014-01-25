@@ -117,5 +117,6 @@
     <string name="toast_update_status_failure">残念~！もう一回！</string>
     <string name="twitter_callback_url">justaway://twitter</string>
     <string name="progress_process">処理中！！１１１１１</string>
+    <string name="widget_title_post_mode">投稿モード</string>
 
 </resources>
