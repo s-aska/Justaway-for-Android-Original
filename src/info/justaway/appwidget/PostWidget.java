@@ -11,12 +11,12 @@ import info.justaway.PostActivity;
 import info.justaway.R;
 
 /**
- *  ポストモードウィジェット
+ * ポストモードウィジェット
  */
-public class PostWidget extends AppWidgetProvider{
+public class PostWidget extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager,
-                      int[] appWidgetIds) {
+                         int[] appWidgetIds) {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
         // アクティビティの指定
         Intent intent = new Intent(context, PostActivity.class);
@@ -29,5 +29,5 @@ public class PostWidget extends AppWidgetProvider{
         // インテントによるアクティビティ起動
         remoteViews.setOnClickPendingIntent(R.id.icon, pendingIntent);
         appWidgetManager.updateAppWidget(appWidgetIds, remoteViews);
-        }
+    }
 }

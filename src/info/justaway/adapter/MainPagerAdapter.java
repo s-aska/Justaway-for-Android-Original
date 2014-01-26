@@ -123,7 +123,7 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
                 if (listUser.equals(JustawayApplication.getApplication().getScreenName())) {
                     tab.mTabTitle = sDefaultListName + " " + listName;
                 } else {
-                tab.mTabTitle = sDefaultListName + " " + listUser+"/"+listName;
+                    tab.mTabTitle = sDefaultListName + " " + listUser + "/" + listName;
                 }
             }
         }
