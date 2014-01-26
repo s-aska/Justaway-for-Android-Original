@@ -311,7 +311,7 @@ public class TweetContextMenu {
             case CONTEXT_MENU_AROUND_ID:
                 AroundFragment aroundFragment = new AroundFragment();
                 Bundle aroundArgs = new Bundle();
-                aroundArgs.putLong("statusId", source.getId());
+                aroundArgs.putSerializable("status", source);
                 aroundFragment.setArguments(aroundArgs);
                 aroundFragment.show(mActivity.getSupportFragmentManager(), "dialog");
                 return true;

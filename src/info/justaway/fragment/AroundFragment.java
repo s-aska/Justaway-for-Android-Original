@@ -5,7 +5,6 @@ import android.app.Dialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
@@ -65,9 +64,10 @@ public class AroundFragment extends DialogFragment {
             }
         });
 
-        Long statusId = getArguments().getLong("statusId");
-        if (statusId > 0) {
-            new BeforeStatusTask(adapter).execute(statusId);
+        Status status = (Status) getArguments().getSerializable("status");
+        if (status != null) {
+            adapter.add(Row.newStatus(status));
+            new BeforeStatusTask(adapter).execute(status);
         }
 
         return dialog;
@@ -91,7 +91,7 @@ public class AroundFragment extends DialogFragment {
             menu.getItem(i).setOnMenuItemClickListener(listener);
     }
 
-    private class BeforeStatusTask extends AsyncTask<Long, Void, ResponseList<Status>> {
+    private class BeforeStatusTask extends AsyncTask<Status, Void, ResponseList<Status>> {
 
         private TwitterAdapter adapter;
 
@@ -101,13 +101,13 @@ public class AroundFragment extends DialogFragment {
         }
 
         @Override
-        protected ResponseList<twitter4j.Status> doInBackground(Long... params) {
+        protected ResponseList<twitter4j.Status> doInBackground(twitter4j.Status... params) {
             try {
                 Twitter twitter = JustawayApplication.getApplication().getTwitter();
-                twitter4j.Status status = twitter.showStatus(params[0]);
+                twitter4j.Status status = params[0];
                 Paging paging = new Paging();
-                paging.setCount(4);
-                paging.setMaxId(params[0]);
+                paging.setCount(3);
+                paging.setMaxId(status.getId() - 1);
                 return twitter.getUserTimeline(status.getUser().getScreenName(), paging);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -154,7 +154,7 @@ public class AroundFragment extends DialogFragment {
                     for (twitter4j.Status row : statuses) {
                         if (row.getId() == status.getId()) {
                             if (index > 0) {
-                                return statuses.subList(Math.max(0, index - 3), index);
+                                return statuses.subList(Math.max(0, index - 4), index - 1);
                             }
                         }
                         index++;
@@ -171,12 +171,12 @@ public class AroundFragment extends DialogFragment {
         protected void onPostExecute(List<twitter4j.Status> statuses) {
             mProgressBarTop.setVisibility(View.GONE);
             if (statuses != null) {
+                int i = 0;
                 for (twitter4j.Status status : statuses) {
-                    adapter.insert(Row.newStatus(status), 0);
+                    adapter.insert(Row.newStatus(status), i);
+                    i++;
                 }
                 adapter.notifyDataSetChanged();
-            } else {
-                JustawayApplication.showToast(R.string.toast_load_data_failure);
             }
         }
     }
