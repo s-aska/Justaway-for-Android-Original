@@ -271,7 +271,7 @@ public class PostActivity extends FragmentActivity {
         if (resultCode == RESULT_OK) {
             if (requestCode == REQUEST_GALLERY) {
                 setImage(data.getData());
-            } else if (requestCode == REQUEST_CAMERA){
+            } else if (requestCode == REQUEST_CAMERA) {
                 setImage(mImageUri);
             }
         }
