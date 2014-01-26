@@ -336,6 +336,9 @@ public class PostActivity extends FragmentActivity {
 
             if (!mWidgetMode) {
                 finish();
+            } else {
+                mImgPath = null;
+                mImgButton.setTextColor(getResources().getColor(android.R.color.secondary_text_dark));
             }
         }
     }
