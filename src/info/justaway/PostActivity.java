@@ -91,6 +91,9 @@ public class PostActivity extends FragmentActivity {
 
         Intent intent = getIntent();
         mWidgetMode = intent.getBooleanExtra("widget", false);
+        if (mWidgetMode) {
+            setTitle(R.string.widget_title_post_mode);
+        }
 
         String status = intent.getStringExtra("status");
         if (status != null) {
@@ -378,15 +381,6 @@ public class PostActivity extends FragmentActivity {
             return true;
         }
         return false;
-    }
-
-    @Override
-    public void finish() {
-        if (mWidgetMode) {
-            moveTaskToBack(true);
-        } else {
-            super.finish();
-        }
     }
 
     @Override
