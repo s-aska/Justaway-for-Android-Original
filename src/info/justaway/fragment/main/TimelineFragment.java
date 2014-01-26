@@ -130,7 +130,7 @@ public class TimelineFragment extends BaseFragment {
                     paging.setMaxId(mMaxId - 1);
                     paging.setCount(200);
                 } else {
-                    paging.setCount(100);
+                    paging.setCount(50);
                 }
                 return JustawayApplication.getApplication().getTwitter().getHomeTimeline(paging);
             } catch (Exception e) {
