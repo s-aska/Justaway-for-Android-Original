@@ -20,7 +20,8 @@ public class PostWidget extends AppWidgetProvider{
         super.onUpdate(context, appWidgetManager, appWidgetIds);
         // アクティビティの指定
         Intent intent = new Intent(context, PostActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK |
+                Intent.FLAG_ACTIVITY_MULTIPLE_TASK | Intent.FLAG_ACTIVITY_NO_HISTORY);
         intent.putExtra("widget", true);
         // PendingIntentの取得
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
