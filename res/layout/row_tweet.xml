@@ -95,6 +95,8 @@
                             android:layout_marginLeft="4dip"
                             android:textColor="#666666"
                             android:textSize="10sp"
+                            android:lines="1"
+                            android:ellipsize="end"
                             tools:ignore="SmallSp"
                             tools:text="@justawayfactory" />
 
