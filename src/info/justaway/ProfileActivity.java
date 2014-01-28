@@ -1,8 +1,11 @@
 package info.justaway;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
@@ -108,6 +111,28 @@ public class ProfileActivity extends FragmentActivity implements
                 intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://twilog.org/"
                         + mUser.getScreenName()));
                 startActivity(intent);
+                break;
+            case R.id.report_spam:
+                new AlertDialog.Builder(ProfileActivity.this)
+                        .setTitle(R.string.confirm_report_spam)
+                        .setPositiveButton(
+                                R.string.button_report_spam,
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        JustawayApplication.showProgressDialog(ProfileActivity.this, getString(R.string.progress_process));
+                                        new ReportSpamTask().execute(mUser.getId());
+                                    }
+                                })
+                        .setNegativeButton(
+                                R.string.button_cancel,
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                    }
+                                })
+                        .show();
+
                 break;
         }
         return true;
@@ -294,5 +319,30 @@ public class ProfileActivity extends FragmentActivity implements
 
     @Override
     public void onLoaderReset(Loader<Profile> arg0) {
+    }
+
+    private class ReportSpamTask extends AsyncTask<Long, Void, Boolean> {
+        @Override
+        protected Boolean doInBackground(Long... params) {
+            Long userId = params[0];
+            try {
+                JustawayApplication.getApplication().getTwitter().createBlock(userId);
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            JustawayApplication.dismissProgressDialog();
+            if (success) {
+                JustawayApplication.showToast(R.string.toast_report_spam_success);
+            } else {
+                JustawayApplication.showToast(R.string.toast_report_spam_failure);
+            }
+
+        }
     }
 }

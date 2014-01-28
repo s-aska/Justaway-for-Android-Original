@@ -9,11 +9,13 @@
     <string name="button_edit_profile">プロフィールを編集する</string>
     <string name="button_follow">フォローする</string>
     <string name="button_quote">引用</string>
+    <string name="button_report_spam">スパム報告する</string>
     <string name="button_retweet">リツイート</string>
     <string name="button_save">保存</string>
     <string name="button_unfollow">フォロー解除</string>
     <string name="confirm_destroy_retweet">リツイートを取り消しますか？</string>
     <string name="confirm_follow">フォローしますか？</string>
+    <string name="confirm_report_spam">スパム報告しますか？</string>
     <string name="confirm_retweet">リツイートしますか？</string>
     <string name="confirm_save_draft">編集中のツイートがあります。保存しますか？</string>
     <string name="confirm_unfollow">フォローを解除しますか？</string>
@@ -59,6 +61,7 @@
     <string name="menu_open_twilog">Twilogで開く</string>
     <string name="menu_open_twitter">Twitterで開く</string>
     <string name="menu_profile">プロフィール</string>
+    <string name="menu_report_spam">スパムとして報告</string>
     <string name="menu_save_search">検索を保存</string>
     <string name="menu_search">サーチ</string>
     <string name="menu_send_direct_messages">DMを送る</string>
@@ -103,6 +106,8 @@
     <string name="toast_follow_success">フォローしました</string>
     <string name="toast_follow_failure">フォローに失敗しました</string>
     <string name="toast_load_data_failure">読み込みに失敗しました:;(∩´﹏`∩);:</string>
+    <string name="toast_report_spam_failure">スパム報告に失敗しました</string>
+    <string name="toast_report_spam_success">スパム報告に成功しました>゜))彡</string>
     <string name="toast_retweet_failure">RTに失敗しました</string>
     <string name="toast_retweet_success">RTに成功しました>゜))彡</string>
     <string name="toast_save_image_success">画像を保存しました</string>
