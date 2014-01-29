@@ -326,7 +326,7 @@ public class ProfileActivity extends FragmentActivity implements
         protected Boolean doInBackground(Long... params) {
             Long userId = params[0];
             try {
-                JustawayApplication.getApplication().getTwitter().createBlock(userId);
+                JustawayApplication.getApplication().getTwitter().reportSpam(userId);
                 return true;
             } catch (Exception e) {
                 e.printStackTrace();
