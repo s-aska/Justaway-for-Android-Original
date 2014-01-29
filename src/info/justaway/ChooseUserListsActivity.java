@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.view.KeyEvent;
+import android.view.View;
 import android.widget.CheckBox;
 import android.widget.ListView;
 
@@ -74,7 +75,11 @@ public class ChooseUserListsActivity extends FragmentActivity implements
             ListView listView = (ListView) findViewById(R.id.list);
             int count = listView.getChildCount();
             for (int i = 0; i < count; i++) {
-                CheckBox checkbox = (CheckBox) listView.getChildAt(i);
+                View view = listView.getChildAt(i);
+                if (view == null) {
+                    continue;
+                }
+                CheckBox checkbox = (CheckBox) view.findViewById(R.id.checkbox);
                 if (checkbox != null && checkbox.isChecked()) {
                     lists.add((Integer) checkbox.getTag());
                 }
