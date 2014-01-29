@@ -15,6 +15,7 @@ import info.justaway.EditProfileActivity;
 import info.justaway.JustawayApplication;
 import info.justaway.R;
 import info.justaway.ScaleImageActivity;
+import info.justaway.task.DestroyBlockTask;
 import info.justaway.task.DestroyFriendshipTask;
 import info.justaway.task.FollowTask;
 import twitter4j.Relationship;
@@ -26,6 +27,7 @@ import twitter4j.User;
 public class SummaryFragment extends Fragment {
 
     private boolean mFollowFlg;
+    private boolean mBlocking;
     private boolean mRuntimeFlg;
 
     @Override
@@ -44,6 +46,7 @@ public class SummaryFragment extends Fragment {
         }
 
         mFollowFlg = relationship.isSourceFollowingTarget();
+        mBlocking = relationship.isSourceBlockingTarget();
 
         ImageView icon = (ImageView) v.findViewById(R.id.icon);
         TextView name = (TextView) v.findViewById(R.id.name);
@@ -76,8 +79,10 @@ public class SummaryFragment extends Fragment {
         follow.setVisibility(View.VISIBLE);
         if (user.getId() == application.getUserId()) {
             follow.setText(R.string.button_edit_profile);
-        } else if (relationship.isSourceFollowingTarget()) {
+        } else if (mFollowFlg) {
             follow.setText(R.string.button_unfollow);
+        } else if (mBlocking){
+            follow.setText(R.string.button_blocking);
         } else {
             follow.setText(R.string.button_follow);
         }
@@ -125,7 +130,43 @@ public class SummaryFragment extends Fragment {
                                         }
                                     })
                             .show();
-                } else {
+                } else if(mBlocking){
+                    // TODO:
+                    new AlertDialog.Builder(getActivity())
+                            .setTitle(R.string.confirm_destroy_block)
+                            .setPositiveButton(
+                                    R.string.button_destroy_block,
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            mRuntimeFlg = true;
+                                            JustawayApplication.showProgressDialog(getActivity(), getString(R.string.progress_process));
+                                            DestroyBlockTask task = new DestroyBlockTask() {
+                                                @Override
+                                                protected void onPostExecute(Boolean success) {
+                                                    JustawayApplication.dismissProgressDialog();
+                                                    if (success) {
+                                                        JustawayApplication.showToast(R.string.toast_destroy_block_success);
+                                                        follow.setText(R.string.button_follow);
+                                                        mBlocking = false;
+                                                    } else {
+                                                        JustawayApplication.showToast(R.string.toast_destroy_block_failure);
+                                                    }
+                                                    mRuntimeFlg = false;
+                                                }
+                                            };
+                                            task.execute(user.getId());
+                                        }
+                                    })
+                            .setNegativeButton(
+                                    R.string.button_cancel,
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                        }
+                                    })
+                            .show();
+                }else {
                     new AlertDialog.Builder(getActivity())
                             .setTitle(R.string.confirm_follow)
                             .setPositiveButton(

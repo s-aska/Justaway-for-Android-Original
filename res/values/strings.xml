@@ -3,6 +3,7 @@
 
     <string name="app_name">Justaway</string>
     <string name="button_apply">適用</string>
+    <string name="button_destroy_block">ブロック解除</string>
     <string name="button_cancel">キャンセル</string>
     <string name="button_destroy">破棄</string>
     <string name="button_destroy_retweet">取り消す</string>
@@ -13,6 +14,7 @@
     <string name="button_retweet">リツイート</string>
     <string name="button_save">保存</string>
     <string name="button_unfollow">フォロー解除</string>
+    <string name="confirm_destroy_block">ブロックを解除しますか？</string>
     <string name="confirm_destroy_retweet">リツイートを取り消しますか？</string>
     <string name="confirm_follow">フォローしますか？</string>
     <string name="confirm_report_spam">スパム報告しますか？</string>
@@ -90,6 +92,8 @@
     <string name="title_post">投稿</string>
     <string name="title_profile">プロフィール</string>
     <string name="title_search">サーチ</string>
+    <string name="toast_destroy_block_success">ブロック解除にしました</string>
+    <string name="toast_destroy_block_failure">ブロック解除に失敗しました</string>
     <string name="toast_destroy_direct_message_failure">DM削除に失敗しました</string>
     <string name="toast_destroy_direct_message_success">DM削除に成功しました>゜))彡</string>
     <string name="toast_destroy_favorite_failure">あんふぁぼに失敗しました</string>
@@ -123,5 +127,6 @@
     <string name="twitter_callback_url">justaway://twitter</string>
     <string name="progress_process">処理中！！１１１１１</string>
     <string name="widget_title_post_mode">投稿モード</string>
+    <string name="button_blocking">ブロック中</string>
 
 </resources>
