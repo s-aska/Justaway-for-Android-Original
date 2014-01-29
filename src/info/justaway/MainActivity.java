@@ -222,25 +222,28 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
             }
         }
 
+        Typeface fontello = JustawayApplication.getFontello();
         ArrayList<Integer> tabs = mApplication.loadTabs();
-        int position = 2;
-        for (Integer tab : tabs) {
-            Typeface fontello = JustawayApplication.getFontello();
-            // 標準のタブを動的に生成する時に実装する
-            if (tab > 0) {
-                Button button = new Button(this);
-                button.setWidth(60);
-                button.setTypeface(fontello);
-                button.setTextSize(22);
-                button.setBackgroundColor(getResources().getColor(R.color.menu_background));
-                button.setText(R.string.fontello_list);
-                button.setOnClickListener(tabMenuOnClickListener(++position));
-                tab_menus.addView(button);
-                Bundle args = new Bundle();
-                args.putInt("userListId", tab);
-                mMainPagerAdapter.addTab(UserListFragment.class, args, sDefaultListName, tab);
+        if (tabs.size() > 3) {
+            int position = 2;
+            for (Integer tab : tabs) {
+                // 標準のタブを動的に生成する時に実装する
+                if (tab > 0) {
+                    Button button = new Button(this);
+                    button.setWidth(60);
+                    button.setTypeface(fontello);
+                    button.setTextSize(22);
+                    button.setBackgroundColor(getResources().getColor(R.color.menu_background));
+                    button.setText(R.string.fontello_list);
+                    button.setOnClickListener(tabMenuOnClickListener(++position));
+                    tab_menus.addView(button);
+                    Bundle args = new Bundle();
+                    args.putInt("userListId", tab);
+                    mMainPagerAdapter.addTab(UserListFragment.class, args, sDefaultListName, tab);
+                }
             }
         }
+
         mMainPagerAdapter.notifyDataSetChanged();
     }
 
@@ -286,6 +289,9 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                     tabs.addAll(lists);
                     mApplication.saveTabs(tabs);
                     setupTab();
+                    if (lists != null && lists.size() > 0) {
+                        JustawayApplication.showToast(R.string.toast_register_list_for_tab);
+                    }
                 } else if (resultCode == RESULT_CANCELED) {
                     ArrayList<Integer> tabs = new ArrayList<Integer>();
                     // 後々タブ設定画面に標準のタブを含める
