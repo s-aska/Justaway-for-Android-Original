@@ -62,25 +62,13 @@ public class JustawayApplication extends Application {
         mUserLists = userLists;
     }
 
-    public String getUserListName(int id) {
+    public UserList getUserList(int id) {
         if (mUserLists == null) {
             return null;
         }
         for (UserList userList : mUserLists) {
             if (userList.getId() == id) {
-                return userList.getName();
-            }
-        }
-        return null;
-    }
-
-    public String getUserListScreenName(int id) {
-        if (mUserLists == null) {
-            return null;
-        }
-        for (UserList userList : mUserLists) {
-            if (userList.getId() == id) {
-                return userList.getUser().getScreenName();
+                return userList;
             }
         }
         return null;

@@ -3,6 +3,7 @@
 
     <string name="app_name">Justaway</string>
     <string name="button_apply">適用</string>
+    <string name="button_ok">OK</string>
     <string name="button_cancel">キャンセル</string>
     <string name="button_destroy">破棄</string>
     <string name="button_destroy_retweet">取り消す</string>
@@ -13,6 +14,8 @@
     <string name="button_retweet">リツイート</string>
     <string name="button_save">保存</string>
     <string name="button_unfollow">フォロー解除</string>
+    <string name="confirm_destroy_user_list_subscribe">リストの購読を解除しますか？</string>
+    <string name="confirm_destroy_user_list">リストを削除しますか？</string>
     <string name="confirm_destroy_retweet">リツイートを取り消しますか？</string>
     <string name="confirm_follow">フォローしますか？</string>
     <string name="confirm_report_spam">スパム報告しますか？</string>
@@ -63,12 +66,14 @@
     <string name="menu_profile">プロフィール</string>
     <string name="menu_report_spam">スパムとして報告</string>
     <string name="menu_save_search">検索を保存</string>
-    <string name="menu_search">サーチ</string>
+    <string name="menu_search">検索</string>
     <string name="menu_send_direct_messages">DMを送る</string>
     <string name="menu_send_reply">リプを送る</string>
     <string name="menu_sign_out">サインアウト</string>
     <string name="menu_store">Google Play</string>
-    <string name="menu_user_list">リスト</string>
+    <string name="menu_choose_user_list">リスト</string>
+    <string name="menu_create_user_list_subscription">リストを購読</string>
+    <string name="menu_destroy_user_list_subscription">リストの購読を解除</string>
     <string name="menu_website">オフィシャルサイト</string>
     <string name="menu_feedback">フィードバック</string>
     <string name="official_website">http://justaway.info/</string>
@@ -89,8 +94,14 @@
     <string name="title_main">Justaway</string>
     <string name="title_post">投稿</string>
     <string name="title_profile">プロフィール</string>
-    <string name="title_search">サーチ</string>
+    <string name="title_search">検索</string>
     <string name="toast_register_list_for_tab">リストがタブに登録されました</string>
+    <string name="toast_create_user_list_subscription_failure">リストの購読に失敗しました</string>
+    <string name="toast_create_user_list_subscription_success">リストの購読に成功しました>゜))彡</string>
+    <string name="toast_destroy_user_list_subscription_failure">リストの購読解除に失敗しました</string>
+    <string name="toast_destroy_user_list_subscription_success">リストの購読解除に成功しました>゜))彡</string>
+    <string name="toast_destroy_user_list_failure">リストの削除に失敗しました</string>
+    <string name="toast_destroy_user_list_success">リストの削除に成功しました>゜))彡</string>
     <string name="toast_destroy_direct_message_failure">DM削除に失敗しました</string>
     <string name="toast_destroy_direct_message_success">DM削除に成功しました>゜))彡</string>
     <string name="toast_destroy_favorite_failure">あんふぁぼに失敗しました</string>
