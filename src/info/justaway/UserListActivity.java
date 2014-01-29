@@ -91,8 +91,8 @@ public class UserListActivity extends FragmentActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(Menu.NONE, MENU_CREATE, Menu.NONE, R.string.menu_destroy_user_list_subscription);
-        menu.add(Menu.NONE, MENU_DESTROY, Menu.NONE, R.string.menu_create_user_list_subscription);
+        menu.add(Menu.NONE, MENU_CREATE, Menu.NONE, R.string.menu_create_user_list_subscription);
+        menu.add(Menu.NONE, MENU_DESTROY, Menu.NONE, R.string.menu_destroy_user_list_subscription);
         return true;
     }
 
