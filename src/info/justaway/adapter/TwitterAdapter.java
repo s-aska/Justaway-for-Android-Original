@@ -501,7 +501,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             public void onClick(View v) {
                 if (mApplication.isFav(status)) {
                     mApplication.doDestroyFavorite(status.getId());
-                    holder.do_retweet.setTextColor(Color.parseColor("#666666"));
+                    holder.do_fav.setTextColor(Color.parseColor("#666666"));
                 } else {
                     mApplication.doFavorite(status.getId());
                     holder.do_fav.setTextColor(mContext.getResources().getColor(R.color.holo_orange_light));
