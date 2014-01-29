@@ -90,6 +90,7 @@
     <string name="title_post">投稿</string>
     <string name="title_profile">プロフィール</string>
     <string name="title_search">サーチ</string>
+    <string name="toast_register_list_for_tab">リストがタブに登録されました</string>
     <string name="toast_destroy_direct_message_failure">DM削除に失敗しました</string>
     <string name="toast_destroy_direct_message_success">DM削除に成功しました>゜))彡</string>
     <string name="toast_destroy_favorite_failure">あんふぁぼに失敗しました</string>
