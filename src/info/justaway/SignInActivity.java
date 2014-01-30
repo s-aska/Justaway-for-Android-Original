@@ -42,6 +42,20 @@ public class SignInActivity extends Activity {
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        /**
+         * 初回認証後バックキーで終了して「最近使ったアプリ」から復帰するとここに来る
+         */
+        if (JustawayApplication.getApplication().hasAccessToken()) {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
+    }
+
     /**
      * OAuth認証（厳密には認可）を開始します。
      */
