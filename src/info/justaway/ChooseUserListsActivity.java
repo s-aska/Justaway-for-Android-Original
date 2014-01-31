@@ -33,6 +33,42 @@ public class ChooseUserListsActivity extends FragmentActivity implements
 
         listView.setAdapter(mAdapter);
 
+        findViewById(R.id.button_cancel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setResult(RESULT_CANCELED);
+                finish();
+            }
+        });
+
+        findViewById(R.id.button_save).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ArrayList<Integer> lists = new ArrayList<Integer>();
+
+                // 有効なチェックボックスからリストIDを取得
+                ListView listView = (ListView) findViewById(R.id.list);
+                int count = listView.getChildCount();
+                for (int i = 0; i < count; i++) {
+                    View view = listView.getChildAt(i);
+                    if (view == null) {
+                        continue;
+                    }
+                    CheckBox checkbox = (CheckBox) view.findViewById(R.id.checkbox);
+                    if (checkbox != null && checkbox.isChecked()) {
+                        lists.add((Integer) checkbox.getTag());
+                    }
+                }
+
+                Intent data = new Intent();
+                Bundle bundle = new Bundle();
+                bundle.putIntegerArrayList("lists", lists);
+                data.putExtras(bundle);
+                setResult(RESULT_OK, data);
+                finish();
+            }
+        });
+
         // 起動時に読み込んだユーザーリストがある場合は新たにAPIを叩かない
         ResponseList<UserList> userLists = JustawayApplication.getApplication().getUserLists();
         if (userLists != null) {
@@ -60,42 +96,5 @@ public class ChooseUserListsActivity extends FragmentActivity implements
 
     @Override
     public void onLoaderReset(Loader<ResponseList<UserList>> arg0) {
-    }
-
-    /**
-     * finish前に色々セットしておく、ここでセットした値は onActivityResult で取れる
-     */
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-
-            ArrayList<Integer> lists = new ArrayList<Integer>();
-
-            // 有効なチェックボックスからリストIDを取得
-            ListView listView = (ListView) findViewById(R.id.list);
-            int count = listView.getChildCount();
-            for (int i = 0; i < count; i++) {
-                View view = listView.getChildAt(i);
-                if (view == null) {
-                    continue;
-                }
-                CheckBox checkbox = (CheckBox) view.findViewById(R.id.checkbox);
-                if (checkbox != null && checkbox.isChecked()) {
-                    lists.add((Integer) checkbox.getTag());
-                }
-            }
-
-            if (lists.size() > 0) {
-                Intent data = new Intent();
-                Bundle bundle = new Bundle();
-                bundle.putIntegerArrayList("lists", lists);
-                data.putExtras(bundle);
-                setResult(RESULT_OK, data);
-            } else {
-                setResult(RESULT_CANCELED);
-            }
-            finish();
-        }
-        return false;
     }
 }
