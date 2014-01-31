@@ -27,6 +27,7 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import info.justaway.BuildConfig;
 import info.justaway.JustawayApplication;
 import info.justaway.MainActivity;
 import info.justaway.PostActivity;
@@ -525,8 +526,21 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         holder.screen_name.setText("@" + status.getUser().getScreenName());
         holder.datetime_relative.setText(getRelativeTime(status.getCreatedAt()));
         holder.datetime.setText(getAbsoluteTime(status.getCreatedAt()));
-        holder.via.setText("via " + getClientName(status.getSource()));
+
+        String via = getClientName(status.getSource());
+        holder.via.setText("via " + via);
         holder.via.setVisibility(View.VISIBLE);
+
+        /**
+         * デバッグモードの時だけ Justaway for Android をハイライト
+         */
+        if (BuildConfig.DEBUG) {
+            if (via.equals("Justaway for Android")) {
+                holder.via.setTextColor(mContext.getResources().getColor(R.color.holo_blue_light));
+            } else {
+                holder.via.setTextColor(Color.parseColor("#666666"));
+            }
+        }
 
         holder.action_icon.setTypeface(fontello);
 
