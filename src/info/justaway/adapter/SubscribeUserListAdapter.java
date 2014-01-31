@@ -71,7 +71,7 @@ public class SubscribeUserListAdapter extends ArrayAdapter<UserList> {
                     new AlertDialog.Builder(mContext)
                             .setTitle(R.string.confirm_destroy_user_list)
                             .setPositiveButton(
-                                    R.string.button_ok,
+                                    R.string.button_yes,
                                     new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
@@ -101,7 +101,7 @@ public class SubscribeUserListAdapter extends ArrayAdapter<UserList> {
                                         }
                                     })
                             .setNegativeButton(
-                                    R.string.button_cancel,
+                                    R.string.button_no,
                                     new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
@@ -115,7 +115,7 @@ public class SubscribeUserListAdapter extends ArrayAdapter<UserList> {
                     new AlertDialog.Builder(mContext)
                             .setTitle(R.string.confirm_destroy_user_list_subscribe)
                             .setPositiveButton(
-                                    R.string.button_ok,
+                                    R.string.button_yes,
                                     new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
@@ -145,7 +145,7 @@ public class SubscribeUserListAdapter extends ArrayAdapter<UserList> {
                                         }
                                     })
                             .setNegativeButton(
-                                    R.string.button_cancel,
+                                    R.string.button_no,
                                     new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {

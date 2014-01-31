@@ -3,9 +3,11 @@
 
     <string name="app_name">Justaway</string>
     <string name="button_apply">適用</string>
+    <string name="button_yes">はい</string>
+    <string name="button_no">いいえ</string>
     <string name="button_ok">OK</string>
-    <string name="button_destroy_block">ブロック解除</string>
     <string name="button_cancel">キャンセル</string>
+    <string name="button_destroy_block">ブロック解除</string>
     <string name="button_destroy">破棄</string>
     <string name="button_destroy_retweet">取り消す</string>
     <string name="button_edit_profile">プロフィールを編集する</string>
