@@ -88,7 +88,7 @@
     <string name="pull_to_refresh_release_label">指を離して更新</string>
     <string name="pull_to_refresh_tap_label">タップして更新</string>
     <string name="tab_users">ユーザー</string>
-    <string name="title_choose_user_lists">リストを選んでバック</string>
+    <string name="title_choose_user_lists">表示するリストを選択</string>
     <string name="title_direct_messages">DM</string>
     <string name="title_edit_profile">プロフィール編集</string>
     <string name="title_interactions">リプ・通知</string>
