@@ -21,7 +21,6 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
     private final Context mContext;
     private final ViewPager mViewPager;
     private final ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
-    private static String sDefaultListName;
 
     private static final class TabInfo {
         private final Class<?> mClazz;
@@ -50,7 +49,6 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
         viewPager.setAdapter(this);
         mContext = context;
         mViewPager = viewPager;
-        sDefaultListName = context.getString(R.string.title_default_list);
     }
 
     @Override
@@ -115,14 +113,14 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
         TabInfo tab = mTabs.get(position);
-        JustawayApplication application = JustawayApplication.getApplication();
-        if (tab.mTabTitle.equals(sDefaultListName)) {
-            UserList userList = application.getUserList( tab.mArgs.getInt("userListId"));
+        if (tab.mTabTitle.equals("-")) {
+            JustawayApplication application = JustawayApplication.getApplication();
+            UserList userList = application.getUserList(tab.mArgs.getInt("userListId"));
             if (userList != null) {
                 if (userList.getUser().getId() == JustawayApplication.getApplication().getUserId()) {
-                    tab.mTabTitle = sDefaultListName + " " + userList.getName();
+                    tab.mTabTitle = userList.getName();
                 } else {
-                    tab.mTabTitle = sDefaultListName + " " + userList.getFullName();
+                    tab.mTabTitle = userList.getFullName();
                 }
             }
         }

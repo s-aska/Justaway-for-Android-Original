@@ -175,8 +175,8 @@
                         android:paddingBottom="6dip"
                         android:paddingTop="6dip"
                         android:textColor="#999999"
-                        android:textSize="10sp"
-                        tools:ignore="SmallSp"
+                        android:textSize="10dp"
+                        tools:ignore="SmallSp,SpUsage"
                         tools:text="12345" />
 
                     <TextView
@@ -199,8 +199,8 @@
                         android:paddingBottom="6dip"
                         android:paddingTop="6dip"
                         android:textColor="#999999"
-                        android:textSize="10sp"
-                        tools:ignore="SmallSp"
+                        android:textSize="10dp"
+                        tools:ignore="SmallSp,SpUsage"
                         tools:text="12345" />
 
                     <LinearLayout
