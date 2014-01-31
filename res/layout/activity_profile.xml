@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/scroll_view"
-    android:layout_height="match_parent"
-    android:layout_width="match_parent">
+              xmlns:tools="http://schemas.android.com/tools"
+              android:id="@+id/scroll_view"
+              android:layout_height="match_parent"
+              android:layout_width="match_parent">
 
     <LinearLayout
         android:id="@+id/container"
@@ -22,17 +23,18 @@
                 android:layout_height="180dip"
                 android:adjustViewBounds="true"
                 android:contentDescription="@string/description_icon"
-                android:scaleType="fitXY" />
+                android:scaleType="fitXY"/>
 
             <android.support.v4.view.ViewPager
                 android:id="@+id/pager"
                 android:layout_width="match_parent"
-                android:layout_height="180dip" />
+                android:layout_height="180dip"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="20dip"
                 android:layout_gravity="bottom">
+
                 <TextView
                     android:id="@+id/symbol"
                     android:layout_width="match_parent"
@@ -40,7 +42,7 @@
                     android:gravity="center"
                     android:text="@string/profile_pointer"
                     android:textSize="8sp"/>
-                </LinearLayout>
+            </LinearLayout>
         </FrameLayout>
 
         <LinearLayout
@@ -63,14 +65,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:paddingBottom="2dip" />
+                    android:paddingBottom="2dip"/>
 
                 <TextView
                     android:id="@+id/statuses_count_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="@string/label_tweets" />
+                    android:textSize="12dp"
+                    android:text="@string/label_tweets"
+                    tools:ignore="SpUsage"/>
             </LinearLayout>
 
             <LinearLayout
@@ -85,14 +89,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:paddingBottom="2dip" />
+                    android:paddingBottom="2dip"/>
 
                 <TextView
                     android:id="@+id/friends_count_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="@string/label_following" />
+                    android:textSize="12dp"
+                    android:text="@string/label_following"
+                    tools:ignore="SpUsage"/>
             </LinearLayout>
 
             <LinearLayout
@@ -107,14 +113,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:paddingBottom="2dip" />
+                    android:paddingBottom="2dip"/>
 
                 <TextView
                     android:id="@+id/followers_count_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="@string/label_followers" />
+                    android:textSize="12dp"
+                    android:text="@string/label_followers"
+                    tools:ignore="SpUsage"/>
             </LinearLayout>
 
             <LinearLayout
@@ -129,14 +137,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:paddingBottom="2dip" />
+                    android:paddingBottom="2dip"/>
 
                 <TextView
                     android:id="@+id/listed_count_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="@string/label_listed" />
+                    android:textSize="12dp"
+                    android:text="@string/label_listed"
+                    tools:ignore="SpUsage"/>
             </LinearLayout>
 
             <LinearLayout
@@ -151,14 +161,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:paddingBottom="2dip" />
+                    android:paddingBottom="2dip"/>
 
                 <TextView
                     android:id="@+id/favourites_count_label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="@string/label_favourites" />
+                    android:textSize="12dp"
+                    android:text="@string/label_favourites"
+                    tools:ignore="SpUsage"/>
             </LinearLayout>
 
             <LinearLayout
@@ -182,7 +194,7 @@
         <android.support.v4.view.ViewPager
             android:id="@+id/list_pager"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"/>
 
     </LinearLayout>
 </LinearLayout>

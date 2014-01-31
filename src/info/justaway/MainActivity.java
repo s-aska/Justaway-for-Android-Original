@@ -51,7 +51,6 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
     private MainPagerAdapter mMainPagerAdapter;
     private ViewPager mViewPager;
     private ProgressDialog mProgressDialog;
-    private static String sDefaultListName;
     private static final int REQUEST_CHOOSE_USER_LIST = 100;
     private static final int TAB_ID_TIMELINE = -1;
     private static final int TAB_ID_INTERACTIONS = -2;
@@ -78,8 +77,6 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
 
         // クイックモード時に起動と同時に入力エリアにフォーカスするのを抑止
         findViewById(R.id.main).requestFocus();
-
-        sDefaultListName = getString(R.string.title_default_list);
 
         mApplication = JustawayApplication.getApplication();
 
@@ -239,7 +236,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                     tab_menus.addView(button);
                     Bundle args = new Bundle();
                     args.putInt("userListId", tab);
-                    mMainPagerAdapter.addTab(UserListFragment.class, args, sDefaultListName, tab);
+                    mMainPagerAdapter.addTab(UserListFragment.class, args, "-", tab);
                 }
             }
         }
