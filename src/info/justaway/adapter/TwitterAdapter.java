@@ -641,14 +641,14 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             }
             Matcher youtube_matcher = youtube_pattern.matcher(url.getExpandedURL());
             if (youtube_matcher.find()) {
-                imageUrls.add("http://i.ytimg.com/vi/" + youtube_matcher.group(1) + "/default.jpg");
+                imageUrls.add("http://i.ytimg.com/vi/" + youtube_matcher.group(1) + "/hqdefault.jpg");
                 continue;
             }
             Matcher niconico_matcher = niconico_pattern.matcher(url.getExpandedURL());
             if (niconico_matcher.find()) {
                 int id = Integer.valueOf(niconico_matcher.group(1));
                 int host = id % 4 + 1;
-                imageUrls.add("http://tn-skr" + host + ".smilevideo.jp/smile?i=" + id);
+                imageUrls.add("http://tn-skr" + host + ".smilevideo.jp/smile?i=" + id + ".L");
                 continue;
             }
             Matcher images_matcher = images_pattern.matcher(url.getExpandedURL());
