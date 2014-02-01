@@ -75,6 +75,8 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
 
         setContentView(R.layout.activity_main);
 
+        setTitle(R.string.title_main);
+
         // クイックモード時に起動と同時に入力エリアにフォーカスするのを抑止
         findViewById(R.id.main).requestFocus();
 
