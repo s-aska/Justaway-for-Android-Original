@@ -41,7 +41,8 @@
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:text="@string/profile_pointer"
-                    android:textSize="8sp"/>
+                    android:textSize="8sp"
+                    tools:ignore="SmallSp"/>
             </LinearLayout>
         </FrameLayout>
 
@@ -65,7 +66,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:paddingBottom="2dip"/>
+                    android:textSize="12dp"
+                    android:paddingBottom="2dip"
+                    tools:text="1234567"
+                    tools:ignore="SpUsage"/>
 
                 <TextView
                     android:id="@+id/statuses_count_label"
@@ -89,7 +93,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:paddingBottom="2dip"/>
+                    android:textSize="12dp"
+                    android:paddingBottom="2dip"
+                    tools:text="1234567"
+                    tools:ignore="SpUsage"/>
 
                 <TextView
                     android:id="@+id/friends_count_label"
@@ -113,7 +120,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:paddingBottom="2dip"/>
+                    android:textSize="12dp"
+                    android:paddingBottom="2dip"
+                    tools:text="1234567"
+                    tools:ignore="SpUsage"/>
 
                 <TextView
                     android:id="@+id/followers_count_label"
@@ -137,7 +147,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:paddingBottom="2dip"/>
+                    android:textSize="12dp"
+                    android:paddingBottom="2dip"
+                    tools:text="1234567"
+                    tools:ignore="SpUsage"/>
 
                 <TextView
                     android:id="@+id/listed_count_label"
@@ -161,7 +174,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:paddingBottom="2dip"/>
+                    android:textSize="12dp"
+                    android:paddingBottom="2dip"
+                    tools:text="1234567"
+                    tools:ignore="SpUsage"/>
 
                 <TextView
                     android:id="@+id/favourites_count_label"
