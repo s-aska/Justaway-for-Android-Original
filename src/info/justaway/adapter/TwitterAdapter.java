@@ -615,6 +615,9 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         Pattern twitpic_pattern = Pattern.compile("^http://twitpic\\.com/(\\w+)$");
         Pattern twipple_pattern = Pattern.compile("^http://p\\.twipple\\.jp/(\\w+)$");
         Pattern instagram_pattern = Pattern.compile("^http://instagram\\.com/p/([^/]+)/$");
+        Pattern images_pattern = Pattern.compile("^https?://.*\\.(png|gif|jpeg|jpg)$");
+        Pattern youtube_pattern = Pattern.compile("^https?://(?:www\\.youtube\\.com/watch\\?.*v=|youtu\\.be/)([\\w-]+)");
+        Pattern niconico_pattern = Pattern.compile("^http://(?:www\\.nicovideo\\.jp/watch|nico\\.ms)/[a-z][a-z](\\d+)$");
         String statusString = status.getText();
         for (URLEntity url : urls) {
             Pattern p = Pattern.compile(url.getURL());
@@ -634,6 +637,23 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             Matcher instagram_matcher = instagram_pattern.matcher(url.getExpandedURL());
             if (instagram_matcher.find()) {
                 imageUrls.add(url.getExpandedURL() + "media?size=l");
+                continue;
+            }
+            Matcher youtube_matcher = youtube_pattern.matcher(url.getExpandedURL());
+            if (youtube_matcher.find()) {
+                imageUrls.add("http://i.ytimg.com/vi/" + youtube_matcher.group(1) + "/default.jpg");
+                continue;
+            }
+            Matcher niconico_matcher = niconico_pattern.matcher(url.getExpandedURL());
+            if (niconico_matcher.find()) {
+                int id = Integer.valueOf(niconico_matcher.group(1));
+                int host = id % 4 + 1;
+                imageUrls.add("http://tn-skr" + host + ".smilevideo.jp/smile?i=" + id);
+                continue;
+            }
+            Matcher images_matcher = images_pattern.matcher(url.getExpandedURL());
+            if (images_matcher.find()) {
+                imageUrls.add(url.getExpandedURL());
             }
         }
         holder.status.setText(statusString);
