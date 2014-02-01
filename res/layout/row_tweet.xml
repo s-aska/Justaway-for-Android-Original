@@ -154,7 +154,7 @@
                         android:padding="6dip"
                         android:text="@string/fontello_reply"
                         android:textColor="#666666"
-                        android:textSize="16dp"
+                        android:textSize="14dp"
                         tools:text="←"
                         tools:ignore="SpUsage"/>
 
@@ -166,7 +166,7 @@
                         android:padding="6dip"
                         android:text="@string/fontello_retweet"
                         android:textColor="#666666"
-                        android:textSize="16dp"
+                        android:textSize="14dp"
                         tools:text="■"
                         tools:ignore="SpUsage"/>
 
@@ -191,7 +191,7 @@
                         android:paddingLeft="2dip"
                         android:text="@string/fontello_star"
                         android:textColor="#666666"
-                        android:textSize="16dp"
+                        android:textSize="14dp"
                         tools:text="■"
                         tools:ignore="SpUsage"/>
 
