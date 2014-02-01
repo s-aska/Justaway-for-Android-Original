@@ -7,6 +7,7 @@
     <string name="button_no">いいえ</string>
     <string name="button_ok">OK</string>
     <string name="button_cancel">キャンセル</string>
+    <string name="button_create_block">ブロックする</string>
     <string name="button_destroy_block">ブロック解除</string>
     <string name="button_destroy">破棄</string>
     <string name="button_destroy_retweet">取り消す</string>
@@ -17,6 +18,7 @@
     <string name="button_retweet">リツイート</string>
     <string name="button_save">保存</string>
     <string name="button_unfollow">フォロー解除</string>
+    <string name="confirm_create_block">ブロックしますか？</string>
     <string name="confirm_destroy_user_list_subscribe">リストの購読を解除しますか？</string>
     <string name="confirm_destroy_user_list">リストを削除しますか？</string>
     <string name="confirm_destroy_block">ブロックを解除しますか？</string>
@@ -103,6 +105,8 @@
     <string name="toast_destroy_block_success">ブロック解除にしました</string>
     <string name="toast_destroy_block_failure">ブロック解除に失敗しました</string>
     <string name="toast_register_list_for_tab">リストがタブに登録されました</string>
+    <string name="toast_create_block_failure">ブロックに失敗しました</string>
+    <string name="toast_create_block_success">ブロックに成功しました>゜))彡</string>
     <string name="toast_create_user_list_subscription_failure">リストの購読に失敗しました</string>
     <string name="toast_create_user_list_subscription_success">リストの購読に成功しました>゜))彡</string>
     <string name="toast_destroy_user_list_subscription_failure">リストの購読解除に失敗しました</string>
@@ -143,5 +147,6 @@
     <string name="progress_process">処理中！！１１１１１</string>
     <string name="widget_title_post_mode">投稿モード</string>
     <string name="button_blocking">ブロック中</string>
+    <string name="menu_create_block">ブロックする</string>
 
 </resources>
