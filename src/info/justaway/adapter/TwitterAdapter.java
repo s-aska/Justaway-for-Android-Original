@@ -383,6 +383,10 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         holder.do_retweet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (status.getUser().isProtected()) {
+                    JustawayApplication.showToast(R.string.toast_protected_tweet_can_not_share);
+                    return;
+                }
                 Long id = mApplication.getRtId(status);
                 if (id != null) {
                     DialogFragment dialog = new DialogFragment() {
