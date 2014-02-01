@@ -26,6 +26,11 @@
         android:showAsAction="never"
         android:title="@string/menu_open_twilog" />
     <item
+        android:id="@+id/create_block"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/menu_create_block" />
+    <item
         android:id="@+id/report_spam"
         android:orderInCategory="100"
         android:showAsAction="never"

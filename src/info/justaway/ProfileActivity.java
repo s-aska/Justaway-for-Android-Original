@@ -134,6 +134,28 @@ public class ProfileActivity extends FragmentActivity implements
                         .show();
 
                 break;
+            case R.id.create_block:
+                new AlertDialog.Builder(ProfileActivity.this)
+                        .setTitle(R.string.confirm_create_block)
+                        .setPositiveButton(
+                                R.string.button_create_block,
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        JustawayApplication.showProgressDialog(ProfileActivity.this, getString(R.string.progress_process));
+                                        new CreateBlockTask().execute(mUser.getId());
+                                    }
+                                })
+                        .setNegativeButton(
+                                R.string.button_cancel,
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                    }
+                                })
+                        .show();
+
+                break;
         }
         return true;
     }
@@ -350,6 +372,32 @@ public class ProfileActivity extends FragmentActivity implements
                 restart();
             } else {
                 JustawayApplication.showToast(R.string.toast_report_spam_failure);
+            }
+
+        }
+    }
+
+    private class CreateBlockTask extends AsyncTask<Long, Void, Boolean> {
+        @Override
+        protected Boolean doInBackground(Long... params) {
+            Long userId = params[0];
+            try {
+                JustawayApplication.getApplication().getTwitter().createBlock(userId);
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            JustawayApplication.dismissProgressDialog();
+            if (success) {
+                JustawayApplication.showToast(R.string.toast_create_block_success);
+                restart();
+            } else {
+                JustawayApplication.showToast(R.string.toast_create_block_failure);
             }
 
         }
