@@ -85,6 +85,7 @@ public class TweetContextMenu {
         twitter4j.Status status = row.getStatus();
         twitter4j.Status retweet = status.getRetweetedStatus();
         twitter4j.Status source = retweet != null ? retweet : status;
+        Boolean isPublic = !source.getUser().isProtected();
 
         JustawayApplication application = JustawayApplication.getApplication();
 
@@ -96,7 +97,9 @@ public class TweetContextMenu {
             menu.add(0, CONTEXT_MENU_REPLY_ALL_ID, 0, R.string.context_menu_reply_all);
         }
 
-        menu.add(0, CONTEXT_MENU_QT_ID, 0, R.string.context_menu_qt);
+        if (isPublic) {
+            menu.add(0, CONTEXT_MENU_QT_ID, 0, R.string.context_menu_qt);
+        }
 
         if (application.isFav(status)) {
             menu.add(0, CONTEXT_MENU_RM_FAV_ID, 0, R.string.context_menu_destroy_favorite);
@@ -113,10 +116,12 @@ public class TweetContextMenu {
                 menu.add(0, CONTEXT_MENU_RM_ID, 0, R.string.context_menu_destroy_status);
             }
         } else if (application.getRtId(status) == null) {
-            if (!application.isFav(status)) {
-                menu.add(0, CONTEXT_MENU_FAVRT_ID, 0, R.string.context_menu_favorite_and_retweet);
+            if (isPublic) {
+                if (!application.isFav(status)) {
+                    menu.add(0, CONTEXT_MENU_FAVRT_ID, 0, R.string.context_menu_favorite_and_retweet);
+                }
+                menu.add(0, CONTEXT_MENU_RT_ID, 0, R.string.context_menu_retweet);
             }
-            menu.add(0, CONTEXT_MENU_RT_ID, 0, R.string.context_menu_retweet);
         }
 
         if (source.getRetweetCount() > 0) {
@@ -147,6 +152,10 @@ public class TweetContextMenu {
 
         for (UserMentionEntity mention : mentions) {
             menu.add(0, CONTEXT_MENU_AT_ID, 0, "@" + mention.getScreenName());
+        }
+
+        if (!isPublic) {
+            return;
         }
 
         // twiccaプラグイン実装 IDは被らないように100~にしてる　

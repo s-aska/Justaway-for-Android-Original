@@ -98,6 +98,7 @@
     <string name="title_post">投稿</string>
     <string name="title_profile">プロフィール</string>
     <string name="title_search">検索</string>
+    <string name="toast_protected_tweet_can_not_share">このツイートはRT出来ません:;(∩´﹏`∩);:</string>
     <string name="toast_get_authorization_url_failure">twitter_consumer_keyが不正かも:;(∩´﹏`∩);:</string>
     <string name="toast_destroy_block_success">ブロック解除にしました</string>
     <string name="toast_destroy_block_failure">ブロック解除に失敗しました</string>
