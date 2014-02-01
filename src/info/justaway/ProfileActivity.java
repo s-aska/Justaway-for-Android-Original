@@ -321,6 +321,14 @@ public class ProfileActivity extends FragmentActivity implements
     public void onLoaderReset(Loader<Profile> arg0) {
     }
 
+    public void restart() {
+        Intent intent = new Intent();
+        intent.setClass(this, ProfileActivity.class);
+        intent.putExtra("userId", mUser.getId());
+        startActivity(intent);
+        finish();
+    }
+
     private class ReportSpamTask extends AsyncTask<Long, Void, Boolean> {
         @Override
         protected Boolean doInBackground(Long... params) {
@@ -339,6 +347,7 @@ public class ProfileActivity extends FragmentActivity implements
             JustawayApplication.dismissProgressDialog();
             if (success) {
                 JustawayApplication.showToast(R.string.toast_report_spam_success);
+                restart();
             } else {
                 JustawayApplication.showToast(R.string.toast_report_spam_failure);
             }
