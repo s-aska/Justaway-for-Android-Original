@@ -56,7 +56,8 @@
         <activity
             android:name=".PostActivity"
             android:label="@string/title_post"
-            android:windowSoftInputMode="stateVisible|adjustResize">
+            android:windowSoftInputMode="stateVisible|adjustResize"
+            android:taskAffinity=".post">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
