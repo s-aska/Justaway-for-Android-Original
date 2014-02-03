@@ -504,11 +504,13 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         holder.do_fav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mApplication.isFav(status)) {
+                if (holder.do_fav.getTag().equals("is_fav")) {
                     mApplication.doDestroyFavorite(status.getId());
+                    holder.do_fav.setTag("no_fav");
                     holder.do_fav.setTextColor(Color.parseColor("#666666"));
                 } else {
                     mApplication.doFavorite(status.getId());
+                    holder.do_fav.setTag("is_fav");
                     holder.do_fav.setTextColor(mContext.getResources().getColor(R.color.holo_orange_light));
                 }
             }
@@ -521,8 +523,10 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         }
 
         if (mApplication.isFav(status)) {
+            holder.do_fav.setTag("is_fav");
             holder.do_fav.setTextColor(mContext.getResources().getColor(R.color.holo_orange_light));
         } else {
+            holder.do_fav.setTag("no_fav");
             holder.do_fav.setTextColor(Color.parseColor("#666666"));
         }
 

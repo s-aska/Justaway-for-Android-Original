@@ -434,12 +434,10 @@ public class JustawayApplication extends Application {
     }
 
     public void doFavorite(Long id) {
-        mIsFavMap.put(id, true);
         new FavoriteTask().execute(id);
     }
 
     public void doDestroyFavorite(Long id) {
-        mIsFavMap.remove(id);
         new UnFavoriteTask().execute(id);
     }
 
