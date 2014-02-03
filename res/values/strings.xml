@@ -115,6 +115,7 @@
     <string name="toast_destroy_user_list_success">リストの削除に成功しました>゜))彡</string>
     <string name="toast_destroy_direct_message_failure">DM削除に失敗しました</string>
     <string name="toast_destroy_direct_message_success">DM削除に成功しました>゜))彡</string>
+    <string name="toast_destroy_favorite_already">もうあんふぁぼしてました:;(∩´﹏`∩);:</string>
     <string name="toast_destroy_favorite_failure">あんふぁぼに失敗しました</string>
     <string name="toast_destroy_favorite_success">あんふぁぼに成功しました>゜))彡</string>
     <string name="toast_destroy_friendship_failure">フォロー解除に失敗しました</string>
@@ -124,6 +125,7 @@
     <string name="toast_destroy_status_failure">ツイ消しに失敗しました</string>
     <string name="toast_destroy_status_success">ツイ消しに成功しました>゜))彡</string>
     <string name="toast_destroy_success">削除しました</string>
+    <string name="toast_favorite_already">もうふぁぼしてました:;(∩´﹏`∩);:</string>
     <string name="toast_favorite_failure">ふぁぼに失敗しました</string>
     <string name="toast_favorite_success">ふぁぼに成功しました>゜))彡</string>
     <string name="toast_follow_success">フォローしました</string>
