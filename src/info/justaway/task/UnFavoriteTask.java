@@ -6,20 +6,32 @@ import info.justaway.JustawayApplication;
 import info.justaway.R;
 import twitter4j.TwitterException;
 
-public class UnFavoriteTask extends AsyncTask<Long, Void, TwitterException> {
+public class UnFavoriteTask extends AsyncTask<Void, Void, TwitterException> {
+
+    private long mId;
+    private JustawayApplication mApplication;
+
+    public UnFavoriteTask(long id) {
+        mId = id;
+        mApplication = JustawayApplication.getApplication();
+
+        /**
+         * 先にremoveFavしておかないとViewの星が戻ってしまう、
+         * 重複エラー以外の理由で失敗し場合（通信エラー等）は戻す
+         */
+        mApplication.removeFav(mId);
+    }
 
     @Override
-    protected TwitterException doInBackground(Long... params) {
-        JustawayApplication application = JustawayApplication.getApplication();
+    protected TwitterException doInBackground(Void... params) {
         try {
-            application.getTwitter().destroyFavorite(params[0]);
+            mApplication.getTwitter().destroyFavorite(mId);
         } catch (TwitterException e) {
-            if (e.getErrorCode() == 34) {
-                application.removeFav(params[0]);
+            if (e.getErrorCode() != 34) {
+                mApplication.setFav(mId);
             }
             return e;
         }
-        application.removeFav(params[0]);
         return null;
     }
 
