@@ -434,11 +434,11 @@ public class JustawayApplication extends Application {
     }
 
     public void doFavorite(Long id) {
-        new FavoriteTask().execute(id);
+        new FavoriteTask(id).execute();
     }
 
     public void doDestroyFavorite(Long id) {
-        new UnFavoriteTask().execute(id);
+        new UnFavoriteTask(id).execute();
     }
 
     public void doRetweet(Long id) {
