@@ -160,7 +160,7 @@ public class TweetContextMenu {
 
         // twiccaプラグイン実装 IDは被らないように100~にしてる　
         if (mTwiccaPlugins == null) {
-            mTwiccaPlugins = TwiccaPlugin.getResolveInfoForShowTweet(mActivity.getPackageManager());
+            mTwiccaPlugins = TwiccaPlugin.getResolveInfo(mActivity.getPackageManager(), TwiccaPlugin.TWICCA_ACTION_SHOW_TWEET);
         }
         if (!mTwiccaPlugins.isEmpty()) {
             PackageManager pm = mActivity.getPackageManager();
