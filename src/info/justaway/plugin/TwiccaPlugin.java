@@ -15,7 +15,8 @@ import twitter4j.User;
 /**
  * Twiccaプラグイン用クラス
  * PICK_TREND,UPLOAD,EDIT_TWEETに関しては、onActivityResultにて受信まで行う必要があるので注意が必要
- *
+ * また、他のアプリに誤った値を渡してエラーを吐いた場合バグレポートが他アプリに行くため、弄る際はtwiccaのデベロッパーページを読み、できるだけ忠実な挙動にする必要がある
+ * twiccaデベロッパーページ: http://twicca.r246.jp/developers/
  * @author oboenikui
  */
 public class TwiccaPlugin {
@@ -111,12 +112,14 @@ public class TwiccaPlugin {
      * @return アプリを起動するためのIntent
      */
     public static Intent createIntentEditTweet(String prefix, String user_input, String suffix, int cursor, String pkgName, String className) {
-        String all_text = (prefix==null?"":prefix) + (user_input==null?"":user_input) + (suffix==null?"":suffix);
+        String fixed_prefix = prefix==null?"":prefix;
+        String fixed_user_input = user_input==null?"":user_input;
+        String fixed_suffix = suffix==null?"":suffix;
         return new Intent(TWICCA_ACTION_EDIT_TWEET)
-        .putExtra(Intent.EXTRA_TEXT, all_text)
-        .putExtra("prefix", prefix)
-        .putExtra("suffix", suffix)
-        .putExtra("user_input", user_input)
+        .putExtra(Intent.EXTRA_TEXT, fixed_prefix+fixed_user_input+fixed_suffix)
+        .putExtra("prefix", fixed_prefix)
+        .putExtra("suffix", fixed_suffix)
+        .putExtra("user_input", fixed_user_input)
         .putExtra("cursor", cursor)
         .addCategory(Intent.CATEGORY_DEFAULT)
         .setClassName(pkgName, className);
@@ -151,8 +154,8 @@ public class TwiccaPlugin {
      */
     public static Intent createIntentUpload(Uri uri,String tweet , String screen_name, String pkgName, String className) {
         return new Intent(TWICCA_ACTION_UPLOAD)
-        .putExtra(Intent.EXTRA_TEXT, tweet)
-        .putExtra(TWICCA_USER_SCREEN_NAME, screen_name)
+        .putExtra(Intent.EXTRA_TEXT, tweet==null?"":tweet)
+        .putExtra(TWICCA_USER_SCREEN_NAME, screen_name==null?"":screen_name)
         .setData(uri)
         .addCategory(Intent.CATEGORY_DEFAULT)
         .setClassName(pkgName, className);
