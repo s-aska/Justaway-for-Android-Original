@@ -116,6 +116,8 @@ public class JustawayApplication extends Application {
         if (BuildConfig.DEBUG) {
             Thread.setDefaultUncaughtExceptionHandler(new MyUncaughtExceptionHandler(sApplication));
         }
+
+        resetFontSize();
     }
 
     public void displayImage(String url, ImageView view) {
@@ -247,6 +249,26 @@ public class JustawayApplication extends Application {
     public Boolean getQuickMode() {
         SharedPreferences preferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
         return preferences.getBoolean(QUICK_MODE, false);
+    }
+
+    /**
+     * 設定管理
+     */
+    private static final String PREF_NAME_SETTINGS = "settings";
+    private int mFontSize;
+
+    public boolean getKeepScreenOn() {
+        SharedPreferences preferences = getSharedPreferences(PREF_NAME_SETTINGS, Context.MODE_PRIVATE);
+        return preferences.getBoolean("keep_screen_on", true);
+    }
+
+    public int getFontSize() {
+        return mFontSize;
+    }
+
+    public void resetFontSize() {
+        SharedPreferences preferences = getSharedPreferences(PREF_NAME_SETTINGS, Context.MODE_PRIVATE);
+        mFontSize = Integer.parseInt(preferences.getString("font_size", "12"));
     }
 
     /**

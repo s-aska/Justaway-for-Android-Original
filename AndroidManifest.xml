@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="info.justaway"
-    android:versionCode="10"
-    android:versionName="1.0.9">
+          package="info.justaway"
+          android:versionCode="10"
+          android:versionName="1.0.9">
 
     <uses-sdk
         android:minSdkVersion="14"
-        android:targetSdkVersion="19" />
+        android:targetSdkVersion="19"/>
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <application
         android:name="info.justaway.JustawayApplication"
@@ -21,36 +21,36 @@
         <receiver
             android:name="info.justaway.appwidget.PostWidget"
             android:exported="false"
-            android:label="@string/widget_title_post_mode" >
+            android:label="@string/widget_title_post_mode">
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/post_widget" />
+                android:resource="@xml/post_widget"/>
         </receiver>
 
         <activity
             android:name="info.justaway.MainActivity"
             android:label="@string/app_name">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
         <activity
             android:name=".SignInActivity"
             android:launchMode="singleTask">
             <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.VIEW"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
 
                 <data
                     android:host="twitter"
-                    android:scheme="justaway" />
+                    android:scheme="justaway"/>
             </intent-filter>
         </activity>
         <activity
@@ -59,72 +59,75 @@
             android:windowSoftInputMode="stateVisible|adjustResize"
             android:taskAffinity=".post">
             <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.VIEW"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
 
                 <data
                     android:host="twitter.com"
                     android:pathPrefix="/intent/tweet"
-                    android:scheme="https" />
+                    android:scheme="https"/>
                 <data
                     android:host="twitter.com"
                     android:pathPrefix="/intent/tweet"
-                    android:scheme="http" />
+                    android:scheme="http"/>
             </intent-filter>
             <intent-filter>
-                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SEND"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.DEFAULT"/>
 
-                <data android:mimeType="image/jpeg" />
-                <data android:mimeType="image/jpg" />
-                <data android:mimeType="image/png" />
+                <data android:mimeType="image/jpeg"/>
+                <data android:mimeType="image/jpg"/>
+                <data android:mimeType="image/png"/>
             </intent-filter>
             <intent-filter>
-                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SEND"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.DEFAULT"/>
 
-                <data android:mimeType="text/plain" />
+                <data android:mimeType="text/plain"/>
             </intent-filter>
         </activity>
         <activity
             android:name=".ProfileActivity"
-            android:label="@string/title_profile" />
+            android:label="@string/title_profile"/>
         <activity
             android:name=".StatusActivity"
             android:theme="@style/Theme.MyTrans">
             <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.VIEW"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
 
                 <data
                     android:host="twitter.com"
                     android:pathPattern="/.*/status/.*"
-                    android:scheme="http" />
+                    android:scheme="http"/>
                 <data
                     android:host="twitter.com"
                     android:pathPattern="/.*/status/.*"
-                    android:scheme="https" />
+                    android:scheme="https"/>
             </intent-filter>
         </activity>
         <activity
             android:name=".ChooseUserListsActivity"
-            android:label="@string/title_choose_user_lists" />
+            android:label="@string/title_choose_user_lists"/>
         <activity
             android:name=".ScaleImageActivity"
-            android:theme="@android:style/Theme.Translucent" />
+            android:theme="@android:style/Theme.Translucent"/>
         <activity
             android:name=".SearchActivity"
-            android:label="@string/title_search" />
+            android:label="@string/title_search"/>
         <activity
             android:name=".EditProfileActivity"
-            android:label="@string/title_edit_profile" />
-        <activity android:name=".UserListActivity" />
+            android:label="@string/title_edit_profile"/>
+        <activity android:name=".UserListActivity"/>
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"/>
     </application>
 
 </manifest>
