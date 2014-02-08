@@ -28,53 +28,66 @@ public class SignInActivity extends Activity {
         JustawayApplication application = JustawayApplication.getApplication();
 
         mCallbackURL = getString(R.string.twitter_callback_url);
-        mTwitter = application.getTwitter();
+        mTwitter = application.getTwitterInstance();
 
         Typeface fontello = JustawayApplication.getFontello();
         TextView button = (TextView) findViewById(R.id.action_start_oauth);
         button.setTypeface(fontello);
+
+        if (getIntent().getBooleanExtra("add_account", false)) {
+            button.setVisibility(View.GONE);
+            startOAuth();
+            return;
+        }
+
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new AsyncTask<Void, Void, String>() {
-                    @Override
-                    protected String doInBackground(Void... params) {
-                        try {
-                            mRequestToken = mTwitter.getOAuthRequestToken(mCallbackURL);
-                            return mRequestToken.getAuthorizationURL();
-                        } catch (TwitterException e) {
-                            e.printStackTrace();
-                            return null;
-                        }
-                    }
-
-                    @Override
-                    protected void onPostExecute(String url) {
-                        if (url == null) {
-                            JustawayApplication.showToast(R.string.toast_get_authorization_url_failure);
-                            return;
-                        }
-                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-                        startActivity(intent);
-                    }
-                }.execute();
+                startOAuth();
             }
         });
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
+    private void startOAuth() {
+        new AsyncTask<Void, Void, String>() {
+            @Override
+            protected String doInBackground(Void... params) {
+                try {
+                    mRequestToken = mTwitter.getOAuthRequestToken(mCallbackURL);
+                    return mRequestToken.getAuthorizationURL();
+                } catch (TwitterException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
 
-        /**
-         * 初回認証後バックキーで終了して「最近使ったアプリ」から復帰するとここに来る
-         */
-        if (JustawayApplication.getApplication().hasAccessToken()) {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-            finish();
-        }
+            @Override
+            protected void onPostExecute(String url) {
+                if (url == null) {
+                    JustawayApplication.showToast(R.string.toast_get_authorization_url_failure);
+                    return;
+                }
+                findViewById(R.id.action_start_oauth).setVisibility(View.GONE);
+                findViewById(R.id.connect_with_twitter).setVisibility(View.GONE);
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                startActivity(intent);
+            }
+        }.execute();
     }
+
+//    @Override
+//    protected void onResume() {
+//        super.onResume();
+//
+//        /**
+//         * 初回認証後バックキーで終了して「最近使ったアプリ」から復帰するとここに来る
+//         */
+//        if (JustawayApplication.getApplication().hasAccessToken()) {
+//            Intent intent = new Intent(this, MainActivity.class);
+//            startActivity(intent);
+//            finish();
+//        }
+//    }
 
     @Override
     public void onNewIntent(Intent intent) {

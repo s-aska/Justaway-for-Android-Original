@@ -16,6 +16,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -254,6 +255,7 @@ public class JustawayApplication extends Application {
      */
     private static final String TOKEN = "token";
     private static final String TOKEN_SECRET = "token_secret";
+    private static final String TOKENS = "tokens";
     private static final String PREF_NAME = "twitter_access_token";
     private AccessToken mAccessToken;
     private Twitter mTwitter;
@@ -311,6 +313,15 @@ public class JustawayApplication extends Application {
         return getAccessToken() != null;
     }
 
+    public ArrayList<AccessToken> getAccessTokens() {
+        SharedPreferences preferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        String json = preferences.getString(TOKENS, null);
+        Gson gson = new Gson();
+        JustawayApplication.AccountSettings accountSettings = gson.fromJson(json, JustawayApplication.AccountSettings.class);
+
+        return  accountSettings.accessTokens;
+    }
+
     /**
      * Twitterアクセストークン取得
      *
@@ -321,11 +332,15 @@ public class JustawayApplication extends Application {
         if (mAccessToken != null) {
             return mAccessToken;
         }
+
         SharedPreferences preferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        String token = preferences.getString(TOKEN, null);
-        String tokenSecret = preferences.getString(TOKEN_SECRET, null);
-        if (token != null && tokenSecret != null) {
-            this.mAccessToken = new AccessToken(token, tokenSecret);
+        String json = preferences.getString(TOKENS, null);
+
+        if (json != null) {
+            Gson gson = new Gson();
+            AccountSettings accountSettings = gson.fromJson(json, AccountSettings.class);
+            this.mAccessToken = accountSettings.accessTokens.get(accountSettings.index);
+
             return mAccessToken;
         } else {
             return null;
@@ -338,16 +353,53 @@ public class JustawayApplication extends Application {
      * @param accessToken Twitterアクセストークン
      */
     public void setAccessToken(AccessToken accessToken) {
-        SharedPreferences preferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        Editor editor = preferences.edit();
-        editor.putString(TOKEN, accessToken.getToken());
-        editor.putString(TOKEN_SECRET, accessToken.getTokenSecret());
-        editor.commit();
+
         this.mAccessToken = accessToken;
+        getTwitter().setOAuthAccessToken(mAccessToken);
+
+        SharedPreferences preferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        String json = preferences.getString(TOKENS, null);
+        Gson gson = new Gson();
+
+        AccountSettings accountSettings;
+        if (json != null) {
+            accountSettings = gson.fromJson(json, AccountSettings.class);
+
+            boolean existUser = false;
+            int i = 0;
+            for (AccessToken sharedAccessToken : accountSettings.accessTokens) {
+                if (accessToken.getUserId() == sharedAccessToken.getUserId()) {
+                    accountSettings.accessTokens.set(i, accessToken);
+                    accountSettings.index = i;
+                    existUser = true;
+                }
+                i++;
+            }
+
+            if (!existUser) {
+                accountSettings.index = accountSettings.accessTokens.size();
+                accountSettings.accessTokens.add(mAccessToken);
+            }
+        } else {
+            accountSettings = new AccountSettings();
+            accountSettings.accessTokens = new ArrayList<AccessToken>();
+            accountSettings.accessTokens.add(mAccessToken);
+        }
+
+        String exportJson = gson.toJson(accountSettings);
+
+        Editor editor = preferences.edit();
+        editor.putString(TOKENS, exportJson);
+        editor.commit();
+    }
+
+    public static class AccountSettings {
+        int index;
+        ArrayList<AccessToken> accessTokens;
     }
 
     /**
-     * Twitterインスタンスを取得
+     * Twitterインスタンス(アクセストークン付き)を取得
      *
      * @return Twitterインスタンス
      */
@@ -355,15 +407,28 @@ public class JustawayApplication extends Application {
         if (mTwitter != null) {
             return mTwitter;
         }
-        TwitterFactory factory = new TwitterFactory();
-        Twitter twitter = factory.getInstance();
-        twitter.setOAuthConsumer(getConsumerKey(), getConsumerSecret());
+        Twitter twitter = getTwitterInstance();
+
         AccessToken token = getAccessToken();
         if (token != null) {
             twitter.setOAuthAccessToken(token);
             // アクセストークンまである時だけキャッシュしておく
             this.mTwitter = twitter;
         }
+        return twitter;
+    }
+
+    /**
+     * Twitterインスタンスを取得
+     *
+     * @return Twitterインスタンス
+     */
+    public Twitter getTwitterInstance() {
+
+        TwitterFactory factory = new TwitterFactory();
+        Twitter twitter = factory.getInstance();
+        twitter.setOAuthConsumer(getConsumerKey(), getConsumerSecret());
+
         return twitter;
     }
 
@@ -397,6 +462,16 @@ public class JustawayApplication extends Application {
         editor.remove("screen_name");
         editor.commit();
         this.mAccessToken = null;
+    }
+
+    public void removetAccessToken() {
+        SharedPreferences preferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+        String json = preferences.getString(TOKENS, null);
+        Gson gson = new Gson();
+
+        AccountSettings accountSettings = gson.fromJson(json, AccountSettings.class);
+
+
     }
 
     private HashMap<Long, Boolean> mIsFavMap = new HashMap<Long, Boolean>();
@@ -490,4 +565,5 @@ public class JustawayApplication extends Application {
     public boolean onContextItemSelected(MenuItem item) {
         return mTweetContextMenu.onContextItemSelected(item);
     }
+
 }

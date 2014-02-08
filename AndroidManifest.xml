@@ -125,6 +125,9 @@
             android:name=".EditProfileActivity"
             android:label="@string/title_edit_profile" />
         <activity android:name=".UserListActivity" />
+        <activity
+            android:name=".AccountSettingActivity"
+            android:label="@string/title_account_setting" />
     </application>
 
 </manifest>
