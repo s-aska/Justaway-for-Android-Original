@@ -1,6 +1,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/settings"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/menu_settings" />
+    <item
+        android:id="@+id/search"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/menu_search" />
+    <item
         android:id="@+id/user_list"
         android:orderInCategory="100"
         android:showAsAction="never"
@@ -10,11 +20,6 @@
         android:orderInCategory="100"
         android:showAsAction="never"
         android:title="@string/menu_profile" />
-    <item
-        android:id="@+id/search"
-        android:orderInCategory="100"
-        android:showAsAction="never"
-        android:title="@string/menu_search" />
     <item
         android:id="@+id/feedback"
         android:orderInCategory="100"

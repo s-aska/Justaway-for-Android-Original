@@ -82,9 +82,6 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
 
         mApplication = JustawayApplication.getApplication();
 
-        // スリープさせない指定
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
         // アクセストークンがない場合に認証用のアクティビティを起動する
         if (!mApplication.hasAccessToken()) {
             Intent intent = new Intent(this, SignInActivity.class);
@@ -252,6 +249,18 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
 
         // 前回バグで強制終了した場合はダイアログ表示、Yesでレポート送信
         MyUncaughtExceptionHandler.showBugReportDialogIfExist(this);
+
+        // スリープさせない指定
+        if (JustawayApplication.getApplication().getKeepScreenOn()) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        } else {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
+
+        mApplication.resetFontSize();
+
+        // フォントサイズの変更や他のアクティビティでのfav/RTを反映
+        mMainPagerAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -523,6 +532,9 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
             startActivityForResult(intent, REQUEST_CHOOSE_USER_LIST);
         } else if (itemId == R.id.search) {
             Intent intent = new Intent(this, SearchActivity.class);
+            startActivity(intent);
+        } else if (itemId == R.id.settings) {
+            Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
         } else if (itemId == R.id.official_website) {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.official_website)));
