@@ -42,8 +42,7 @@
     <string name="context_menu_reply_all">全員にリプ</string>
     <string name="context_menu_reply_direct_message">返信(DM)</string>
     <string name="context_menu_retweet">公式RT</string>
-    <string name="context_menu_share_text">ツイート本文を共有</string>
-    <string name="context_menu_share_url">ツイートURLを共有</string>
+    <string name="context_menu_share_url">ツイートを共有</string>
     <string name="context_menu_talk">会話を表示</string>
     <string name="context_menu_photo_gallery">画像を添付</string>
     <string name="context_menu_photo_camera">写真を撮影</string>

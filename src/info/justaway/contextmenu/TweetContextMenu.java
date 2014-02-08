@@ -56,7 +56,6 @@ public class TweetContextMenu {
     static final int CONTEXT_MENU_HASH_ID = 14;
     static final int CONTEXT_MENU_AT_ID = 15;
     static final int CONTEXT_MENU_REPLY_ALL_ID = 16;
-    static final int CONTEXT_MENU_SHARE_TEXT_ID = 17;
     static final int CONTEXT_MENU_SHARE_URL_ID = 18;
     static final int CONTEXT_MENU_AROUND_ID = 19;
     static final int CONTEXT_MENU_RETWEETERS_ID = 20;
@@ -174,7 +173,6 @@ public class TweetContextMenu {
             }
         }
 
-        menu.add(0, CONTEXT_MENU_SHARE_TEXT_ID, 0, R.string.context_menu_share_text);
         menu.add(0, CONTEXT_MENU_SHARE_URL_ID, 0, R.string.context_menu_share_url);
     }
 
@@ -340,13 +338,6 @@ public class TweetContextMenu {
             case CONTEXT_MENU_AT_ID:
                 intent = new Intent(mActivity, ProfileActivity.class);
                 intent.putExtra("screenName", item.getTitle().toString().substring(1));
-                mActivity.startActivity(intent);
-                return true;
-            case CONTEXT_MENU_SHARE_TEXT_ID:
-                intent = new Intent();
-                intent.setAction(Intent.ACTION_SEND);
-                intent.setType("text/plain");
-                intent.putExtra(Intent.EXTRA_TEXT, status.getText());
                 mActivity.startActivity(intent);
                 return true;
             case CONTEXT_MENU_SHARE_URL_ID:
