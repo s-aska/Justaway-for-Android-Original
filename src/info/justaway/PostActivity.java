@@ -442,7 +442,7 @@ public class PostActivity extends FragmentActivity {
             dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
             dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                     WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
-            dialog.setContentView(R.layout.fragment_list);
+            dialog.setContentView(R.layout.list);
             ListView listView = (ListView) dialog.findViewById(R.id.list);
 
             // 下書きをViewに描写するアダプター

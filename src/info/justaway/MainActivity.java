@@ -52,6 +52,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
     private ViewPager mViewPager;
     private ProgressDialog mProgressDialog;
     private static final int REQUEST_CHOOSE_USER_LIST = 100;
+    private static final int REQUEST_ACCOUNT_SETTING = 200;
     private static final int TAB_ID_TIMELINE = -1;
     private static final int TAB_ID_INTERACTIONS = -2;
     private static final int TAB_ID_DIRECT_MESSAGE = -3;
@@ -293,6 +294,12 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                     }
                 }
                 break;
+            case REQUEST_ACCOUNT_SETTING:
+                // 再読み込み
+                Intent intent = new Intent();
+                intent.setClass(this, MainActivity.class);
+                startActivity(intent);
+                finish();
             default:
                 break;
         }
@@ -539,6 +546,9 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
             Intent intent = new Intent(this, PostActivity.class);
             intent.putExtra("status", " #justaway");
             startActivity(intent);
+        } else if (itemId == R.id.account) {
+            Intent intent = new Intent(this, AccountSettingActivity.class);
+            startActivityForResult(intent, REQUEST_ACCOUNT_SETTING);
         }
         return true;
     }

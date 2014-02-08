@@ -3,6 +3,7 @@
 
     <string name="app_name">Justaway</string>
     <string name="button_apply">適用</string>
+    <string name="button_blocking">ブロック中</string>
     <string name="button_yes">はい</string>
     <string name="button_no">いいえ</string>
     <string name="button_ok">OK</string>
@@ -63,8 +64,11 @@
     <string name="label_update_profile_image">画像を変更</string>
     <string name="label_web_site">Web</string>
     <string name="label_connect_with_twitter">Connect with Twitter</string>
+    <string name="menu_add_account">アカウント追加</string>
+    <string name="menu_account_setting">アカウント管理</string>
     <string name="menu_battery_level">バッテリー残量</string>
     <string name="menu_clear">クリア</string>
+    <string name="menu_create_block">ブロックする</string>
     <string name="menu_open_favstar">Favstarで開く</string>
     <string name="menu_open_twilog">Twilogで開く</string>
     <string name="menu_open_twitter">Twitterで開く</string>
@@ -76,6 +80,7 @@
     <string name="menu_send_reply">リプを送る</string>
     <string name="menu_sign_out">サインアウト</string>
     <string name="menu_store">Google Play</string>
+    <string name="menu_change_account">アカウント切り替え</string>
     <string name="menu_choose_user_list">リスト</string>
     <string name="menu_create_user_list_subscription">リストを購読</string>
     <string name="menu_destroy_user_list_subscription">リストの購読を解除</string>
@@ -91,6 +96,7 @@
     <string name="pull_to_refresh_release_label">指を離して更新</string>
     <string name="pull_to_refresh_tap_label">タップして更新</string>
     <string name="tab_users">ユーザー</string>
+    <string name="title_account_setting">アカウント管理</string>
     <string name="title_choose_user_lists">表示するリストを選択</string>
     <string name="title_direct_messages">DM</string>
     <string name="title_edit_profile">プロフィール編集</string>
@@ -149,7 +155,4 @@
     <string name="twitter_callback_url">justaway://twitter</string>
     <string name="progress_process">処理中！！１１１１１</string>
     <string name="widget_title_post_mode">投稿モード</string>
-    <string name="button_blocking">ブロック中</string>
-    <string name="menu_create_block">ブロックする</string>
-
 </resources>
