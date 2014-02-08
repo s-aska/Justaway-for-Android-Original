@@ -300,6 +300,23 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
                     if (lists != null && lists.size() > 0) {
                         JustawayApplication.showToast(R.string.toast_register_list_for_tab);
                     }
+                } else {
+
+                    /**
+                     * リストの削除を検出してタブを再構成
+                     */
+                    ArrayList<Integer> tabs = mApplication.loadTabs();
+                    ArrayList<Integer> new_tabs = new ArrayList<Integer>();
+                    for (Integer tab : tabs) {
+                        if (tab > 0 && mApplication.getUserList(tab) == null) {
+                            continue;
+                        }
+                        new_tabs.add(tab);
+                    }
+                    if (tabs.size() != new_tabs.size()) {
+                        mApplication.saveTabs(new_tabs);
+                        setupTab();
+                    }
                 }
                 break;
             default:
