@@ -69,15 +69,7 @@ public class ChooseUserListsActivity extends FragmentActivity implements
             }
         });
 
-        // 起動時に読み込んだユーザーリストがある場合は新たにAPIを叩かない
-        ResponseList<UserList> userLists = JustawayApplication.getApplication().getUserLists();
-        if (userLists != null) {
-            for (UserList userList : userLists) {
-                mAdapter.add(userList);
-            }
-        } else {
-            getSupportLoaderManager().initLoader(0, null, this);
-        }
+        getSupportLoaderManager().initLoader(0, null, this);
     }
 
     @Override
