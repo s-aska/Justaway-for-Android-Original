@@ -24,7 +24,7 @@ public class AccountSettingActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account_setting);
 
-        ListView listView = (ListView) findViewById(R.id.list);
+        ListView listView = (ListView) findViewById(R.id.list_view);
 
         AccountAdapter adapter = new AccountAdapter(this, R.layout.row_word);
         listView.setAdapter(adapter);

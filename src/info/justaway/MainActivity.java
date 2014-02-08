@@ -413,6 +413,10 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
     }
 
     public void setupStream() {
+        if (mTwitterStream != null) {
+            mTwitterStream.cleanUp();
+            mTwitterStream.shutdown();
+        }
         mTwitterStream = mApplication.getTwitterStream();
         mTwitterStream.addListener(getUserStreamAdapter());
         mTwitterStream.user();
