@@ -8,8 +8,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -32,7 +30,6 @@ import info.justaway.model.Row;
 import info.justaway.task.DestroyDirectMessageTask;
 import info.justaway.task.LoadUserListsTask;
 import info.justaway.task.ReFetchFavoriteStatus;
-import info.justaway.task.VerifyCredentialsLoader;
 import twitter4j.DirectMessage;
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
@@ -44,7 +41,7 @@ import twitter4j.UserStreamAdapter;
 /**
  * @author aska
  */
-public class MainActivity extends FragmentActivity implements LoaderManager.LoaderCallbacks<User> {
+public class MainActivity extends FragmentActivity {
 
     private JustawayApplication mApplication;
     private TwitterStream mTwitterStream;
@@ -91,11 +88,10 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
             Intent intent = new Intent(this, SignInActivity.class);
             startActivity(intent);
             finish();
-        } else if (mApplication.getUserId() > 0 && mApplication.getScreenName() != null) {
-            setup();
+            return;
         }
 
-        getSupportLoaderManager().initLoader(0, null, this);
+        setup();
 
         /**
          * ユーザーリストの一覧をアプリケーションのメンバ変数に読み込んでおく
@@ -326,36 +322,6 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
         };
     }
 
-    /**
-     * 認証済みのユーザーアカウントを取得
-     */
-    @Override
-    public Loader<User> onCreateLoader(int id, Bundle args) {
-        return new VerifyCredentialsLoader(this);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<User> loader, User user) {
-
-        // VerifyCredentialsLoaderが失敗する場合も考慮
-        if (user == null) {
-            mApplication.resetAccessToken();
-            Intent intent = new Intent(this, SignInActivity.class);
-            startActivity(intent);
-            finish();
-        } else {
-            if (mApplication.getUserId() < 0 || mApplication.getScreenName() == null) {
-                JustawayApplication.showToast(user.getScreenName() + " さんこんにちわ！！！！");
-                mApplication.setUserId(user.getId());
-                mApplication.setScreenName(user.getScreenName());
-                setup();
-            } else {
-                mApplication.setUserId(user.getId());
-                mApplication.setScreenName(user.getScreenName());
-            }
-        }
-    }
-
     public void setup() {
 
         /**
@@ -420,11 +386,6 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
         mTwitterStream = mApplication.getTwitterStream();
         mTwitterStream.addListener(getUserStreamAdapter());
         mTwitterStream.user();
-    }
-
-    @Override
-    public void onLoaderReset(Loader<User> arg0) {
-
     }
 
     /**
@@ -519,10 +480,7 @@ public class MainActivity extends FragmentActivity implements LoaderManager.Load
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
-        if (itemId == R.id.sign_out) {
-            JustawayApplication.getApplication().resetAccessToken();
-            finish();
-        } else if (itemId == R.id.profile) {
+        if (itemId == R.id.profile) {
             /**
              * screenNameは変更可能なのでuserIdを使う
              */
