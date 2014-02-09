@@ -100,15 +100,15 @@ public class AccountSettingActivity extends Activity {
             if (JustawayApplication.getApplication().getUserId() == accessToken.getUserId()) {
                 screenName.setTextColor(getResources().getColor(R.color.holo_blue_bright));
                 trash.setVisibility(View.GONE);
+            } else {
+                view.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        JustawayApplication.getApplication().setAccessToken(accessToken);
+                        finish();
+                    }
+                });
             }
-
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    JustawayApplication.getApplication().setAccessToken(accessToken);
-                    finish();
-                }
-            });
 
             view.findViewById(R.id.trash).setOnClickListener(new View.OnClickListener() {
                 @Override
