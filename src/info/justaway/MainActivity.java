@@ -80,9 +80,6 @@ public class MainActivity extends FragmentActivity {
 
         mApplication = JustawayApplication.getApplication();
 
-        // スリープさせない指定
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
         // アクセストークンがない場合に認証用のアクティビティを起動する
         if (!mApplication.hasAccessToken()) {
             Intent intent = new Intent(this, SignInActivity.class);
@@ -249,6 +246,18 @@ public class MainActivity extends FragmentActivity {
 
         // 前回バグで強制終了した場合はダイアログ表示、Yesでレポート送信
         MyUncaughtExceptionHandler.showBugReportDialogIfExist(this);
+
+        // スリープさせない指定
+        if (JustawayApplication.getApplication().getKeepScreenOn()) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        } else {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
+
+        mApplication.resetFontSize();
+
+        // フォントサイズの変更や他のアクティビティでのfav/RTを反映
+        mMainPagerAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -287,6 +296,23 @@ public class MainActivity extends FragmentActivity {
                     setupTab();
                     if (lists != null && lists.size() > 0) {
                         JustawayApplication.showToast(R.string.toast_register_list_for_tab);
+                    }
+                } else {
+
+                    /**
+                     * リストの削除を検出してタブを再構成
+                     */
+                    ArrayList<Integer> tabs = mApplication.loadTabs();
+                    ArrayList<Integer> new_tabs = new ArrayList<Integer>();
+                    for (Integer tab : tabs) {
+                        if (tab > 0 && mApplication.getUserList(tab) == null) {
+                            continue;
+                        }
+                        new_tabs.add(tab);
+                    }
+                    if (tabs.size() != new_tabs.size()) {
+                        mApplication.saveTabs(new_tabs);
+                        setupTab();
                     }
                 }
                 break;
@@ -492,6 +518,9 @@ public class MainActivity extends FragmentActivity {
             startActivityForResult(intent, REQUEST_CHOOSE_USER_LIST);
         } else if (itemId == R.id.search) {
             Intent intent = new Intent(this, SearchActivity.class);
+            startActivity(intent);
+        } else if (itemId == R.id.settings) {
+            Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
         } else if (itemId == R.id.official_website) {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.official_website)));
