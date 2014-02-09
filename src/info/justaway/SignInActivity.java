@@ -36,6 +36,7 @@ public class SignInActivity extends Activity {
 
         if (getIntent().getBooleanExtra("add_account", false)) {
             button.setVisibility(View.GONE);
+            findViewById(R.id.connect_with_twitter).setVisibility(View.GONE);
             startOAuth();
             return;
         }

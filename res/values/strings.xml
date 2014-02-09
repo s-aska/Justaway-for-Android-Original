@@ -65,7 +65,7 @@
     <string name="label_web_site">Web</string>
     <string name="label_connect_with_twitter">Connect with Twitter</string>
     <string name="menu_add_account">アカウント追加</string>
-    <string name="menu_account_setting">アカウント管理</string>
+    <string name="menu_account_setting">アカウント</string>
     <string name="menu_battery_level">バッテリー残量</string>
     <string name="menu_clear">クリア</string>
     <string name="menu_create_block">ブロックする</string>
