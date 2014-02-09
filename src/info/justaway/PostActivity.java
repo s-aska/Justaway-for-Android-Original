@@ -142,7 +142,7 @@ public class PostActivity extends FragmentActivity {
         mTweetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showProgressDialog(getString(R.string.progress_sending));
+                JustawayApplication.showProgressDialog(mContext, getString(R.string.progress_sending));
                 StatusUpdate superSugoi = new StatusUpdate(mEditText.getText().toString());
                 if (mInReplyToStatusId > 0) {
                     superSugoi.setInReplyToStatusId(mInReplyToStatusId);
@@ -327,7 +327,7 @@ public class PostActivity extends FragmentActivity {
 
         @Override
         protected void onPostExecute(Boolean success) {
-            dismissProgressDialog();
+            JustawayApplication.dismissProgressDialog();
             if (success) {
                 mEditText.setText("");
             } else {
@@ -419,17 +419,6 @@ public class PostActivity extends FragmentActivity {
                 break;
         }
         return true;
-    }
-
-    private void showProgressDialog(String message) {
-        mProgressDialog = new ProgressDialog(this);
-        mProgressDialog.setMessage(message);
-        mProgressDialog.show();
-    }
-
-    private void dismissProgressDialog() {
-        if (mProgressDialog != null)
-            mProgressDialog.dismiss();
     }
 
     public class DraftFragment extends DialogFragment {
