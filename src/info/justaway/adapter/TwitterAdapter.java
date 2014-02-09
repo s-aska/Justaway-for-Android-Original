@@ -10,6 +10,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -209,6 +210,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             holder.fontello_lock = (TextView) view.findViewById(R.id.fontello_lock);
             holder.datetime_relative = (TextView) view.findViewById(R.id.datetime_relative);
             holder.status = (TextView) view.findViewById(R.id.status);
+            holder.status.setTag(12);
             holder.images = (LinearLayout) view.findViewById(R.id.images);
             holder.menu_and_via = (TableLayout) view.findViewById(R.id.menu_and_via);
             holder.do_reply = (TextView) view.findViewById(R.id.do_reply);
@@ -224,6 +226,14 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             view.setTag(holder);
         } else {
             holder = (ViewHolder) view.getTag();
+        }
+
+        if (mApplication.getFontSize() != (Integer) holder.status.getTag()) {
+            holder.status.setTag(mApplication.getFontSize());
+            holder.status.setTextSize(TypedValue.COMPLEX_UNIT_SP, mApplication.getFontSize());
+            holder.display_name.setTextSize(TypedValue.COMPLEX_UNIT_SP, mApplication.getFontSize());
+            holder.screen_name.setTextSize(TypedValue.COMPLEX_UNIT_SP, mApplication.getFontSize() - 2);
+            holder.datetime_relative.setTextSize(TypedValue.COMPLEX_UNIT_SP, mApplication.getFontSize()- 2);
         }
 
         // 表示すべきデータの取得
