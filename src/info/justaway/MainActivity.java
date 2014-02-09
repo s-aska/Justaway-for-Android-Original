@@ -317,11 +317,15 @@ public class MainActivity extends FragmentActivity {
                 }
                 break;
             case REQUEST_ACCOUNT_SETTING:
-                // 再読み込み
-                Intent intent = new Intent();
-                intent.setClass(this, MainActivity.class);
-                startActivity(intent);
-                finish();
+                setupTab();
+                int count = mMainPagerAdapter.getCount();
+                for (int id = 0; id < count; id++) {
+                    BaseFragment fragment = mMainPagerAdapter
+                            .findFragmentByPosition(id);
+                    if (fragment != null) {
+                        fragment.reload();
+                    }
+                }
             default:
                 break;
         }

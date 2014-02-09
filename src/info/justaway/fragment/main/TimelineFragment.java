@@ -27,7 +27,6 @@ public class TimelineFragment extends BaseFragment {
     private Boolean mReload = false;
     private long mMaxId = 0L;
     private ProgressBar mFooter;
-    private Boolean mStreamingStarted = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -61,10 +60,16 @@ public class TimelineFragment extends BaseFragment {
     }
 
     @Override
-    public void onRefreshStarted(View view) {
+    public void reload() {
         mReload = true;
         mMaxId = 0L;
+        getListAdapter().clear();
         new HomeTimelineTask().execute();
+    }
+
+    @Override
+    public void onRefreshStarted(View view) {
+        reload();
     }
 
     private void additionalReading() {
@@ -146,8 +151,8 @@ public class TimelineFragment extends BaseFragment {
                 return;
             }
             TwitterAdapter adapter = getListAdapter();
+            boolean streamingRestart = mReload || adapter.getCount() == 0;
             if (mReload) {
-                adapter.clear();
                 for (twitter4j.Status status : statuses) {
                     if (mMaxId == 0L || mMaxId > status.getId()) {
                         mMaxId = status.getId();
@@ -156,24 +161,23 @@ public class TimelineFragment extends BaseFragment {
                 }
                 mReload = false;
                 getPullToRefreshLayout().setRefreshComplete();
-                return;
-            }
-            for (twitter4j.Status status : statuses) {
-                if (mMaxId == 0L || mMaxId > status.getId()) {
-                    mMaxId = status.getId();
+            } else {
+                for (twitter4j.Status status : statuses) {
+                    if (mMaxId == 0L || mMaxId > status.getId()) {
+                        mMaxId = status.getId();
+                    }
+                    adapter.extensionAdd(Row.newStatus(status));
                 }
-                adapter.extensionAdd(Row.newStatus(status));
+                mAutoLoader = true;
+                getListView().setVisibility(View.VISIBLE);
             }
-            mAutoLoader = true;
-            if (!mStreamingStarted) {
+            if (streamingRestart) {
                 MainActivity activity = (MainActivity) getActivity();
                 // アプリの終了処理中にnullになるっぽい
                 if (activity != null) {
                     activity.setupStream();
-                    mStreamingStarted = true;
                 }
             }
-            getListView().setVisibility(View.VISIBLE);
         }
     }
 }

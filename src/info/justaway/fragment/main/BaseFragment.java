@@ -110,6 +110,8 @@ public abstract class BaseFragment extends Fragment implements
      */
     public abstract void add(Row row);
 
+    public abstract void reload();
+
     public void removeStatus(final long statusId) {
         final ListView listView = getListView();
         if (listView == null) {
