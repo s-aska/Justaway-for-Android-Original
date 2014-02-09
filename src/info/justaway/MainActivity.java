@@ -317,12 +317,19 @@ public class MainActivity extends FragmentActivity {
                 }
                 break;
             case REQUEST_ACCOUNT_SETTING:
+
+                if (mTwitterStream != null) {
+                    mTwitterStream.cleanUp();
+                    mTwitterStream.shutdown();
+                }
+
                 setupTab();
                 int count = mMainPagerAdapter.getCount();
                 for (int id = 0; id < count; id++) {
                     BaseFragment fragment = mMainPagerAdapter
                             .findFragmentByPosition(id);
                     if (fragment != null) {
+                        fragment.getListAdapter().clear();
                         fragment.reload();
                     }
                 }

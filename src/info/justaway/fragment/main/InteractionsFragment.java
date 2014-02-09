@@ -63,7 +63,6 @@ public class InteractionsFragment extends BaseFragment {
     public void reload() {
         mReload = true;
         mMaxId = 0L;
-        getListAdapter().clear();
         new MentionsTimelineTask().execute();
     }
 
@@ -170,6 +169,7 @@ public class InteractionsFragment extends BaseFragment {
             }
             TwitterAdapter adapter = getListAdapter();
             if (mReload) {
+                adapter.clear();
                 for (twitter4j.Status status : statuses) {
                     if (mMaxId == 0L || mMaxId > status.getId()) {
                         mMaxId = status.getId();
