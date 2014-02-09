@@ -198,12 +198,12 @@ public class JustawayApplication extends Application {
     /**
      * タブ管理
      */
-    private static final String TABS = "tabs";
+    private static final String TABS = "tabs-";
     private ArrayList<Integer> mTabs = new ArrayList<Integer>();
 
     public ArrayList<Integer> loadTabs() {
         SharedPreferences preferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
-        String tabs_string = preferences.getString(TABS, "-1,-2,-3");
+        String tabs_string = preferences.getString(TABS.concat(String.valueOf(getUserId())), "-1,-2,-3");
         String[] tabs_strings = tabs_string.split(",");
         mTabs.clear();
         for (String tab_string : tabs_strings) {
@@ -220,7 +220,7 @@ public class JustawayApplication extends Application {
         }
         SharedPreferences preferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
         Editor editor = preferences.edit();
-        editor.putString(TABS, TextUtils.join(",", tabs_strings));
+        editor.putString(TABS.concat(String.valueOf(getUserId())), TextUtils.join(",", tabs_strings));
         editor.commit();
     }
 
@@ -259,41 +259,19 @@ public class JustawayApplication extends Application {
     private static final String PREF_NAME = "twitter_access_token";
     private AccessToken mAccessToken;
     private Twitter mTwitter;
-    private String mScreenName;
-    private long mUserId = -1L;
 
     public long getUserId() {
-        if (mUserId != -1L) {
-            return mUserId;
+        if (mAccessToken == null) {
+            return -1L;
         }
-        SharedPreferences preferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        mUserId = preferences.getLong("user_id", -1L);
-        return mUserId;
-    }
-
-    public void setUserId(long userId) {
-        SharedPreferences preferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        Editor editor = preferences.edit();
-        editor.putLong("user_id", userId);
-        editor.commit();
-        this.mUserId = userId;
+        return mAccessToken.getUserId();
     }
 
     public String getScreenName() {
-        if (mScreenName != null) {
-            return mScreenName;
+        if (mAccessToken == null) {
+            return "";
         }
-        SharedPreferences preferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        mScreenName = preferences.getString("screen_name", null);
-        return mScreenName;
-    }
-
-    public void setScreenName(String screenName) {
-        SharedPreferences preferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        Editor editor = preferences.edit();
-        editor.putString("screen_name", screenName);
-        editor.commit();
-        this.mScreenName = screenName;
+        return mAccessToken.getScreenName();
     }
 
     private String getConsumerKey() {
@@ -319,7 +297,7 @@ public class JustawayApplication extends Application {
         Gson gson = new Gson();
         JustawayApplication.AccountSettings accountSettings = gson.fromJson(json, JustawayApplication.AccountSettings.class);
 
-        return  accountSettings.accessTokens;
+        return accountSettings.accessTokens;
     }
 
     /**
@@ -355,6 +333,7 @@ public class JustawayApplication extends Application {
     public void setAccessToken(AccessToken accessToken) {
 
         this.mAccessToken = accessToken;
+
         getTwitter().setOAuthAccessToken(mAccessToken);
 
         SharedPreferences preferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
@@ -447,21 +426,6 @@ public class JustawayApplication extends Application {
                 .setOAuthConsumerSecret(getConsumerSecret()).setOAuthAccessToken(token.getToken())
                 .setOAuthAccessTokenSecret(token.getTokenSecret()).build();
         return new TwitterStreamFactory(conf).getInstance();
-    }
-
-    /**
-     * アクセストークンを削除（認証失敗時などトークンが無効な場合に使用）
-     */
-    public void resetAccessToken() {
-        mTwitter.setOAuthAccessToken(null);
-        SharedPreferences preferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        Editor editor = preferences.edit();
-        editor.remove(TOKEN);
-        editor.remove(TOKEN_SECRET);
-        editor.remove("user_id");
-        editor.remove("screen_name");
-        editor.commit();
-        this.mAccessToken = null;
     }
 
     public void removetAccessToken() {

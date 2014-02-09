@@ -71,7 +71,6 @@ public class EditProfileActivity extends FragmentActivity implements LoaderManag
     public void onLoadFinished(Loader<User> loader, User user) {
         JustawayApplication application = JustawayApplication.getApplication();
         if (user == null) {
-            application.resetAccessToken();
             Intent intent = new Intent(this, SignInActivity.class);
             startActivity(intent);
             finish();

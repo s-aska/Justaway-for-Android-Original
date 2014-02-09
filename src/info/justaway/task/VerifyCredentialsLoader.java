@@ -18,10 +18,7 @@ public class VerifyCredentialsLoader extends AbstractAsyncTaskLoader<User> {
         try {
             JustawayApplication application = JustawayApplication.getApplication();
             Twitter twitter = application.getTwitter();
-            User user = twitter.verifyCredentials();
-            application.setUserId(user.getId());
-            application.setScreenName(user.getScreenName());
-            return user;
+            return twitter.verifyCredentials();
         } catch (TwitterException e) {
             e.printStackTrace();
             return null;
