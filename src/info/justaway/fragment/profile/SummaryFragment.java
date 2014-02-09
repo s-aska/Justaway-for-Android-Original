@@ -53,6 +53,9 @@ public class SummaryFragment extends Fragment {
         TextView screenName = (TextView) v.findViewById(R.id.screen_name);
         TextView followedBy = (TextView) v.findViewById(R.id.followed_by);
         final TextView follow = (TextView) v.findViewById(R.id.follow);
+        TextView lock = (TextView) v.findViewById(R.id.lock);
+        lock.setTypeface(JustawayApplication.getFontello());
+        lock.setVisibility(View.GONE);
 
         String iconUrl = user.getBiggerProfileImageURL();
         application.displayRoundedImage(iconUrl, icon);
@@ -70,6 +73,9 @@ public class SummaryFragment extends Fragment {
         name.setText(user.getName());
         screenName.setText("@" + user.getScreenName());
 
+        if (user.isProtected()) {
+            lock.setVisibility(View.VISIBLE);
+        }
         if (relationship.isSourceFollowedByTarget()) {
             followedBy.setText(R.string.label_followed_by_target);
         } else {
