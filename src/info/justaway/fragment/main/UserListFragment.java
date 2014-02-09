@@ -63,10 +63,16 @@ public class UserListFragment extends BaseFragment {
     }
 
     @Override
-    public void onRefreshStarted(View view) {
+    public void reload() {
         mReload = true;
         mMaxId = 0L;
+        getListAdapter().clear();
         new UserListStatusesTask().execute();
+    }
+
+    @Override
+    public void onRefreshStarted(View view) {
+        reload();
     }
 
     private void additionalReading() {
@@ -149,7 +155,6 @@ public class UserListFragment extends BaseFragment {
             }
             TwitterAdapter adapter = getListAdapter();
             if (mReload) {
-                adapter.clear();
                 for (twitter4j.Status status : statuses) {
                     if (mMaxId == 0L || mMaxId > status.getId()) {
                         mMaxId = status.getId();

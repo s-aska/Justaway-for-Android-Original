@@ -62,11 +62,17 @@ public class DirectMessagesFragment extends BaseFragment {
     }
 
     @Override
-    public void onRefreshStarted(View view) {
+    public void reload() {
         mReload = true;
         mDirectMessagesMaxId = 0L;
         mSentDirectMessagesMaxId = 0L;
+        getListAdapter().clear();
         new DirectMessagesTask().execute();
+    }
+
+    @Override
+    public void onRefreshStarted(View view) {
+        reload();
     }
 
     private void additionalReading() {
@@ -198,7 +204,6 @@ public class DirectMessagesFragment extends BaseFragment {
             }
             TwitterAdapter adapter = getListAdapter();
             if (mReload) {
-                adapter.clear();
                 for (DirectMessage status : statuses) {
                     adapter.add(Row.newDirectMessage(status));
                 }
