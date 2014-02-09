@@ -90,7 +90,9 @@ public class PostActivity extends FragmentActivity {
         Intent intent = getIntent();
         mWidgetMode = intent.getBooleanExtra("widget", false);
         if (mWidgetMode) {
-            setTitle(R.string.widget_title_post_mode);
+            setTitle(getString(R.string.widget_title_post_mode).concat(" @").concat(application.getScreenName()));
+        } else {
+            setTitle(getString(R.string.title_post).concat(" @").concat(application.getScreenName()));
         }
 
         String status = intent.getStringExtra("status");
