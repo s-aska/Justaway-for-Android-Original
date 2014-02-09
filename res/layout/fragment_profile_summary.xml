@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical">
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:gravity="center"
+              android:orientation="vertical">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -25,20 +26,45 @@
                     android:id="@+id/icon"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:contentDescription="@string/description_icon" />
+                    android:contentDescription="@string/description_icon"
+                    tools:src="@drawable/ic_launcher"/>
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/name"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:shadowColor="@android:color/black"
-                android:shadowDx="3.0"
-                android:shadowDy="3.0"
-                android:shadowRadius="10.0"
-                android:textColor="@android:color/white"
-                android:textSize="23sp" />
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:shadowColor="@android:color/black"
+                    android:shadowDx="3.0"
+                    android:shadowDy="3.0"
+                    android:shadowRadius="10.0"
+                    android:textColor="@android:color/white"
+                    android:textSize="23sp"
+                    tools:text="Justaway"/>
+
+                <TextView
+                    android:id="@+id/lock"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:shadowColor="@android:color/black"
+                    android:shadowDx="3.0"
+                    android:shadowDy="3.0"
+                    android:shadowRadius="10.0"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp"
+                    android:layout_marginTop="3dip"
+                    android:layout_marginLeft="6dip"
+                    android:text="@string/fontello_lock"
+                    tools:text="鍵"/>
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/screen_name"
@@ -50,7 +76,8 @@
                 android:shadowDy="5.0"
                 android:shadowRadius="10.0"
                 android:textColor="@android:color/white"
-                android:textSize="18sp" />
+                android:textSize="18sp"
+                tools:text="justawayfactory"/>
 
             <TextView
                 android:id="@+id/followed_by"
@@ -62,7 +89,8 @@
                 android:shadowDy="5.0"
                 android:shadowRadius="10.0"
                 android:textColor="@android:color/white"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                tools:text="@string/label_followed_by_target"/>
         </LinearLayout>
 
         <Button
@@ -74,7 +102,8 @@
             android:background="@color/menu_background"
             android:paddingLeft="16dip"
             android:paddingRight="16dip"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            tools:text="@string/button_unfollow"/>
 
     </FrameLayout>
 </LinearLayout>
