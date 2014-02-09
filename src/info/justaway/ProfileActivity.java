@@ -69,6 +69,7 @@ public class ProfileActivity extends FragmentActivity implements
                 args.putLong("userId", intent.getLongExtra("userId", 0));
             }
         }
+        JustawayApplication.showProgressDialog(this, getString(R.string.progress_loading));
         getSupportLoaderManager().initLoader(0, args, this);
     }
 
@@ -172,6 +173,7 @@ public class ProfileActivity extends FragmentActivity implements
 
     @Override
     public void onLoadFinished(Loader<Profile> arg0, Profile profile) {
+        JustawayApplication.dismissProgressDialog();
         if (profile == null) {
             JustawayApplication.showToast(R.string.toast_load_data_failure);
             return;

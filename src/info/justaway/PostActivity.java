@@ -4,7 +4,6 @@ package info.justaway;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -57,7 +56,6 @@ public class PostActivity extends FragmentActivity {
     private TextView mTextView;
     private Button mTweetButton;
     private Button mImgButton;
-    private ProgressDialog mProgressDialog;
     private Long mInReplyToStatusId;
     private File mImgPath;
     private Uri mImageUri;
@@ -98,7 +96,6 @@ public class PostActivity extends FragmentActivity {
         String status = intent.getStringExtra("status");
         if (status != null) {
             mEditText.setText(status);
-            updateCount(status);
         }
         int selection = intent.getIntExtra("selection", 0);
         if (selection > 0) {
@@ -139,10 +136,18 @@ public class PostActivity extends FragmentActivity {
             }
         }
 
+        updateCount(mEditText.getText().toString());
+
+        SaveLoadTraining saveLoadTraining = new SaveLoadTraining();
+        ArrayList<String> draftList = saveLoadTraining.loadArray();
+        if (draftList.isEmpty()) {
+            draftButton.setEnabled(false);
+        }
+
         mTweetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showProgressDialog(getString(R.string.progress_sending));
+                JustawayApplication.showProgressDialog(mContext, getString(R.string.progress_sending));
                 StatusUpdate superSugoi = new StatusUpdate(mEditText.getText().toString());
                 if (mInReplyToStatusId > 0) {
                     superSugoi.setInReplyToStatusId(mInReplyToStatusId);
@@ -289,6 +294,7 @@ public class PostActivity extends FragmentActivity {
         this.mImgPath = path;
         JustawayApplication.showToast(R.string.toast_set_image_success);
         mImgButton.setTextColor(getResources().getColor(R.color.holo_blue_bright));
+        mTweetButton.setEnabled(true);
     }
 
     private void updateCount(String str) {
@@ -303,10 +309,14 @@ public class PostActivity extends FragmentActivity {
         mTextView.setTextColor(textColor);
         mTextView.setText(String.valueOf(length));
 
-        // 文字数が0文字または140文字以上の時はボタンを無効
         if (str.codePointCount(0, str.length()) == 0
                 || str.codePointCount(0, str.length()) > 140) {
-            mTweetButton.setEnabled(false);
+            // 文字数が0文字または140文字以上の時はボタンを無効
+            if (mImgPath != null) {
+                mTweetButton.setEnabled(true);
+            } else {
+                mTweetButton.setEnabled(false);
+            }
         } else {
             mTweetButton.setEnabled(true);
         }
@@ -327,7 +337,7 @@ public class PostActivity extends FragmentActivity {
 
         @Override
         protected void onPostExecute(Boolean success) {
-            dismissProgressDialog();
+            JustawayApplication.dismissProgressDialog();
             if (success) {
                 mEditText.setText("");
             } else {
@@ -339,6 +349,7 @@ public class PostActivity extends FragmentActivity {
             } else {
                 mImgPath = null;
                 mImgButton.setTextColor(getResources().getColor(android.R.color.secondary_text_dark));
+                mTweetButton.setEnabled(false);
             }
         }
     }
@@ -419,17 +430,6 @@ public class PostActivity extends FragmentActivity {
                 break;
         }
         return true;
-    }
-
-    private void showProgressDialog(String message) {
-        mProgressDialog = new ProgressDialog(this);
-        mProgressDialog.setMessage(message);
-        mProgressDialog.show();
-    }
-
-    private void dismissProgressDialog() {
-        if (mProgressDialog != null)
-            mProgressDialog.dismiss();
     }
 
     public class DraftFragment extends DialogFragment {
