@@ -1,7 +1,9 @@
 package info.justaway;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -90,8 +92,15 @@ public class AccountSettingActivity extends Activity {
 
             final AccessToken accessToken = mAccountLists.get(position);
 
-            ((TextView) view.findViewById(R.id.word)).setText(accessToken.getScreenName());
-            ((TextView) view.findViewById(R.id.trash)).setTypeface(JustawayApplication.getFontello());
+            assert view != null;
+            TextView screenName = (TextView) view.findViewById(R.id.word);
+            TextView trash = (TextView) view.findViewById(R.id.trash);
+            trash.setTypeface(JustawayApplication.getFontello());
+            screenName.setText("@".concat(accessToken.getScreenName()));
+            if (JustawayApplication.getApplication().getUserId() == accessToken.getUserId()) {
+                screenName.setTextColor(getResources().getColor(R.color.holo_blue_bright));
+                trash.setVisibility(View.GONE);
+            }
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -104,8 +113,28 @@ public class AccountSettingActivity extends Activity {
             view.findViewById(R.id.trash).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    remove(position);
-                    // TODO: アカウント削除するか聞いて、削除する
+                    new AlertDialog.Builder(AccountSettingActivity.this)
+                            .setTitle("@".concat(accessToken.getScreenName().concat(getString(R.string.confirm_remove_account))))
+                            .setPositiveButton(
+                                    R.string.button_yes,
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            remove(position);
+                                            JustawayApplication.getApplication().removeAccessToken(position);
+
+                                            finish();
+                                        }
+                                    })
+                            .setNegativeButton(
+                                    R.string.button_no,
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            finish();
+                                        }
+                                    })
+                            .show();
                 }
             });
             return view;
