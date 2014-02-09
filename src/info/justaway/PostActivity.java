@@ -4,7 +4,6 @@ package info.justaway;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -97,7 +96,6 @@ public class PostActivity extends FragmentActivity {
         String status = intent.getStringExtra("status");
         if (status != null) {
             mEditText.setText(status);
-            updateCount(status);
         }
         int selection = intent.getIntExtra("selection", 0);
         if (selection > 0) {
@@ -137,6 +135,8 @@ public class PostActivity extends FragmentActivity {
                 mEditText.setText(pageTitle);
             }
         }
+
+        updateCount(mEditText.getText().toString());
 
         SaveLoadTraining saveLoadTraining = new SaveLoadTraining();
         ArrayList<String> draftList = saveLoadTraining.loadArray();
@@ -294,6 +294,7 @@ public class PostActivity extends FragmentActivity {
         this.mImgPath = path;
         JustawayApplication.showToast(R.string.toast_set_image_success);
         mImgButton.setTextColor(getResources().getColor(R.color.holo_blue_bright));
+        mTweetButton.setEnabled(true);
     }
 
     private void updateCount(String str) {
@@ -308,10 +309,14 @@ public class PostActivity extends FragmentActivity {
         mTextView.setTextColor(textColor);
         mTextView.setText(String.valueOf(length));
 
-        // 文字数が0文字または140文字以上の時はボタンを無効
         if (str.codePointCount(0, str.length()) == 0
                 || str.codePointCount(0, str.length()) > 140) {
-            mTweetButton.setEnabled(false);
+            // 文字数が0文字または140文字以上の時はボタンを無効
+            if (mImgPath != null) {
+                mTweetButton.setEnabled(true);
+            } else {
+                mTweetButton.setEnabled(false);
+            }
         } else {
             mTweetButton.setEnabled(true);
         }
@@ -344,6 +349,7 @@ public class PostActivity extends FragmentActivity {
             } else {
                 mImgPath = null;
                 mImgButton.setTextColor(getResources().getColor(android.R.color.secondary_text_dark));
+                mTweetButton.setEnabled(false);
             }
         }
     }
