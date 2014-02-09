@@ -428,13 +428,22 @@ public class JustawayApplication extends Application {
         return new TwitterStreamFactory(conf).getInstance();
     }
 
-    public void removetAccessToken() {
+    public void removeAccessToken(int position) {
         SharedPreferences preferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         String json = preferences.getString(TOKENS, null);
         Gson gson = new Gson();
 
         AccountSettings accountSettings = gson.fromJson(json, AccountSettings.class);
+        accountSettings.accessTokens.remove(position);
+        if (accountSettings.index > position) {
+            accountSettings.index--;
+        }
 
+        String exportJson = gson.toJson(accountSettings);
+
+        Editor editor = preferences.edit();
+        editor.putString(TOKENS, exportJson);
+        editor.commit();
 
     }
 
