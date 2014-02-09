@@ -57,7 +57,6 @@ public class PostActivity extends FragmentActivity {
     private TextView mTextView;
     private Button mTweetButton;
     private Button mImgButton;
-    private ProgressDialog mProgressDialog;
     private Long mInReplyToStatusId;
     private File mImgPath;
     private Uri mImageUri;
@@ -137,6 +136,12 @@ public class PostActivity extends FragmentActivity {
                 }
                 mEditText.setText(pageTitle);
             }
+        }
+
+        SaveLoadTraining saveLoadTraining = new SaveLoadTraining();
+        ArrayList<String> draftList = saveLoadTraining.loadArray();
+        if (draftList.isEmpty()) {
+            draftButton.setEnabled(false);
         }
 
         mTweetButton.setOnClickListener(new View.OnClickListener() {
