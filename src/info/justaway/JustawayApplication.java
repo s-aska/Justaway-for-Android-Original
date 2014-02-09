@@ -253,8 +253,6 @@ public class JustawayApplication extends Application {
     /**
      * Twitterインスタンス管理
      */
-    private static final String TOKEN = "token";
-    private static final String TOKEN_SECRET = "token_secret";
     private static final String TOKENS = "tokens";
     private static final String PREF_NAME = "twitter_access_token";
     private AccessToken mAccessToken;
