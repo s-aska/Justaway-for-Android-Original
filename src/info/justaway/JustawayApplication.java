@@ -8,6 +8,7 @@ import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.util.LongSparseArray;
 import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.MenuItem;
@@ -468,7 +469,7 @@ public class JustawayApplication extends Application {
     }
 
     private HashMap<Long, Boolean> mIsFavMap = new HashMap<Long, Boolean>();
-    private HashMap<Long, Long> mRtIdMap = new HashMap<Long, Long>();
+    private LongSparseArray<Long> mRtIdMap = new LongSparseArray<Long>();
 
     public void setFav(Long id) {
         mIsFavMap.put(id, true);
@@ -514,14 +515,23 @@ public class JustawayApplication extends Application {
         new RetweetTask().execute(id);
     }
 
-    public void doDestroyRetweet(Long sourceId) {
-        Long retweetId = mRtIdMap.get(sourceId);
-        if (retweetId == null) {
-            return;
-        }
-        mRtIdMap.remove(sourceId);
-        if (retweetId > 0) {
-            new UnRetweetTask().execute(retweetId);
+    public void doDestroyRetweet(Status status) {
+        if (status.getUser().getId() == getUserId()) {
+            // 自分がRTしたStatus
+            int index = mRtIdMap.indexOfValue(status.getId());
+            if (index > -1) {
+                mRtIdMap.removeAt(index);
+            }
+            new UnRetweetTask().execute(status.getId());
+        } else {
+            // 他人のStatusで、それを自分がRTしている
+            long statusId = mRtIdMap.get(status.getId());
+            if (statusId == (long) 0) {
+                JustawayApplication.showToast(R.string.toast_destroy_retweet_progress);
+            } else if (statusId > 0) {
+                mRtIdMap.remove(status.getId());
+                new UnRetweetTask().execute(statusId);
+            }
         }
     }
 
