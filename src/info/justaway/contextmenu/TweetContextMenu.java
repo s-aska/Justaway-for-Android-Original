@@ -108,13 +108,13 @@ public class TweetContextMenu {
 
         if (status.getUser().getId() == application.getUserId()) {
             if (retweet != null) {
-                if (application.getRtId(status) != null) {
-                    menu.add(0, CONTEXT_MENU_RM_RT_ID, 0, R.string.context_menu_destroy_retweet);
-                }
+                menu.add(0, CONTEXT_MENU_RM_RT_ID, 0, R.string.context_menu_destroy_retweet);
             } else {
                 menu.add(0, CONTEXT_MENU_RM_ID, 0, R.string.context_menu_destroy_status);
             }
-        } else if (application.getRtId(status) == null) {
+        } else if (application.getRtId(status) != null) {
+            menu.add(0, CONTEXT_MENU_RM_RT_ID, 0, R.string.context_menu_destroy_retweet);
+        } else {
             if (isPublic) {
                 if (!application.isFav(status)) {
                     menu.add(0, CONTEXT_MENU_FAVRT_ID, 0, R.string.context_menu_favorite_and_retweet);
@@ -283,13 +283,13 @@ public class TweetContextMenu {
                 mActivity.startActivity(intent);
                 return true;
             case CONTEXT_MENU_RM_ID:
-                application.doDestroyStatus(row.getStatus().getId());
+                application.doDestroyStatus(status.getId());
                 return true;
             case CONTEXT_MENU_RT_ID:
-                application.doRetweet(row.getStatus().getId());
+                application.doRetweet(status.getId());
                 return true;
             case CONTEXT_MENU_RM_RT_ID:
-                application.doDestroyRetweet(row.getStatus().getId());
+                application.doDestroyRetweet(status);
                 return true;
             case CONTEXT_MENU_RM_FAV_ID:
                 application.doDestroyFavorite(status.getId());
@@ -299,7 +299,7 @@ public class TweetContextMenu {
                 return true;
             case CONTEXT_MENU_FAVRT_ID:
                 application.doFavorite(status.getId());
-                application.doRetweet(row.getStatus().getId());
+                application.doRetweet(status.getId());
                 return true;
             case CONTEXT_MENU_RETWEETERS_ID:
                 RetweetersFragment retweetersFragment = new RetweetersFragment();
