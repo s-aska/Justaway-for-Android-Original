@@ -128,6 +128,7 @@
     <string name="toast_destroy_friendship_success">フォロー解除に成功しました>゜))彡</string>
     <string name="toast_destroy_retweet_already">公式RT解除してました:;(∩´﹏`∩);:</string>
     <string name="toast_destroy_retweet_failure">公式RT解除に失敗しました</string>
+    <string name="toast_destroy_retweet_progress">公式RT処理中です:;(∩´﹏`∩);:</string>
     <string name="toast_destroy_retweet_success">公式RT解除に成功しました>゜))彡</string>
     <string name="toast_destroy_status_failure">ツイ消しに失敗しました</string>
     <string name="toast_destroy_status_success">ツイ消しに成功しました>゜))彡</string>
