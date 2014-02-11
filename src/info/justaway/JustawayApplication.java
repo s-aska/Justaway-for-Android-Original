@@ -468,7 +468,7 @@ public class JustawayApplication extends Application {
 
     }
 
-    private HashMap<Long, Boolean> mIsFavMap = new HashMap<Long, Boolean>();
+    private LongSparseArray<Boolean> mIsFavMap = new LongSparseArray<Boolean>();
     private LongSparseArray<Long> mRtIdMap = new LongSparseArray<Long>();
 
     public void setFav(Long id) {
@@ -502,12 +502,12 @@ public class JustawayApplication extends Application {
         return null;
     }
 
-    public void doFavorite(Long id) {
-        new FavoriteTask(id).execute();
+    public void doFavorite(Long statusId) {
+        new FavoriteTask(statusId).execute();
     }
 
-    public void doDestroyFavorite(Long id) {
-        new UnFavoriteTask(id).execute();
+    public void doDestroyFavorite(Long statusId) {
+        new UnFavoriteTask(statusId).execute();
     }
 
     public void doRetweet(Long id) {
