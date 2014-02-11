@@ -23,7 +23,6 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import info.justaway.contextmenu.TweetContextMenu;
 import info.justaway.display.FadeInRoundedBitmapDisplayer;
@@ -468,7 +467,7 @@ public class JustawayApplication extends Application {
 
     }
 
-    private HashMap<Long, Boolean> mIsFavMap = new HashMap<Long, Boolean>();
+    private LongSparseArray<Boolean> mIsFavMap = new LongSparseArray<Boolean>();
     private LongSparseArray<Long> mRtIdMap = new LongSparseArray<Long>();
 
     public void setFav(Long id) {
@@ -491,7 +490,11 @@ public class JustawayApplication extends Application {
     }
 
     public void setRtId(Long sourceId, Long retweetId) {
-        mRtIdMap.put(sourceId, retweetId);
+        if (retweetId != null) {
+            mRtIdMap.put(sourceId, retweetId);
+        } else {
+            mRtIdMap.remove(sourceId);
+        }
     }
 
     public Long getRtId(Status status) {
@@ -499,38 +502,60 @@ public class JustawayApplication extends Application {
         if (id != null) {
             return id;
         }
+        Status retweet = status.getRetweetedStatus();
+        if (retweet != null) {
+            return mRtIdMap.get(retweet.getId());
+        }
         return null;
     }
 
-    public void doFavorite(Long id) {
-        new FavoriteTask(id).execute();
+    public void doFavorite(Long statusId) {
+        new FavoriteTask(statusId).execute();
     }
 
-    public void doDestroyFavorite(Long id) {
-        new UnFavoriteTask(id).execute();
+    public void doDestroyFavorite(Long statusId) {
+        new UnFavoriteTask(statusId).execute();
     }
 
-    public void doRetweet(Long id) {
-        sApplication.setRtId(id, (long) 0);
-        new RetweetTask().execute(id);
+    public void doRetweet(Long statusId) {
+        new RetweetTask(statusId).execute();
     }
 
     public void doDestroyRetweet(Status status) {
+
         if (status.getUser().getId() == getUserId()) {
             // 自分がRTしたStatus
-            int index = mRtIdMap.indexOfValue(status.getId());
-            if (index > -1) {
-                mRtIdMap.removeAt(index);
+            Status retweet = status.getRetweetedStatus();
+            if (retweet != null) {
+                new UnRetweetTask(retweet.getId(), status.getId()).execute();
             }
-            new UnRetweetTask().execute(status.getId());
         } else {
             // 他人のStatusで、それを自分がRTしている
-            long statusId = mRtIdMap.get(status.getId());
-            if (statusId == (long) 0) {
+
+            // 被リツイート
+            Long retweetedStatusId = -1L;
+
+            // リツイート
+            Long statusId = mRtIdMap.get(status.getId());
+            if (statusId != null && statusId > 0) {
+                // そのStatusそのものをRTしている
+                retweetedStatusId = status.getId();
+            } else {
+                Status retweet = status.getRetweetedStatus();
+                if (retweet != null) {
+                    statusId = mRtIdMap.get(retweet.getId());
+                    if (statusId != null && statusId > 0) {
+                        // そのStatusがRTした元StatusをRTしている
+                        retweetedStatusId = retweet.getId();
+                    }
+                }
+            }
+
+            if (statusId != null && statusId == 0L) {
+                // 処理中は 0
                 JustawayApplication.showToast(R.string.toast_destroy_retweet_progress);
-            } else if (statusId > 0) {
-                mRtIdMap.remove(status.getId());
-                new UnRetweetTask().execute(statusId);
+            } else if (statusId != null && statusId > 0) {
+                new UnRetweetTask(retweetedStatusId, statusId).execute();
             }
         }
     }

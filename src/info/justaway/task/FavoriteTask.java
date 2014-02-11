@@ -8,28 +8,25 @@ import twitter4j.TwitterException;
 
 public class FavoriteTask extends AsyncTask<Void, Void, TwitterException> {
 
-    private long mId;
+    private long mStatusId;
     private JustawayApplication mApplication;
 
-    public FavoriteTask(long id) {
-        mId = id;
+    public FavoriteTask(long statusId) {
+        mStatusId = statusId;
         mApplication = JustawayApplication.getApplication();
 
         /**
          * 先にsetFavしておかないとViewの星が戻ってしまう、
          * 重複エラー以外の理由で失敗し場合（通信エラー等）は戻す
          */
-        mApplication.setFav(mId);
+        mApplication.setFav(mStatusId);
     }
 
     @Override
     protected TwitterException doInBackground(Void... params) {
         try {
-            mApplication.getTwitter().createFavorite(mId);
+            mApplication.getTwitter().createFavorite(mStatusId);
         } catch (TwitterException e) {
-            if (e.getErrorCode() != 139) {
-                mApplication.removeFav(mId);
-            }
             return e;
         }
         return null;
@@ -42,6 +39,7 @@ public class FavoriteTask extends AsyncTask<Void, Void, TwitterException> {
         } else if (e.getErrorCode() == 139) {
             JustawayApplication.showToast(R.string.toast_favorite_already);
         } else {
+            mApplication.removeFav(mStatusId);
             JustawayApplication.showToast(R.string.toast_favorite_failure);
         }
     }
