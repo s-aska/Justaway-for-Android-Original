@@ -33,10 +33,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.io.File;
@@ -44,6 +46,7 @@ import java.util.ArrayList;
 
 import twitter4j.StatusUpdate;
 import twitter4j.Twitter;
+import twitter4j.auth.AccessToken;
 
 public class PostActivity extends FragmentActivity {
 
@@ -51,7 +54,6 @@ public class PostActivity extends FragmentActivity {
     private static final int REQUEST_CAMERA = 2;
 
     private Context mContext;
-    private Twitter mTwitter;
     private EditText mEditText;
     private TextView mTextView;
     private Button mTweetButton;
@@ -61,6 +63,8 @@ public class PostActivity extends FragmentActivity {
     private Uri mImageUri;
     private DraftFragment mDraftDialog;
     private boolean mWidgetMode;
+    private ArrayList<AccessToken> mAccessTokens;
+    private AccessToken mAccessToken;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +80,6 @@ public class PostActivity extends FragmentActivity {
         mTextView = (TextView) findViewById(R.id.count);
         mTweetButton = (Button) findViewById(R.id.tweet);
         mImgButton = (Button) findViewById(R.id.img);
-        mTwitter = application.getTwitter();
         Button suddenlyButton = (Button) findViewById(R.id.suddenly);
         Button draftButton = (Button) findViewById(R.id.word);
 
@@ -86,6 +89,42 @@ public class PostActivity extends FragmentActivity {
         draftButton.setTypeface(fontello);
 
         registerForContextMenu(mImgButton);
+
+        // アカウント切り替え
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+                android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        Spinner spinner = (Spinner) findViewById(R.id.switchAccount);
+        spinner.setAdapter(adapter);
+
+        mAccessTokens = JustawayApplication.getApplication().getAccessTokens();
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            public void onItemSelected(AdapterView parent, View view, int position, long id) {
+                String item = (String) parent.getItemAtPosition(position);
+                for (AccessToken accessToken : mAccessTokens) {
+                    if (item.equals(accessToken.getScreenName())) {
+                        mAccessToken = accessToken;
+                    }
+                }
+            }
+
+            public void onNothingSelected(AdapterView parent) {
+            }
+        });
+
+        if (mAccessTokens != null) {
+            int i = 0;
+            for (AccessToken accessToken : mAccessTokens) {
+                adapter.add(accessToken.getScreenName());
+
+                if (JustawayApplication.getApplication().getUserId() == accessToken.getUserId()) {
+                    spinner.setSelection(i);
+                }
+                i++;
+            }
+        }
 
         Intent intent = getIntent();
         mWidgetMode = intent.getBooleanExtra("widget", false);
@@ -329,7 +368,9 @@ public class PostActivity extends FragmentActivity {
         protected Boolean doInBackground(StatusUpdate... params) {
             StatusUpdate super_sugoi = params[0];
             try {
-                mTwitter.updateStatus(super_sugoi);
+                Twitter twitter = JustawayApplication.getApplication().getTwitterInstance();
+                twitter.setOAuthAccessToken(mAccessToken);
+                twitter.updateStatus(super_sugoi);
                 return true;
             } catch (Exception e) {
                 e.printStackTrace();
