@@ -23,7 +23,6 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import info.justaway.contextmenu.TweetContextMenu;
 import info.justaway.display.FadeInRoundedBitmapDisplayer;
@@ -499,6 +498,10 @@ public class JustawayApplication extends Application {
         if (id != null) {
             return id;
         }
+        Status retweet = status.getRetweetedStatus();
+        if (retweet != null) {
+            return mRtIdMap.get(retweet.getId());
+        }
         return null;
     }
 
@@ -518,18 +521,32 @@ public class JustawayApplication extends Application {
     public void doDestroyRetweet(Status status) {
         if (status.getUser().getId() == getUserId()) {
             // 自分がRTしたStatus
-            int index = mRtIdMap.indexOfValue(status.getId());
-            if (index > -1) {
-                mRtIdMap.removeAt(index);
+            Status retweet = status.getRetweetedStatus();
+            if (retweet != null) {
+                mRtIdMap.remove(retweet.getId());
             }
             new UnRetweetTask().execute(status.getId());
         } else {
             // 他人のStatusで、それを自分がRTしている
-            long statusId = mRtIdMap.get(status.getId());
-            if (statusId == (long) 0) {
-                JustawayApplication.showToast(R.string.toast_destroy_retweet_progress);
-            } else if (statusId > 0) {
+            Long statusId = mRtIdMap.get(status.getId());
+            if (statusId != null && statusId > 0) {
+                // そのStatusそのものをRTしている
                 mRtIdMap.remove(status.getId());
+            } else {
+                Status retweet = status.getRetweetedStatus();
+                if (retweet != null) {
+                    statusId = mRtIdMap.get(retweet.getId());
+                    if (statusId != null && statusId > 0) {
+                        // そのStatusがRTした元StatusをRTしている
+                        mRtIdMap.remove(retweet.getId());
+                    }
+                }
+            }
+
+            if (statusId != null && statusId == 0L) {
+                // 処理中は 0
+                JustawayApplication.showToast(R.string.toast_destroy_retweet_progress);
+            } else if (statusId != null && statusId > 0) {
                 new UnRetweetTask().execute(statusId);
             }
         }
