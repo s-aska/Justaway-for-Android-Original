@@ -4,24 +4,45 @@ import android.os.AsyncTask;
 
 import info.justaway.JustawayApplication;
 import info.justaway.R;
+import twitter4j.TwitterException;
 
-public class UnRetweetTask extends AsyncTask<Long, Void, twitter4j.Status> {
+public class UnRetweetTask extends AsyncTask<Void, Void, TwitterException> {
 
-    @Override
-    protected twitter4j.Status doInBackground(Long... params) {
-        try {
-            return JustawayApplication.getApplication().getTwitter().destroyStatus(params[0]);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+    private long mRetweetedStatusId;
+    private long mStatusId;
+    private JustawayApplication mApplication;
+    private static final int ERROR_CODE_DUPLICATE = 34;
+
+    public UnRetweetTask(long retweetedStatusId, long statusId) {
+        mRetweetedStatusId = retweetedStatusId;
+        mStatusId = statusId;
+        mApplication = JustawayApplication.getApplication();
+        if (mRetweetedStatusId > 0) {
+            mApplication.setRtId(mRetweetedStatusId, null);
         }
     }
 
     @Override
-    protected void onPostExecute(twitter4j.Status status) {
-        if (status != null) {
+    protected TwitterException doInBackground(Void... params) {
+        try {
+            JustawayApplication.getApplication().getTwitter().destroyStatus(mStatusId);
+            return null;
+        } catch (TwitterException e) {
+            e.printStackTrace();
+            return e;
+        }
+    }
+
+    @Override
+    protected void onPostExecute(TwitterException e) {
+        if (e == null) {
             JustawayApplication.showToast(R.string.toast_destroy_retweet_success);
+        } else if (e.getErrorCode() == ERROR_CODE_DUPLICATE) {
+            JustawayApplication.showToast(R.string.toast_destroy_retweet_already);
         } else {
+            if (mRetweetedStatusId > 0) {
+                mApplication.setRtId(mRetweetedStatusId, mStatusId);
+            }
             JustawayApplication.showToast(R.string.toast_destroy_retweet_failure);
         }
     }
