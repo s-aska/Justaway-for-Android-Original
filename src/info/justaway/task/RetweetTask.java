@@ -4,24 +4,39 @@ import android.os.AsyncTask;
 
 import info.justaway.JustawayApplication;
 import info.justaway.R;
+import twitter4j.TwitterException;
 
-public class RetweetTask extends AsyncTask<Long, Void, twitter4j.Status> {
+public class RetweetTask extends AsyncTask<Void, Void, TwitterException> {
+
+    private long mStatusId;
+    private JustawayApplication mApplication;
+    private static final int ERROR_CODE_DUPLICATE = 37;
+
+    public RetweetTask(long statusId) {
+        mStatusId = statusId;
+        mApplication = JustawayApplication.getApplication();
+        mApplication.setRtId(statusId, (long) 0);
+    }
 
     @Override
-    protected twitter4j.Status doInBackground(Long... params) {
+    protected TwitterException doInBackground(Void... params) {
         try {
-            return JustawayApplication.getApplication().getTwitter().retweetStatus(params[0]);
-        } catch (Exception e) {
-            e.printStackTrace();
+            twitter4j.Status status = JustawayApplication.getApplication().getTwitter().retweetStatus(mStatusId);
+            mApplication.setRtId(status.getRetweetedStatus().getId(), status.getId());
             return null;
+        } catch (TwitterException e) {
+            mApplication.setRtId(mStatusId, null);
+            e.printStackTrace();
+            return e;
         }
     }
 
     @Override
-    protected void onPostExecute(twitter4j.Status status) {
-        if (status != null) {
-            JustawayApplication.getApplication().setRtId(status.getRetweetedStatus().getId(), status.getId());
+    protected void onPostExecute(TwitterException e) {
+        if (e == null) {
             JustawayApplication.showToast(R.string.toast_retweet_success);
+        } else if (e.getErrorCode() == ERROR_CODE_DUPLICATE) {
+            JustawayApplication.showToast(R.string.toast_retweet_already);
         } else {
             JustawayApplication.showToast(R.string.toast_retweet_failure);
         }
