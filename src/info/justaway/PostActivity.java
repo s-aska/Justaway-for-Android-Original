@@ -37,6 +37,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -72,7 +73,7 @@ public class PostActivity extends FragmentActivity {
         setContentView(R.layout.activity_post);
         mContext = this;
 
-        JustawayApplication application = JustawayApplication.getApplication();
+        final JustawayApplication application = JustawayApplication.getApplication();
 
         Typeface fontello = JustawayApplication.getFontello();
 
@@ -80,6 +81,7 @@ public class PostActivity extends FragmentActivity {
         mTextView = (TextView) findViewById(R.id.count);
         mTweetButton = (Button) findViewById(R.id.tweet);
         mImgButton = (Button) findViewById(R.id.img);
+        final ImageView icon = (ImageView) findViewById(R.id.icon);
         Button suddenlyButton = (Button) findViewById(R.id.suddenly);
         Button draftButton = (Button) findViewById(R.id.word);
 
@@ -106,6 +108,7 @@ public class PostActivity extends FragmentActivity {
                 for (AccessToken accessToken : mAccessTokens) {
                     if (item.equals(accessToken.getScreenName())) {
                         mAccessToken = accessToken;
+                        application.displayUserIcon(accessToken.getUserId(), icon);
                     }
                 }
             }
