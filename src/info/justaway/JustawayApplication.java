@@ -122,8 +122,6 @@ public class JustawayApplication extends Application {
         }
 
         resetFontSize();
-
-        warmUpUserIconMap();
     }
 
     public void displayImage(String url, ImageView view) {
@@ -158,6 +156,10 @@ public class JustawayApplication extends Application {
             displayRoundedImage(url, view);
             return;
         }
+
+        // すぐにURLが取れない時は一旦消す
+        view.setImageDrawable(null);
+
         new AsyncTask<Void, Void, User>() {
 
             @Override
@@ -175,47 +177,6 @@ public class JustawayApplication extends Application {
                 if (user != null) {
                     mUserIconMap.put(userId, user.getBiggerProfileImageURL());
                     displayRoundedImage(user.getBiggerProfileImageURL(), view);
-                }
-            }
-        }.execute();
-    }
-
-    /**
-     * アプリケーション起動時にキャッシュを温めておく
-     * 起動時のネットワーク通信がこれでまた一つ増えてしまった
-     */
-    public void warmUpUserIconMap() {
-        ArrayList<AccessToken> accessTokens = getAccessTokens();
-        if (accessTokens.size() == 0) {
-            return;
-        }
-
-        final long userIds[] = new long[accessTokens.size()];
-        int i = 0;
-        for (AccessToken accessToken : accessTokens) {
-            userIds[i] = accessToken.getUserId();
-            i++;
-        }
-
-        new AsyncTask<Void, Void, ResponseList<User>>() {
-
-            @Override
-            protected ResponseList<User> doInBackground(Void... voids) {
-                try {
-                    return getTwitter().lookupUsers(userIds);
-                } catch (TwitterException e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(ResponseList<User> users) {
-                if (users == null) {
-                    return;
-                }
-                for (User user : users) {
-                    mUserIconMap.put(user.getId(), user.getBiggerProfileImageURL());
                 }
             }
         }.execute();
