@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
+import android.os.AsyncTask;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.util.LongSparseArray;
 import android.text.TextUtils;
@@ -34,9 +35,11 @@ import info.justaway.task.UnRetweetTask;
 import twitter4j.ResponseList;
 import twitter4j.Status;
 import twitter4j.Twitter;
+import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.TwitterStream;
 import twitter4j.TwitterStreamFactory;
+import twitter4j.User;
 import twitter4j.UserList;
 import twitter4j.auth.AccessToken;
 import twitter4j.conf.ConfigurationBuilder;
@@ -119,6 +122,8 @@ public class JustawayApplication extends Application {
         }
 
         resetFontSize();
+
+        warmUpUserIconMap();
     }
 
     public void displayImage(String url, ImageView view) {
@@ -137,6 +142,83 @@ public class JustawayApplication extends Application {
         }
         view.setTag(url);
         sImageLoader.displayImage(url, view, sRoundedDisplayImageOptions);
+    }
+
+    /**
+     * userIdとアイコンの対応、DiskCacheすると「古いアイコン〜〜〜〜」ってなるのでしない。
+     */
+    private LongSparseArray<String> mUserIconMap = new LongSparseArray<String>();
+
+    /**
+     * userIdからアイコンを取得する
+     */
+    public void displayUserIcon(final long userId, final ImageView view) {
+        String url = mUserIconMap.get(userId);
+        if (url != null) {
+            displayRoundedImage(url, view);
+            return;
+        }
+        new AsyncTask<Void, Void, User>() {
+
+            @Override
+            protected User doInBackground(Void... voids) {
+                try {
+                    return getTwitter().showUser(userId);
+                } catch (TwitterException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(User user) {
+                if (user != null) {
+                    mUserIconMap.put(userId, user.getBiggerProfileImageURL());
+                    displayRoundedImage(user.getBiggerProfileImageURL(), view);
+                }
+            }
+        }.execute();
+    }
+
+    /**
+     * アプリケーション起動時にキャッシュを温めておく
+     * 起動時のネットワーク通信がこれでまた一つ増えてしまった
+     */
+    public void warmUpUserIconMap() {
+        ArrayList<AccessToken> accessTokens = getAccessTokens();
+        if (accessTokens.size() == 0) {
+            return;
+        }
+
+        final long userIds[] = new long[accessTokens.size()];
+        int i = 0;
+        for (AccessToken accessToken : accessTokens) {
+            userIds[i] = accessToken.getUserId();
+            i++;
+        }
+
+        new AsyncTask<Void, Void, ResponseList<User>>() {
+
+            @Override
+            protected ResponseList<User> doInBackground(Void... voids) {
+                try {
+                    return getTwitter().lookupUsers(userIds);
+                } catch (TwitterException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(ResponseList<User> users) {
+                if (users == null) {
+                    return;
+                }
+                for (User user : users) {
+                    mUserIconMap.put(user.getId(), user.getBiggerProfileImageURL());
+                }
+            }
+        }.execute();
     }
 
     /*
