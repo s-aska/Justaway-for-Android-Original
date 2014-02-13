@@ -162,7 +162,7 @@
                         android:id="@+id/do_retweet"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="18dip"
+                        android:layout_marginLeft="22dip"
                         android:paddingTop="6dip"
                         android:paddingRight="4dip"
                         android:paddingBottom="6dip"
@@ -175,7 +175,7 @@
 
                     <TextView
                         android:id="@+id/retweet_count"
-                        android:layout_width="28dip"
+                        android:layout_width="32dip"
                         android:layout_height="wrap_content"
                         android:paddingBottom="6dip"
                         android:paddingTop="6dip"
