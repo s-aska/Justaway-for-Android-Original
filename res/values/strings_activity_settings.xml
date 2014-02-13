@@ -27,4 +27,7 @@
         <item>19</item>
         <item>20</item>
     </string-array>
+
+    <string name="pref_title_mute">ミュート</string>
+    <string name="pref_description_mute">ミュートの設定</string>
 </resources>

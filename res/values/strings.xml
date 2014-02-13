@@ -2,6 +2,7 @@
 <resources>
 
     <string name="app_name">Justaway</string>
+    <string name="button_add">追加</string>
     <string name="button_apply">適用</string>
     <string name="button_blocking">ブロック中</string>
     <string name="button_yes">はい</string>
@@ -64,6 +65,9 @@
     <string name="label_update_profile_image">画像を変更</string>
     <string name="label_web_site">Web</string>
     <string name="label_connect_with_twitter">Connect with Twitter</string>
+    <string name="label_user">ユーザー</string>
+    <string name="label_source">via</string>
+    <string name="label_word">ワード</string>
     <string name="menu_add_account">アカウント追加</string>
     <string name="menu_account_setting">アカウント</string>
     <string name="menu_battery_level">バッテリー残量</string>
@@ -103,6 +107,7 @@
     <string name="title_edit_profile">プロフィール編集</string>
     <string name="title_interactions">リプ・通知</string>
     <string name="title_main">Home</string>
+    <string name="title_mute">ミュート</string>
     <string name="title_post">投稿</string>
     <string name="title_profile">プロフィール</string>
     <string name="title_search">検索</string>

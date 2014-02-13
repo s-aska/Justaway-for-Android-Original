@@ -15,4 +15,13 @@
         android:negativeButtonText="@null"
         android:positiveButtonText="@null" />
 
+    <PreferenceScreen
+        android:key="mute"
+        android:title="@string/pref_title_mute"
+        android:summary="@string/pref_description_mute">
+        <intent
+            android:action="android.intent.action.MAIN"
+            android:targetPackage="info.justaway"
+            android:targetClass="info.justaway.MuteActivity" />
+    </PreferenceScreen>
 </PreferenceScreen>
