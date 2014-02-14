@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -24,21 +25,58 @@ public class WordFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.list, container, false);
+        View v = inflater.inflate(R.layout.fragment_mute_word, container, false);
         if (v == null) {
             return null;
         }
 
-        WordAdapter adapter = new WordAdapter(getActivity(), R.layout.row_word);
+        final WordAdapter adapter = new WordAdapter(getActivity(), R.layout.row_word);
 
         ListView listView = (ListView) v.findViewById(R.id.list);
         listView.setAdapter(adapter);
 
-        JustawayApplication application = JustawayApplication.getApplication();
+        final JustawayApplication application = JustawayApplication.getApplication();
         mMuteSettings = application.getMuteSettings();
         for (String word : mMuteSettings.getWords()) {
             adapter.add(word);
         }
+
+        v.findViewById(R.id.button_add).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final EditText editText = new EditText(getActivity());
+                application.showKeyboard(editText);
+                new AlertDialog.Builder(getActivity())
+                        .setTitle(R.string.title_create_mute_word)
+                        .setView(editText)
+                        .setPositiveButton(
+                                R.string.button_save,
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        if (editText.getText() == null) {
+                                            return;
+                                        }
+                                        String word = editText.getText().toString();
+                                        if (word.isEmpty()) {
+                                            return;
+                                        }
+                                        adapter.add(word);
+                                        mMuteSettings.addWord(word);
+                                        mMuteSettings.saveMuteSettings();
+                                        JustawayApplication.showToast(R.string.toast_create_mute);
+                                    }
+                                })
+                        .setNegativeButton(
+                                R.string.button_cancel,
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                    }
+                                })
+                        .show();
+            }
+        });
 
         return v;
     }
