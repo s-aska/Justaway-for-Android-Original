@@ -13,8 +13,6 @@ import info.justaway.fragment.mute.WordFragment;
 
 public class MuteActivity extends FragmentActivity {
 
-    private SimplePagerAdapter mSimplePagerAdapter;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,11 +22,11 @@ public class MuteActivity extends FragmentActivity {
         ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setOffscreenPageLimit(3); // 3だと不要なんだけど一応...
 
-        mSimplePagerAdapter = new SimplePagerAdapter(this, viewPager);
-        mSimplePagerAdapter.addTab(UserFragment.class, null);
-        mSimplePagerAdapter.addTab(SourceFragment.class, null);
-        mSimplePagerAdapter.addTab(WordFragment.class, null);
-        mSimplePagerAdapter.notifyDataSetChanged();
+        SimplePagerAdapter simplePagerAdapter = new SimplePagerAdapter(this, viewPager);
+        simplePagerAdapter.addTab(UserFragment.class, null);
+        simplePagerAdapter.addTab(SourceFragment.class, null);
+        simplePagerAdapter.addTab(WordFragment.class, null);
+        simplePagerAdapter.notifyDataSetChanged();
 
         final int colorBlue = getResources().getColor(R.color.holo_blue_light);
         final int colorWhite = getResources().getColor(android.R.color.secondary_text_dark);
