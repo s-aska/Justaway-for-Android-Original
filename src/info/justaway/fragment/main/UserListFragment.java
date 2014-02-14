@@ -15,6 +15,7 @@ import info.justaway.MainActivity;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.model.Row;
+import info.justaway.settings.MuteSettings;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
 import twitter4j.Status;
@@ -93,6 +94,9 @@ public class UserListFragment extends BaseFragment {
         if (mMembers.get(row.getStatus().getUser().getId()) == null) {
             return;
         }
+        if (JustawayApplication.getApplication().getMuteSettings().isMute(row.getStatus())) {
+            return;
+        }
         listView.post(new Runnable() {
             @Override
             public void run() {
@@ -152,12 +156,16 @@ public class UserListFragment extends BaseFragment {
             if (statuses == null || statuses.size() == 0) {
                 return;
             }
+            MuteSettings muteSettings = JustawayApplication.getApplication().getMuteSettings();
             TwitterAdapter adapter = getListAdapter();
             if (mReload) {
                 adapter.clear();
                 for (twitter4j.Status status : statuses) {
                     if (mMaxId == 0L || mMaxId > status.getId()) {
                         mMaxId = status.getId();
+                    }
+                    if (muteSettings.isMute(status)) {
+                        continue;
                     }
                     adapter.add(Row.newStatus(status));
                 }
@@ -169,10 +177,14 @@ public class UserListFragment extends BaseFragment {
                 if (mMaxId == 0L || mMaxId > status.getId()) {
                     mMaxId = status.getId();
                 }
-                adapter.extensionAdd(Row.newStatus(status));
 
                 // 最初のツイートに登場ユーザーをStreaming APIからの取り込み対象にすることでAPI節約!!!
                 mMembers.append(status.getUser().getId(), true);
+
+                if (muteSettings.isMute(status)) {
+                    continue;
+                }
+                adapter.extensionAdd(Row.newStatus(status));
             }
             mAutoLoader = true;
             getListView().setVisibility(View.VISIBLE);

@@ -14,6 +14,7 @@ import info.justaway.MainActivity;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.model.Row;
+import info.justaway.settings.MuteSettings;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
 import twitter4j.Status;
@@ -87,10 +88,17 @@ public class InteractionsFragment extends BaseFragment {
         if (row.isStatus()) {
             JustawayApplication application = JustawayApplication.getApplication();
             Status status = row.getStatus();
+
+            // mute
+            if (application.getMuteSettings().isMute(status)) {
+                return true;
+            }
+
             // mentioned for me
             if (status.getInReplyToUserId() == application.getUserId()) {
                 return false;
             }
+
             // retweeted for me
             Status retweet = status.getRetweetedStatus();
             if (retweet != null && retweet.getUser().getId() == application.getUserId()) {
@@ -167,12 +175,16 @@ public class InteractionsFragment extends BaseFragment {
             if (statuses == null || statuses.size() == 0) {
                 return;
             }
+            MuteSettings muteSettings = JustawayApplication.getApplication().getMuteSettings();
             TwitterAdapter adapter = getListAdapter();
             if (mReload) {
                 adapter.clear();
                 for (twitter4j.Status status : statuses) {
                     if (mMaxId == 0L || mMaxId > status.getId()) {
                         mMaxId = status.getId();
+                    }
+                    if (muteSettings.isMute(status)) {
+                        continue;
                     }
                     adapter.add(Row.newStatus(status));
                 }
@@ -183,6 +195,9 @@ public class InteractionsFragment extends BaseFragment {
             for (twitter4j.Status status : statuses) {
                 if (mMaxId == 0L || mMaxId > status.getId()) {
                     mMaxId = status.getId();
+                }
+                if (muteSettings.isMute(status)) {
+                    continue;
                 }
                 adapter.extensionAdd(Row.newStatus(status));
             }

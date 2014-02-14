@@ -27,6 +27,7 @@ import java.util.ArrayList;
 
 import info.justaway.contextmenu.TweetContextMenu;
 import info.justaway.display.FadeInRoundedBitmapDisplayer;
+import info.justaway.settings.MuteSettings;
 import info.justaway.task.DestroyStatusTask;
 import info.justaway.task.FavoriteTask;
 import info.justaway.task.RetweetTask;
@@ -54,6 +55,7 @@ public class JustawayApplication extends Application {
     private static JustawayApplication sApplication;
     private static ImageLoader sImageLoader;
     private static DisplayImageOptions sRoundedDisplayImageOptions;
+    private static MuteSettings sMuteSettings;
     private static Typeface sFontello;
     private ResponseList<UserList> mUserLists;
     private static ProgressDialog mProgressDialog;
@@ -122,6 +124,8 @@ public class JustawayApplication extends Application {
         }
 
         resetFontSize();
+
+        sMuteSettings = new MuteSettings();
     }
 
     public void displayImage(String url, ImageView view) {
@@ -140,6 +144,10 @@ public class JustawayApplication extends Application {
         }
         view.setTag(url);
         sImageLoader.displayImage(url, view, sRoundedDisplayImageOptions);
+    }
+
+    public MuteSettings getMuteSettings() {
+        return sMuteSettings;
     }
 
     /**
@@ -637,4 +645,12 @@ public class JustawayApplication extends Application {
         return mTweetContextMenu.onContextItemSelected(item);
     }
 
+    public String getClientName(String source) {
+        String[] tokens = source.split("[<>]");
+        if (tokens.length > 1) {
+            return tokens[2];
+        } else {
+            return tokens[0];
+        }
+    }
 }

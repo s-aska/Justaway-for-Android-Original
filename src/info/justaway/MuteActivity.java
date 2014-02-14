@@ -5,9 +5,9 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 
 import info.justaway.adapter.SimplePagerAdapter;
-import info.justaway.fragment.mute.SourceMuteFragment;
-import info.justaway.fragment.mute.UserMuteFragment;
-import info.justaway.fragment.mute.WordMuteFragment;
+import info.justaway.fragment.mute.SourceFragment;
+import info.justaway.fragment.mute.UserFragment;
+import info.justaway.fragment.mute.WordFragment;
 
 public class MuteActivity extends FragmentActivity {
 
@@ -21,9 +21,9 @@ public class MuteActivity extends FragmentActivity {
         viewPager.setOffscreenPageLimit(5);
 
         SimplePagerAdapter simplePagerAdapter = new SimplePagerAdapter(this, viewPager);
-        simplePagerAdapter.addTab(UserMuteFragment.class, null);
-        simplePagerAdapter.addTab(SourceMuteFragment.class, null);
-        simplePagerAdapter.addTab(WordMuteFragment.class, null);
+        simplePagerAdapter.addTab(UserFragment.class, null);
+        simplePagerAdapter.addTab(SourceFragment.class, null);
+        simplePagerAdapter.addTab(WordFragment.class, null);
         simplePagerAdapter.notifyDataSetChanged();
 
 
