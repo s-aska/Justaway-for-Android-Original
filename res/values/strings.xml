@@ -21,6 +21,7 @@
     <string name="button_save">保存</string>
     <string name="button_unfollow">フォロー解除</string>
     <string name="confirm_create_block">ブロックしますか？</string>
+    <string name="confirm_destroy_some">を削除しますか？</string>
     <string name="confirm_destroy_user_list_subscribe">リストの購読を解除しますか？</string>
     <string name="confirm_destroy_user_list">リストを削除しますか？</string>
     <string name="confirm_destroy_block">ブロックを解除しますか？</string>
@@ -39,6 +40,7 @@
     <string name="context_menu_destroy_retweet">公式RTを解除</string>
     <string name="context_menu_destroy_status">ツイ消し</string>
     <string name="context_menu_favorite_and_retweet">ふぁぼ＆公式RT</string>
+    <string name="context_menu_mute">をミュート</string>
     <string name="context_menu_qt">引用</string>
     <string name="context_menu_reply">リプ</string>
     <string name="context_menu_reply_all">全員にリプ</string>
@@ -120,6 +122,7 @@
     <string name="toast_create_block_success">ブロックに成功しました>゜))彡</string>
     <string name="toast_create_user_list_subscription_failure">リストの購読に失敗しました</string>
     <string name="toast_create_user_list_subscription_success">リストの購読に成功しました>゜))彡</string>
+    <string name="toast_create_mute">ミュートを追加ました</string>
     <string name="toast_destroy_user_list_subscription_failure">リストの購読解除に失敗しました</string>
     <string name="toast_destroy_user_list_subscription_success">リストの購読解除に成功しました>゜))彡</string>
     <string name="toast_destroy_user_list_failure">リストの削除に失敗しました</string>

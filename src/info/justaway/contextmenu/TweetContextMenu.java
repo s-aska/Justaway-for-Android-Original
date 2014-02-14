@@ -26,6 +26,7 @@ import info.justaway.fragment.RetweetersFragment;
 import info.justaway.fragment.TalkFragment;
 import info.justaway.model.Row;
 import info.justaway.plugin.TwiccaPlugin;
+import info.justaway.settings.MuteSettings;
 import twitter4j.HashtagEntity;
 import twitter4j.Status;
 import twitter4j.URLEntity;
@@ -59,6 +60,8 @@ public class TweetContextMenu {
     static final int CONTEXT_MENU_SHARE_URL_ID = 18;
     static final int CONTEXT_MENU_AROUND_ID = 19;
     static final int CONTEXT_MENU_RETWEETERS_ID = 20;
+    static final int CONTEXT_MENU_MUTE_SOURCE_ID = 21;
+    static final int CONTEXT_MENU_MUTE_USER_ID = 22;
     static final int CONTEXT_MENU_TWICCA_SHOW_TEXT_BASE_ID = 100;
 
     private List<ResolveInfo> mTwiccaPlugins;
@@ -174,6 +177,10 @@ public class TweetContextMenu {
         }
 
         menu.add(0, CONTEXT_MENU_SHARE_URL_ID, 0, R.string.context_menu_share_url);
+
+        menu.add(0, CONTEXT_MENU_MUTE_SOURCE_ID, 0, application.getClientName(source.getSource()).concat(mActivity.getString(R.string.context_menu_mute)));
+
+        menu.add(0, CONTEXT_MENU_MUTE_USER_ID, 0, "@".concat(source.getUser().getScreenName()).concat(mActivity.getString(R.string.context_menu_mute)));
     }
 
     public boolean onContextItemSelected(MenuItem item) {
@@ -182,6 +189,7 @@ public class TweetContextMenu {
         Status status = row.getStatus();
         Status retweet = status != null ? status.getRetweetedStatus() : null;
         Status source = retweet != null ? retweet : status;
+        MuteSettings muteSettings;
         Intent intent;
         String text;
         EditText editStatus = null;
@@ -347,6 +355,18 @@ public class TweetContextMenu {
                 intent.putExtra(Intent.EXTRA_TEXT, "https://twitter.com/" + source.getUser().getScreenName()
                         + "/status/" + String.valueOf(source.getId()));
                 mActivity.startActivity(intent);
+                return true;
+            case CONTEXT_MENU_MUTE_SOURCE_ID:
+                muteSettings = application.getMuteSettings();
+                muteSettings.addSource(application.getClientName(source.getSource()));
+                muteSettings.saveMuteSettings();
+                JustawayApplication.showToast(R.string.toast_create_mute);
+                return true;
+            case CONTEXT_MENU_MUTE_USER_ID:
+                muteSettings = application.getMuteSettings();
+                muteSettings.addUser(source.getUser().getId(), source.getUser().getScreenName());
+                muteSettings.saveMuteSettings();
+                JustawayApplication.showToast(R.string.toast_create_mute);
                 return true;
             default:
                 if (itemId >= CONTEXT_MENU_TWICCA_SHOW_TEXT_BASE_ID) {
