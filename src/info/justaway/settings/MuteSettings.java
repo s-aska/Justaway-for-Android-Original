@@ -2,7 +2,6 @@ package info.justaway.settings;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -36,14 +35,12 @@ public class MuteSettings {
             mMuteSettingsData.userMap = new HashMap<Long, String>();
             mMuteSettingsData.words = new ArrayList<String>();
         }
-        Log.d("Justaway", gson.toJson(mMuteSettingsData));
     }
 
     public void saveMuteSettings() {
         SharedPreferences preferences = mApplication.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         Gson gson = new Gson();
         String exportJson = gson.toJson(mMuteSettingsData);
-        Log.d("Justaway", exportJson);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString(PREF_KEY, exportJson);
         editor.commit();
