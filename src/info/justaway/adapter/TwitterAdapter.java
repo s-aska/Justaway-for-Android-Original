@@ -411,8 +411,11 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                                         new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
-                                                mApplication.doDestroyRetweet(status);
                                                 holder.do_retweet.setTextColor(Color.parseColor("#666666"));
+                                                mApplication.doDestroyRetweet(status);
+                                                if (isMain) {
+                                                    ((MainActivity) mContext).notifyDataSetChanged();
+                                                }
                                                 dismiss();
                                             }
                                         });
@@ -482,9 +485,12 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                                     new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
-                                            mApplication.doRetweet(status.getId());
                                             holder.do_retweet.setTextColor(mContext.getResources()
                                                     .getColor(R.color.holo_green_light));
+                                            mApplication.doRetweet(status.getId());
+                                            if (isMain) {
+                                                ((MainActivity) mContext).notifyDataSetChanged();
+                                            }
                                             dismiss();
                                         }
                                     });
@@ -518,13 +524,16 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             @Override
             public void onClick(View v) {
                 if (holder.do_fav.getTag().equals("is_fav")) {
-                    mApplication.doDestroyFavorite(status.getId());
                     holder.do_fav.setTag("no_fav");
                     holder.do_fav.setTextColor(Color.parseColor("#666666"));
+                    mApplication.doDestroyFavorite(status.getId());
                 } else {
-                    mApplication.doFavorite(status.getId());
                     holder.do_fav.setTag("is_fav");
                     holder.do_fav.setTextColor(mContext.getResources().getColor(R.color.holo_orange_light));
+                    mApplication.doFavorite(status.getId());
+                }
+                if (isMain) {
+                    ((MainActivity) mContext).notifyDataSetChanged();
                 }
             }
         });

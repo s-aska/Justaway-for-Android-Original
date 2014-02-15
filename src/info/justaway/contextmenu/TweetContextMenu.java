@@ -65,8 +65,9 @@ public class TweetContextMenu {
     static final int CONTEXT_MENU_TWICCA_SHOW_TEXT_BASE_ID = 100;
 
     private List<ResolveInfo> mTwiccaPlugins;
+    private Runnable mCallback;
 
-    public TweetContextMenu(FragmentActivity activity, ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo) {
+    public TweetContextMenu(FragmentActivity activity, ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo, Runnable callback) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
         ListView listView = (ListView) view;
         Row row = (Row) listView.getItemAtPosition(info.position);
@@ -75,6 +76,7 @@ public class TweetContextMenu {
         }
         mRow = row;
         mActivity = activity;
+        mCallback = callback;
 
         // ダイレクトメッセージの場合
         if (row.isDirectMessage()) {
@@ -295,19 +297,34 @@ public class TweetContextMenu {
                 return true;
             case CONTEXT_MENU_RT_ID:
                 application.doRetweet(status.getId());
+                if (mCallback != null) {
+                    mCallback.run();
+                }
                 return true;
             case CONTEXT_MENU_RM_RT_ID:
                 application.doDestroyRetweet(status);
+                if (mCallback != null) {
+                    mCallback.run();
+                }
                 return true;
             case CONTEXT_MENU_RM_FAV_ID:
                 application.doDestroyFavorite(status.getId());
+                if (mCallback != null) {
+                    mCallback.run();
+                }
                 return true;
             case CONTEXT_MENU_FAV_ID:
                 application.doFavorite(status.getId());
+                if (mCallback != null) {
+                    mCallback.run();
+                }
                 return true;
             case CONTEXT_MENU_FAVRT_ID:
                 application.doFavorite(status.getId());
                 application.doRetweet(status.getId());
+                if (mCallback != null) {
+                    mCallback.run();
+                }
                 return true;
             case CONTEXT_MENU_RETWEETERS_ID:
                 RetweetersFragment retweetersFragment = new RetweetersFragment();

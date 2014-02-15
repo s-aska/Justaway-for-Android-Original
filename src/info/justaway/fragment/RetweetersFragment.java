@@ -29,6 +29,7 @@ import twitter4j.Twitter;
 public class RetweetersFragment extends DialogFragment {
 
     private ProgressBar mProgressBar;
+    private UserAdapter mAdapter;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -43,54 +44,22 @@ public class RetweetersFragment extends DialogFragment {
         ListView listView = (ListView) dialog.findViewById(R.id.list);
         mProgressBar = (ProgressBar) dialog.findViewById(R.id.guruguru);
 
-        // コンテキストメニューを使える様にする為の指定、但しデフォルトではロングタップで開く
-        registerForContextMenu(listView);
-
-        // Status(ツイート)をViewに描写するアダプター
-        UserAdapter adapter = new UserAdapter(activity, R.layout.row_user);
-        listView.setAdapter(adapter);
-
-        // シングルタップでコンテキストメニューを開くための指定
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                view.showContextMenu();
-            }
-        });
+        mAdapter = new UserAdapter(activity, R.layout.row_user);
+        listView.setAdapter(mAdapter);
 
         Long statusId = getArguments().getLong("statusId");
         if (statusId > 0) {
-            new RetweetsTask(adapter).execute(statusId);
+            new RetweetsTask().execute(statusId);
         }
 
         return dialog;
     }
 
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, view, menuInfo);
-        JustawayApplication.getApplication().onCreateContextMenu(getActivity(), menu, view, menuInfo);
-
-        // DialogFragment内でContextMenuを使うにはこれが必要
-        MenuItem.OnMenuItemClickListener listener = new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                JustawayApplication.getApplication().onContextItemSelected(item);
-                return true;
-            }
-        };
-
-        for (int i = 0, n = menu.size(); i < n; i++)
-            menu.getItem(i).setOnMenuItemClickListener(listener);
-    }
-
     private class RetweetsTask extends AsyncTask<Long, Void, ResponseList<Status>> {
 
-        private UserAdapter adapter;
 
-        public RetweetsTask(UserAdapter adapter) {
+        public RetweetsTask() {
             super();
-            this.adapter = adapter;
         }
 
         @Override
@@ -109,9 +78,9 @@ public class RetweetersFragment extends DialogFragment {
             mProgressBar.setVisibility(View.GONE);
             if (statuses != null) {
                 for (twitter4j.Status status : statuses) {
-                    adapter.add(status.getUser());
+                    mAdapter.add(status.getUser());
                 }
-                adapter.notifyDataSetChanged();
+                mAdapter.notifyDataSetChanged();
             } else {
                 JustawayApplication.showToast(R.string.toast_load_data_failure);
             }

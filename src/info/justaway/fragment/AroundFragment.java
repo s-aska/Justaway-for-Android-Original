@@ -34,6 +34,7 @@ public class AroundFragment extends DialogFragment {
 
     private ProgressBar mProgressBarTop;
     private ProgressBar mProgressBarBottom;
+    private TwitterAdapter mAdapter;
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -53,8 +54,8 @@ public class AroundFragment extends DialogFragment {
         registerForContextMenu(listView);
 
         // Status(ツイート)をViewに描写するアダプター
-        TwitterAdapter adapter = new TwitterAdapter(activity, R.layout.row_tweet);
-        listView.setAdapter(adapter);
+        mAdapter = new TwitterAdapter(activity, R.layout.row_tweet);
+        listView.setAdapter(mAdapter);
 
         // シングルタップでコンテキストメニューを開くための指定
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -66,8 +67,8 @@ public class AroundFragment extends DialogFragment {
 
         Status status = (Status) getArguments().getSerializable("status");
         if (status != null) {
-            adapter.add(Row.newStatus(status));
-            new BeforeStatusTask(adapter).execute(status);
+            mAdapter.add(Row.newStatus(status));
+            new BeforeStatusTask().execute(status);
         }
 
         return dialog;
@@ -76,7 +77,12 @@ public class AroundFragment extends DialogFragment {
     @Override
     public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, view, menuInfo);
-        JustawayApplication.getApplication().onCreateContextMenu(getActivity(), menu, view, menuInfo);
+        JustawayApplication.getApplication().onCreateContextMenu(getActivity(), menu, view, menuInfo, new Runnable() {
+            @Override
+            public void run() {
+                mAdapter.notifyDataSetChanged();
+            }
+        });
 
         // DialogFragment内でContextMenuを使うにはこれが必要
         MenuItem.OnMenuItemClickListener listener = new MenuItem.OnMenuItemClickListener() {
@@ -93,11 +99,8 @@ public class AroundFragment extends DialogFragment {
 
     private class BeforeStatusTask extends AsyncTask<Status, Void, ResponseList<Status>> {
 
-        private TwitterAdapter adapter;
-
-        public BeforeStatusTask(TwitterAdapter adapter) {
+        public BeforeStatusTask() {
             super();
-            this.adapter = adapter;
         }
 
         @Override
@@ -120,10 +123,10 @@ public class AroundFragment extends DialogFragment {
             mProgressBarBottom.setVisibility(View.GONE);
             if (statuses != null) {
                 for (twitter4j.Status status : statuses) {
-                    adapter.add(Row.newStatus(status));
+                    mAdapter.add(Row.newStatus(status));
                 }
-                adapter.notifyDataSetChanged();
-                new AfterStatusTask(adapter).execute(statuses.get(0));
+                mAdapter.notifyDataSetChanged();
+                new AfterStatusTask().execute(statuses.get(0));
             } else {
                 JustawayApplication.showToast(R.string.toast_load_data_failure);
             }
@@ -132,11 +135,8 @@ public class AroundFragment extends DialogFragment {
 
     private class AfterStatusTask extends AsyncTask<twitter4j.Status, Void, List<Status>> {
 
-        private TwitterAdapter adapter;
-
-        public AfterStatusTask(TwitterAdapter adapter) {
+        public AfterStatusTask() {
             super();
-            this.adapter = adapter;
         }
 
         @Override
@@ -173,10 +173,10 @@ public class AroundFragment extends DialogFragment {
             if (statuses != null) {
                 int i = 0;
                 for (twitter4j.Status status : statuses) {
-                    adapter.insert(Row.newStatus(status), i);
+                    mAdapter.insert(Row.newStatus(status), i);
                     i++;
                 }
-                adapter.notifyDataSetChanged();
+                mAdapter.notifyDataSetChanged();
             }
         }
     }

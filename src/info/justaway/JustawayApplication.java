@@ -637,8 +637,8 @@ public class JustawayApplication extends Application {
 
     private TweetContextMenu mTweetContextMenu;
 
-    public void onCreateContextMenu(FragmentActivity activity, ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        mTweetContextMenu = new TweetContextMenu(activity, menu, v, menuInfo);
+    public void onCreateContextMenu(FragmentActivity activity, ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo, Runnable calback) {
+        mTweetContextMenu = new TweetContextMenu(activity, menu, v, menuInfo, calback);
     }
 
     public boolean onContextItemSelected(MenuItem item) {

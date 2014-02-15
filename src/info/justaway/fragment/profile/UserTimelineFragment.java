@@ -99,7 +99,12 @@ public class UserTimelineFragment extends Fragment implements
 
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        JustawayApplication.getApplication().onCreateContextMenu(getActivity(), menu, v, menuInfo);
+        JustawayApplication.getApplication().onCreateContextMenu(getActivity(), menu, v, menuInfo, new Runnable() {
+            @Override
+            public void run() {
+                mAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     public boolean onContextItemSelected(MenuItem item) {
