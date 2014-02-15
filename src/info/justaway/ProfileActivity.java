@@ -11,10 +11,12 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
+import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import info.justaway.adapter.SimplePagerAdapter;
@@ -35,23 +37,14 @@ public class ProfileActivity extends FragmentActivity implements
 
     private ImageView mBanner;
     private User mUser;
-    private int mCurrentPosition = 0;
-    private int mColorBlue;
-    private int mColorWhite;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        mColorBlue = getResources().getColor(R.color.holo_blue_light);
-        mColorWhite = getResources().getColor(android.R.color.secondary_text_dark);
-
         mBanner = (ImageView) findViewById(R.id.banner);
         mBanner.setImageResource(R.drawable.suzuri);
-
-        ((TextView) findViewById(R.id.statuses_count)).setTextColor(mColorBlue);
-        ((TextView) findViewById(R.id.statuses_count_label)).setTextColor(mColorBlue);
 
         Typeface fontello = JustawayApplication.getFontello();
         ((TextView) findViewById(R.id.collapse_label)).setTypeface(fontello);
@@ -237,95 +230,60 @@ public class ProfileActivity extends FragmentActivity implements
         listPagerAdapter.addTab(FavoritesListFragment.class, listArgs);
         listPagerAdapter.notifyDataSetChanged();
         listViewPager.setOffscreenPageLimit(5);
+
+        /**
+         * タブのラベル情報をSparseArray（高速なHashMap）に入れておく
+         */
+        final SparseArray<TextView> countTexts = new SparseArray<TextView>();
+        countTexts.put(0, (TextView) findViewById(R.id.statuses_count));
+        countTexts.put(1, (TextView) findViewById(R.id.friends_count));
+        countTexts.put(2, (TextView) findViewById(R.id.followers_count));
+        countTexts.put(3, (TextView) findViewById(R.id.listed_count));
+        countTexts.put(4, (TextView) findViewById(R.id.favourites_count));
+
+        final SparseArray<TextView> labelTexts = new SparseArray<TextView>();
+        labelTexts.put(0, (TextView) findViewById(R.id.statuses_count_label));
+        labelTexts.put(1, (TextView) findViewById(R.id.friends_count_label));
+        labelTexts.put(2, (TextView) findViewById(R.id.followers_count_label));
+        labelTexts.put(3, (TextView) findViewById(R.id.listed_count_label));
+        labelTexts.put(4, (TextView) findViewById(R.id.favourites_count_label));
+
+        final SparseArray<LinearLayout> tabs = new SparseArray<LinearLayout>();
+        tabs.put(0, (LinearLayout) findViewById(R.id.statuses));
+        tabs.put(1, (LinearLayout) findViewById(R.id.friends));
+        tabs.put(2, (LinearLayout) findViewById(R.id.followers));
+        tabs.put(3, (LinearLayout) findViewById(R.id.listed));
+        tabs.put(4, (LinearLayout) findViewById(R.id.favourites));
+
+        final int colorBlue = getResources().getColor(R.color.holo_blue_light);
+        final int colorWhite = getResources().getColor(android.R.color.secondary_text_dark);
+
+        countTexts.get(0).setTextColor(colorBlue);
+        labelTexts.get(0).setTextColor(colorBlue);
+
         listViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
-                switch (position) {
-                    case 0:
-                        ((TextView) findViewById(R.id.statuses_count)).setTextColor(mColorBlue);
-                        ((TextView) findViewById(R.id.statuses_count_label)).setTextColor(mColorBlue);
-                        break;
-                    case 1:
-                        ((TextView) findViewById(R.id.friends_count)).setTextColor(mColorBlue);
-                        ((TextView) findViewById(R.id.friends_count_label)).setTextColor(mColorBlue);
-                        break;
-                    case 2:
-                        ((TextView) findViewById(R.id.followers_count)).setTextColor(mColorBlue);
-                        ((TextView) findViewById(R.id.followers_count_label)).setTextColor(mColorBlue);
-                        break;
-                    case 3:
-                        ((TextView) findViewById(R.id.listed_count)).setTextColor(mColorBlue);
-                        ((TextView) findViewById(R.id.listed_count_label)).setTextColor(mColorBlue);
-                        break;
-                    case 4:
-                        ((TextView) findViewById(R.id.favourites_count)).setTextColor(mColorBlue);
-                        ((TextView) findViewById(R.id.favourites_count_label)).setTextColor(mColorBlue);
-                        break;
+                /**
+                 * タブのindexと選択されたpositionを比較して色を設定
+                 */
+                for (int i = 0; i < countTexts.size(); i++) {
+                    countTexts.get(i).setTextColor( i == position ? colorBlue : colorWhite);
+                    labelTexts.get(i).setTextColor( i == position ? colorBlue : colorWhite);
                 }
-
-                // 青くなってるのを取り消す処理
-                switch (mCurrentPosition) {
-                    case 0:
-                        ((TextView) findViewById(R.id.statuses_count)).setTextColor(mColorWhite);
-                        ((TextView) findViewById(R.id.statuses_count_label)).setTextColor(mColorWhite);
-                        break;
-                    case 1:
-                        ((TextView) findViewById(R.id.friends_count)).setTextColor(mColorWhite);
-                        ((TextView) findViewById(R.id.friends_count_label)).setTextColor(mColorWhite);
-                        break;
-                    case 2:
-                        ((TextView) findViewById(R.id.followers_count)).setTextColor(mColorWhite);
-                        ((TextView) findViewById(R.id.followers_count_label)).setTextColor(mColorWhite);
-                        break;
-                    case 3:
-                        ((TextView) findViewById(R.id.listed_count)).setTextColor(mColorWhite);
-                        ((TextView) findViewById(R.id.listed_count_label)).setTextColor(mColorWhite);
-                        break;
-                    case 4:
-                        ((TextView) findViewById(R.id.favourites_count)).setTextColor(mColorWhite);
-                        ((TextView) findViewById(R.id.favourites_count_label)).setTextColor(mColorWhite);
-                        break;
-                }
-                mCurrentPosition = position;
             }
         });
 
-        findViewById(R.id.statuses).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listViewPager.setCurrentItem(0);
-            }
-        });
-        findViewById(R.id.friends).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listViewPager.setCurrentItem(1);
-            }
-        });
-        findViewById(R.id.friends).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listViewPager.setCurrentItem(1);
-            }
-        });
-        findViewById(R.id.followers).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listViewPager.setCurrentItem(2);
-            }
-        });
-        findViewById(R.id.listed).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listViewPager.setCurrentItem(3);
-            }
-        });
-        findViewById(R.id.favourites).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                listViewPager.setCurrentItem(4);
-            }
-        });
+        for (int i = 0; i < tabs.size(); i++) {
+            final int finalI = i;
+            tabs.get(i).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    listViewPager.setCurrentItem(finalI);
+                }
+            });
+        }
+
         findViewById(R.id.collapse).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
