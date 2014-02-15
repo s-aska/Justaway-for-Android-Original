@@ -117,7 +117,7 @@
             android:label="@string/title_choose_user_lists"/>
         <activity
             android:name=".ScaleImageActivity"
-            android:theme="@android:style/Theme.Translucent"/>
+            android:theme="@style/Theme.MyTrans"/>
         <activity
             android:name=".SearchActivity"
             android:label="@string/title_search"/>

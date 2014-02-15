@@ -91,6 +91,14 @@ public class ScaleImageView extends ImageView implements OnTouchListener {
             }
 
             @Override
+            public boolean onSingleTapUp(MotionEvent e) {
+                if (mActivity != null) {
+                    mActivity.finish();
+                }
+                return super.onSingleTapUp(e);
+            }
+
+            @Override
             public void onLongPress(MotionEvent e) {
                 if (mActivity != null) {
                     mActivity.openOptionsMenu();
