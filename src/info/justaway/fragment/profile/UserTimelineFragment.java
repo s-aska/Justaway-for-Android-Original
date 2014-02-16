@@ -16,6 +16,7 @@ import android.widget.ProgressBar;
 import info.justaway.JustawayApplication;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
+import info.justaway.fragment.dialog.StatusMenuFragment;
 import info.justaway.model.Row;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
@@ -62,9 +63,6 @@ public class UserTimelineFragment extends Fragment implements
         mListView = (ListView) v.findViewById(R.id.list_view);
         mListView.setVisibility(View.GONE);
 
-        // コンテキストメニューを使える様にする為の指定、但しデフォルトではロングタップで開く
-        registerForContextMenu(mListView);
-
         mFooter = (ProgressBar) v.findViewById(R.id.guruguru);
 
         // Status(ツイート)をViewに描写するアダプター
@@ -75,7 +73,18 @@ public class UserTimelineFragment extends Fragment implements
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                view.showContextMenu();
+                StatusMenuFragment statusMenuFragment = new StatusMenuFragment();
+                Bundle args = new Bundle();
+                Row row = mAdapter.getItem(position);
+                args.putSerializable("status", row.getStatus());
+                statusMenuFragment.setArguments(args);
+                statusMenuFragment.setCallback(new Runnable() {
+                    @Override
+                    public void run() {
+                        mAdapter.notifyDataSetChanged();
+                    }
+                });
+                statusMenuFragment.show(getActivity().getSupportFragmentManager(), "dialog");
             }
         });
         new UserTimelineTask().execute(mUser.getScreenName());
@@ -95,20 +104,6 @@ public class UserTimelineFragment extends Fragment implements
             }
         });
         return v;
-    }
-
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        JustawayApplication.getApplication().onCreateContextMenu(getActivity(), menu, v, menuInfo, new Runnable() {
-            @Override
-            public void run() {
-                mAdapter.notifyDataSetChanged();
-            }
-        });
-    }
-
-    public boolean onContextItemSelected(MenuItem item) {
-        return JustawayApplication.getApplication().onContextItemSelected(item);
     }
 
     @Override

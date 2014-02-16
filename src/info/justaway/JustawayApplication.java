@@ -8,11 +8,8 @@ import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.util.LongSparseArray;
 import android.text.TextUtils;
-import android.view.ContextMenu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
@@ -25,7 +22,6 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import java.util.ArrayList;
 
-import info.justaway.contextmenu.TweetContextMenu;
 import info.justaway.display.FadeInRoundedBitmapDisplayer;
 import info.justaway.settings.MuteSettings;
 import info.justaway.task.DestroyStatusTask;
@@ -633,16 +629,6 @@ public class JustawayApplication extends Application {
     public void hideKeyboard(View view) {
         InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-    }
-
-    private TweetContextMenu mTweetContextMenu;
-
-    public void onCreateContextMenu(FragmentActivity activity, ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo, Runnable calback) {
-        mTweetContextMenu = new TweetContextMenu(activity, menu, v, menuInfo, calback);
-    }
-
-    public boolean onContextItemSelected(MenuItem item) {
-        return mTweetContextMenu.onContextItemSelected(item);
     }
 
     public String getClientName(String source) {
