@@ -40,7 +40,7 @@
     <string name="context_menu_destroy_retweet">公式RTを解除</string>
     <string name="context_menu_destroy_status">ツイ消し</string>
     <string name="context_menu_favorite_and_retweet">ふぁぼ＆公式RT</string>
-    <string name="context_menu_mute">をミュート</string>
+    <string name="context_menu_mute">" をミュート"</string>
     <string name="context_menu_qt">引用</string>
     <string name="context_menu_reply">リプ</string>
     <string name="context_menu_reply_all">全員にリプ</string>
