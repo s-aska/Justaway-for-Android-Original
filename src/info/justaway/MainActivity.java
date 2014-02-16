@@ -2,7 +2,6 @@ package info.justaway;
 
 import android.R.color;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.net.Uri;
@@ -16,7 +15,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -687,6 +685,10 @@ public class MainActivity extends FragmentActivity {
     }
 
     public void notifyDataSetChanged() {
+
+        /**
+         * 重く同期で処理すると一瞬画面が固まる
+         */
         new Handler().post(new Runnable() {
             @Override
             public void run() {
