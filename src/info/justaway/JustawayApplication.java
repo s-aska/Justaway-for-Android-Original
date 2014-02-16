@@ -194,7 +194,7 @@ public class JustawayApplication extends Application {
      * 起動時のネットワーク通信がこれでまた一つ増えてしまった
      */
     private static final String PREF_NAME_USER_ICON_MAP = "user_icon_map";
-    private static final String PREF_KEY_USER_ICON_MAP = "data";
+    private static final String PREF_KEY_USER_ICON_MAP = "data/v1";
 
     @SuppressWarnings("unchecked")
     public void warmUpUserIconMap() {
@@ -234,6 +234,7 @@ public class JustawayApplication extends Application {
                 if (users == null) {
                     return;
                 }
+                mUserIconMap.clear();
                 for (User user : users) {
                     mUserIconMap.put(user.getId(), user.getBiggerProfileImageURL());
                 }
