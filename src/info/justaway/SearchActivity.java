@@ -6,7 +6,6 @@ import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -27,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import info.justaway.adapter.TwitterAdapter;
+import info.justaway.fragment.dialog.StatusMenuFragment;
 import info.justaway.model.Row;
 import twitter4j.Query;
 import twitter4j.QueryResult;
@@ -69,9 +69,6 @@ public class SearchActivity extends FragmentActivity {
         mSearchListView.setAdapter(mSearchWordAdapter);
         new GetSavedSearchesTask().execute();
 
-        // コンテキストメニューを使える様にする為の指定、但しデフォルトではロングタップで開く
-        registerForContextMenu(mListView);
-
         // Status(ツイート)をViewに描写するアダプター
         mAdapter = new TwitterAdapter(mContext, R.layout.row_tweet);
         mListView.setAdapter(mAdapter);
@@ -80,7 +77,18 @@ public class SearchActivity extends FragmentActivity {
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                view.showContextMenu();
+                StatusMenuFragment statusMenuFragment = new StatusMenuFragment();
+                Bundle args = new Bundle();
+                Row row = mAdapter.getItem(position);
+                args.putSerializable("status", row.getStatus());
+                statusMenuFragment.setArguments(args);
+                statusMenuFragment.setCallback(new Runnable() {
+                    @Override
+                    public void run() {
+                        mAdapter.notifyDataSetChanged();
+                    }
+                });
+                statusMenuFragment.show(getSupportFragmentManager(), "dialog");
             }
         });
 
@@ -151,22 +159,6 @@ public class SearchActivity extends FragmentActivity {
                 }
             }
         });
-    }
-
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        JustawayApplication.getApplication().onCreateContextMenu(this, menu, v, menuInfo, new Runnable() {
-            @Override
-            public void run() {
-                mAdapter.notifyDataSetChanged();
-            }
-        });
-    }
-
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        return JustawayApplication.getApplication().onContextItemSelected(item);
     }
 
     @Override

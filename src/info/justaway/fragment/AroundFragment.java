@@ -5,8 +5,6 @@ import android.app.Dialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.view.ContextMenu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -19,6 +17,7 @@ import java.util.List;
 import info.justaway.JustawayApplication;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
+import info.justaway.fragment.dialog.StatusMenuFragment;
 import info.justaway.model.Row;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
@@ -61,7 +60,18 @@ public class AroundFragment extends DialogFragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                view.showContextMenu();
+                StatusMenuFragment statusMenuFragment = new StatusMenuFragment();
+                Bundle args = new Bundle();
+                Row row = mAdapter.getItem(position);
+                args.putSerializable("status", row.getStatus());
+                statusMenuFragment.setArguments(args);
+                statusMenuFragment.setCallback(new Runnable() {
+                    @Override
+                    public void run() {
+                        mAdapter.notifyDataSetChanged();
+                    }
+                });
+                statusMenuFragment.show(getActivity().getSupportFragmentManager(), "dialog");
             }
         });
 
@@ -72,29 +82,6 @@ public class AroundFragment extends DialogFragment {
         }
 
         return dialog;
-    }
-
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, view, menuInfo);
-        JustawayApplication.getApplication().onCreateContextMenu(getActivity(), menu, view, menuInfo, new Runnable() {
-            @Override
-            public void run() {
-                mAdapter.notifyDataSetChanged();
-            }
-        });
-
-        // DialogFragment内でContextMenuを使うにはこれが必要
-        MenuItem.OnMenuItemClickListener listener = new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                JustawayApplication.getApplication().onContextItemSelected(item);
-                return true;
-            }
-        };
-
-        for (int i = 0, n = menu.size(); i < n; i++)
-            menu.getItem(i).setOnMenuItemClickListener(listener);
     }
 
     private class BeforeStatusTask extends AsyncTask<Status, Void, ResponseList<Status>> {

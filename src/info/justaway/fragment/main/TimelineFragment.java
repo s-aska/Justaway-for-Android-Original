@@ -152,12 +152,19 @@ public class TimelineFragment extends BaseFragment {
         @Override
         protected void onPostExecute(ResponseList<twitter4j.Status> statuses) {
             mFooter.setVisibility(View.GONE);
+            TwitterAdapter adapter = getListAdapter();
+            boolean streamingRestart = mReload || adapter.getCount() == 0;
             if (statuses == null || statuses.size() == 0) {
+                if (streamingRestart) {
+                    MainActivity activity = (MainActivity) getActivity();
+                    // アプリの終了処理中にnullになるっぽい
+                    if (activity != null) {
+                        activity.setupStream();
+                    }
+                }
                 return;
             }
             MuteSettings muteSettings = JustawayApplication.getApplication().getMuteSettings();
-            TwitterAdapter adapter = getListAdapter();
-            boolean streamingRestart = mReload || adapter.getCount() == 0;
             if (mReload) {
                 adapter.clear();
                 for (twitter4j.Status status : statuses) {
