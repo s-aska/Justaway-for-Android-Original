@@ -453,16 +453,16 @@ public class PostActivity extends FragmentActivity {
 
                 switch (status) {
                     case BatteryManager.BATTERY_STATUS_FULL:
-                        mEditText.setText(model + " のバッテリー残量:" + battery + "% (0゜・◡・♥​​)");
+                        mEditText.setText(model + " のバッテリー残量：" + battery + "% (0゜・◡・♥​​)");
                         break;
                     case BatteryManager.BATTERY_STATUS_CHARGING:
-                        mEditText.setText(model + " のバッテリー残量:" + battery + "% 充電なう(・◡・♥​​)");
+                        mEditText.setText(model + " のバッテリー残量：" + battery + "% 充電なう(・◡・♥​​)");
                         break;
                     default:
-                        if (level <= 10) {
-                            mEditText.setText(model + " のバッテリー残量:" + battery + "% (◞‸◟)");
+                        if (level <= 14) {
+                            mEditText.setText(model + " のバッテリー残量：" + battery + "% (◞‸◟)");
                         } else {
-                            mEditText.setText(model + " のバッテリー残量:" + battery + "% (・◡・♥​​)");
+                            mEditText.setText(model + " のバッテリー残量：" + battery + "% (・◡・♥​​)");
                         }
                         break;
                 }
