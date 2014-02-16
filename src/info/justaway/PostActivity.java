@@ -128,7 +128,7 @@ public class PostActivity extends FragmentActivity {
         }
         mInReplyToStatusId = intent.getLongExtra("inReplyToStatusId", 0);
 
-        if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+        if (Intent.ACTION_VIEW.equals(intent.getAction()) && intent.getData() != null) {
             String text = intent.getData().getQueryParameter("text");
             String url = intent.getData().getQueryParameter("url");
             String hashtags = intent.getData().getQueryParameter("hashtags");
@@ -148,7 +148,7 @@ public class PostActivity extends FragmentActivity {
             if (intent.getParcelableExtra(Intent.EXTRA_STREAM) != null) {
                 Uri imgUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
                 setImage(imgUri);
-            } else {
+            } else if (intent.getExtras() != null){
                 String pageUri = intent.getExtras().getString(Intent.EXTRA_TEXT);
                 String pageTitle = intent.getExtras().getString(Intent.EXTRA_SUBJECT);
                 if (pageTitle == null) {
@@ -161,7 +161,9 @@ public class PostActivity extends FragmentActivity {
             }
         }
 
-        updateCount(mEditText.getText().toString());
+        if (mEditText.getText() != null) {
+            updateCount(mEditText.getText().toString());
+        }
 
         SaveLoadTraining saveLoadTraining = new SaveLoadTraining();
         ArrayList<String> draftList = saveLoadTraining.loadArray();
@@ -396,7 +398,7 @@ public class PostActivity extends FragmentActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (mEditText.getText().length() != 0) {
+            if (mEditText.getText() != null && mEditText.getText().length() != 0) {
                 new AlertDialog.Builder(PostActivity.this)
                         .setTitle(R.string.confirm_save_draft)
                         .setPositiveButton(
@@ -437,8 +439,12 @@ public class PostActivity extends FragmentActivity {
                 mEditText.setText("");
                 break;
             case R.id.tweet_battery:
-                Intent batteryIntent = getApplicationContext().registerReceiver(null,
+                Intent batteryIntent = registerReceiver(null,
                         new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+
+                if (batteryIntent == null) {
+                    break;
+                }
                 int level = batteryIntent.getIntExtra("level", 0);
                 int scale = batteryIntent.getIntExtra("scale", 100);
                 int status = batteryIntent.getIntExtra("status", 0);
@@ -554,14 +560,12 @@ public class PostActivity extends FragmentActivity {
     public class DraftAdapter extends ArrayAdapter<String> {
 
         private ArrayList<String> mDraftLists = new ArrayList<String>();
-        private Context mContext;
         private LayoutInflater mInflater;
         private int mLayout;
 
         public DraftAdapter(Context context, int textViewResourceId) {
             super(context, textViewResourceId);
             this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            this.mContext = context;
             this.mLayout = textViewResourceId;
         }
 
@@ -587,6 +591,7 @@ public class PostActivity extends FragmentActivity {
 
             final String draft = mDraftLists.get(position);
 
+            assert view != null;
             ((TextView) view.findViewById(R.id.word)).setText(draft);
             ((TextView) view.findViewById(R.id.trash)).setTypeface(JustawayApplication.getFontello());
 
