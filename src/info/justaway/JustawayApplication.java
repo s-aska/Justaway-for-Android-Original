@@ -21,6 +21,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import info.justaway.display.FadeInRoundedBitmapDisplayer;
 import info.justaway.settings.MuteSettings;
@@ -122,6 +123,8 @@ public class JustawayApplication extends Application {
         resetFontSize();
 
         sMuteSettings = new MuteSettings();
+
+        warmUpUserIconMap();
     }
 
     public void displayImage(String url, ImageView view) {
@@ -149,7 +152,7 @@ public class JustawayApplication extends Application {
     /**
      * userIdとアイコンの対応、DiskCacheすると「古いアイコン〜〜〜〜」ってなるのでしない。
      */
-    private LongSparseArray<String> mUserIconMap = new LongSparseArray<String>();
+    private HashMap<Long, String> mUserIconMap = new HashMap<Long, String>();
 
     /**
      * userIdからアイコンを取得する
@@ -182,6 +185,63 @@ public class JustawayApplication extends Application {
                     mUserIconMap.put(userId, user.getBiggerProfileImageURL());
                     displayRoundedImage(user.getBiggerProfileImageURL(), view);
                 }
+            }
+        }.execute();
+    }
+
+    /**
+     * アプリケーション起動時にキャッシュを温めておく
+     * 起動時のネットワーク通信がこれでまた一つ増えてしまった
+     */
+    private static final String PREF_NAME_USER_ICON_MAP = "user_icon_map";
+    private static final String PREF_KEY_USER_ICON_MAP = "data";
+
+    @SuppressWarnings("unchecked")
+    public void warmUpUserIconMap() {
+        ArrayList<AccessToken> accessTokens = getAccessTokens();
+        if (accessTokens.size() == 0) {
+            return;
+        }
+
+        final SharedPreferences preferences = getSharedPreferences(PREF_NAME_USER_ICON_MAP, Context.MODE_PRIVATE);
+        final Gson gson = new Gson();
+        String json = preferences.getString(PREF_KEY_USER_ICON_MAP, null);
+        if (json != null) {
+            mUserIconMap = gson.fromJson(json, mUserIconMap.getClass());
+        }
+
+        final long userIds[] = new long[accessTokens.size()];
+        int i = 0;
+        for (AccessToken accessToken : accessTokens) {
+            userIds[i] = accessToken.getUserId();
+            i++;
+        }
+
+        new AsyncTask<Void, Void, ResponseList<User>>() {
+
+            @Override
+            protected ResponseList<User> doInBackground(Void... voids) {
+                try {
+                    return getTwitter().lookupUsers(userIds);
+                } catch (TwitterException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(ResponseList<User> users) {
+                if (users == null) {
+                    return;
+                }
+                for (User user : users) {
+                    mUserIconMap.put(user.getId(), user.getBiggerProfileImageURL());
+                }
+                String exportJson = gson.toJson(mUserIconMap);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString(PREF_KEY_USER_ICON_MAP, exportJson);
+                editor.commit();
+
             }
         }.execute();
     }
