@@ -7,6 +7,7 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.view.KeyEvent;
@@ -681,6 +682,19 @@ public class MainActivity extends FragmentActivity {
     private void dismissProgressDialog() {
         if (mProgressDialog != null)
             mProgressDialog.dismiss();
+    }
+
+    public void notifyDataSetChanged() {
+
+        /**
+         * 重く同期で処理すると一瞬画面が固まる
+         */
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                mMainPagerAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     public void doDestroyDirectMessage(Long id) {

@@ -128,25 +128,14 @@ public abstract class BaseFragment extends Fragment implements
         });
     }
 
-//    public void replaceStatus(final Status status) {
-//        final ListView listView = getListView();
-//        if (listView == null) {
-//            return;
-//        }
-//
-//        listView.post(new Runnable() {
-//            @Override
-//            public void run() {
-//
-//                TwitterAdapter adapter = (TwitterAdapter) listView.getAdapter();
-//                adapter.replaceStatus(status);
-//            }
-//        });
-//    }
-
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        JustawayApplication.getApplication().onCreateContextMenu(getActivity(), menu, v, menuInfo);
+        JustawayApplication.getApplication().onCreateContextMenu(getActivity(), menu, v, menuInfo, new Runnable() {
+            @Override
+            public void run() {
+                ((MainActivity) getActivity()).notifyDataSetChanged();
+            }
+        });
     }
 
     public boolean onContextItemSelected(MenuItem item) {
