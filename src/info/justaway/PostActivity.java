@@ -145,8 +145,8 @@ public class PostActivity extends FragmentActivity {
         }
 
         if (Intent.ACTION_SEND.equals(intent.getAction())) {
-            if (intent.getExtras().get(Intent.EXTRA_STREAM) != null) {
-                Uri imgUri = (Uri) intent.getExtras().get(Intent.EXTRA_STREAM);
+            if (intent.getParcelableExtra(Intent.EXTRA_STREAM) != null) {
+                Uri imgUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
                 setImage(imgUri);
             } else {
                 String pageUri = intent.getExtras().getString(Intent.EXTRA_TEXT);
@@ -311,8 +311,15 @@ public class PostActivity extends FragmentActivity {
         ContentResolver cr = getContentResolver();
         String[] columns = {MediaStore.Images.Media.DATA};
         Cursor c = cr.query(uri, columns, null, null, null);
+        assert c != null;
         c.moveToFirst();
-        File path = new File(c.getString(0));
+        String fileName = c.getString(0);
+        if (fileName==null) {
+            JustawayApplication.showToast(getString(R.string.toast_set_image_failure));
+            return;
+        }
+        File path = new File(fileName);
+
         if (!path.exists()) {
             return;
         }
