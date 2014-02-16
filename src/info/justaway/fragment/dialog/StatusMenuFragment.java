@@ -476,37 +476,53 @@ public class StatusMenuFragment extends DialogFragment {
                     mActivity.startActivity(intent);
                 }
             }));
+        }
 
-            /**
-             * viaをミュート
-             */
-            adapter.add(new Menu(mApplication.getClientName(source.getSource())
-                            + mActivity.getString(R.string.context_menu_mute),
-                    new Runnable() {
+        /**
+         * viaをミュート
+         */
+        adapter.add(new Menu(mApplication.getClientName(source.getSource())
+                + mActivity.getString(R.string.context_menu_mute),
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        MuteSettings muteSettings = mApplication.getMuteSettings();
+                        muteSettings.addSource(mApplication.getClientName(source.getSource()));
+                        muteSettings.saveMuteSettings();
+                        JustawayApplication.showToast(R.string.toast_create_mute);
+                        dismiss();
+                    }
+                }));
+
+        /**
+         * ハッシュタグをミュート
+         */
+        for (final HashtagEntity hashtag : hashtags) {
+            adapter.add(new Menu("#" + hashtag.getText() + mActivity.getString(R.string.context_menu_mute), new Runnable() {
                 @Override
                 public void run() {
                     MuteSettings muteSettings = mApplication.getMuteSettings();
-                    muteSettings.addSource(mApplication.getClientName(source.getSource()));
-                    muteSettings.saveMuteSettings();
-                    JustawayApplication.showToast(R.string.toast_create_mute);
-                    dismiss();
-                }
-            }));
-
-            /**
-             * ユーザーをミュート
-             */
-            adapter.add(new Menu("@" + source.getUser().getScreenName() + mActivity.getString(R.string.context_menu_mute), new Runnable() {
-                @Override
-                public void run() {
-                    MuteSettings muteSettings = mApplication.getMuteSettings();
-                    muteSettings.addUser(source.getUser().getId(), source.getUser().getScreenName());
+                    muteSettings.addWord("#" + hashtag.getText());
                     muteSettings.saveMuteSettings();
                     JustawayApplication.showToast(R.string.toast_create_mute);
                     dismiss();
                 }
             }));
         }
+
+        /**
+         * ユーザーをミュート
+         */
+        adapter.add(new Menu("@" + source.getUser().getScreenName() + mActivity.getString(R.string.context_menu_mute), new Runnable() {
+            @Override
+            public void run() {
+                MuteSettings muteSettings = mApplication.getMuteSettings();
+                muteSettings.addUser(source.getUser().getId(), source.getUser().getScreenName());
+                muteSettings.saveMuteSettings();
+                JustawayApplication.showToast(R.string.toast_create_mute);
+                dismiss();
+            }
+        }));
 
         return builder.create();
     }
