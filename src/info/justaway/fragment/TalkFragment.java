@@ -26,6 +26,9 @@ import twitter4j.Twitter;
  */
 public class TalkFragment extends DialogFragment {
 
+    private Twitter mTwitter;
+    private TwitterAdapter mAdapter;
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
@@ -42,8 +45,8 @@ public class TalkFragment extends DialogFragment {
         registerForContextMenu(listView);
 
         // Status(ツイート)をViewに描写するアダプター
-        TwitterAdapter adapter = new TwitterAdapter(activity, R.layout.row_tweet);
-        listView.setAdapter(adapter);
+        mAdapter = new TwitterAdapter(activity, R.layout.row_tweet);
+        listView.setAdapter(mAdapter);
 
         // シングルタップでコンテキストメニューを開くための指定
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -55,8 +58,8 @@ public class TalkFragment extends DialogFragment {
 
         Long statusId = getArguments().getLong("statusId");
         if (statusId > 0) {
-            Twitter twitter = JustawayApplication.getApplication().getTwitter();
-            new LoadTalk(twitter, adapter).execute(statusId);
+            mTwitter = JustawayApplication.getApplication().getTwitter();
+            new LoadTalk().execute(statusId);
         }
 
         return dialog;
@@ -65,7 +68,12 @@ public class TalkFragment extends DialogFragment {
     @Override
     public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, view, menuInfo);
-        JustawayApplication.getApplication().onCreateContextMenu(getActivity(), menu, view, menuInfo);
+        JustawayApplication.getApplication().onCreateContextMenu(getActivity(), menu, view, menuInfo, new Runnable() {
+            @Override
+            public void run() {
+                mAdapter.notifyDataSetChanged();
+            }
+        });
 
         // DialogFragment内でContextMenuを使うにはこれが必要
         MenuItem.OnMenuItemClickListener listener = new MenuItem.OnMenuItemClickListener() {
@@ -82,19 +90,14 @@ public class TalkFragment extends DialogFragment {
 
     private class LoadTalk extends AsyncTask<Long, Void, twitter4j.Status> {
 
-        private Twitter twitter;
-        private TwitterAdapter adapter;
-
-        public LoadTalk(Twitter twitter, TwitterAdapter adapter) {
+        public LoadTalk() {
             super();
-            this.twitter = twitter;
-            this.adapter = adapter;
         }
 
         @Override
         protected twitter4j.Status doInBackground(Long... params) {
             try {
-                return twitter.showStatus(params[0]);
+                return mTwitter.showStatus(params[0]);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -104,11 +107,11 @@ public class TalkFragment extends DialogFragment {
         @Override
         protected void onPostExecute(twitter4j.Status status) {
             if (status != null) {
-                adapter.add(Row.newStatus(status));
-                adapter.notifyDataSetChanged();
+                mAdapter.add(Row.newStatus(status));
+                mAdapter.notifyDataSetChanged();
                 Long inReplyToStatusId = status.getInReplyToStatusId();
                 if (inReplyToStatusId > 0) {
-                    new LoadTalk(twitter, adapter).execute(inReplyToStatusId);
+                    new LoadTalk().execute(inReplyToStatusId);
                 }
             }
         }

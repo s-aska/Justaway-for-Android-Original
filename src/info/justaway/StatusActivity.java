@@ -25,6 +25,8 @@ import twitter4j.Twitter;
 public class StatusActivity extends FragmentActivity {
 
     private ProgressDialog mProgressDialog;
+    private TwitterAdapter mAdapter;
+    private Twitter mTwitter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,8 +65,8 @@ public class StatusActivity extends FragmentActivity {
         registerForContextMenu(listView);
 
         // Status(ツイート)をViewに描写するアダプター
-        TwitterAdapter adapter = new TwitterAdapter(this, R.layout.row_tweet);
-        listView.setAdapter(adapter);
+        mAdapter = new TwitterAdapter(this, R.layout.row_tweet);
+        listView.setAdapter(mAdapter);
 
         // シングルタップでコンテキストメニューを開くための指定
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -75,16 +77,21 @@ public class StatusActivity extends FragmentActivity {
         });
 
         if (statusId > 0) {
-            Twitter twitter = JustawayApplication.getApplication().getTwitter();
+            mTwitter = JustawayApplication.getApplication().getTwitter();
             showProgressDialog(getString(R.string.progress_loading));
-            new LoadTalk(twitter, adapter).execute(statusId);
+            new LoadTalk().execute(statusId);
         }
     }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        JustawayApplication.getApplication().onCreateContextMenu(this, menu, v, menuInfo);
+        JustawayApplication.getApplication().onCreateContextMenu(this, menu, v, menuInfo, new Runnable() {
+            @Override
+            public void run() {
+                mAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     @Override
@@ -105,19 +112,14 @@ public class StatusActivity extends FragmentActivity {
 
     private class LoadTalk extends AsyncTask<Long, Void, Status> {
 
-        private Twitter twitter;
-        private TwitterAdapter adapter;
-
-        public LoadTalk(Twitter twitter, TwitterAdapter adapter) {
+        public LoadTalk() {
             super();
-            this.twitter = twitter;
-            this.adapter = adapter;
         }
 
         @Override
         protected twitter4j.Status doInBackground(Long... params) {
             try {
-                return twitter.showStatus(params[0]);
+                return mTwitter.showStatus(params[0]);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -128,11 +130,11 @@ public class StatusActivity extends FragmentActivity {
         protected void onPostExecute(twitter4j.Status status) {
             dismissProgressDialog();
             if (status != null) {
-                adapter.add(Row.newStatus(status));
-                adapter.notifyDataSetChanged();
+                mAdapter.add(Row.newStatus(status));
+                mAdapter.notifyDataSetChanged();
                 Long inReplyToStatusId = status.getInReplyToStatusId();
                 if (inReplyToStatusId > 0) {
-                    new LoadTalk(twitter, adapter).execute(inReplyToStatusId);
+                    new LoadTalk().execute(inReplyToStatusId);
                 }
             } else {
                 JustawayApplication.showToast(R.string.toast_load_data_failure);
