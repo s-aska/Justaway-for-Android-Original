@@ -6,8 +6,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.view.ContextMenu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -15,6 +13,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import info.justaway.adapter.TwitterAdapter;
+import info.justaway.fragment.dialog.StatusMenuFragment;
 import info.justaway.model.Row;
 import twitter4j.Status;
 import twitter4j.Twitter;
@@ -72,7 +71,18 @@ public class StatusActivity extends FragmentActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                view.showContextMenu();
+                StatusMenuFragment statusMenuFragment = new StatusMenuFragment();
+                Bundle args = new Bundle();
+                Row row = mAdapter.getItem(position);
+                args.putSerializable("status", row.getStatus());
+                statusMenuFragment.setArguments(args);
+                statusMenuFragment.setCallback(new Runnable() {
+                    @Override
+                    public void run() {
+                        mAdapter.notifyDataSetChanged();
+                    }
+                });
+                statusMenuFragment.show(getSupportFragmentManager(), "dialog");
             }
         });
 
@@ -81,22 +91,6 @@ public class StatusActivity extends FragmentActivity {
             showProgressDialog(getString(R.string.progress_loading));
             new LoadTalk().execute(statusId);
         }
-    }
-
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        JustawayApplication.getApplication().onCreateContextMenu(this, menu, v, menuInfo, new Runnable() {
-            @Override
-            public void run() {
-                mAdapter.notifyDataSetChanged();
-            }
-        });
-    }
-
-    @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        return JustawayApplication.getApplication().onContextItemSelected(item);
     }
 
     private void showProgressDialog(String message) {

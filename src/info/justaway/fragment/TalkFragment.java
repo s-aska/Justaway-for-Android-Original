@@ -16,6 +16,7 @@ import android.widget.ListView;
 import info.justaway.JustawayApplication;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
+import info.justaway.fragment.dialog.StatusMenuFragment;
 import info.justaway.model.Row;
 import twitter4j.Twitter;
 
@@ -41,9 +42,6 @@ public class TalkFragment extends DialogFragment {
 
         ListView listView = (ListView) dialog.findViewById(R.id.list);
 
-        // コンテキストメニューを使える様にする為の指定、但しデフォルトではロングタップで開く
-        registerForContextMenu(listView);
-
         // Status(ツイート)をViewに描写するアダプター
         mAdapter = new TwitterAdapter(activity, R.layout.row_tweet);
         listView.setAdapter(mAdapter);
@@ -52,7 +50,18 @@ public class TalkFragment extends DialogFragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                view.showContextMenu();
+                StatusMenuFragment statusMenuFragment = new StatusMenuFragment();
+                Bundle args = new Bundle();
+                Row row = mAdapter.getItem(position);
+                args.putSerializable("status", row.getStatus());
+                statusMenuFragment.setArguments(args);
+                statusMenuFragment.setCallback(new Runnable() {
+                    @Override
+                    public void run() {
+                        mAdapter.notifyDataSetChanged();
+                    }
+                });
+                statusMenuFragment.show(getActivity().getSupportFragmentManager(), "dialog");
             }
         });
 
@@ -63,29 +72,6 @@ public class TalkFragment extends DialogFragment {
         }
 
         return dialog;
-    }
-
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, view, menuInfo);
-        JustawayApplication.getApplication().onCreateContextMenu(getActivity(), menu, view, menuInfo, new Runnable() {
-            @Override
-            public void run() {
-                mAdapter.notifyDataSetChanged();
-            }
-        });
-
-        // DialogFragment内でContextMenuを使うにはこれが必要
-        MenuItem.OnMenuItemClickListener listener = new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                JustawayApplication.getApplication().onContextItemSelected(item);
-                return true;
-            }
-        };
-
-        for (int i = 0, n = menu.size(); i < n; i++)
-            menu.getItem(i).setOnMenuItemClickListener(listener);
     }
 
     private class LoadTalk extends AsyncTask<Long, Void, twitter4j.Status> {

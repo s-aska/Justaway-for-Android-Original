@@ -2,18 +2,16 @@ package info.justaway.fragment.main;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import info.justaway.JustawayApplication;
 import info.justaway.MainActivity;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
+import info.justaway.fragment.dialog.StatusMenuFragment;
 import info.justaway.model.Row;
 import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
 import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout;
@@ -66,10 +64,7 @@ public abstract class BaseFragment extends Fragment implements
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        MainActivity activity = (MainActivity) getActivity();
-
-        // コンテキストメニューを使える様にする為の指定、但しデフォルトではロングタップで開く
-        registerForContextMenu(mListView);
+        final MainActivity activity = (MainActivity) getActivity();
 
         // mMainPagerAdapter.notifyDataSetChanged() された時に
         // onCreateView と onActivityCreated インスタンスが生きたまま呼ばれる
@@ -86,7 +81,22 @@ public abstract class BaseFragment extends Fragment implements
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                view.showContextMenu();
+                StatusMenuFragment statusMenuFragment = new StatusMenuFragment();
+                Bundle args = new Bundle();
+                Row row = mAdapter.getItem(position);
+                if (row.isDirectMessage()) {
+                    args.putSerializable("directMessage", row.getMessage());
+                } else {
+                    args.putSerializable("status", row.getStatus());
+                }
+                statusMenuFragment.setArguments(args);
+                statusMenuFragment.setCallback(new Runnable() {
+                    @Override
+                    public void run() {
+                        activity.notifyDataSetChanged();
+                    }
+                });
+                statusMenuFragment.show(getActivity().getSupportFragmentManager(), "dialog");
             }
         });
     }
@@ -121,24 +131,9 @@ public abstract class BaseFragment extends Fragment implements
         listView.post(new Runnable() {
             @Override
             public void run() {
-
                 TwitterAdapter adapter = (TwitterAdapter) listView.getAdapter();
                 adapter.removeStatus(statusId);
             }
         });
-    }
-
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        JustawayApplication.getApplication().onCreateContextMenu(getActivity(), menu, v, menuInfo, new Runnable() {
-            @Override
-            public void run() {
-                ((MainActivity) getActivity()).notifyDataSetChanged();
-            }
-        });
-    }
-
-    public boolean onContextItemSelected(MenuItem item) {
-        return JustawayApplication.getApplication().onContextItemSelected(item);
     }
 }
