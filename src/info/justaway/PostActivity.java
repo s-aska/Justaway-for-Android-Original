@@ -33,7 +33,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -64,8 +63,7 @@ public class PostActivity extends FragmentActivity {
     private Uri mImageUri;
     private DraftFragment mDraftDialog;
     private boolean mWidgetMode;
-    private ArrayList<AccessToken> mAccessTokens;
-    private AccessToken mAccessToken;
+    private Spinner mSpinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +79,6 @@ public class PostActivity extends FragmentActivity {
         mTextView = (TextView) findViewById(R.id.count);
         mTweetButton = (Button) findViewById(R.id.tweet);
         mImgButton = (Button) findViewById(R.id.img);
-        final ImageView icon = (ImageView) findViewById(R.id.icon);
         Button suddenlyButton = (Button) findViewById(R.id.suddenly);
         Button draftButton = (Button) findViewById(R.id.word);
 
@@ -93,37 +90,21 @@ public class PostActivity extends FragmentActivity {
         registerForContextMenu(mImgButton);
 
         // アカウント切り替え
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_spinner_item);
+        AccessTokenAdapter adapter = new AccessTokenAdapter(this, R.layout.spinner_switch_account);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        Spinner spinner = (Spinner) findViewById(R.id.switchAccount);
-        spinner.setAdapter(adapter);
+        mSpinner = (Spinner) findViewById(R.id.switchAccount);
+        mSpinner.setAdapter(adapter);
 
-        mAccessTokens = JustawayApplication.getApplication().getAccessTokens();
+        ArrayList<AccessToken> accessTokens = JustawayApplication.getApplication().getAccessTokens();
 
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            public void onItemSelected(AdapterView parent, View view, int position, long id) {
-                String item = (String) parent.getItemAtPosition(position);
-                for (AccessToken accessToken : mAccessTokens) {
-                    if (item.equals(accessToken.getScreenName())) {
-                        mAccessToken = accessToken;
-                        application.displayUserIcon(accessToken.getUserId(), icon);
-                    }
-                }
-            }
-
-            public void onNothingSelected(AdapterView parent) {
-            }
-        });
-
-        if (mAccessTokens != null) {
+        if (accessTokens != null) {
             int i = 0;
-            for (AccessToken accessToken : mAccessTokens) {
-                adapter.add(accessToken.getScreenName());
+            for (AccessToken accessToken : accessTokens) {
+                adapter.add(accessToken);
 
                 if (JustawayApplication.getApplication().getUserId() == accessToken.getUserId()) {
-                    spinner.setSelection(i);
+                    mSpinner.setSelection(i);
                 }
                 i++;
             }
@@ -372,7 +353,7 @@ public class PostActivity extends FragmentActivity {
             StatusUpdate super_sugoi = params[0];
             try {
                 Twitter twitter = JustawayApplication.getApplication().getTwitterInstance();
-                twitter.setOAuthAccessToken(mAccessToken);
+                twitter.setOAuthAccessToken((AccessToken) mSpinner.getSelectedItem());
                 twitter.updateStatus(super_sugoi);
                 return true;
             } catch (Exception e) {
@@ -504,6 +485,64 @@ public class PostActivity extends FragmentActivity {
             return dialog;
         }
     }
+
+    public class AccessTokenAdapter extends ArrayAdapter<AccessToken> {
+
+        private ArrayList<AccessToken> mAccessTokenList = new ArrayList<AccessToken>();
+        private LayoutInflater mInflater;
+        private int mLayout;
+
+        public AccessTokenAdapter(Context context, int textViewResourceId) {
+            super(context, textViewResourceId);
+            this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            this.mLayout = textViewResourceId;
+        }
+
+        @Override
+        public void add(AccessToken accessToken) {
+            super.add(accessToken);
+            mAccessTokenList.add(accessToken);
+        }
+
+        @Override
+        public View getView(final int position, View convertView, ViewGroup parent) {
+            // ビューを受け取る
+            View view = convertView;
+            if (view == null) {
+                // 受け取ったビューがnullなら新しくビューを生成
+                view = mInflater.inflate(this.mLayout, null);
+            }
+
+            AccessToken accessToken = mAccessTokenList.get(position);
+
+            assert view != null;
+            ImageView icon = (ImageView) view.findViewById(R.id.icon);
+            JustawayApplication.getApplication().displayUserIcon(accessToken.getUserId(), icon);
+            ((TextView) view.findViewById(R.id.screen_name)).setText(accessToken.getScreenName());
+
+            return view;
+        }
+
+        @Override
+        public View getDropDownView(int position, View convertView, ViewGroup parent) {
+            // ビューを受け取る
+            View view = convertView;
+            if (view == null) {
+                // 受け取ったビューがnullなら新しくビューを生成
+                view = mInflater.inflate(this.mLayout, null);
+            }
+
+            AccessToken accessToken = mAccessTokenList.get(position);
+
+            assert view != null;
+            ImageView icon = (ImageView) view.findViewById(R.id.icon);
+            JustawayApplication.getApplication().displayUserIcon(accessToken.getUserId(), icon);
+            ((TextView) view.findViewById(R.id.screen_name)).setText(accessToken.getScreenName());
+
+            return view;
+        }
+    }
+
 
     public class DraftAdapter extends ArrayAdapter<String> {
 
