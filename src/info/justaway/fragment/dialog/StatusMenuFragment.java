@@ -360,7 +360,7 @@ public class StatusMenuFragment extends DialogFragment {
         /**
          * 前後のツイートを表示
          */
-        adapter.add(new Menu(R.string.context_menu_talk, new Runnable() {
+        adapter.add(new Menu(R.string.context_menu_show_around, new Runnable() {
             @Override
             public void run() {
                 AroundFragment aroundFragment = new AroundFragment();
