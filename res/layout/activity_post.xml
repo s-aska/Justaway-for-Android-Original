@@ -15,15 +15,6 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <ImageView
-                android:id="@+id/icon"
-                android:layout_width="24dip"
-                android:layout_height="24dip"
-                android:layout_marginTop="6dip"
-                android:layout_marginLeft="6dip"
-                android:layout_marginRight="4dip"
-                android:contentDescription="@string/description_icon" />
-
             <Spinner
                 android:id="@+id/switchAccount"
                 android:layout_width="wrap_content"
