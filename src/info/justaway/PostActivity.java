@@ -529,6 +529,7 @@ public class PostActivity extends FragmentActivity {
             AccessToken accessToken = mAccessTokenList.get(position);
 
             assert view != null;
+            view.setPadding(16, 0, 0, 0);
             ImageView icon = (ImageView) view.findViewById(R.id.icon);
             JustawayApplication.getApplication().displayUserIcon(accessToken.getUserId(), icon);
             ((TextView) view.findViewById(R.id.screen_name)).setText(accessToken.getScreenName());
