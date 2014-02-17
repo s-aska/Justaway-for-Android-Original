@@ -124,7 +124,9 @@ public class JustawayApplication extends Application {
 
         sMuteSettings = new MuteSettings();
 
-        warmUpUserIconMap();
+        if (hasAccessToken()) {
+            warmUpUserIconMap();
+        }
     }
 
     public void displayImage(String url, ImageView view) {
