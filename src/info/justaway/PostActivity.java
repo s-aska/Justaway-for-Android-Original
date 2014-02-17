@@ -126,7 +126,12 @@ public class PostActivity extends FragmentActivity {
         }
         mInReplyToStatusId = intent.getLongExtra("inReplyToStatusId", 0);
 
-        if (Intent.ACTION_VIEW.equals(intent.getAction()) && intent.getData() != null) {
+        if (intent.getData() != null) {
+            String inReplyToStatusId = intent.getData().getQueryParameter("in_reply_to");
+            if (inReplyToStatusId != null && inReplyToStatusId.length() > 0) {
+                mInReplyToStatusId = Long.valueOf(inReplyToStatusId);
+            }
+
             String text = intent.getData().getQueryParameter("text");
             String url = intent.getData().getQueryParameter("url");
             String hashtags = intent.getData().getQueryParameter("hashtags");
