@@ -71,8 +71,6 @@ public class PostActivity extends FragmentActivity {
         setContentView(R.layout.activity_post);
         mContext = this;
 
-        final JustawayApplication application = JustawayApplication.getApplication();
-
         Typeface fontello = JustawayApplication.getFontello();
 
         mEditText = (EditText) findViewById(R.id.status);
@@ -359,11 +357,11 @@ public class PostActivity extends FragmentActivity {
     private class PostTask extends AsyncTask<StatusUpdate, Void, Boolean> {
         @Override
         protected Boolean doInBackground(StatusUpdate... params) {
-            StatusUpdate super_sugoi = params[0];
+            StatusUpdate statusUpdate = params[0];
             try {
                 Twitter twitter = JustawayApplication.getApplication().getTwitterInstance();
                 twitter.setOAuthAccessToken((AccessToken) mSpinner.getSelectedItem());
-                twitter.updateStatus(super_sugoi);
+                twitter.updateStatus(statusUpdate);
                 return true;
             } catch (Exception e) {
                 e.printStackTrace();
