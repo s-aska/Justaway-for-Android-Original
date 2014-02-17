@@ -46,12 +46,14 @@ import java.util.ArrayList;
 
 import twitter4j.StatusUpdate;
 import twitter4j.Twitter;
+import twitter4j.TwitterException;
 import twitter4j.auth.AccessToken;
 
 public class PostActivity extends FragmentActivity {
 
     private static final int REQUEST_GALLERY = 1;
     private static final int REQUEST_CAMERA = 2;
+    private static final int ERROR_CODE_DUPLICATE_STATUS = 187;
 
     private Context mContext;
     private EditText mEditText;
@@ -359,25 +361,26 @@ public class PostActivity extends FragmentActivity {
         }
     }
 
-    private class PostTask extends AsyncTask<StatusUpdate, Void, Boolean> {
+    private class PostTask extends AsyncTask<StatusUpdate, Void, TwitterException> {
         @Override
-        protected Boolean doInBackground(StatusUpdate... params) {
+        protected TwitterException doInBackground(StatusUpdate... params) {
             StatusUpdate statusUpdate = params[0];
             try {
                 Twitter twitter = JustawayApplication.getApplication().getTwitterInstance();
                 twitter.setOAuthAccessToken((AccessToken) mSpinner.getSelectedItem());
                 twitter.updateStatus(statusUpdate);
-                return true;
-            } catch (Exception e) {
+                return null;
+            } catch (TwitterException e) {
                 e.printStackTrace();
-                return false;
+
+                return e;
             }
         }
 
         @Override
-        protected void onPostExecute(Boolean success) {
+        protected void onPostExecute(TwitterException e) {
             JustawayApplication.dismissProgressDialog();
-            if (success) {
+            if (e == null) {
                 mEditText.setText("");
                 if (!mWidgetMode) {
                     finish();
@@ -386,7 +389,9 @@ public class PostActivity extends FragmentActivity {
                     mImgButton.setTextColor(getResources().getColor(android.R.color.secondary_text_dark));
                     mTweetButton.setEnabled(false);
                 }
-            } else {
+            }else if (e.getErrorCode() == ERROR_CODE_DUPLICATE_STATUS) {
+                JustawayApplication.showToast(getString(R.string.toast_update_status_already));
+            }else {
                 JustawayApplication.showToast(R.string.toast_update_status_failure);
             }
         }
