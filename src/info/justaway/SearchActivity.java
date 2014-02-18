@@ -95,21 +95,16 @@ public class SearchActivity extends FragmentActivity {
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                JustawayApplication.getApplication().hideKeyboard(mSearchWords);
-
-                Query query = new Query(mSearchWords.getText().toString());
-                mAdapter.clear();
-                mListView.setVisibility(View.GONE);
-                mFooter.setVisibility(View.VISIBLE);
-                mNextQuery = null;
-                new SearchTask().execute(query);
+                search();
             }
         });
+
         tweet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (mSearchWords.getText() == null) return;
                 Intent intent = new Intent(mContext, PostActivity.class);
-                intent.putExtra("status", " " + mSearchWords.getText().toString());
+                intent.putExtra("status", " ".concat(mSearchWords.getText().toString()));
                 startActivity(intent);
             }
         });
@@ -121,15 +116,7 @@ public class SearchActivity extends FragmentActivity {
                 //EnterKeyが押されたかを判定
                 if (event.getAction() == KeyEvent.ACTION_DOWN
                         && keyCode == KeyEvent.KEYCODE_ENTER) {
-                    JustawayApplication.getApplication().hideKeyboard(mSearchWords);
-
-                    Query query = new Query(mSearchWords.getText().toString());
-                    mAdapter.clear();
-                    mListView.setVisibility(View.GONE);
-                    mFooter.setVisibility(View.VISIBLE);
-                    mNextQuery = null;
-                    new SearchTask().execute(query);
-
+                    search();
                     return true;
                 }
                 return false;
@@ -171,7 +158,9 @@ public class SearchActivity extends FragmentActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.save_search:
-                new CreateSavedSearchTask().execute(mSearchWords.getText().toString());
+                if (mSearchWords.getText() != null) {
+                    new CreateSavedSearchTask().execute(mSearchWords.getText().toString());
+                }
                 break;
         }
         return true;
@@ -185,13 +174,23 @@ public class SearchActivity extends FragmentActivity {
         }
     }
 
+    private void search() {
+        JustawayApplication.getApplication().hideKeyboard(mSearchWords);
+        if (mSearchWords.getText() == null) return;
+        Query query = new Query(mSearchWords.getText().toString());
+        mAdapter.clear();
+        mListView.setVisibility(View.GONE);
+        mFooter.setVisibility(View.VISIBLE);
+        mNextQuery = null;
+        new SearchTask().execute(query);
+    }
+
     private class SearchTask extends AsyncTask<Query, Void, QueryResult> {
         @Override
         protected QueryResult doInBackground(Query... params) {
             Query query = params[0];
             try {
-                QueryResult queryResult = JustawayApplication.getApplication().getTwitter().search(query);
-                return queryResult;
+                return JustawayApplication.getApplication().getTwitter().search(query);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -232,8 +231,7 @@ public class SearchActivity extends FragmentActivity {
         protected SavedSearch doInBackground(String... params) {
             String query = params[0];
             try {
-                SavedSearch savedSearch = JustawayApplication.getApplication().getTwitter().createSavedSearch(query);
-                return savedSearch;
+                return JustawayApplication.getApplication().getTwitter().createSavedSearch(query);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -254,8 +252,7 @@ public class SearchActivity extends FragmentActivity {
         protected SavedSearch doInBackground(Integer... params) {
             Integer id = params[0];
             try {
-                SavedSearch savedSearch = JustawayApplication.getApplication().getTwitter().destroySavedSearch(id);
-                return savedSearch;
+                return JustawayApplication.getApplication().getTwitter().destroySavedSearch(id);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -275,8 +272,7 @@ public class SearchActivity extends FragmentActivity {
         @Override
         protected ResponseList<SavedSearch> doInBackground(Void... params) {
             try {
-                ResponseList<SavedSearch> savedSearches = JustawayApplication.getApplication().getTwitter().getSavedSearches();
-                return savedSearches;
+                return JustawayApplication.getApplication().getTwitter().getSavedSearches();
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -297,14 +293,12 @@ public class SearchActivity extends FragmentActivity {
     public class SearchWordAdapter extends ArrayAdapter<SavedSearch> {
 
         private ArrayList<SavedSearch> mWordLists = new ArrayList<SavedSearch>();
-        private Context mContext;
         private LayoutInflater mInflater;
         private int mLayout;
 
         public SearchWordAdapter(Context context, int textViewResourceId) {
             super(context, textViewResourceId);
             this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            this.mContext = context;
             this.mLayout = textViewResourceId;
         }
 
@@ -336,6 +330,7 @@ public class SearchActivity extends FragmentActivity {
 
             final SavedSearch word = mWordLists.get(position);
 
+            assert view != null;
             ((TextView) view.findViewById(R.id.word)).setText(word.getQuery());
             ((TextView) view.findViewById(R.id.trash)).setTypeface(JustawayApplication.getFontello());
 
