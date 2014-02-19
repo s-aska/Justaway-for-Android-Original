@@ -54,6 +54,8 @@ public class PostActivity extends FragmentActivity {
     private static final int REQUEST_GALLERY = 1;
     private static final int REQUEST_CAMERA = 2;
     private static final int ERROR_CODE_DUPLICATE_STATUS = 187;
+    private static final String DRAFT_LIST_FILE = "DraftListFile";
+    private static final String HASHTAG_LIST_FILE = "HashtagListFile";
 
     private Context mContext;
     private EditText mEditText;
@@ -64,6 +66,7 @@ public class PostActivity extends FragmentActivity {
     private File mImgPath;
     private Uri mImageUri;
     private DraftFragment mDraftDialog;
+    private HashtagFragment mHashtagDialog;
     private boolean mWidgetMode;
     private Spinner mSpinner;
 
@@ -80,12 +83,14 @@ public class PostActivity extends FragmentActivity {
         mTweetButton = (Button) findViewById(R.id.tweet);
         mImgButton = (Button) findViewById(R.id.img);
         Button suddenlyButton = (Button) findViewById(R.id.suddenly);
-        Button draftButton = (Button) findViewById(R.id.word);
+        Button draftButton = (Button) findViewById(R.id.draft);
+        Button hashtagButton = (Button) findViewById(R.id.hashtag);
 
         mTweetButton.setTypeface(fontello);
         mImgButton.setTypeface(fontello);
         suddenlyButton.setTypeface(fontello);
         draftButton.setTypeface(fontello);
+        hashtagButton.setTypeface(fontello);
 
         registerForContextMenu(mImgButton);
 
@@ -170,7 +175,7 @@ public class PostActivity extends FragmentActivity {
             updateCount(mEditText.getText().toString());
         }
 
-        SaveLoadTraining saveLoadTraining = new SaveLoadTraining();
+        SaveLoadTraining saveLoadTraining = new SaveLoadTraining(DRAFT_LIST_FILE);
         ArrayList<String> draftList = saveLoadTraining.loadArray();
         if (draftList.isEmpty()) {
             draftButton.setEnabled(false);
@@ -179,6 +184,7 @@ public class PostActivity extends FragmentActivity {
         mTweetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String text = mEditText.getText().toString();
                 JustawayApplication.showProgressDialog(mContext, getString(R.string.progress_sending));
                 StatusUpdate superSugoi = new StatusUpdate(mEditText.getText().toString());
                 if (mInReplyToStatusId > 0) {
@@ -187,6 +193,26 @@ public class PostActivity extends FragmentActivity {
                 if (mImgPath != null) {
                     superSugoi.setMedia(mImgPath);
                 }
+
+                if (text.contains("#")) {
+                    String hashtag = text.substring(text.indexOf("#"));
+                    SaveLoadTraining saveLoadTraining = new SaveLoadTraining(HASHTAG_LIST_FILE);
+                    ArrayList<String> hashtagList = saveLoadTraining.loadArray();
+
+                    boolean exist = false;
+                    for (String existHashtag : hashtagList) {
+                        if (existHashtag.equals(hashtag)) {
+                            exist = true;
+                            break;
+                        }
+                    }
+                    if (!exist) {
+                        hashtagList.add(hashtag);
+                        saveLoadTraining.saveArray(hashtagList);
+                    }
+
+                }
+
                 new PostTask().execute(superSugoi);
             }
         });
@@ -250,6 +276,14 @@ public class PostActivity extends FragmentActivity {
             public void onClick(View v) {
                 mDraftDialog = new DraftFragment();
                 mDraftDialog.show(getSupportFragmentManager(), "dialog");
+            }
+        });
+
+        hashtagButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mHashtagDialog = new HashtagFragment();
+                mHashtagDialog.show(getSupportFragmentManager(), "dialog");
             }
         });
 
@@ -415,7 +449,7 @@ public class PostActivity extends FragmentActivity {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         // 下書きとして保存する
-                                        SaveLoadTraining saveLoadTraining = new SaveLoadTraining();
+                                        SaveLoadTraining saveLoadTraining = new SaveLoadTraining(DRAFT_LIST_FILE);
                                         ArrayList<String> draftList = saveLoadTraining.loadArray();
                                         draftList.add(mEditText.getText().toString());
                                         saveLoadTraining.saveArray(draftList);
@@ -496,11 +530,39 @@ public class PostActivity extends FragmentActivity {
             DraftAdapter adapter = new DraftAdapter(activity, R.layout.row_word);
             listView.setAdapter(adapter);
 
-            SaveLoadTraining saveLoadTraining = new SaveLoadTraining();
+            SaveLoadTraining saveLoadTraining = new SaveLoadTraining(DRAFT_LIST_FILE);
             ArrayList<String> draftList = saveLoadTraining.loadArray();
 
             for (String draft : draftList) {
                 adapter.add(draft);
+            }
+
+            return dialog;
+        }
+    }
+
+    public class HashtagFragment extends DialogFragment {
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+            Activity activity = getActivity();
+            Dialog dialog = new Dialog(activity);
+            dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+            dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
+            dialog.setContentView(R.layout.list);
+            ListView listView = (ListView) dialog.findViewById(R.id.list);
+
+            // ハッシュタグをViewに描写するアダプター
+            HashtagAdapter adapter = new HashtagAdapter(activity, R.layout.row_word);
+            listView.setAdapter(adapter);
+
+            SaveLoadTraining saveLoadTraining = new SaveLoadTraining(HASHTAG_LIST_FILE);
+            ArrayList<String> hashtagList = saveLoadTraining.loadArray();
+
+            for (String hashtag : hashtagList) {
+                adapter.add(hashtag);
             }
 
             return dialog;
@@ -610,7 +672,7 @@ public class PostActivity extends FragmentActivity {
                     mEditText.setText(draft);
                     mDraftDialog.dismiss();
                     mDraftLists.remove(position);
-                    SaveLoadTraining saveLoadTraining = new SaveLoadTraining();
+                    SaveLoadTraining saveLoadTraining = new SaveLoadTraining(DRAFT_LIST_FILE);
                     saveLoadTraining.saveArray(mDraftLists);
 
                 }
@@ -620,8 +682,68 @@ public class PostActivity extends FragmentActivity {
                 @Override
                 public void onClick(View v) {
                     remove(position);
-                    SaveLoadTraining saveLoadTraining = new SaveLoadTraining();
+                    SaveLoadTraining saveLoadTraining = new SaveLoadTraining(DRAFT_LIST_FILE);
                     saveLoadTraining.saveArray(mDraftLists);
+                }
+            });
+            return view;
+        }
+    }
+
+    public class HashtagAdapter extends ArrayAdapter<String> {
+
+        private ArrayList<String> mHashtagLists = new ArrayList<String>();
+        private LayoutInflater mInflater;
+        private int mLayout;
+
+        public HashtagAdapter(Context context, int textViewResourceId) {
+            super(context, textViewResourceId);
+            this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            this.mLayout = textViewResourceId;
+        }
+
+        @Override
+        public void add(String hashtag) {
+            super.add(hashtag);
+            mHashtagLists.add(hashtag);
+        }
+
+        public void remove(int position) {
+            super.remove(mHashtagLists.remove(position));
+        }
+
+        @Override
+        public View getView(final int position, View convertView, ViewGroup parent) {
+
+            // ビューを受け取る
+            View view = convertView;
+            if (view == null) {
+                // 受け取ったビューがnullなら新しくビューを生成
+                view = mInflater.inflate(this.mLayout, null);
+            }
+
+            final String hashtag = mHashtagLists.get(position);
+
+            assert view != null;
+            ((TextView) view.findViewById(R.id.word)).setText(hashtag);
+            ((TextView) view.findViewById(R.id.trash)).setTypeface(JustawayApplication.getFontello());
+
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mEditText.getText() != null) {
+                        mEditText.setText(mEditText.getText().toString().concat(" ".concat(hashtag)));
+                        mHashtagDialog.dismiss();
+                    }
+                }
+            });
+
+            view.findViewById(R.id.trash).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    remove(position);
+                    SaveLoadTraining saveLoadTraining = new SaveLoadTraining(HASHTAG_LIST_FILE);
+                    saveLoadTraining.saveArray(mHashtagLists);
                 }
             });
             return view;
@@ -633,18 +755,19 @@ public class PostActivity extends FragmentActivity {
      */
     public class SaveLoadTraining {
 
+        private String prefsName;
         private Context context;
-        public static final String PREFS_NAME = "DraftListFile";
         private ArrayList<String> list;
 
-        public SaveLoadTraining() {
+        public SaveLoadTraining(String prefsName) {
             this.context = mContext;
+            this.prefsName = prefsName;
         }
 
         public void saveArray(ArrayList<String> list) {
             this.list = list;
 
-            SharedPreferences settings = context.getSharedPreferences(PREFS_NAME, 0);
+            SharedPreferences settings = context.getSharedPreferences(prefsName, 0);
             SharedPreferences.Editor editor = settings.edit();
 
             int size = list.size();
@@ -660,7 +783,7 @@ public class PostActivity extends FragmentActivity {
         }
 
         public ArrayList<String> loadArray() {
-            SharedPreferences file = context.getSharedPreferences(PREFS_NAME, 0);
+            SharedPreferences file = context.getSharedPreferences(prefsName, 0);
             list = new ArrayList<String>();
             int size = file.getInt("list_size", 0);
 
