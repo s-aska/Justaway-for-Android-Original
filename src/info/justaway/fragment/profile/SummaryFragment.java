@@ -87,7 +87,7 @@ public class SummaryFragment extends Fragment {
             follow.setText(R.string.button_edit_profile);
         } else if (mFollowFlg) {
             follow.setText(R.string.button_unfollow);
-        } else if (mBlocking){
+        } else if (mBlocking) {
             follow.setText(R.string.button_blocking);
         } else {
             follow.setText(R.string.button_follow);
@@ -136,7 +136,7 @@ public class SummaryFragment extends Fragment {
                                         }
                                     })
                             .show();
-                } else if(mBlocking){
+                } else if (mBlocking) {
                     // TODO:
                     new AlertDialog.Builder(getActivity())
                             .setTitle(R.string.confirm_destroy_block)
@@ -172,7 +172,7 @@ public class SummaryFragment extends Fragment {
                                         }
                                     })
                             .show();
-                }else {
+                } else {
                     new AlertDialog.Builder(getActivity())
                             .setTitle(R.string.confirm_follow)
                             .setPositiveButton(

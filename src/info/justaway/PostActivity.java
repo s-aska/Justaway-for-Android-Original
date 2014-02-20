@@ -158,7 +158,7 @@ public class PostActivity extends FragmentActivity {
             if (intent.getParcelableExtra(Intent.EXTRA_STREAM) != null) {
                 Uri imgUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
                 setImage(imgUri);
-            } else if (intent.getExtras() != null){
+            } else if (intent.getExtras() != null) {
                 String pageUri = intent.getExtras().getString(Intent.EXTRA_TEXT);
                 String pageTitle = intent.getExtras().getString(Intent.EXTRA_SUBJECT);
                 if (pageTitle == null) {
@@ -355,7 +355,7 @@ public class PostActivity extends FragmentActivity {
         assert c != null;
         c.moveToFirst();
         String fileName = c.getString(0);
-        if (fileName==null) {
+        if (fileName == null) {
             JustawayApplication.showToast(getString(R.string.toast_set_image_failure));
             return;
         }
@@ -423,9 +423,9 @@ public class PostActivity extends FragmentActivity {
                     mImgButton.setTextColor(getResources().getColor(android.R.color.secondary_text_dark));
                     mTweetButton.setEnabled(false);
                 }
-            }else if (e.getErrorCode() == ERROR_CODE_DUPLICATE_STATUS) {
+            } else if (e.getErrorCode() == ERROR_CODE_DUPLICATE_STATUS) {
                 JustawayApplication.showToast(getString(R.string.toast_update_status_already));
-            }else {
+            } else {
                 JustawayApplication.showToast(R.string.toast_update_status_failure);
             }
         }

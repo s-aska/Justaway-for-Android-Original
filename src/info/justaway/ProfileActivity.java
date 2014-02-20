@@ -268,8 +268,8 @@ public class ProfileActivity extends FragmentActivity implements
                  * タブのindexと選択されたpositionを比較して色を設定
                  */
                 for (int i = 0; i < countTexts.size(); i++) {
-                    countTexts.get(i).setTextColor( i == position ? colorBlue : colorWhite);
-                    labelTexts.get(i).setTextColor( i == position ? colorBlue : colorWhite);
+                    countTexts.get(i).setTextColor(i == position ? colorBlue : colorWhite);
+                    labelTexts.get(i).setTextColor(i == position ? colorBlue : colorWhite);
                 }
             }
         });

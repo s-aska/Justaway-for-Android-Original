@@ -5,6 +5,6 @@
         android:id="@+id/save"
         android:orderInCategory="100"
         android:showAsAction="never"
-        android:title="@string/button_save" />
+        android:title="@string/button_save"/>
 
 </menu>
