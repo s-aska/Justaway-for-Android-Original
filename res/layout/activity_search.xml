@@ -1,8 +1,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/background">
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:background="@color/background">
 
     <LinearLayout
         android:orientation="horizontal"
@@ -16,7 +16,7 @@
             android:layout_weight="1"
             android:layout_marginTop="10dip"
             android:singleLine="true"
-            android:id="@+id/searchWords" />
+            android:id="@+id/searchWords"/>
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -29,6 +29,7 @@
                 android:layout_height="wrap_content"
                 android:background="@color/menu_background"
                 android:text="@string/fontello_search"/>
+
             <Button
                 android:id="@+id/tweet"
                 android:layout_width="58dip"
@@ -43,15 +44,17 @@
         android:id="@+id/search_list_view"
         android:layout_height="0dip"
         android:layout_width="match_parent"
-        android:layout_weight="1" />
+        android:layout_weight="1"/>
+
     <ListView
         android:id="@+id/list_view"
         android:layout_height="0dip"
         android:layout_width="match_parent"
         android:layout_weight="1"/>
+
     <ProgressBar
         android:id="@+id/guruguru"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center" />
+        android:gravity="center"/>
 </LinearLayout>

@@ -1,9 +1,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/background"
-    android:padding="6dip">
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:background="@color/background"
+              android:padding="6dip">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,14 +18,14 @@
                 android:id="@+id/icon"
                 android:layout_width="96dip"
                 android:layout_height="96dip"
-                android:paddingRight="6dip" />
+                android:paddingRight="6dip"/>
 
             <Button
                 android:id="@+id/update_profile_image"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
-                android:text="@string/label_update_profile_image" />
+                android:text="@string/label_update_profile_image"/>
         </LinearLayout>
 
         <LinearLayout
@@ -38,13 +38,13 @@
                 android:layout_width="64dip"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="@string/label_name" />
+                android:text="@string/label_name"/>
 
             <EditText
                 android:id="@+id/name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"/>
         </LinearLayout>
 
         <LinearLayout
@@ -57,13 +57,13 @@
                 android:layout_width="64dip"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="@string/label_location" />
+                android:text="@string/label_location"/>
 
             <EditText
                 android:id="@+id/location"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"/>
         </LinearLayout>
 
         <LinearLayout
@@ -76,13 +76,13 @@
                 android:layout_width="64dip"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="@string/label_web_site" />
+                android:text="@string/label_web_site"/>
 
             <EditText
                 android:id="@+id/web_site"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"/>
         </LinearLayout>
 
         <LinearLayout
@@ -95,13 +95,13 @@
                 android:layout_width="64dip"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="@string/label_bio" />
+                android:text="@string/label_bio"/>
 
             <EditText
                 android:id="@+id/bio"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1" />
+                android:layout_weight="1"/>
         </LinearLayout>
 
         <Button
@@ -109,6 +109,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
-            android:text="@string/button_save" />
+            android:text="@string/button_save"/>
     </LinearLayout>
 </LinearLayout>
