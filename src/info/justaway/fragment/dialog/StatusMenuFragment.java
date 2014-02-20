@@ -98,7 +98,7 @@ public class StatusMenuFragment extends DialogFragment {
             /**
              * ツイ消し(DM)
              */
-            adapter.add(new Menu(R.string.context_menu_reply_direct_message, new Runnable() {
+            adapter.add(new Menu(R.string.context_menu_destroy_direct_message, new Runnable() {
                 @Override
                 public void run() {
                     MainActivity mainActivity = (MainActivity) mActivity;
