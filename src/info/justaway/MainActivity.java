@@ -35,6 +35,7 @@ import twitter4j.DirectMessage;
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
 import twitter4j.StatusUpdate;
+import twitter4j.TwitterException;
 import twitter4j.TwitterStream;
 import twitter4j.User;
 import twitter4j.UserStreamAdapter;
@@ -51,6 +52,7 @@ public class MainActivity extends FragmentActivity {
     private ProgressDialog mProgressDialog;
     private static final int REQUEST_CHOOSE_USER_LIST = 100;
     private static final int REQUEST_ACCOUNT_SETTING = 200;
+    private static final int ERROR_CODE_DUPLICATE_STATUS = 187;
     private static final int TAB_ID_TIMELINE = -1;
     private static final int TAB_ID_INTERACTIONS = -2;
     private static final int TAB_ID_DIRECT_MESSAGE = -3;
@@ -648,25 +650,27 @@ public class MainActivity extends FragmentActivity {
         };
     }
 
-    public class UpdateStatusTask extends AsyncTask<StatusUpdate, Void, Boolean> {
+    public class UpdateStatusTask extends AsyncTask<StatusUpdate, Void, TwitterException> {
         @Override
-        protected Boolean doInBackground(StatusUpdate... params) {
+        protected TwitterException doInBackground(StatusUpdate... params) {
             StatusUpdate superSugoi = params[0];
             try {
                 mApplication.getTwitter().updateStatus(superSugoi);
-                return true;
-            } catch (Exception e) {
+                return null;
+            } catch (TwitterException e) {
                 e.printStackTrace();
-                return false;
+                return e;
             }
         }
 
         @Override
-        protected void onPostExecute(Boolean success) {
+        protected void onPostExecute(TwitterException e) {
             dismissProgressDialog();
-            if (success) {
+            if (e == null) {
                 EditText status = (EditText) findViewById(R.id.quick_tweet_edit);
                 status.setText("");
+            } else if (e.getErrorCode() == ERROR_CODE_DUPLICATE_STATUS) {
+                JustawayApplication.showToast(getString(R.string.toast_update_status_already));
             } else {
                 JustawayApplication.showToast(R.string.toast_update_status_failure);
             }

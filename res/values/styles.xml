@@ -18,6 +18,7 @@
     </style>
 
     <drawable name="translucent_background">#99000000</drawable>
+
     <style name="Theme.MyTrans" parent="android:style/Theme.Translucent">
         <item name="android:windowBackground">@drawable/translucent_background</item>
     </style>
