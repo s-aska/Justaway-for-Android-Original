@@ -28,6 +28,7 @@ import java.util.List;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.fragment.dialog.StatusMenuFragment;
 import info.justaway.model.Row;
+import info.justaway.settings.MuteSettings;
 import twitter4j.Query;
 import twitter4j.QueryResult;
 import twitter4j.ResponseList;
@@ -207,14 +208,17 @@ public class SearchActivity extends FragmentActivity {
             if (queryResult.hasNext()) {
                 mNextQuery = queryResult.nextQuery();
             }
-            int count = mAdapter.getCount();
+            MuteSettings muteSettings = JustawayApplication.getApplication().getMuteSettings();
             List<twitter4j.Status> statuses = queryResult.getTweets();
             for (twitter4j.Status status : statuses) {
+                if (muteSettings.isMute(status)) {
+                    continue;
+                }
                 mAdapter.add(Row.newStatus(status));
             }
 
             mListView.setVisibility(View.VISIBLE);
-            if (count == 0) {
+            if (mAdapter.getCount() == 0) {
                 mListView.setSelection(0);
                 mSearchListView.setVisibility(View.GONE);
             }
