@@ -208,6 +208,7 @@ public class SearchActivity extends FragmentActivity {
                 mNextQuery = queryResult.nextQuery();
             }
             MuteSettings muteSettings = JustawayApplication.getApplication().getMuteSettings();
+            int count = mAdapter.getCount();
             List<twitter4j.Status> statuses = queryResult.getTweets();
             for (twitter4j.Status status : statuses) {
                 if (muteSettings.isMute(status)) {
@@ -217,7 +218,7 @@ public class SearchActivity extends FragmentActivity {
             }
 
             mListView.setVisibility(View.VISIBLE);
-            if (mAdapter.getCount() == 0) {
+            if (count == 0) {
                 mListView.setSelection(0);
                 mSearchListView.setVisibility(View.GONE);
             }
