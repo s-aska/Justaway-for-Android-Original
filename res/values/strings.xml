@@ -169,4 +169,5 @@
     <string name="widget_title_post_mode">投稿モード</string>
     <string name="confirm_remove_account">の登録を解除しますか？</string>
     <string name="toast_set_image_failure">添付に失敗しました</string>
+    <string name="toast_update_status_already">もうつぶやいてます＞＜</string>
 </resources>

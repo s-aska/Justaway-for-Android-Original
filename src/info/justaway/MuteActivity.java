@@ -52,7 +52,7 @@ public class MuteActivity extends FragmentActivity {
                  * タブのindexと選択されたpositionを比較して色を設定
                  */
                 for (int i = 0; i < tabs.size(); i++) {
-                    tabs.get(i).setTextColor( i == position ? colorBlue : colorWhite );
+                    tabs.get(i).setTextColor(i == position ? colorBlue : colorWhite);
                 }
             }
         });

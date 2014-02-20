@@ -4,6 +4,6 @@
         android:id="@+id/add_account"
         android:orderInCategory="100"
         android:showAsAction="never"
-        android:title="@string/menu_add_account" />
+        android:title="@string/menu_add_account"/>
 
 </menu>

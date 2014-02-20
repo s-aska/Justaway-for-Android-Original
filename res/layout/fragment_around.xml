@@ -10,10 +10,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"/>
+
     <ListView
         android:id="@+id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+
     <ProgressBar
         android:id="@+id/guruguru_bottom"
         android:layout_width="match_parent"

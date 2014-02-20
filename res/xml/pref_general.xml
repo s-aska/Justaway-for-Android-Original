@@ -4,7 +4,7 @@
         android:key="keep_screen_on"
         android:title="@string/pref_title_keep_screen_on"
         android:summary="@string/pref_description_keep_screen_on"
-        android:defaultValue="true" />
+        android:defaultValue="true"/>
 
     <ListPreference
         android:key="font_size"
@@ -13,7 +13,7 @@
         android:entries="@array/pref_font_size_titles"
         android:entryValues="@array/pref_font_size_values"
         android:negativeButtonText="@null"
-        android:positiveButtonText="@null" />
+        android:positiveButtonText="@null"/>
 
     <PreferenceScreen
         android:key="mute"
@@ -22,6 +22,6 @@
         <intent
             android:action="android.intent.action.MAIN"
             android:targetPackage="info.justaway"
-            android:targetClass="info.justaway.MuteActivity" />
+            android:targetClass="info.justaway.MuteActivity"/>
     </PreferenceScreen>
 </PreferenceScreen>
