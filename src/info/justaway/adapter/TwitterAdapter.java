@@ -557,7 +557,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         holder.datetime_relative.setText(getRelativeTime(status.getCreatedAt()));
         holder.datetime.setText(getAbsoluteTime(status.getCreatedAt()));
 
-        String via = getClientName(status.getSource());
+        String via = mApplication.getClientName(status.getSource());
         holder.via.setText("via " + via);
         holder.via.setVisibility(View.VISIBLE);
 
@@ -584,8 +584,10 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             holder.menu_and_via.setVisibility(View.VISIBLE);
             holder.action.setVisibility(View.VISIBLE);
         }
+
         // RTの場合
         else if (retweet != null) {
+
             // 自分のツイート
             if (userId == status.getUser().getId()) {
                 holder.action_icon.setText(R.string.fontello_retweet);
@@ -603,8 +605,9 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                 holder.retweet.setVisibility(View.VISIBLE);
             }
         } else {
+
             // 自分へのリプ
-            if (userId == status.getInReplyToUserId()) {
+            if (mApplication.isMentionForMe(status)) {
                 holder.action_icon.setText(R.string.fontello_at);
                 holder.action_icon.setTextColor(mContext.getResources().getColor(R.color.holo_red_light));
                 holder.action_by_display_name.setText(status.getUser().getName());
@@ -711,14 +714,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         }
     }
 
-    private String getClientName(String source) {
-        String[] tokens = source.split("[<>]");
-        if (tokens.length > 1) {
-            return tokens[2];
-        } else {
-            return tokens[0];
-        }
-    }
+
 
     private String getRelativeTime(Date date) {
         int diff = (int) (((new Date()).getTime() - date.getTime()) / 1000);
