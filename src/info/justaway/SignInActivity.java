@@ -96,6 +96,10 @@ public class SignInActivity extends Activity {
                 || !intent.getData().toString().startsWith(mCallbackURL)) {
             return;
         }
+        String oauth_verifier = intent.getData().getQueryParameter("oauth_verifier");
+        if (oauth_verifier == null || oauth_verifier.isEmpty()) {
+            return;
+        }
         new AsyncTask<String, Void, AccessToken>() {
             @Override
             protected AccessToken doInBackground(String... params) {
@@ -117,7 +121,7 @@ public class SignInActivity extends Activity {
                     JustawayApplication.showToast(R.string.toast_sign_in_failure);
                 }
             }
-        }.execute(intent.getData().getQueryParameter("oauth_verifier"));
+        }.execute(oauth_verifier);
     }
 
     private void successOAuth(AccessToken accessToken) {
