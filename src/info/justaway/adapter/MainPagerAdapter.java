@@ -10,7 +10,6 @@ import android.support.v4.view.ViewPager;
 import java.util.ArrayList;
 
 import info.justaway.JustawayApplication;
-import info.justaway.R;
 import info.justaway.fragment.main.BaseFragment;
 import twitter4j.UserList;
 

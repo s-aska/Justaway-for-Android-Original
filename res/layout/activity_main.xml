@@ -1,12 +1,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical"
-    android:background="@color/background"
-    android:focusableInTouchMode="true"
-    tools:context=".MainActivity">
+              xmlns:tools="http://schemas.android.com/tools"
+              android:id="@+id/main"
+              android:layout_width="fill_parent"
+              android:layout_height="fill_parent"
+              android:orientation="vertical"
+              android:background="@color/background"
+              android:focusableInTouchMode="true"
+              tools:context=".MainActivity">
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -19,7 +19,7 @@
         <android.support.v4.view.ViewPager
             android:id="@+id/pager"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent" />
+            android:layout_height="fill_parent"/>
     </LinearLayout>
 
     <LinearLayout
@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:enabled="false"
-            android:focusable="false" />
+            android:focusable="false"/>
 
         <Button
             android:id="@+id/send"
@@ -43,7 +43,7 @@
             android:layout_height="wrap_content"
             android:background="@color/menu_background"
             android:text="@string/fontello_paper"
-            android:textSize="22sp" />
+            android:textSize="22sp"/>
 
     </LinearLayout>
 
@@ -70,7 +70,7 @@
                     android:layout_gravity="left"
                     android:gravity="left"
                     android:orientation="horizontal"
-                    android:background="@color/menu_background" >
+                    android:background="@color/menu_background">
 
                     <Button
                         android:id="@+id/action_timeline"
@@ -78,7 +78,7 @@
                         android:layout_height="wrap_content"
                         android:background="@color/menu_active_background"
                         android:text="@string/fontello_home"
-                        android:textSize="22sp" />
+                        android:textSize="22sp"/>
 
                     <Button
                         android:id="@+id/action_interactions"
@@ -86,7 +86,7 @@
                         android:layout_height="wrap_content"
                         android:background="@color/menu_background"
                         android:text="@string/fontello_at"
-                        android:textSize="22sp" />
+                        android:textSize="22sp"/>
 
                     <Button
                         android:id="@+id/action_direct_message"
@@ -94,7 +94,7 @@
                         android:layout_height="wrap_content"
                         android:background="@color/menu_background"
                         android:text="@string/fontello_mail"
-                        android:textSize="22sp" />
+                        android:textSize="22sp"/>
                 </LinearLayout>
             </HorizontalScrollView>
 
@@ -103,7 +103,7 @@
                 android:layout_width="58dip"
                 android:layout_height="wrap_content"
                 android:background="@color/menu_background"
-                android:text="@string/fontello_edit" />
+                android:text="@string/fontello_edit"/>
         </TableRow>
     </TableLayout>
 
