@@ -62,9 +62,6 @@ public class StatusMenuFragment extends DialogFragment {
         final MenuAdapter adapter = new MenuAdapter(getActivity(), R.layout.row_menu);
         ListView listView = new ListView(mActivity);
         listView.setAdapter(adapter);
-//        listView.setSelector(R.drawable.selector);
-//        listView.setDrawSelectorOnTop(true);
-
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
