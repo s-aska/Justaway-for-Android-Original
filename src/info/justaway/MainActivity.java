@@ -694,7 +694,13 @@ public class MainActivity extends FragmentActivity {
         new Handler().post(new Runnable() {
             @Override
             public void run() {
-                mMainPagerAdapter.notifyDataSetChanged();
+                int count = mMainPagerAdapter.getCount();
+                for (int id = 0; id < count; id++) {
+                    BaseFragment fragment = mMainPagerAdapter.findFragmentByPosition(id);
+                    if (fragment != null) {
+                        fragment.getListAdapter().notifyDataSetChanged();
+                    }
+                }
             }
         });
     }
