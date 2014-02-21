@@ -39,6 +39,7 @@ import twitter4j.TwitterStream;
 import twitter4j.TwitterStreamFactory;
 import twitter4j.User;
 import twitter4j.UserList;
+import twitter4j.UserMentionEntity;
 import twitter4j.auth.AccessToken;
 import twitter4j.conf.ConfigurationBuilder;
 
@@ -701,5 +702,21 @@ public class JustawayApplication extends Application {
         } else {
             return tokens[0];
         }
+    }
+
+    public boolean isMentionForMe(Status status) {
+        long userId = getUserId();
+        if (status.getInReplyToUserId() == userId) {
+            return true;
+        }
+
+        UserMentionEntity[] mentions = status.getUserMentionEntities();
+        for (UserMentionEntity mention : mentions) {
+            if (mention.getId() == userId) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

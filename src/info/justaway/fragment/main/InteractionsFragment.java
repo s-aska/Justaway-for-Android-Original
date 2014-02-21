@@ -18,6 +18,7 @@ import info.justaway.settings.MuteSettings;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
 import twitter4j.Status;
+import twitter4j.UserMentionEntity;
 
 /**
  * 将来「つながり」タブ予定のタブ、現在はリプしか表示されない
@@ -82,27 +83,46 @@ public class InteractionsFragment extends BaseFragment {
     }
 
     private Boolean skip(Row row) {
+
         if (row.isFavorite()) {
             return false;
         }
-        if (row.isStatus()) {
-            JustawayApplication application = JustawayApplication.getApplication();
-            Status status = row.getStatus();
 
-            // mute
+        if (row.isStatus()) {
+
+            JustawayApplication application = JustawayApplication.getApplication();
+
+            Status status = row.getStatus();
             if (application.getMuteSettings().isMute(status)) {
                 return true;
             }
 
-            // mentioned for me
-            if (status.getInReplyToUserId() == application.getUserId()) {
-                return false;
-            }
-
-            // retweeted for me
+            long userId = application.getUserId();
             Status retweet = status.getRetweetedStatus();
-            if (retweet != null && retweet.getUser().getId() == application.getUserId()) {
-                return false;
+            if (retweet != null) {
+
+                // retweeted for me
+                if (retweet.getUser().getId() == userId) {
+                    return false;
+                }
+            } else {
+
+                /**
+                 * 自分を@に含むRTが通知欄を破壊するのを防ぐ為、mentioned判定は非RT時のみ行う
+                 */
+
+                // mentioned for me
+                if (status.getInReplyToUserId() == userId) {
+                    return false;
+                }
+
+                // mentioned for me
+                UserMentionEntity[] mentions = status.getUserMentionEntities();
+                for (UserMentionEntity mention : mentions) {
+                    if (mention.getId() == userId) {
+                        return false;
+                    }
+                }
             }
         }
         return true;
