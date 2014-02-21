@@ -31,7 +31,7 @@
 
         <info.justaway.widget.ClearEditText
             android:id="@+id/quick_tweet_edit"
-            android:layout_width="1dip"
+            android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:enabled="false"
@@ -41,7 +41,7 @@
             android:id="@+id/send"
             android:layout_width="58dip"
             android:layout_height="wrap_content"
-            android:background="@color/menu_background"
+            android:background="@drawable/button_stateful"
             android:text="@string/fontello_paper"
             android:textSize="22sp"/>
 
@@ -55,7 +55,7 @@
         android:background="@color/menu_background">
 
         <!-- TableRow 無いと2段になる(◞‸◟) -->
-        <TableRow>
+        <TableRow tools:ignore="UselessParent">
 
             <HorizontalScrollView
                 android:id="@+id/scroll_view"
@@ -76,7 +76,7 @@
                         android:id="@+id/action_timeline"
                         android:layout_width="58dip"
                         android:layout_height="wrap_content"
-                        android:background="@color/menu_active_background"
+                        android:background="@drawable/tab_stateful"
                         android:text="@string/fontello_home"
                         android:textSize="22sp"/>
 
@@ -84,7 +84,7 @@
                         android:id="@+id/action_interactions"
                         android:layout_width="58dip"
                         android:layout_height="wrap_content"
-                        android:background="@color/menu_background"
+                        android:background="@drawable/tab_stateful"
                         android:text="@string/fontello_at"
                         android:textSize="22sp"/>
 
@@ -92,7 +92,7 @@
                         android:id="@+id/action_direct_message"
                         android:layout_width="58dip"
                         android:layout_height="wrap_content"
-                        android:background="@color/menu_background"
+                        android:background="@drawable/tab_stateful"
                         android:text="@string/fontello_mail"
                         android:textSize="22sp"/>
                 </LinearLayout>
@@ -102,7 +102,7 @@
                 android:id="@+id/action_tweet"
                 android:layout_width="58dip"
                 android:layout_height="wrap_content"
-                android:background="@color/menu_background"
+                android:background="@drawable/button_stateful"
                 android:text="@string/fontello_edit"/>
         </TableRow>
     </TableLayout>

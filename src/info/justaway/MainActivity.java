@@ -229,7 +229,7 @@ public class MainActivity extends FragmentActivity {
                     button.setWidth(60);
                     button.setTypeface(fontello);
                     button.setTextSize(22);
-                    button.setBackgroundColor(getResources().getColor(R.color.menu_background));
+                    button.setBackgroundResource(R.drawable.tab_stateful);
                     button.setText(R.string.fontello_list);
                     button.setOnClickListener(tabMenuOnClickListener(++position));
                     tab_menus.addView(button);
@@ -402,11 +402,9 @@ public class MainActivity extends FragmentActivity {
                         continue;
                     }
                     if (i == position) {
-                        button.setBackgroundColor(getResources().getColor(
-                                R.color.menu_active_background));
+                        button.setSelected(true);
                     } else {
-                        button.setBackgroundColor(getResources().getColor(
-                                R.color.menu_background));
+                        button.setSelected(false);
                     }
                 }
                 setTitle(mMainPagerAdapter.getPageTitle(position));
