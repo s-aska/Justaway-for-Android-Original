@@ -28,6 +28,6 @@
         <item>20</item>
     </string-array>
 
-    <string name="pref_title_mute">ミュート</string>
-    <string name="pref_description_mute">ミュートの設定</string>
+    <string name="pref_title_mute">ミュート設定</string>
+    <string name="pref_description_mute">ユーザー / via / キーワード を指定できます</string>
 </resources>
