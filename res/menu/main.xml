@@ -4,36 +4,36 @@
         android:id="@+id/account"
         android:orderInCategory="100"
         android:showAsAction="never"
-        android:title="@string/menu_account_setting" />
+        android:title="@string/menu_account_setting"/>
     <item
         android:id="@+id/user_list"
         android:orderInCategory="100"
         android:showAsAction="never"
-        android:title="@string/menu_choose_user_list" />
+        android:title="@string/menu_choose_user_list"/>
     <item
         android:id="@+id/profile"
         android:orderInCategory="100"
         android:showAsAction="never"
-        android:title="@string/menu_profile" />
+        android:title="@string/menu_profile"/>
     <item
         android:id="@+id/search"
         android:orderInCategory="100"
         android:showAsAction="never"
-        android:title="@string/menu_search" />
+        android:title="@string/menu_search"/>
     <item
         android:id="@+id/settings"
         android:orderInCategory="100"
         android:showAsAction="never"
-        android:title="@string/menu_settings" />
+        android:title="@string/menu_settings"/>
     <item
         android:id="@+id/feedback"
         android:orderInCategory="100"
         android:showAsAction="never"
-        android:title="@string/menu_feedback" />
+        android:title="@string/menu_feedback"/>
     <item
         android:id="@+id/official_website"
         android:orderInCategory="100"
         android:showAsAction="never"
-        android:title="@string/menu_website" />
+        android:title="@string/menu_website"/>
 
 </menu>
