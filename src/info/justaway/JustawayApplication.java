@@ -124,8 +124,6 @@ public class JustawayApplication extends Application {
         resetDisplaySettings();
 
         sMuteSettings = new MuteSettings();
-
-        warmUpUserIconMap();
     }
 
     public void displayImage(String url, ImageView view) {
@@ -157,7 +155,7 @@ public class JustawayApplication extends Application {
     /**
      * userIdとアイコンの対応、DiskCacheすると「古いアイコン〜〜〜〜」ってなるのでしない。
      */
-    private HashMap<Long, String> mUserIconMap = new HashMap<Long, String>();
+    private HashMap<String, String> mUserIconMap = new HashMap<String, String>();
 
     public void displayUserIcon(User user, final ImageView view) {
         String url;
@@ -182,7 +180,7 @@ public class JustawayApplication extends Application {
      * userIdからアイコンを取得する
      */
     public void displayUserIcon(final long userId, final ImageView view) {
-        String url = mUserIconMap.get(userId);
+        String url = mUserIconMap.get(String.valueOf(userId));
         if (url != null) {
             displayRoundedImage(url, view);
             return;
@@ -191,26 +189,26 @@ public class JustawayApplication extends Application {
         // すぐにURLが取れない時は一旦消す
         view.setImageDrawable(null);
 
-        new AsyncTask<Void, Void, User>() {
-
-            @Override
-            protected User doInBackground(Void... voids) {
-                try {
-                    return getTwitter().showUser(userId);
-                } catch (TwitterException e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(User user) {
-                if (user != null) {
-                    mUserIconMap.put(userId, user.getBiggerProfileImageURL());
-                    displayRoundedImage(user.getBiggerProfileImageURL(), view);
-                }
-            }
-        }.execute();
+//        new AsyncTask<Void, Void, User>() {
+//
+//            @Override
+//            protected User doInBackground(Void... voids) {
+//                try {
+//                    return getTwitter().showUser(userId);
+//                } catch (TwitterException e) {
+//                    e.printStackTrace();
+//                }
+//                return null;
+//            }
+//
+//            @Override
+//            protected void onPostExecute(User user) {
+//                if (user != null) {
+//                    mUserIconMap.put(userId, user.getBiggerProfileImageURL());
+//                    displayRoundedImage(user.getBiggerProfileImageURL(), view);
+//                }
+//            }
+//        }.execute();
     }
 
     /**
@@ -218,7 +216,7 @@ public class JustawayApplication extends Application {
      * 起動時のネットワーク通信がこれでまた一つ増えてしまった
      */
     private static final String PREF_NAME_USER_ICON_MAP = "user_icon_map";
-    private static final String PREF_KEY_USER_ICON_MAP = "data/v1";
+    private static final String PREF_KEY_USER_ICON_MAP = "data/v2";
 
     @SuppressWarnings("unchecked")
     public void warmUpUserIconMap() {
@@ -260,10 +258,11 @@ public class JustawayApplication extends Application {
                 }
                 mUserIconMap.clear();
                 for (User user : users) {
-                    mUserIconMap.put(user.getId(), user.getBiggerProfileImageURL());
+                    mUserIconMap.put(String.valueOf(user.getId()), user.getBiggerProfileImageURL());
                 }
                 String exportJson = gson.toJson(mUserIconMap);
                 SharedPreferences.Editor editor = preferences.edit();
+                editor.clear();
                 editor.putString(PREF_KEY_USER_ICON_MAP, exportJson);
                 editor.commit();
 

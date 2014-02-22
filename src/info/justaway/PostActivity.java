@@ -75,6 +75,8 @@ public class PostActivity extends FragmentActivity {
         setContentView(R.layout.activity_post);
         mContext = this;
 
+        JustawayApplication.getApplication().warmUpUserIconMap();
+
         Typeface fontello = JustawayApplication.getFontello();
 
         mEditText = (EditText) findViewById(R.id.status);
