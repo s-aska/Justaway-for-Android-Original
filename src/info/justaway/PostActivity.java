@@ -1,9 +1,7 @@
 package info.justaway;
 
 
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -19,7 +17,6 @@ import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -30,8 +27,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -63,8 +58,8 @@ public class PostActivity extends FragmentActivity {
     private Long mInReplyToStatusId;
     private File mImgPath;
     private Uri mImageUri;
-    private DraftFragment mDraftDialog;
-    private HashtagFragment mHashtagDialog;
+    private AlertDialog mDraftDialog;
+    private AlertDialog mHashtagDialog;
     private boolean mWidgetMode;
     private Spinner mSpinner;
     private PostStockSettings mPostStockSettings;
@@ -272,16 +267,47 @@ public class PostActivity extends FragmentActivity {
         draftButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mDraftDialog = new DraftFragment();
-                mDraftDialog.show(getSupportFragmentManager(), "dialog");
+                View view =  ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.list, null);
+                assert view != null;
+                ListView listView = (ListView) view.findViewById(R.id.list);
+
+                // 下書きをViewに描写するアダプター
+                DraftAdapter adapter = new DraftAdapter(mContext, R.layout.row_word);
+                listView.setAdapter(adapter);
+
+                PostStockSettings postStockSettings = new PostStockSettings();
+
+                for (String draft : postStockSettings.getDrafts()) {
+                    adapter.add(draft);
+                }
+                mDraftDialog = new AlertDialog.Builder(mContext)
+                        .setTitle(R.string.dialog_title_draft)
+                        .setView(view)
+                        .show();
             }
         });
 
         hashtagButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mHashtagDialog = new HashtagFragment();
-                mHashtagDialog.show(getSupportFragmentManager(), "dialog");
+
+                View view =  ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.list, null);
+                assert view != null;
+                ListView listView = (ListView) view.findViewById(R.id.list);
+
+                // ハッシュタグをViewに描写するアダプター
+                HashtagAdapter adapter = new HashtagAdapter(mContext, R.layout.row_word);
+                listView.setAdapter(adapter);
+
+                PostStockSettings postStockSettings = new PostStockSettings();
+
+                for (String hashtag : postStockSettings.getHashtags()) {
+                    adapter.add(hashtag);
+                }
+                mHashtagDialog = new AlertDialog.Builder(mContext)
+                        .setTitle(R.string.dialog_title_hashtag)
+                        .setView(view)
+                        .show();
             }
         });
 
@@ -506,60 +532,6 @@ public class PostActivity extends FragmentActivity {
                 break;
         }
         return true;
-    }
-
-    public class DraftFragment extends DialogFragment {
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-
-            Activity activity = getActivity();
-            Dialog dialog = new Dialog(activity);
-            dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-            dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
-            dialog.setContentView(R.layout.list);
-            ListView listView = (ListView) dialog.findViewById(R.id.list);
-
-            // 下書きをViewに描写するアダプター
-            DraftAdapter adapter = new DraftAdapter(activity, R.layout.row_word);
-            listView.setAdapter(adapter);
-
-            PostStockSettings postStockSettings = new PostStockSettings();
-
-            for (String draft : postStockSettings.getDrafts()) {
-                adapter.add(draft);
-            }
-
-            return dialog;
-        }
-    }
-
-    public class HashtagFragment extends DialogFragment {
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-
-            Activity activity = getActivity();
-            Dialog dialog = new Dialog(activity);
-            dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-            dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
-            dialog.setContentView(R.layout.list);
-            ListView listView = (ListView) dialog.findViewById(R.id.list);
-
-            // ハッシュタグをViewに描写するアダプター
-            HashtagAdapter adapter = new HashtagAdapter(activity, R.layout.row_word);
-            listView.setAdapter(adapter);
-
-            PostStockSettings postStockSettings = new PostStockSettings();
-
-            for (String hashtag : postStockSettings.getHashtags()) {
-                adapter.add(hashtag);
-            }
-
-            return dialog;
-        }
     }
 
     public class AccessTokenAdapter extends ArrayAdapter<AccessToken> {

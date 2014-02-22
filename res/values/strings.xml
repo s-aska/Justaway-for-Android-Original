@@ -170,4 +170,6 @@
     <string name="toast_update_status_failure">残念~！もう一回！</string>
     <string name="twitter_callback_url">justaway://twitter</string>
     <string name="widget_title_post_mode">投稿モード</string>
+    <string name="dialog_title_draft">下書き</string>
+    <string name="dialog_title_hashtag">ハッシュタグ</string>
 </resources>
