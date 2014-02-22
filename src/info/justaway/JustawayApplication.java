@@ -121,11 +121,9 @@ public class JustawayApplication extends Application {
             Thread.setDefaultUncaughtExceptionHandler(new MyUncaughtExceptionHandler(sApplication));
         }
 
-        resetFontSize();
+        resetDisplaySettings();
 
         sMuteSettings = new MuteSettings();
-
-        warmUpUserIconMap();
     }
 
     public void displayImage(String url, ImageView view) {
@@ -143,7 +141,11 @@ public class JustawayApplication extends Application {
             return;
         }
         view.setTag(url);
-        sImageLoader.displayImage(url, view, sRoundedDisplayImageOptions);
+        if (getUserIconRoundedOn()) {
+            sImageLoader.displayImage(url, view, sRoundedDisplayImageOptions);
+        } else {
+            sImageLoader.displayImage(url, view);
+        }
     }
 
     public MuteSettings getMuteSettings() {
@@ -153,13 +155,32 @@ public class JustawayApplication extends Application {
     /**
      * userIdとアイコンの対応、DiskCacheすると「古いアイコン〜〜〜〜」ってなるのでしない。
      */
-    private HashMap<Long, String> mUserIconMap = new HashMap<Long, String>();
+    private HashMap<String, String> mUserIconMap = new HashMap<String, String>();
+
+    public void displayUserIcon(User user, final ImageView view) {
+        String url;
+        if (getUserIconSize().equals("bigger")) {
+            url = user.getBiggerProfileImageURL();
+        } else if (getUserIconSize().equals("normal")) {
+            url = user.getProfileImageURL();
+        } else if (getUserIconSize().equals("mini")) {
+            url = user.getMiniProfileImageURL();
+
+        } else {
+            return;
+        }
+        if (getUserIconRoundedOn()) {
+            displayRoundedImage(url, view);
+        } else {
+            displayImage(url, view);
+        }
+    }
 
     /**
      * userIdからアイコンを取得する
      */
     public void displayUserIcon(final long userId, final ImageView view) {
-        String url = mUserIconMap.get(userId);
+        String url = mUserIconMap.get(String.valueOf(userId));
         if (url != null) {
             displayRoundedImage(url, view);
             return;
@@ -168,26 +189,26 @@ public class JustawayApplication extends Application {
         // すぐにURLが取れない時は一旦消す
         view.setImageDrawable(null);
 
-        new AsyncTask<Void, Void, User>() {
-
-            @Override
-            protected User doInBackground(Void... voids) {
-                try {
-                    return getTwitter().showUser(userId);
-                } catch (TwitterException e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(User user) {
-                if (user != null) {
-                    mUserIconMap.put(userId, user.getBiggerProfileImageURL());
-                    displayRoundedImage(user.getBiggerProfileImageURL(), view);
-                }
-            }
-        }.execute();
+//        new AsyncTask<Void, Void, User>() {
+//
+//            @Override
+//            protected User doInBackground(Void... voids) {
+//                try {
+//                    return getTwitter().showUser(userId);
+//                } catch (TwitterException e) {
+//                    e.printStackTrace();
+//                }
+//                return null;
+//            }
+//
+//            @Override
+//            protected void onPostExecute(User user) {
+//                if (user != null) {
+//                    mUserIconMap.put(userId, user.getBiggerProfileImageURL());
+//                    displayRoundedImage(user.getBiggerProfileImageURL(), view);
+//                }
+//            }
+//        }.execute();
     }
 
     /**
@@ -195,7 +216,7 @@ public class JustawayApplication extends Application {
      * 起動時のネットワーク通信がこれでまた一つ増えてしまった
      */
     private static final String PREF_NAME_USER_ICON_MAP = "user_icon_map";
-    private static final String PREF_KEY_USER_ICON_MAP = "data/v1";
+    private static final String PREF_KEY_USER_ICON_MAP = "data/v2";
 
     @SuppressWarnings("unchecked")
     public void warmUpUserIconMap() {
@@ -237,10 +258,11 @@ public class JustawayApplication extends Application {
                 }
                 mUserIconMap.clear();
                 for (User user : users) {
-                    mUserIconMap.put(user.getId(), user.getBiggerProfileImageURL());
+                    mUserIconMap.put(String.valueOf(user.getId()), user.getBiggerProfileImageURL());
                 }
                 String exportJson = gson.toJson(mUserIconMap);
                 SharedPreferences.Editor editor = preferences.edit();
+                editor.clear();
                 editor.putString(PREF_KEY_USER_ICON_MAP, exportJson);
                 editor.commit();
 
@@ -383,6 +405,8 @@ public class JustawayApplication extends Application {
      */
     private static final String PREF_NAME_SETTINGS = "settings";
     private int mFontSize;
+    private Boolean mUserIconRounded;
+    private String mUserIconSize;
 
     public boolean getKeepScreenOn() {
         SharedPreferences preferences = getSharedPreferences(PREF_NAME_SETTINGS, Context.MODE_PRIVATE);
@@ -393,9 +417,29 @@ public class JustawayApplication extends Application {
         return mFontSize;
     }
 
-    public void resetFontSize() {
+    public void resetDisplaySettings() {
         SharedPreferences preferences = getSharedPreferences(PREF_NAME_SETTINGS, Context.MODE_PRIVATE);
         mFontSize = Integer.parseInt(preferences.getString("font_size", "12"));
+        mUserIconRounded = getUserIconRoundedOn();
+        mUserIconSize = getUserIconSize();
+    }
+
+    public boolean getUserIconRoundedOn() {
+        if (mUserIconRounded != null) {
+            return mUserIconRounded;
+        }
+        SharedPreferences preferences = getSharedPreferences(PREF_NAME_SETTINGS, Context.MODE_PRIVATE);
+        mUserIconRounded = preferences.getBoolean("user_icon_rounded_on", true);
+        return mUserIconRounded;
+    }
+
+    public String getUserIconSize() {
+        if (mUserIconSize != null) {
+            return mUserIconSize;
+        }
+        SharedPreferences preferences = getSharedPreferences(PREF_NAME_SETTINGS, Context.MODE_PRIVATE);
+        mUserIconSize = preferences.getString("user_icon_size", "bigger");
+        return mUserIconSize;
     }
 
     /**

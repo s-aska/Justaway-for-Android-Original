@@ -7,7 +7,7 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 
-public class SettingsActivity extends Activity {
+public class PerformanceActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,17 +28,23 @@ public class SettingsActivity extends Activity {
             }
             preferenceManager.setSharedPreferencesName("settings");
 
-            addPreferencesFromResource(R.xml.pref_general);
+            addPreferencesFromResource(R.xml.pref_performance);
 
-            ListPreference fontSizePreference = (ListPreference) findPreference("font_size");
-            if (fontSizePreference == null) {
+            ListPreference userIconSizePreference = (ListPreference) findPreference("user_icon_size");
+            if (userIconSizePreference == null) {
                 return;
             }
-            fontSizePreference.setSummary(fontSizePreference.getValue() + " pt");
-            fontSizePreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+            userIconSizePreference.setSummary(userIconSizePreference.getEntry());
+            userIconSizePreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    preference.setSummary(newValue + " pt");
+                    ListPreference listPreference = (ListPreference) preference;
+                    int listId = listPreference.findIndexOfValue((String) newValue);
+                    CharSequence[] entries;
+                    entries = listPreference.getEntries();
+                    if (entries != null) {
+                        preference.setSummary(entries[listId]);
+                    }
                     return true;
                 }
             });

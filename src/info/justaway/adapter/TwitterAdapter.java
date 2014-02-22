@@ -319,7 +319,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         holder.via.setVisibility(View.GONE);
         holder.retweet.setVisibility(View.GONE);
         holder.images.setVisibility(View.GONE);
-        mApplication.displayRoundedImage(message.getSender().getBiggerProfileImageURL(), holder.icon);
+        mApplication.displayUserIcon(message.getSender(), holder.icon);
         holder.icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -627,7 +627,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         } else {
             holder.fontello_lock.setVisibility(View.INVISIBLE);
         }
-        mApplication.displayRoundedImage(status.getUser().getBiggerProfileImageURL(), holder.icon);
+        mApplication.displayUserIcon(status.getUser(), holder.icon);
         holder.icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -646,7 +646,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         Pattern instagram_pattern = Pattern.compile("^http://instagram\\.com/p/([^/]+)/$");
         Pattern images_pattern = Pattern.compile("^https?://.*\\.(png|gif|jpeg|jpg)$");
         Pattern youtube_pattern = Pattern.compile("^https?://(?:www\\.youtube\\.com/watch\\?.*v=|youtu\\.be/)([\\w-]+)");
-        Pattern niconico_pattern = Pattern.compile("^http://(?:www\\.nicovideo\\.jp/watch|nico\\.ms)/[a-z][a-z](\\d+)$");
+        Pattern niconico_pattern = Pattern.compile("^http://(?:www\\.nicovideo\\.jp/watch|nico\\.ms)/sm(\\d+)$");
         String statusString = status.getText();
         for (URLEntity url : urls) {
             Pattern p = Pattern.compile(url.getURL());
