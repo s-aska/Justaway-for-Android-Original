@@ -723,17 +723,12 @@ public class JustawayApplication extends Application {
 
     public boolean isMentionForMe(Status status) {
         long userId = getUserId();
-        if (status.getInReplyToUserId() == userId) {
-            return true;
-        }
-
         UserMentionEntity[] mentions = status.getUserMentionEntities();
         for (UserMentionEntity mention : mentions) {
             if (mention.getId() == userId) {
                 return true;
             }
         }
-
         return false;
     }
 }
