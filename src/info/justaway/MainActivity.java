@@ -1,23 +1,31 @@
 package info.justaway;
 
 import android.R.color;
+import android.app.ActionBar;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -31,6 +39,7 @@ import info.justaway.model.Row;
 import info.justaway.task.DestroyDirectMessageTask;
 import info.justaway.task.LoadUserListsTask;
 import info.justaway.task.ReFetchFavoriteStatus;
+import twitter4j.ConnectionLifeCycleListener;
 import twitter4j.DirectMessage;
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
@@ -50,6 +59,8 @@ public class MainActivity extends FragmentActivity {
     private MainPagerAdapter mMainPagerAdapter;
     private ViewPager mViewPager;
     private ProgressDialog mProgressDialog;
+    ActionBar mActionBar;
+    private TextView mSignalButton;
     private static final int REQUEST_CHOOSE_USER_LIST = 100;
     private static final int REQUEST_ACCOUNT_SETTING = 200;
     private static final int ERROR_CODE_DUPLICATE_STATUS = 187;
@@ -73,6 +84,81 @@ public class MainActivity extends FragmentActivity {
 
         // クイックモード時に起動と同時にキーボードが出現するのを抑止
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
+        mActionBar = getActionBar();
+        if (mActionBar != null) {
+            mActionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+            if (mActionBar.getCustomView() == null) {
+                mActionBar.setCustomView(R.layout.action_bar);
+                ViewGroup group = (ViewGroup) mActionBar.getCustomView();
+                mSignalButton = (TextView) group.findViewById(R.id.signal);
+                mSignalButton.setTypeface(JustawayApplication.getFontello());
+                mSignalButton.setOnClickListener(
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if (mApplication.getStreamingMode()) {
+                                    DialogFragment dialog = new DialogFragment() {
+                                        @Override
+                                        public Dialog onCreateDialog(Bundle savedInstanceState) {
+                                            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                            builder.setTitle(R.string.confirm_destroy_streaming);
+                                            builder.setPositiveButton(getString(R.string.button_ok),
+                                                    new DialogInterface.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(DialogInterface dialog, int which) {
+                                                            mApplication.setStreamingMode(false);
+                                                            if (mTwitterStream != null) {
+                                                                mTwitterStream.cleanUp();
+                                                                mTwitterStream.shutdown();
+                                                            }
+                                                            JustawayApplication.showToast(R.string.toast_destroy_streaming);
+                                                            dismiss();
+                                                        }
+                                                    });
+                                            builder.setNegativeButton(getString(R.string.button_cancel),
+                                                    new DialogInterface.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(DialogInterface dialog, int which) {
+                                                            dismiss();
+                                                        }
+                                                    });
+                                            return builder.create();
+                                        }
+                                    };
+                                    dialog.show(getSupportFragmentManager(), "dialog");
+                                } else {
+                                    DialogFragment dialog = new DialogFragment() {
+                                        @Override
+                                        public Dialog onCreateDialog(Bundle savedInstanceState) {
+                                            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                                            builder.setTitle(R.string.confirm_create_streaming);
+                                            builder.setPositiveButton(getString(R.string.button_ok),
+                                                    new DialogInterface.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(DialogInterface dialog, int which) {
+                                                            mApplication.setStreamingMode(true);
+                                                            setupStream();
+                                                            JustawayApplication.showToast(R.string.toast_create_streaming);
+                                                            dismiss();
+                                                        }
+                                                    });
+                                            builder.setNegativeButton(getString(R.string.button_cancel),
+                                                    new DialogInterface.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(DialogInterface dialog, int which) {
+                                                            dismiss();
+                                                        }
+                                                    });
+                                            return builder.create();
+                                        }
+                                    };
+                                    dialog.show(getSupportFragmentManager(), "dialog");
+                                }
+                            }
+                        });
+            }
+        }
 
         setContentView(R.layout.activity_main);
 
@@ -417,12 +503,48 @@ public class MainActivity extends FragmentActivity {
     }
 
     public void setupStream() {
+        if (!mApplication.getStreamingMode()) {
+            return;
+        }
         if (mTwitterStream != null) {
             mTwitterStream.cleanUp();
             mTwitterStream.shutdown();
+            mTwitterStream.setOAuthAccessToken(mApplication.getAccessToken());
+        } else {
+            mTwitterStream = mApplication.getTwitterStream();
+            mTwitterStream.addListener(getUserStreamAdapter());
+            mTwitterStream.addConnectionLifeCycleListener(new ConnectionLifeCycleListener() {
+                @Override
+                public void onConnect() {
+                    if (mSignalButton != null) {
+                        mSignalButton.setTextColor(getResources().getColor(R.color.holo_green_light));
+                    }
+                }
+
+                @Override
+                public void onDisconnect() {
+                    if (mSignalButton != null) {
+                        if (mApplication.getStreamingMode()) {
+                            mSignalButton.setTextColor(getResources().getColor(R.color.holo_red_light));
+                        } else {
+                            mSignalButton.setTextColor(Color.WHITE);
+                        }
+                    }
+                }
+
+                @Override
+                public void onCleanUp() {
+                    if (mSignalButton != null) {
+                        if (mApplication.getStreamingMode()) {
+                            mSignalButton.setTextColor(getResources().getColor(R.color.holo_orange_light));
+                        } else {
+                            mSignalButton.setTextColor(Color.WHITE);
+                        }
+                    }
+                }
+            });
+            mSignalButton.setTextColor(getResources().getColor(R.color.holo_blue_light));
         }
-        mTwitterStream = mApplication.getTwitterStream();
-        mTwitterStream.addListener(getUserStreamAdapter());
         mTwitterStream.user();
     }
 

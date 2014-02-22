@@ -364,6 +364,23 @@ public class JustawayApplication extends Application {
     }
 
     /**
+     * ストリーミングモードの記憶
+     */
+    private static final String STREAMING_MODE = "streamingMode";
+
+    public void setStreamingMode(Boolean streamingMode) {
+        SharedPreferences preferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
+        Editor editor = preferences.edit();
+        editor.putBoolean(STREAMING_MODE, streamingMode);
+        editor.commit();
+    }
+
+    public Boolean getStreamingMode() {
+        SharedPreferences preferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
+        return preferences.getBoolean(STREAMING_MODE, true);
+    }
+
+    /**
      * 設定管理
      */
     private static final String PREF_NAME_SETTINGS = "settings";
@@ -436,7 +453,7 @@ public class JustawayApplication extends Application {
      *
      * @return Twitterアクセストークン
      */
-    private AccessToken getAccessToken() {
+    public AccessToken getAccessToken() {
         // キャッシュしておく
         if (mAccessToken != null) {
             return mAccessToken;
