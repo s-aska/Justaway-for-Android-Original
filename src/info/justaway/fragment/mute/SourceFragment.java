@@ -88,7 +88,7 @@ public class SourceFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     new AlertDialog.Builder(getActivity())
-                            .setTitle(source.concat(getString(R.string.confirm_destroy_some)))
+                            .setTitle(source.concat(getString(R.string.confirm_destroy_mute)))
                             .setPositiveButton(
                                     R.string.button_yes,
                                     new DialogInterface.OnClickListener() {

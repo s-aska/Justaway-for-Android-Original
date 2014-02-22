@@ -99,7 +99,7 @@ public class UserFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     new AlertDialog.Builder(getActivity())
-                            .setTitle("@".concat(user.screenName).concat(getString(R.string.confirm_destroy_some)))
+                            .setTitle("@".concat(user.screenName).concat(getString(R.string.confirm_destroy_mute)))
                             .setPositiveButton(
                                     R.string.button_yes,
                                     new DialogInterface.OnClickListener() {
