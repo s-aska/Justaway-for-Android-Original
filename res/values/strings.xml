@@ -21,11 +21,11 @@
     <string name="button_unfollow">フォロー解除</string>
     <string name="button_yes">はい</string>
     <string name="confirm_create_block">ブロックしますか？</string>
-    <string name="confirm_create_streaming">ストリーミングAPIに接続しますか？</string>
+    <string name="confirm_create_streaming">ストリーミングに接続しますか？</string>
     <string name="confirm_destroy_block">ブロックを解除しますか？</string>
     <string name="confirm_destroy_retweet">リツイートを取り消しますか？</string>
     <string name="confirm_destroy_some">を削除しますか？</string>
-    <string name="confirm_destroy_streaming">ストリーミングAPIを切断しますか？</string>
+    <string name="confirm_destroy_streaming">ストリーミングを切断しますか？</string>
     <string name="confirm_destroy_user_list">リストを削除しますか？</string>
     <string name="confirm_destroy_user_list_subscribe">リストの購読を解除しますか？</string>
     <string name="confirm_follow">フォローしますか？</string>
