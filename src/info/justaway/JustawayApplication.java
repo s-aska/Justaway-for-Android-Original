@@ -9,7 +9,6 @@ import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.support.v4.util.LongSparseArray;
-import android.text.TextUtils;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
@@ -310,34 +309,76 @@ public class JustawayApplication extends Application {
      * タブ管理
      */
     private static final String TABS = "tabs-";
-    private ArrayList<Integer> mTabs = new ArrayList<Integer>();
+    private ArrayList<Tab> mTabs = new ArrayList<Tab>();
 
-    public ArrayList<Integer> loadTabs() {
-        SharedPreferences preferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
-        String tabs_string = preferences.getString(TABS.concat(String.valueOf(getUserId())), "-1,-2,-3");
-        String[] tabs_strings = tabs_string.split(",");
+    public ArrayList<Tab> loadTabs() {
         mTabs.clear();
-        for (String tab_string : tabs_strings) {
-            mTabs.add(Integer.valueOf(tab_string));
+        SharedPreferences preferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
+        String json = preferences.getString(TABS.concat(String.valueOf(getUserId())).concat("/v2"), null);
+        if (json != null) {
+            Gson gson = new Gson();
+            TabData tabData = gson.fromJson(json, TabData.class);
+            mTabs = tabData.tabs;
+        } else {
+            String tabs_string = preferences.getString(TABS.concat(String.valueOf(getUserId())), "-1,-2,-3");
+            String[] tabs_strings = tabs_string.split(",");
+            ArrayList<Integer> tabIds = new ArrayList<Integer>();
+            for (String tab_string : tabs_strings) {
+                Tab tab = new Tab();
+                tab.id = Integer.valueOf(tab_string);
+                tab.name = "-";
+                mTabs.add(tab);
+                tabIds.add(tab.id);
+            }
+            saveTabs(tabIds);
         }
         return mTabs;
     }
 
-    public void saveTabs(ArrayList<Integer> tabs) {
-        mTabs = tabs;
-        ArrayList<String> tabs_strings = new ArrayList<String>();
-        for (Integer tab : tabs) {
-            tabs_strings.add(String.valueOf(tab));
+    public void saveTabs(ArrayList<Integer> tabIds) {
+        mTabs.clear();
+        for (Integer tabId : tabIds) {
+            Tab tab = new Tab();
+            tab.id = tabId;
+            if (tabId > 0) {
+                UserList userList = getUserList(tabId);
+                if (userList != null) {
+                    if (userList.getUser().getId() == getUserId()) {
+                        tab.name = userList.getName();
+                    } else {
+                        tab.name = userList.getFullName();
+                    }
+                } else {
+                    tab.name = "-";
+                }
+            } else {
+                tab.name = "";
+            }
+            mTabs.add(tab);
         }
+        TabData tabData = new TabData();
+        tabData.tabs = mTabs;
+        Gson gson = new Gson();
+        String json = gson.toJson(tabData);
         SharedPreferences preferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
         Editor editor = preferences.edit();
-        editor.putString(TABS.concat(String.valueOf(getUserId())), TextUtils.join(",", tabs_strings));
+        editor.remove(TABS.concat(String.valueOf(getUserId())));
+        editor.putString(TABS.concat(String.valueOf(getUserId())).concat("/v2"), json);
         editor.commit();
     }
 
+    public static class TabData {
+        ArrayList<Tab> tabs;
+    }
+
+    public static class Tab {
+        String name;
+        Integer id;
+    }
+
     public boolean existsTab(Integer findTab) {
-        for (Integer tab : mTabs) {
-            if (tab.equals(findTab)) {
+        for (Tab tab : mTabs) {
+            if (tab.id.equals(findTab)) {
                 return true;
             }
         }
