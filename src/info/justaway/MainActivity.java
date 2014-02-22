@@ -219,6 +219,7 @@ public class MainActivity extends FragmentActivity {
         Button directMessage = (Button) findViewById(R.id.action_direct_message);
         Button tweet = (Button) findViewById(R.id.action_tweet);
         Button send = (Button) findViewById(R.id.send);
+        findViewById(R.id.action_timeline).setSelected(true);
         home.setTypeface(fontello);
         interactions.setTypeface(fontello);
         directMessage.setTypeface(fontello);
