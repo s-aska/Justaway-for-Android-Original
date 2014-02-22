@@ -319,7 +319,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         holder.via.setVisibility(View.GONE);
         holder.retweet.setVisibility(View.GONE);
         holder.images.setVisibility(View.GONE);
-        mApplication.displayRoundedImage(message.getSender().getBiggerProfileImageURL(), holder.icon);
+        mApplication.displayUserIcon(message.getSender(), holder.icon);
         holder.icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -627,7 +627,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         } else {
             holder.fontello_lock.setVisibility(View.INVISIBLE);
         }
-        mApplication.displayRoundedImage(status.getUser().getBiggerProfileImageURL(), holder.icon);
+        mApplication.displayUserIcon(status.getUser(), holder.icon);
         holder.icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

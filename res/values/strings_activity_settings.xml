@@ -30,4 +30,7 @@
 
     <string name="pref_title_mute">ミュート設定</string>
     <string name="pref_description_mute">ユーザー / via / キーワード を指定できます</string>
+
+    <string name="pref_title_performance">パフォーマンス設定</string>
+    <string name="pref_description_performance">アイコンの角丸や画質、読み込み件数を指定できます</string>
 </resources>
