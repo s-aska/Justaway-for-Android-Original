@@ -111,7 +111,8 @@
     <string name="title_edit_profile">プロフィール編集</string>
     <string name="title_interactions">リプ・通知</string>
     <string name="title_main">Home</string>
-    <string name="title_mute">ミュート</string>
+    <string name="title_mute">ミュート設定</string>
+    <string name="title_performance">パフォーマンス設定</string>
     <string name="title_post">投稿</string>
     <string name="title_profile">プロフィール</string>
     <string name="title_search">検索</string>

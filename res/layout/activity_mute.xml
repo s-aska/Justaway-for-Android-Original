@@ -9,8 +9,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="8dip"
-        android:paddingBottom="8dip"
+        android:paddingTop="12dip"
+        android:paddingBottom="12dip"
         android:background="@color/menu_background"
         android:orientation="horizontal">
 
@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:textSize="14sp"
+            android:textSize="14dp"
             android:text="@string/label_user"
             tools:ignore="SpUsage"/>
 
@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:textSize="14sp"
+            android:textSize="14dp"
             android:text="@string/label_source"
             tools:ignore="SpUsage"/>
 
@@ -40,7 +40,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:textSize="14sp"
+            android:textSize="14dp"
             android:text="@string/label_word"
             tools:ignore="SpUsage"/>
 

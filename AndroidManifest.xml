@@ -134,6 +134,9 @@
         <activity
             android:name=".MuteActivity"
             android:label="@string/title_mute"/>
+        <activity
+            android:name=".PerformanceActivity"
+            android:label="@string/title_performance"/>
     </application>
 
 </manifest>

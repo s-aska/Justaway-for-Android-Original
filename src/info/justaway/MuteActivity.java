@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.util.SparseArray;
+import android.view.View;
 import android.widget.TextView;
 
 import info.justaway.adapter.SimplePagerAdapter;
@@ -16,10 +17,10 @@ public class MuteActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        getWindow().setBackgroundDrawableResource(R.color.background);
         setContentView(R.layout.activity_mute);
 
-        ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
+        final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setOffscreenPageLimit(3); // 3だと不要なんだけど一応...
 
         SimplePagerAdapter simplePagerAdapter = new SimplePagerAdapter(this, viewPager);
@@ -38,6 +39,19 @@ public class MuteActivity extends FragmentActivity {
         tabs.put(0, (TextView) findViewById(R.id.tab_user));
         tabs.put(1, (TextView) findViewById(R.id.tab_source));
         tabs.put(2, (TextView) findViewById(R.id.tab_word));
+
+        /**
+         * タップしたら移動
+         */
+        for (int i = 0; i < 3; i++) {
+            final int item = i;
+            tabs.get(i).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    viewPager.setCurrentItem(item);
+                }
+            });
+        }
 
         /**
          * 最初のタブを青くする
