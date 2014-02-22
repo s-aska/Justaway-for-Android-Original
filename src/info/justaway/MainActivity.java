@@ -37,7 +37,6 @@ import info.justaway.fragment.main.TimelineFragment;
 import info.justaway.fragment.main.UserListFragment;
 import info.justaway.model.Row;
 import info.justaway.task.DestroyDirectMessageTask;
-import info.justaway.task.LoadUserListsTask;
 import info.justaway.task.ReFetchFavoriteStatus;
 import twitter4j.ConnectionLifeCycleListener;
 import twitter4j.DirectMessage;
@@ -203,12 +202,6 @@ public class MainActivity extends FragmentActivity {
         setup();
 
         /**
-         * ユーザーリストの一覧をアプリケーションのメンバ変数に読み込んでおく
-         * これがないと最新のリスト名を表示できない
-         */
-        new LoadUserListsTask().execute();
-
-        /**
          * 違うタブだったら移動、同じタブだったら最上部にスクロールという美しい実装
          * ActionBarのタブに頼っていない為、自力でsetCurrentItemでタブを動かしている
          * タブの切替がスワイプだけで良い場合はこの処理すら不要
@@ -329,12 +322,12 @@ public class MainActivity extends FragmentActivity {
         }
 
         Typeface fontello = JustawayApplication.getFontello();
-        ArrayList<Integer> tabs = mApplication.loadTabs();
+        ArrayList<JustawayApplication.Tab> tabs = mApplication.loadTabs();
         if (tabs.size() > 3) {
             int position = 2;
-            for (Integer tab : tabs) {
+            for (JustawayApplication.Tab tab : tabs) {
                 // 標準のタブを動的に生成する時に実装する
-                if (tab > 0) {
+                if (tab.id > 0) {
                     Button button = new Button(this);
                     button.setWidth(60);
                     button.setTypeface(fontello);
@@ -344,8 +337,8 @@ public class MainActivity extends FragmentActivity {
                     button.setOnClickListener(tabMenuOnClickListener(++position));
                     tab_menus.addView(button);
                     Bundle args = new Bundle();
-                    args.putInt("userListId", tab);
-                    mMainPagerAdapter.addTab(UserListFragment.class, args, "-", tab);
+                    args.putInt("userListId", tab.id);
+                    mMainPagerAdapter.addTab(UserListFragment.class, args, tab.name, tab.id);
                 }
             }
         }
@@ -415,13 +408,13 @@ public class MainActivity extends FragmentActivity {
                     /**
                      * リストの削除を検出してタブを再構成
                      */
-                    ArrayList<Integer> tabs = mApplication.loadTabs();
+                    ArrayList<JustawayApplication.Tab> tabs = mApplication.loadTabs();
                     ArrayList<Integer> new_tabs = new ArrayList<Integer>();
-                    for (Integer tab : tabs) {
-                        if (tab > 0 && mApplication.getUserList(tab) == null) {
+                    for (JustawayApplication.Tab tab : tabs) {
+                        if (tab.id > 0 && mApplication.getUserList(tab.id) == null) {
                             continue;
                         }
-                        new_tabs.add(tab);
+                        new_tabs.add(tab.id);
                     }
                     if (tabs.size() != new_tabs.size()) {
                         mApplication.saveTabs(new_tabs);

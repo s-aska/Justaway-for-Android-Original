@@ -83,6 +83,7 @@ public class ChooseUserListsActivity extends FragmentActivity implements
                 mAdapter.add(userList);
             }
         }
+        JustawayApplication.getApplication().setUserLists(userLists);
     }
 
     @Override
