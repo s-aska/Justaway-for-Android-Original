@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -44,6 +43,7 @@ import android.widget.TextView;
 import java.io.File;
 import java.util.ArrayList;
 
+import info.justaway.settings.PostStockSettings;
 import twitter4j.StatusUpdate;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -54,8 +54,6 @@ public class PostActivity extends FragmentActivity {
     private static final int REQUEST_GALLERY = 1;
     private static final int REQUEST_CAMERA = 2;
     private static final int ERROR_CODE_DUPLICATE_STATUS = 187;
-    private static final String DRAFT_LIST_FILE = "DraftListFile";
-    private static final String HASHTAG_LIST_FILE = "HashtagListFile";
 
     private Context mContext;
     private EditText mEditText;
@@ -69,6 +67,7 @@ public class PostActivity extends FragmentActivity {
     private HashtagFragment mHashtagDialog;
     private boolean mWidgetMode;
     private Spinner mSpinner;
+    private PostStockSettings mPostStockSettings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -175,10 +174,12 @@ public class PostActivity extends FragmentActivity {
             updateCount(mEditText.getText().toString());
         }
 
-        SaveLoadTraining saveLoadTraining = new SaveLoadTraining(DRAFT_LIST_FILE);
-        ArrayList<String> draftList = saveLoadTraining.loadArray();
-        if (draftList.isEmpty()) {
+        mPostStockSettings = new PostStockSettings();
+        if (mPostStockSettings.getDrafts().isEmpty()) {
             draftButton.setEnabled(false);
+        }
+        if (mPostStockSettings.getHashtags().isEmpty()) {
+            hashtagButton.setEnabled(false);
         }
 
         mTweetButton.setOnClickListener(new View.OnClickListener() {
@@ -196,19 +197,16 @@ public class PostActivity extends FragmentActivity {
 
                 if (text.contains("#")) {
                     String hashtag = text.substring(text.indexOf("#"));
-                    SaveLoadTraining saveLoadTraining = new SaveLoadTraining(HASHTAG_LIST_FILE);
-                    ArrayList<String> hashtagList = saveLoadTraining.loadArray();
 
                     boolean exist = false;
-                    for (String existHashtag : hashtagList) {
+                    for (String existHashtag : mPostStockSettings.getHashtags()) {
                         if (existHashtag.equals(hashtag)) {
                             exist = true;
                             break;
                         }
                     }
                     if (!exist) {
-                        hashtagList.add(hashtag);
-                        saveLoadTraining.saveArray(hashtagList);
+                        mPostStockSettings.addHashtag(hashtag);
                     }
 
                 }
@@ -449,10 +447,7 @@ public class PostActivity extends FragmentActivity {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         // 下書きとして保存する
-                                        SaveLoadTraining saveLoadTraining = new SaveLoadTraining(DRAFT_LIST_FILE);
-                                        ArrayList<String> draftList = saveLoadTraining.loadArray();
-                                        draftList.add(mEditText.getText().toString());
-                                        saveLoadTraining.saveArray(draftList);
+                                        mPostStockSettings.addDraft(mEditText.getText().toString());
 
                                         finish();
                                     }
@@ -530,10 +525,9 @@ public class PostActivity extends FragmentActivity {
             DraftAdapter adapter = new DraftAdapter(activity, R.layout.row_word);
             listView.setAdapter(adapter);
 
-            SaveLoadTraining saveLoadTraining = new SaveLoadTraining(DRAFT_LIST_FILE);
-            ArrayList<String> draftList = saveLoadTraining.loadArray();
+            PostStockSettings postStockSettings = new PostStockSettings();
 
-            for (String draft : draftList) {
+            for (String draft : postStockSettings.getDrafts()) {
                 adapter.add(draft);
             }
 
@@ -558,10 +552,9 @@ public class PostActivity extends FragmentActivity {
             HashtagAdapter adapter = new HashtagAdapter(activity, R.layout.row_word);
             listView.setAdapter(adapter);
 
-            SaveLoadTraining saveLoadTraining = new SaveLoadTraining(HASHTAG_LIST_FILE);
-            ArrayList<String> hashtagList = saveLoadTraining.loadArray();
+            PostStockSettings postStockSettings = new PostStockSettings();
 
-            for (String hashtag : hashtagList) {
+            for (String hashtag : postStockSettings.getHashtags()) {
                 adapter.add(hashtag);
             }
 
@@ -672,9 +665,7 @@ public class PostActivity extends FragmentActivity {
                     mEditText.setText(draft);
                     mDraftDialog.dismiss();
                     mDraftLists.remove(position);
-                    SaveLoadTraining saveLoadTraining = new SaveLoadTraining(DRAFT_LIST_FILE);
-                    saveLoadTraining.saveArray(mDraftLists);
-
+                    mPostStockSettings.removeDraft(draft);
                 }
             });
 
@@ -682,8 +673,7 @@ public class PostActivity extends FragmentActivity {
                 @Override
                 public void onClick(View v) {
                     remove(position);
-                    SaveLoadTraining saveLoadTraining = new SaveLoadTraining(DRAFT_LIST_FILE);
-                    saveLoadTraining.saveArray(mDraftLists);
+                    mPostStockSettings.removeDraft(draft);
                 }
             });
             return view;
@@ -742,56 +732,10 @@ public class PostActivity extends FragmentActivity {
                 @Override
                 public void onClick(View v) {
                     remove(position);
-                    SaveLoadTraining saveLoadTraining = new SaveLoadTraining(HASHTAG_LIST_FILE);
-                    saveLoadTraining.saveArray(mHashtagLists);
+                    mPostStockSettings.removeHashtag(hashtag);
                 }
             });
             return view;
-        }
-    }
-
-    /**
-     * SharedPreferencesにArrayListを突っ込む
-     */
-    public class SaveLoadTraining {
-
-        private String prefsName;
-        private Context context;
-        private ArrayList<String> list;
-
-        public SaveLoadTraining(String prefsName) {
-            this.context = mContext;
-            this.prefsName = prefsName;
-        }
-
-        public void saveArray(ArrayList<String> list) {
-            this.list = list;
-
-            SharedPreferences settings = context.getSharedPreferences(prefsName, 0);
-            SharedPreferences.Editor editor = settings.edit();
-
-            int size = list.size();
-            editor.putInt("list_size", size);
-
-            for (int i = 0; i < size; i++) {
-                editor.remove("list_" + i);
-            }
-            for (int i = 0; i < size; i++) {
-                editor.putString("list_" + i, list.get(i));
-            }
-            editor.commit();
-        }
-
-        public ArrayList<String> loadArray() {
-            SharedPreferences file = context.getSharedPreferences(prefsName, 0);
-            list = new ArrayList<String>();
-            int size = file.getInt("list_size", 0);
-
-            for (int i = 0; i < size; i++) {
-                String draft = file.getString("list_" + i, null);
-                list.add(draft);
-            }
-            return list;
         }
     }
 }
