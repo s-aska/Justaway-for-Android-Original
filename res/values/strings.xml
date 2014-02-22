@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <string name="app_name">Justaway</string>
     <string name="button_add">追加</string>
@@ -21,9 +21,11 @@
     <string name="button_unfollow">フォロー解除</string>
     <string name="button_yes">はい</string>
     <string name="confirm_create_block">ブロックしますか？</string>
+    <string name="confirm_create_streaming">ストリーミングAPIに接続しますか？</string>
     <string name="confirm_destroy_block">ブロックを解除しますか？</string>
     <string name="confirm_destroy_retweet">リツイートを取り消しますか？</string>
     <string name="confirm_destroy_some">を削除しますか？</string>
+    <string name="confirm_destroy_streaming">ストリーミングAPIを切断しますか？</string>
     <string name="confirm_destroy_user_list">リストを削除しますか？</string>
     <string name="confirm_destroy_user_list_subscribe">リストの購読を解除しますか？</string>
     <string name="confirm_follow">フォローしますか？</string>
@@ -116,6 +118,7 @@
     <string name="toast_create_block_failure">ブロックに失敗しました</string>
     <string name="toast_create_block_success">ブロックに成功しました>゜))彡</string>
     <string name="toast_create_mute">ミュートを追加ました</string>
+    <string name="toast_create_streaming" tools:ignore="TypographyEllipsis">ストリーミングAPIに接続しています...</string>
     <string name="toast_create_user_list_subscription_failure">リストの購読に失敗しました</string>
     <string name="toast_create_user_list_subscription_success">リストの購読に成功しました>゜))彡</string>
     <string name="toast_destroy_block_failure">ブロック解除に失敗しました</string>
@@ -133,6 +136,7 @@
     <string name="toast_destroy_retweet_success">公式RT解除に成功しました>゜))彡</string>
     <string name="toast_destroy_status_failure">ツイ消しに失敗しました</string>
     <string name="toast_destroy_status_success">ツイ消しに成功しました>゜))彡</string>
+    <string name="toast_destroy_streaming" tools:ignore="TypographyEllipsis">ストリーミングAPIを切断しています...</string>
     <string name="toast_destroy_success">削除しました</string>
     <string name="toast_destroy_user_list_failure">リストの削除に失敗しました</string>
     <string name="toast_destroy_user_list_subscription_failure">リストの購読解除に失敗しました</string>
