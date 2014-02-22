@@ -165,7 +165,6 @@ public class JustawayApplication extends Application {
             url = user.getProfileImageURL();
         } else if (getUserIconSize().equals("mini")) {
             url = user.getMiniProfileImageURL();
-
         } else {
             return;
         }
@@ -188,27 +187,6 @@ public class JustawayApplication extends Application {
 
         // すぐにURLが取れない時は一旦消す
         view.setImageDrawable(null);
-
-//        new AsyncTask<Void, Void, User>() {
-//
-//            @Override
-//            protected User doInBackground(Void... voids) {
-//                try {
-//                    return getTwitter().showUser(userId);
-//                } catch (TwitterException e) {
-//                    e.printStackTrace();
-//                }
-//                return null;
-//            }
-//
-//            @Override
-//            protected void onPostExecute(User user) {
-//                if (user != null) {
-//                    mUserIconMap.put(userId, user.getBiggerProfileImageURL());
-//                    displayRoundedImage(user.getBiggerProfileImageURL(), view);
-//                }
-//            }
-//        }.execute();
     }
 
     /**
