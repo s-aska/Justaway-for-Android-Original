@@ -121,7 +121,7 @@ public class JustawayApplication extends Application {
             Thread.setDefaultUncaughtExceptionHandler(new MyUncaughtExceptionHandler(sApplication));
         }
 
-        resetFontSize();
+        resetDisplaySettings();
 
         sMuteSettings = new MuteSettings();
 
@@ -143,7 +143,11 @@ public class JustawayApplication extends Application {
             return;
         }
         view.setTag(url);
-        sImageLoader.displayImage(url, view, sRoundedDisplayImageOptions);
+        if (getUserIconRoundedOn()) {
+            sImageLoader.displayImage(url, view, sRoundedDisplayImageOptions);
+        } else {
+            sImageLoader.displayImage(url, view);
+        }
     }
 
     public MuteSettings getMuteSettings() {
@@ -154,6 +158,25 @@ public class JustawayApplication extends Application {
      * userIdとアイコンの対応、DiskCacheすると「古いアイコン〜〜〜〜」ってなるのでしない。
      */
     private HashMap<Long, String> mUserIconMap = new HashMap<Long, String>();
+
+    public void displayUserIcon(User user, final ImageView view) {
+        String url;
+        if (getUserIconSize().equals("bigger")) {
+            url = user.getBiggerProfileImageURL();
+        } else if (getUserIconSize().equals("normal")) {
+            url = user.getProfileImageURL();
+        } else if (getUserIconSize().equals("mini")) {
+            url = user.getMiniProfileImageURL();
+
+        } else {
+            return;
+        }
+        if (getUserIconRoundedOn()) {
+            displayRoundedImage(url, view);
+        } else {
+            displayImage(url, view);
+        }
+    }
 
     /**
      * userIdからアイコンを取得する
@@ -383,6 +406,8 @@ public class JustawayApplication extends Application {
      */
     private static final String PREF_NAME_SETTINGS = "settings";
     private int mFontSize;
+    private Boolean mUserIconRounded;
+    private String mUserIconSize;
 
     public boolean getKeepScreenOn() {
         SharedPreferences preferences = getSharedPreferences(PREF_NAME_SETTINGS, Context.MODE_PRIVATE);
@@ -393,9 +418,29 @@ public class JustawayApplication extends Application {
         return mFontSize;
     }
 
-    public void resetFontSize() {
+    public void resetDisplaySettings() {
         SharedPreferences preferences = getSharedPreferences(PREF_NAME_SETTINGS, Context.MODE_PRIVATE);
         mFontSize = Integer.parseInt(preferences.getString("font_size", "12"));
+        mUserIconRounded = getUserIconRoundedOn();
+        mUserIconSize = getUserIconSize();
+    }
+
+    public boolean getUserIconRoundedOn() {
+        if (mUserIconRounded != null) {
+            return mUserIconRounded;
+        }
+        SharedPreferences preferences = getSharedPreferences(PREF_NAME_SETTINGS, Context.MODE_PRIVATE);
+        mUserIconRounded = preferences.getBoolean("user_icon_rounded_on", true);
+        return mUserIconRounded;
+    }
+
+    public String getUserIconSize() {
+        if (mUserIconSize != null) {
+            return mUserIconSize;
+        }
+        SharedPreferences preferences = getSharedPreferences(PREF_NAME_SETTINGS, Context.MODE_PRIVATE);
+        mUserIconSize = preferences.getString("user_icon_size", "bigger");
+        return mUserIconSize;
     }
 
     /**

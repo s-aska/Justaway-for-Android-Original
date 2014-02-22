@@ -24,4 +24,14 @@
             android:targetPackage="info.justaway"
             android:targetClass="info.justaway.MuteActivity"/>
     </PreferenceScreen>
+
+    <PreferenceScreen
+        android:key="performance"
+        android:title="@string/pref_title_performance"
+        android:summary="@string/pref_description_performance">
+        <intent
+            android:action="android.intent.action.MAIN"
+            android:targetPackage="info.justaway"
+            android:targetClass="info.justaway.PerformanceActivity"/>
+    </PreferenceScreen>
 </PreferenceScreen>
