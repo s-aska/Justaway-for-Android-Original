@@ -125,9 +125,7 @@ public class JustawayApplication extends Application {
 
         sMuteSettings = new MuteSettings();
 
-        if (hasAccessToken()) {
-            warmUpUserIconMap();
-        }
+        warmUpUserIconMap();
     }
 
     public void displayImage(String url, ImageView view) {
@@ -202,7 +200,7 @@ public class JustawayApplication extends Application {
     @SuppressWarnings("unchecked")
     public void warmUpUserIconMap() {
         ArrayList<AccessToken> accessTokens = getAccessTokens();
-        if (accessTokens.size() == 0) {
+        if (accessTokens == null || accessTokens.size() == 0) {
             return;
         }
 
@@ -442,9 +440,12 @@ public class JustawayApplication extends Application {
     public ArrayList<AccessToken> getAccessTokens() {
         SharedPreferences preferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         String json = preferences.getString(TOKENS, null);
+        if (json == null) {
+            return null;
+        }
+
         Gson gson = new Gson();
         JustawayApplication.AccountSettings accountSettings = gson.fromJson(json, JustawayApplication.AccountSettings.class);
-
         return accountSettings.accessTokens;
     }
 
@@ -461,16 +462,14 @@ public class JustawayApplication extends Application {
 
         SharedPreferences preferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         String json = preferences.getString(TOKENS, null);
-
-        if (json != null) {
-            Gson gson = new Gson();
-            AccountSettings accountSettings = gson.fromJson(json, AccountSettings.class);
-            this.mAccessToken = accountSettings.accessTokens.get(accountSettings.index);
-
-            return mAccessToken;
-        } else {
+        if (json == null) {
             return null;
         }
+
+        Gson gson = new Gson();
+        AccountSettings accountSettings = gson.fromJson(json, AccountSettings.class);
+        mAccessToken = accountSettings.accessTokens.get(accountSettings.index);
+        return mAccessToken;
     }
 
     /**
@@ -480,7 +479,7 @@ public class JustawayApplication extends Application {
      */
     public void setAccessToken(AccessToken accessToken) {
 
-        this.mAccessToken = accessToken;
+        mAccessToken = accessToken;
 
         getTwitter().setOAuthAccessToken(mAccessToken);
 
