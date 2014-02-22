@@ -646,7 +646,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         Pattern instagram_pattern = Pattern.compile("^http://instagram\\.com/p/([^/]+)/$");
         Pattern images_pattern = Pattern.compile("^https?://.*\\.(png|gif|jpeg|jpg)$");
         Pattern youtube_pattern = Pattern.compile("^https?://(?:www\\.youtube\\.com/watch\\?.*v=|youtu\\.be/)([\\w-]+)");
-        Pattern niconico_pattern = Pattern.compile("^http://(?:www\\.nicovideo\\.jp/watch|nico\\.ms)/[a-z][a-z](\\d+)$");
+        Pattern niconico_pattern = Pattern.compile("^http://(?:www\\.nicovideo\\.jp/watch|nico\\.ms)/sm(\\d+)$");
         String statusString = status.getText();
         for (URLEntity url : urls) {
             Pattern p = Pattern.compile(url.getURL());
