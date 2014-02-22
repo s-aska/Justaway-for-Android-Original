@@ -21,6 +21,7 @@
     <string name="button_unfollow">フォロー解除</string>
     <string name="button_yes">はい</string>
     <string name="confirm_create_block">ブロックしますか？</string>
+    <string name="context_create_mute">" をミュートしますか？"</string>
     <string name="confirm_create_streaming">ストリーミングに接続しますか？</string>
     <string name="confirm_destroy_block">ブロックを解除しますか？</string>
     <string name="confirm_destroy_retweet">リツイートを取り消しますか？</string>

@@ -3,6 +3,7 @@ package info.justaway.fragment.dialog;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -483,11 +484,24 @@ public class StatusMenuFragment extends DialogFragment {
                 new Runnable() {
                     @Override
                     public void run() {
-                        MuteSettings muteSettings = mApplication.getMuteSettings();
-                        muteSettings.addSource(mApplication.getClientName(source.getSource()));
-                        muteSettings.saveMuteSettings();
-                        JustawayApplication.showToast(R.string.toast_create_mute);
-                        dismiss();
+                        new AlertDialog.Builder(getActivity())
+                                .setTitle(mApplication.getClientName(source.getSource()) + getString(R.string.context_create_mute))
+                                .setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        MuteSettings muteSettings = mApplication.getMuteSettings();
+                                        muteSettings.addSource(mApplication.getClientName(source.getSource()));
+                                        muteSettings.saveMuteSettings();
+                                        JustawayApplication.showToast(R.string.toast_create_mute);
+                                        dismiss();
+                                    }
+                                })
+                                .setNegativeButton(R.string.button_cancel, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                    }
+                                })
+                                .show();
                     }
                 }));
 
@@ -498,11 +512,24 @@ public class StatusMenuFragment extends DialogFragment {
             adapter.add(new Menu("#" + hashtag.getText() + mActivity.getString(R.string.context_menu_mute), new Runnable() {
                 @Override
                 public void run() {
-                    MuteSettings muteSettings = mApplication.getMuteSettings();
-                    muteSettings.addWord("#" + hashtag.getText());
-                    muteSettings.saveMuteSettings();
-                    JustawayApplication.showToast(R.string.toast_create_mute);
-                    dismiss();
+                    new AlertDialog.Builder(getActivity())
+                            .setTitle("#" + hashtag.getText() + getString(R.string.context_create_mute))
+                            .setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    MuteSettings muteSettings = mApplication.getMuteSettings();
+                                    muteSettings.addWord("#" + hashtag.getText());
+                                    muteSettings.saveMuteSettings();
+                                    JustawayApplication.showToast(R.string.toast_create_mute);
+                                    dismiss();
+                                }
+                            })
+                            .setNegativeButton(R.string.button_cancel, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                }
+                            })
+                            .show();
                 }
             }));
         }
@@ -513,11 +540,24 @@ public class StatusMenuFragment extends DialogFragment {
         adapter.add(new Menu("@" + source.getUser().getScreenName() + mActivity.getString(R.string.context_menu_mute), new Runnable() {
             @Override
             public void run() {
-                MuteSettings muteSettings = mApplication.getMuteSettings();
-                muteSettings.addUser(source.getUser().getId(), source.getUser().getScreenName());
-                muteSettings.saveMuteSettings();
-                JustawayApplication.showToast(R.string.toast_create_mute);
-                dismiss();
+                new AlertDialog.Builder(getActivity())
+                        .setTitle("@" + source.getUser().getScreenName() + getString(R.string.context_create_mute))
+                        .setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                MuteSettings muteSettings = mApplication.getMuteSettings();
+                                muteSettings.addUser(source.getUser().getId(), source.getUser().getScreenName());
+                                muteSettings.saveMuteSettings();
+                                JustawayApplication.showToast(R.string.toast_create_mute);
+                                dismiss();
+                            }
+                        })
+                        .setNegativeButton(R.string.button_cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                            }
+                        })
+                        .show();
             }
         }));
 
