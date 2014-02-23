@@ -178,7 +178,7 @@ public class SearchActivity extends FragmentActivity {
     private void search() {
         JustawayApplication.getApplication().hideKeyboard(mSearchWords);
         if (mSearchWords.getText() == null) return;
-        Query query = new Query(mSearchWords.getText().toString());
+        Query query = new Query(mSearchWords.getText().toString().concat(" exclude:retweets"));
         mAdapter.clear();
         mListView.setVisibility(View.GONE);
         mFooter.setVisibility(View.VISIBLE);
