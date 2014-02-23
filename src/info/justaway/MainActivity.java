@@ -16,6 +16,7 @@ import android.os.Handler;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -534,29 +535,44 @@ public class MainActivity extends FragmentActivity {
                 @Override
                 public void onConnect() {
                     if (mSignalButton != null) {
-                        mSignalButton.setTextColor(getResources().getColor(R.color.holo_green_light));
+                        mSignalButton.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                mSignalButton.setTextColor(getResources().getColor(R.color.holo_green_light));
+                            }
+                        });
                     }
                 }
 
                 @Override
                 public void onDisconnect() {
                     if (mSignalButton != null) {
-                        if (mApplication.getStreamingMode()) {
-                            mSignalButton.setTextColor(getResources().getColor(R.color.holo_red_light));
-                        } else {
-                            mSignalButton.setTextColor(Color.WHITE);
-                        }
+                        mSignalButton.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (mApplication.getStreamingMode()) {
+                                    mSignalButton.setTextColor(getResources().getColor(R.color.holo_red_light));
+                                } else {
+                                    mSignalButton.setTextColor(Color.WHITE);
+                                }
+                            }
+                        });
                     }
                 }
 
                 @Override
                 public void onCleanUp() {
                     if (mSignalButton != null) {
-                        if (mApplication.getStreamingMode()) {
-                            mSignalButton.setTextColor(getResources().getColor(R.color.holo_orange_light));
-                        } else {
-                            mSignalButton.setTextColor(Color.WHITE);
-                        }
+                        mSignalButton.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (mApplication.getStreamingMode()) {
+                                    mSignalButton.setTextColor(getResources().getColor(R.color.holo_orange_light));
+                                } else {
+                                    mSignalButton.setTextColor(Color.WHITE);
+                                }
+                            }
+                        });
                     }
                 }
             });
