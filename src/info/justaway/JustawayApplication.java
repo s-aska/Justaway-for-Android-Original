@@ -439,8 +439,8 @@ public class JustawayApplication extends Application {
     public void resetDisplaySettings() {
         SharedPreferences preferences = getSharedPreferences(PREF_NAME_SETTINGS, Context.MODE_PRIVATE);
         mFontSize = Integer.parseInt(preferences.getString("font_size", "12"));
-        mUserIconRounded = getUserIconRoundedOn();
-        mUserIconSize = getUserIconSize();
+        mUserIconRounded = preferences.getBoolean("user_icon_rounded_on", true);
+        mUserIconSize = preferences.getString("user_icon_size", "bigger");
     }
 
     public boolean getUserIconRoundedOn() {
