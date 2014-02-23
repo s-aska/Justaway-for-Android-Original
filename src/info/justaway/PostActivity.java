@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -219,42 +220,56 @@ public class PostActivity extends FragmentActivity {
                 int selectStart = mEditText.getSelectionStart();
                 int selectEnd = mEditText.getSelectionEnd();
 
-                String totsuzen;
+                // 突然の死対象のテキストを取得
+                String targetText;
                 if (selectStart != selectEnd) {
-                    totsuzen = text.substring(selectStart, selectEnd) + "\n";
+                    targetText = text.substring(selectStart, selectEnd) + "\n";
                 } else {
-                    totsuzen = text + "\n";
+                    targetText = text + "\n";
                 }
 
-                int i;
                 String top = "";
                 String under = "";
-                int j = 0;
-                String generateTotsu = "";
+                Paint paint = new Paint();
+                float maxTextWidth = 0;
 
-                // 改行文字がある場所を見つけて上と下を作る
-                for (i = 0; totsuzen.charAt(i) != '\n'; i++) {
-                    int codeunit = totsuzen.codePointAt(i);
-                    if (0xffff < codeunit) {
-                        i++;
+                // 対象のテキストの最大文字列幅を取得
+                String[] lines = targetText.split("\\n");
+                for (String line : lines) {
+                    if (paint.measureText(line) > maxTextWidth) {
+                        maxTextWidth = paint.measureText(line);
                     }
+                }
+
+                // 上と下を作る
+                int i;
+                for (i = 0; (maxTextWidth / 12) > i; i++) {
                     top += "人";
+                }
+                for (i = 0; (maxTextWidth / 13) > i; i++) {
                     under += "^Y";
                 }
-                // 突然死したいテキストの文字をひとつづつ見る
-                for (i = 0; totsuzen.length() > i; i++) {
-                    // 一文字取り出して改行文字なのかチェック
-                    if (totsuzen.charAt(i) == '\n') {
-                        String gen = "＞ " + totsuzen.substring(j, i) + " ＜\n";
-                        i++;
-                        j = i;
-                        generateTotsu = generateTotsu.concat(gen);
+
+                String suddenly = "";
+                for (String line : lines) {
+                    float spaceWidth = maxTextWidth - paint.measureText(line);
+                    // maxとくらべて13以上差がある場合はスペースを挿入して調整する
+                    if (spaceWidth >= 12) {
+                        int spaceNumber = (int) spaceWidth / 12;
+                        for (i = 0; i < spaceNumber; i++) {
+                            line += "　";
+                        }
+                        if ((spaceWidth % 12) >= 6) {
+                            line += "　";
+                        }
                     }
+                    suddenly = suddenly.concat("＞ " + line + " ＜\n");
                 }
+
                 if (selectStart != selectEnd) {
-                    mEditText.setText(text.substring(0, selectStart) + "＿" + top + "＿\n" + generateTotsu + "￣" + under + "￣" + text.substring(selectEnd));
+                    mEditText.setText(text.substring(0, selectStart) + "＿" + top + "＿\n" + suddenly + "￣" + under + "￣" + text.substring(selectEnd));
                 } else {
-                    mEditText.setText("＿" + top + "＿\n" + generateTotsu + "￣" + under + "￣");
+                    mEditText.setText("＿" + top + "＿\n" + suddenly + "￣" + under + "￣");
                 }
             }
         });
@@ -269,7 +284,7 @@ public class PostActivity extends FragmentActivity {
         draftButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                View view =  ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.list, null);
+                View view = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.list, null);
                 assert view != null;
                 ListView listView = (ListView) view.findViewById(R.id.list);
 
@@ -293,7 +308,7 @@ public class PostActivity extends FragmentActivity {
             @Override
             public void onClick(View v) {
 
-                View view =  ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.list, null);
+                View view = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.list, null);
                 assert view != null;
                 ListView listView = (ListView) view.findViewById(R.id.list);
 
