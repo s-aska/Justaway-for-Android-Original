@@ -109,11 +109,13 @@ public class AroundFragment extends DialogFragment {
         protected void onPostExecute(ResponseList<twitter4j.Status> statuses) {
             mProgressBarBottom.setVisibility(View.GONE);
             if (statuses != null) {
-                for (twitter4j.Status status : statuses) {
-                    mAdapter.add(Row.newStatus(status));
+                if (statuses.size() > 0) {
+                    for (twitter4j.Status status : statuses) {
+                        mAdapter.add(Row.newStatus(status));
+                    }
+                    mAdapter.notifyDataSetChanged();
+                    new AfterStatusTask().execute(statuses.get(0));
                 }
-                mAdapter.notifyDataSetChanged();
-                new AfterStatusTask().execute(statuses.get(0));
             } else {
                 JustawayApplication.showToast(R.string.toast_load_data_failure);
             }
