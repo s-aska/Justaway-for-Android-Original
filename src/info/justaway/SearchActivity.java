@@ -1,6 +1,8 @@
 package info.justaway;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
@@ -167,6 +169,17 @@ public class SearchActivity extends FragmentActivity {
         return true;
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            mListView.setVisibility(View.GONE);
+            mSearchListView.setVisibility(View.VISIBLE);
+
+            return true;
+        }
+        return false;
+    }
+
     private void additionalReading() {
         if (mNextQuery != null) {
             mFooter.setVisibility(View.VISIBLE);
@@ -217,6 +230,7 @@ public class SearchActivity extends FragmentActivity {
                 mAdapter.add(Row.newStatus(status));
             }
 
+            mSearchListView.setVisibility(View.GONE);
             mListView.setVisibility(View.VISIBLE);
             if (count == 0) {
                 mListView.setSelection(0);
@@ -343,8 +357,7 @@ public class SearchActivity extends FragmentActivity {
                 @Override
                 public void onClick(View v) {
                     mSearchWords.setText(word.getQuery());
-                    Query query = new Query(word.getQuery());
-                    new SearchTask().execute(query);
+                    search();
                 }
             });
 
