@@ -116,11 +116,16 @@ public class DirectMessagesFragment extends BaseFragment {
                 if (activity == null) {
                     return;
                 }
+                boolean doAppeal = row.getMessage().getSenderId() != JustawayApplication.getApplication().getUserId();
                 if (position != 0 || y != 0) {
                     listView.setSelectionFromTop(position + 1, y);
-                    activity.onNewDirectMessage(false);
+                    if (doAppeal) {
+                        activity.onNewDirectMessage(false);
+                    }
                 } else {
-                    activity.onNewDirectMessage(true);
+                    if (doAppeal) {
+                        activity.onNewDirectMessage(true);
+                    }
                 }
             }
         });
