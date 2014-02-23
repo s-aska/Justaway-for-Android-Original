@@ -28,6 +28,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -289,8 +290,18 @@ public class PostActivity extends FragmentActivity {
                 ListView listView = (ListView) view.findViewById(R.id.list);
 
                 // 下書きをViewに描写するアダプター
-                DraftAdapter adapter = new DraftAdapter(mContext, R.layout.row_word);
+                final DraftAdapter adapter = new DraftAdapter(mContext, R.layout.row_word);
                 listView.setAdapter(adapter);
+                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                        String draft = adapter.getItem(i);
+                        mEditText.setText(draft);
+                        mDraftDialog.dismiss();
+                        adapter.remove(i);
+                        mPostStockSettings.removeDraft(draft);
+                    }
+                });
 
                 PostStockSettings postStockSettings = new PostStockSettings();
 
@@ -313,8 +324,18 @@ public class PostActivity extends FragmentActivity {
                 ListView listView = (ListView) view.findViewById(R.id.list);
 
                 // ハッシュタグをViewに描写するアダプター
-                HashtagAdapter adapter = new HashtagAdapter(mContext, R.layout.row_word);
+                final HashtagAdapter adapter = new HashtagAdapter(mContext, R.layout.row_word);
                 listView.setAdapter(adapter);
+                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                        String hashtag = adapter.getItem(i);
+                        if (mEditText.getText() != null) {
+                            mEditText.setText(mEditText.getText().toString().concat(" ".concat(hashtag)));
+                            mHashtagDialog.dismiss();
+                        }
+                    }
+                });
 
                 PostStockSettings postStockSettings = new PostStockSettings();
 
@@ -648,16 +669,6 @@ public class PostActivity extends FragmentActivity {
             ((TextView) view.findViewById(R.id.word)).setText(draft);
             ((TextView) view.findViewById(R.id.trash)).setTypeface(JustawayApplication.getFontello());
 
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mEditText.setText(draft);
-                    mDraftDialog.dismiss();
-                    mDraftLists.remove(position);
-                    mPostStockSettings.removeDraft(draft);
-                }
-            });
-
             view.findViewById(R.id.trash).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -706,16 +717,6 @@ public class PostActivity extends FragmentActivity {
             assert view != null;
             ((TextView) view.findViewById(R.id.word)).setText(hashtag);
             ((TextView) view.findViewById(R.id.trash)).setTypeface(JustawayApplication.getFontello());
-
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mEditText.getText() != null) {
-                        mEditText.setText(mEditText.getText().toString().concat(" ".concat(hashtag)));
-                        mHashtagDialog.dismiss();
-                    }
-                }
-            });
 
             view.findViewById(R.id.trash).setOnClickListener(new View.OnClickListener() {
                 @Override
