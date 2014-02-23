@@ -1,8 +1,6 @@
 package info.justaway;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
@@ -172,9 +170,12 @@ public class SearchActivity extends FragmentActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            mListView.setVisibility(View.GONE);
-            mSearchListView.setVisibility(View.VISIBLE);
-
+            if (mSearchListView.getVisibility() != View.VISIBLE) {
+                mListView.setVisibility(View.GONE);
+                mSearchListView.setVisibility(View.VISIBLE);
+            } else {
+                finish();
+            }
             return true;
         }
         return false;
