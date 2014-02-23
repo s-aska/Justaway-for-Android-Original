@@ -121,7 +121,7 @@
     <string name="toast_create_block_failure">ブロックに失敗しました</string>
     <string name="toast_create_block_success">ブロックに成功しました>゜))彡</string>
     <string name="toast_create_mute">ミュートを追加ました</string>
-    <string name="toast_create_streaming" tools:ignore="TypographyEllipsis">ストリーミングAPIに接続しています...</string>
+    <string name="toast_create_streaming" tools:ignore="TypographyEllipsis">ストリーミングに接続しています...</string>
     <string name="toast_create_user_list_subscription_failure">リストの購読に失敗しました</string>
     <string name="toast_create_user_list_subscription_success">リストの購読に成功しました>゜))彡</string>
     <string name="toast_destroy_block_failure">ブロック解除に失敗しました</string>
@@ -139,7 +139,7 @@
     <string name="toast_destroy_retweet_success">公式RT解除に成功しました>゜))彡</string>
     <string name="toast_destroy_status_failure">ツイ消しに失敗しました</string>
     <string name="toast_destroy_status_success">ツイ消しに成功しました>゜))彡</string>
-    <string name="toast_destroy_streaming" tools:ignore="TypographyEllipsis">ストリーミングAPIを切断しています...</string>
+    <string name="toast_destroy_streaming" tools:ignore="TypographyEllipsis">ストリーミングを切断しています...</string>
     <string name="toast_destroy_success">削除しました</string>
     <string name="toast_destroy_user_list_failure">リストの削除に失敗しました</string>
     <string name="toast_destroy_user_list_subscription_failure">リストの購読解除に失敗しました</string>
