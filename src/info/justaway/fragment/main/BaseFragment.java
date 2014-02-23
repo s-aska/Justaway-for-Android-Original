@@ -89,6 +89,9 @@ public abstract class BaseFragment extends Fragment implements
                 } else {
                     args.putSerializable("status", row.getStatus());
                 }
+                if (row.isFavorite()) {
+                    args.putSerializable("favoriteSourceUser", row.getSource());
+                }
                 statusMenuFragment.setArguments(args);
                 statusMenuFragment.setCallback(new Runnable() {
                     @Override

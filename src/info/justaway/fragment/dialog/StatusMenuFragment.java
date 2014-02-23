@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.util.LongSparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +39,7 @@ import twitter4j.DirectMessage;
 import twitter4j.HashtagEntity;
 import twitter4j.Status;
 import twitter4j.URLEntity;
+import twitter4j.User;
 import twitter4j.UserMentionEntity;
 
 public class StatusMenuFragment extends DialogFragment {
@@ -412,10 +414,47 @@ public class StatusMenuFragment extends DialogFragment {
             }));
         }
 
+        LongSparseArray<Boolean> users = new LongSparseArray<Boolean>();
+
+        /**
+         * ふぁぼした人
+         */
+        final User favoriteSourceUser = (User) getArguments().getSerializable("favoriteSourceUser");
+        if (favoriteSourceUser != null) {
+            users.put(favoriteSourceUser.getId(), true);
+            adapter.add(new Menu("@" + favoriteSourceUser.getScreenName(), new Runnable() {
+                @Override
+                public void run() {
+                    Intent intent = new Intent(mActivity, ProfileActivity.class);
+                    intent.putExtra("screenName", favoriteSourceUser.getScreenName());
+                    mActivity.startActivity(intent);
+                }
+            }));
+        }
+
+        /**
+         * RTした人
+         */
+        if (retweet != null && users.get(status.getUser().getId()) == null) {
+            users.put(status.getUser().getId(), true);
+            adapter.add(new Menu("@" + status.getUser().getScreenName(), new Runnable() {
+                @Override
+                public void run() {
+                    Intent intent = new Intent(mActivity, ProfileActivity.class);
+                    intent.putExtra("screenName", status.getUser().getScreenName());
+                    mActivity.startActivity(intent);
+                }
+            }));
+        }
+
         /**
          * ツイート内のメンション
          */
         for (final UserMentionEntity mention : mentions) {
+            if (users.get(mention.getId()) != null) {
+                continue;
+            }
+            users.put(mention.getId(), true);
             adapter.add(new Menu("@" + mention.getScreenName(), new Runnable() {
                 @Override
                 public void run() {
