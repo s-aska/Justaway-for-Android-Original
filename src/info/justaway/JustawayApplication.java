@@ -322,7 +322,7 @@ public class JustawayApplication extends Application {
         } else {
             String tabs_string = preferences.getString(TABS.concat(String.valueOf(getUserId())), "-1,-2,-3");
             String[] tabs_strings = tabs_string.split(",");
-            ArrayList<Integer> tabIds = new ArrayList<Integer>();
+            final ArrayList<Integer> tabIds = new ArrayList<Integer>();
             for (String tab_string : tabs_strings) {
                 Tab tab = new Tab();
                 tab.id = Integer.valueOf(tab_string);
@@ -330,7 +330,25 @@ public class JustawayApplication extends Application {
                 mTabs.add(tab);
                 tabIds.add(tab.id);
             }
-            saveTabs(tabIds);
+            new AsyncTask<Void, Void, ResponseList<UserList>>() {
+                @Override
+                protected ResponseList<UserList> doInBackground(Void... params) {
+                    try {
+                        return getTwitter().getUserLists(getUserId());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return null;
+                    }
+                }
+
+                @Override
+                protected void onPostExecute(ResponseList<UserList> userLists) {
+                    if (userLists != null) {
+                        setUserLists(userLists);
+                        saveTabs(tabIds);
+                    }
+                }
+            }.execute();
         }
         return mTabs;
     }
