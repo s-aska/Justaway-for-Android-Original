@@ -99,7 +99,7 @@
             android:layout_height="36dip"
             android:layout_gravity="right|bottom"
             android:textColor="#33b5e5"
-            android:background="@color/menu_background"
+            android:background="@drawable/button_stateful"
             android:paddingLeft="16dip"
             android:paddingRight="16dip"
             android:textSize="14sp"
