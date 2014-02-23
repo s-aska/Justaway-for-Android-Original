@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -28,8 +29,18 @@ public class AccountSettingActivity extends Activity {
 
         ListView listView = (ListView) findViewById(R.id.list_view);
 
-        AccountAdapter adapter = new AccountAdapter(this, R.layout.row_word);
+        final AccountAdapter adapter = new AccountAdapter(this, R.layout.row_word);
         listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                AccessToken accessToken = adapter.getItem(i);
+                if (JustawayApplication.getApplication().getUserId() != accessToken.getUserId()) {
+                    JustawayApplication.getApplication().setAccessToken(accessToken);
+                    finish();
+                }
+            }
+        });
 
         ArrayList<AccessToken> accessTokens = JustawayApplication.getApplication().getAccessTokens();
 
@@ -100,14 +111,6 @@ public class AccountSettingActivity extends Activity {
             if (JustawayApplication.getApplication().getUserId() == accessToken.getUserId()) {
                 screenName.setTextColor(getResources().getColor(R.color.holo_blue_bright));
                 trash.setVisibility(View.GONE);
-            } else {
-                view.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        JustawayApplication.getApplication().setAccessToken(accessToken);
-                        finish();
-                    }
-                });
             }
 
             view.findViewById(R.id.trash).setOnClickListener(new View.OnClickListener() {
