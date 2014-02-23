@@ -61,12 +61,12 @@ public class PostStockSettings {
     }
 
     public void addHashtag(String hashtag) {
-        for (String muteWord : mPostStockSettingsDate.hashtags) {
-            if (muteWord.equals(hashtag)) {
+        for (String existHashtag : mPostStockSettingsDate.hashtags) {
+            if (existHashtag.equals(hashtag)) {
                 return;
             }
         }
-        mPostStockSettingsDate.hashtags.add(hashtag);
+        mPostStockSettingsDate.hashtags.add(0, hashtag);
         savePostStockSettings();
     }
 
@@ -81,7 +81,7 @@ public class PostStockSettings {
                 return;
             }
         }
-        mPostStockSettingsDate.drafts.add(draft);
+        mPostStockSettingsDate.drafts.add(0, draft);
         savePostStockSettings();
     }
 

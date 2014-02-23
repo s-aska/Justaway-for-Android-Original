@@ -13,7 +13,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -41,8 +40,8 @@ import java.io.File;
 import java.util.ArrayList;
 
 import info.justaway.settings.PostStockSettings;
+import info.justaway.task.UpdateStatusTask;
 import twitter4j.StatusUpdate;
-import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.auth.AccessToken;
 
@@ -184,33 +183,36 @@ public class PostActivity extends FragmentActivity {
         mTweetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String text = mEditText.getText().toString();
                 JustawayApplication.showProgressDialog(mContext, getString(R.string.progress_sending));
-                StatusUpdate superSugoi = new StatusUpdate(mEditText.getText().toString());
+                StatusUpdate statusUpdate = new StatusUpdate(mEditText.getText().toString());
                 if (mInReplyToStatusId > 0) {
-                    superSugoi.setInReplyToStatusId(mInReplyToStatusId);
+                    statusUpdate.setInReplyToStatusId(mInReplyToStatusId);
                 }
                 if (mImgPath != null) {
-                    superSugoi.setMedia(mImgPath);
+                    statusUpdate.setMedia(mImgPath);
                 }
 
-                if (text.contains("#")) {
-                    String hashtag = text.substring(text.indexOf("#"));
-
-                    boolean exist = false;
-                    for (String existHashtag : mPostStockSettings.getHashtags()) {
-                        if (existHashtag.equals(hashtag)) {
-                            exist = true;
-                            break;
+                UpdateStatusTask task = new UpdateStatusTask((AccessToken) mSpinner.getSelectedItem()) {
+                    @Override
+                    protected void onPostExecute(TwitterException e) {
+                        JustawayApplication.dismissProgressDialog();
+                        if (e == null) {
+                            mEditText.setText("");
+                            if (!mWidgetMode) {
+                                finish();
+                            } else {
+                                mImgPath = null;
+                                mImgButton.setTextColor(getResources().getColor(android.R.color.secondary_text_dark));
+                                mTweetButton.setEnabled(false);
+                            }
+                        } else if (e.getErrorCode() == ERROR_CODE_DUPLICATE_STATUS) {
+                            JustawayApplication.showToast(getString(R.string.toast_update_status_already));
+                        } else {
+                            JustawayApplication.showToast(R.string.toast_update_status_failure);
                         }
                     }
-                    if (!exist) {
-                        mPostStockSettings.addHashtag(hashtag);
-                    }
-
-                }
-
-                new PostTask().execute(superSugoi);
+                };
+                task.execute(statusUpdate);
             }
         });
 
@@ -454,42 +456,6 @@ public class PostActivity extends FragmentActivity {
             }
         } else {
             mTweetButton.setEnabled(true);
-        }
-    }
-
-    private class PostTask extends AsyncTask<StatusUpdate, Void, TwitterException> {
-        @Override
-        protected TwitterException doInBackground(StatusUpdate... params) {
-            StatusUpdate statusUpdate = params[0];
-            try {
-                Twitter twitter = JustawayApplication.getApplication().getTwitterInstance();
-                twitter.setOAuthAccessToken((AccessToken) mSpinner.getSelectedItem());
-                twitter.updateStatus(statusUpdate);
-                return null;
-            } catch (TwitterException e) {
-                e.printStackTrace();
-
-                return e;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(TwitterException e) {
-            JustawayApplication.dismissProgressDialog();
-            if (e == null) {
-                mEditText.setText("");
-                if (!mWidgetMode) {
-                    finish();
-                } else {
-                    mImgPath = null;
-                    mImgButton.setTextColor(getResources().getColor(android.R.color.secondary_text_dark));
-                    mTweetButton.setEnabled(false);
-                }
-            } else if (e.getErrorCode() == ERROR_CODE_DUPLICATE_STATUS) {
-                JustawayApplication.showToast(getString(R.string.toast_update_status_already));
-            } else {
-                JustawayApplication.showToast(R.string.toast_update_status_failure);
-            }
         }
     }
 

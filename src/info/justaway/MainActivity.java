@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.DialogFragment;
@@ -38,6 +37,7 @@ import info.justaway.fragment.main.UserListFragment;
 import info.justaway.model.Row;
 import info.justaway.task.DestroyDirectMessageTask;
 import info.justaway.task.ReFetchFavoriteStatus;
+import info.justaway.task.UpdateStatusTask;
 import twitter4j.ConnectionLifeCycleListener;
 import twitter4j.DirectMessage;
 import twitter4j.Status;
@@ -263,13 +263,28 @@ public class MainActivity extends FragmentActivity {
                 String msg = status.getText() != null ? status.getText().toString() : null;
                 if (msg != null && msg.length() > 0) {
                     showProgressDialog(getString(R.string.progress_sending));
-                    StatusUpdate super_sugoi = new StatusUpdate(msg);
+                    StatusUpdate statusUpdate = new StatusUpdate(msg);
                     Long inReplyToStatusId = getInReplyToStatusId();
                     if (inReplyToStatusId != null && inReplyToStatusId > 0) {
-                        super_sugoi.setInReplyToStatusId(inReplyToStatusId);
+                        statusUpdate.setInReplyToStatusId(inReplyToStatusId);
                         setInReplyToStatusId((long) 0);
                     }
-                    new UpdateStatusTask().execute(super_sugoi);
+
+                    UpdateStatusTask task = new UpdateStatusTask(null) {
+                        @Override
+                        protected void onPostExecute(TwitterException e) {
+                            dismissProgressDialog();
+                            if (e == null) {
+                                EditText status = (EditText) findViewById(R.id.quick_tweet_edit);
+                                status.setText("");
+                            } else if (e.getErrorCode() == ERROR_CODE_DUPLICATE_STATUS) {
+                                JustawayApplication.showToast(getString(R.string.toast_update_status_already));
+                            } else {
+                                JustawayApplication.showToast(R.string.toast_update_status_failure);
+                            }
+                        }
+                    };
+                    task.execute(statusUpdate);
                 }
             }
         });
@@ -799,33 +814,6 @@ public class MainActivity extends FragmentActivity {
                 }
             }
         };
-    }
-
-    public class UpdateStatusTask extends AsyncTask<StatusUpdate, Void, TwitterException> {
-        @Override
-        protected TwitterException doInBackground(StatusUpdate... params) {
-            StatusUpdate superSugoi = params[0];
-            try {
-                mApplication.getTwitter().updateStatus(superSugoi);
-                return null;
-            } catch (TwitterException e) {
-                e.printStackTrace();
-                return e;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(TwitterException e) {
-            dismissProgressDialog();
-            if (e == null) {
-                EditText status = (EditText) findViewById(R.id.quick_tweet_edit);
-                status.setText("");
-            } else if (e.getErrorCode() == ERROR_CODE_DUPLICATE_STATUS) {
-                JustawayApplication.showToast(getString(R.string.toast_update_status_already));
-            } else {
-                JustawayApplication.showToast(R.string.toast_update_status_failure);
-            }
-        }
     }
 
     private void showProgressDialog(String message) {
