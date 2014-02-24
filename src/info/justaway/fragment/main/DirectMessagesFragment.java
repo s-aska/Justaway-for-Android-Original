@@ -158,7 +158,7 @@ public class DirectMessagesFragment extends BaseFragment {
                     directMessagesPaging.setMaxId(mDirectMessagesMaxId - 1);
                     directMessagesPaging.setCount(200);
                 } else {
-                    directMessagesPaging.setCount(25);
+                    directMessagesPaging.setCount(10);
                 }
                 ResponseList<DirectMessage> directMessages = twitter.getDirectMessages(directMessagesPaging);
                 for (DirectMessage directMessage : directMessages) {
@@ -173,7 +173,7 @@ public class DirectMessagesFragment extends BaseFragment {
                     sentDirectMessagesPaging.setMaxId(mSentDirectMessagesMaxId - 1);
                     sentDirectMessagesPaging.setCount(200);
                 } else {
-                    sentDirectMessagesPaging.setCount(25);
+                    sentDirectMessagesPaging.setCount(10);
                 }
                 ResponseList<DirectMessage> sentDirectMessages = twitter.getSentDirectMessages(sentDirectMessagesPaging);
                 for (DirectMessage directMessage : sentDirectMessages) {
