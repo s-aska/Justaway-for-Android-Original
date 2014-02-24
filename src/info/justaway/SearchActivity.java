@@ -41,7 +41,7 @@ public class SearchActivity extends FragmentActivity {
     private TwitterAdapter mAdapter;
     private SearchWordAdapter mSearchWordAdapter;
     private ListView mListView;
-    private ProgressBar mFooter;
+    private ProgressBar mProgressBar;
     private Query mNextQuery;
     private ListView mSearchListView;
 
@@ -58,12 +58,12 @@ public class SearchActivity extends FragmentActivity {
         tweet.setTypeface(fontello);
 
         mSearchWords = (EditText) findViewById(R.id.searchWords);
-        mFooter = (ProgressBar) findViewById(R.id.guruguru);
-        mFooter.setVisibility(View.GONE);
+        mProgressBar = (ProgressBar) findViewById(R.id.guruguru);
         mListView = (ListView) findViewById(R.id.list_view);
         mListView.setVisibility(View.GONE);
 
         mSearchListView = (ListView) findViewById(R.id.search_list_view);
+        mSearchListView.setVisibility(View.GONE);
 
         // 保存された検索をViewに描写するアダプター
         mSearchWordAdapter = new SearchWordAdapter(mContext, R.layout.row_word);
@@ -113,7 +113,6 @@ public class SearchActivity extends FragmentActivity {
         mSearchWords.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-
                 //EnterKeyが押されたかを判定
                 if (event.getAction() == KeyEvent.ACTION_DOWN
                         && keyCode == KeyEvent.KEYCODE_ENTER) {
@@ -183,19 +182,20 @@ public class SearchActivity extends FragmentActivity {
 
     private void additionalReading() {
         if (mNextQuery != null) {
-            mFooter.setVisibility(View.VISIBLE);
+            mProgressBar.setVisibility(View.VISIBLE);
             new SearchTask().execute(mNextQuery);
             mNextQuery = null;
         }
     }
 
     private void search() {
+        mSearchListView.setVisibility(View.GONE);
         JustawayApplication.getApplication().hideKeyboard(mSearchWords);
         if (mSearchWords.getText() == null) return;
         Query query = new Query(mSearchWords.getText().toString().concat(" exclude:retweets"));
         mAdapter.clear();
         mListView.setVisibility(View.GONE);
-        mFooter.setVisibility(View.VISIBLE);
+        mProgressBar.setVisibility(View.VISIBLE);
         mNextQuery = null;
         new SearchTask().execute(query);
     }
@@ -237,7 +237,7 @@ public class SearchActivity extends FragmentActivity {
                 mListView.setSelection(0);
                 mSearchListView.setVisibility(View.GONE);
             }
-            mFooter.setVisibility(View.GONE);
+            mProgressBar.setVisibility(View.GONE);
 
             // インテント経由で検索時にうまく閉じてくれないので入れている
             InputMethodManager inputMethodManager =
@@ -301,6 +301,8 @@ public class SearchActivity extends FragmentActivity {
 
         @Override
         protected void onPostExecute(ResponseList<SavedSearch> savedSearches) {
+            mProgressBar.setVisibility(View.GONE);
+            mSearchListView.setVisibility(View.VISIBLE);
             if (savedSearches == null) {
                 return;
             }
