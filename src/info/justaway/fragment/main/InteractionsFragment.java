@@ -179,8 +179,6 @@ public class InteractionsFragment extends BaseFragment {
                 if (mMaxId > 0) {
                     paging.setMaxId(mMaxId - 1);
                     paging.setCount(200);
-                } else {
-                    paging.setCount(50);
                 }
                 return JustawayApplication.getApplication().getTwitter().getMentionsTimeline(paging);
             } catch (Exception e) {
