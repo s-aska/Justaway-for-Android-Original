@@ -122,6 +122,8 @@ public class JustawayApplication extends Application {
 
         resetDisplaySettings();
 
+        getAccessToken();
+
         sMuteSettings = new MuteSettings();
     }
 
