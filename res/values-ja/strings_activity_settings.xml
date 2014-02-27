@@ -1,0 +1,36 @@
+<resources>
+    <string name="title_activity_settings">設定</string>
+
+    <string name="pref_title_keep_screen_on">スリープしない</string>
+    <string name="pref_description_keep_screen_on">ホーム画面でスリープしなくなります</string>
+
+    <string name="pref_title_font_size">フォントサイズ</string>
+    <string-array name="pref_font_size_titles">
+        <item>12 pt</item>
+        <item>13 pt</item>
+        <item>14 pt</item>
+        <item>15 pt</item>
+        <item>16 pt</item>
+        <item>17 pt</item>
+        <item>18 pt</item>
+        <item>19 pt</item>
+        <item>20 pt</item>
+    </string-array>
+    <string-array name="pref_font_size_values">
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>15</item>
+        <item>16</item>
+        <item>17</item>
+        <item>18</item>
+        <item>19</item>
+        <item>20</item>
+    </string-array>
+
+    <string name="pref_title_mute">ミュート設定</string>
+    <string name="pref_description_mute">ユーザー / via / キーワード を指定できます</string>
+
+    <string name="pref_title_performance">パフォーマンス設定</string>
+    <string name="pref_description_performance">アイコンの角丸や画質、読み込み件数を指定できます</string>
+</resources>

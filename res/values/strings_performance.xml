@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="pref_title_user_icon_rounded_on">アイコンを角丸にする</string>
-    <string name="pref_description_user_icon_rounded_on">無効にすると消費メモリを抑えます</string>
+    <string name="pref_title_user_icon_rounded_on">Rounded to the icon</string>
+    <string name="pref_description_user_icon_rounded_on">Memory consumption will decrease when you disable.</string>
 
-    <string name="pref_title_user_icon_size">アイコン画質</string>
+    <string name="pref_title_user_icon_size">Icon image quality</string>
     <string-array name="pref_user_icon_size_titles">
-        <item>低</item>
-        <item>中</item>
-        <item>高</item>
+        <item>low</item>
+        <item>middle</item>
+        <item>high</item>
     </string-array>
     <string-array name="pref_user_icon_size_values">
         <item>mini</item>
