@@ -560,41 +560,39 @@ public class StatusMenuFragment extends DialogFragment {
         /**
          * viaをミュート
          */
-        adapter.add(new Menu(mApplication.getClientName(source.getSource())
-                + mActivity.getString(R.string.context_menu_mute),
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        new AlertDialog.Builder(getActivity())
-                                .setTitle(mApplication.getClientName(source.getSource()) + getString(R.string.context_create_mute))
-                                .setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        MuteSettings muteSettings = mApplication.getMuteSettings();
-                                        muteSettings.addSource(mApplication.getClientName(source.getSource()));
-                                        muteSettings.saveMuteSettings();
-                                        JustawayApplication.showToast(R.string.toast_create_mute);
-                                        dismiss();
-                                    }
-                                })
-                                .setNegativeButton(R.string.button_cancel, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                    }
-                                })
-                                .show();
-                    }
-                }));
+        adapter.add(new Menu(String.format(mActivity.getString(R.string.context_menu_mute), mApplication.getClientName(source.getSource())), new Runnable() {
+            @Override
+            public void run() {
+                new AlertDialog.Builder(getActivity())
+                        .setTitle(String.format(getString(R.string.context_create_mute), mApplication.getClientName(source.getSource())))
+                        .setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                MuteSettings muteSettings = mApplication.getMuteSettings();
+                                muteSettings.addSource(mApplication.getClientName(source.getSource()));
+                                muteSettings.saveMuteSettings();
+                                JustawayApplication.showToast(R.string.toast_create_mute);
+                                dismiss();
+                            }
+                        })
+                        .setNegativeButton(R.string.button_cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                            }
+                        })
+                        .show();
+            }
+        }));
 
         /**
          * ハッシュタグをミュート
          */
         for (final HashtagEntity hashtag : hashtags) {
-            adapter.add(new Menu("#" + hashtag.getText() + mActivity.getString(R.string.context_menu_mute), new Runnable() {
+            adapter.add(new Menu(String.format(mActivity.getString(R.string.context_menu_mute), "#".concat(hashtag.getText())), new Runnable() {
                 @Override
                 public void run() {
                     new AlertDialog.Builder(getActivity())
-                            .setTitle("#" + hashtag.getText() + getString(R.string.context_create_mute))
+                            .setTitle(String.format(getString(R.string.context_create_mute), "#".concat(hashtag.getText())))
                             .setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
@@ -618,11 +616,11 @@ public class StatusMenuFragment extends DialogFragment {
         /**
          * ユーザーをミュート
          */
-        adapter.add(new Menu("@" + source.getUser().getScreenName() + mActivity.getString(R.string.context_menu_mute), new Runnable() {
+        adapter.add(new Menu(String.format(mActivity.getString(R.string.context_menu_mute), "@".concat(source.getUser().getScreenName())), new Runnable() {
             @Override
             public void run() {
                 new AlertDialog.Builder(getActivity())
-                        .setTitle("@" + source.getUser().getScreenName() + getString(R.string.context_create_mute))
+                        .setTitle(String.format(getString(R.string.context_create_mute), "@".concat(source.getUser().getScreenName())))
                         .setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
