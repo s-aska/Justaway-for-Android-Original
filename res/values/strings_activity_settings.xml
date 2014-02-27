@@ -1,10 +1,10 @@
-<resources>
-    <string name="title_activity_settings">設定</string>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="title_activity_settings">Settings</string>
 
-    <string name="pref_title_keep_screen_on">スリープしない</string>
-    <string name="pref_description_keep_screen_on">ホーム画面でスリープしなくなります</string>
+    <string name="pref_title_keep_screen_on">Keep screen</string>
+    <string name="pref_description_keep_screen_on">Do not Sleep.</string>
 
-    <string name="pref_title_font_size">フォントサイズ</string>
+    <string name="pref_title_font_size">Font size</string>
     <string-array name="pref_font_size_titles">
         <item>12 pt</item>
         <item>13 pt</item>
@@ -28,9 +28,9 @@
         <item>20</item>
     </string-array>
 
-    <string name="pref_title_mute">ミュート設定</string>
-    <string name="pref_description_mute">ユーザー / via / キーワード を指定できます</string>
+    <string name="pref_title_mute">Mute Settings</string>
+    <string name="pref_description_mute">User / Via / Keyword</string>
 
-    <string name="pref_title_performance">パフォーマンス設定</string>
-    <string name="pref_description_performance">アイコンの角丸や画質、読み込み件数を指定できます</string>
+    <string name="pref_title_performance">Performance Settings</string>
+    <string name="pref_description_performance" tools:ignore="TypographyEllipsis">Icon size ...etc</string>
 </resources>
