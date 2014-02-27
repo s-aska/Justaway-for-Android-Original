@@ -117,8 +117,9 @@ public class SignInActivity extends Activity {
                 if (accessToken != null) {
                     JustawayApplication.showToast(R.string.toast_sign_in_success);
                     successOAuth(accessToken);
-                } else {
-                    JustawayApplication.showToast(R.string.toast_sign_in_failure);
+                    // 認証画面で別アカウントにして認証した時に誤爆する
+//                } else {
+//                    JustawayApplication.showToast(R.string.toast_sign_in_failure);
                 }
             }
         }.execute(oauth_verifier);

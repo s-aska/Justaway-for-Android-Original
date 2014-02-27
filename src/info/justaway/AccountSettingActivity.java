@@ -117,7 +117,7 @@ public class AccountSettingActivity extends Activity {
                 @Override
                 public void onClick(View v) {
                     new AlertDialog.Builder(AccountSettingActivity.this)
-                            .setTitle("@".concat(accessToken.getScreenName().concat(getString(R.string.confirm_remove_account))))
+                            .setTitle(String.format(getString(R.string.confirm_remove_account), "@".concat(accessToken.getScreenName())))
                             .setPositiveButton(
                                     R.string.button_yes,
                                     new DialogInterface.OnClickListener() {
@@ -125,7 +125,6 @@ public class AccountSettingActivity extends Activity {
                                         public void onClick(DialogInterface dialog, int which) {
                                             remove(position);
                                             JustawayApplication.getApplication().removeAccessToken(position);
-
                                             finish();
                                         }
                                     })
@@ -134,7 +133,6 @@ public class AccountSettingActivity extends Activity {
                                     new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
-                                            finish();
                                         }
                                     })
                             .show();
