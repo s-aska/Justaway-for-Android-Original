@@ -20,7 +20,7 @@
         android:id="@+id/signal"
         android:layout_width="58dip"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
+        android:background="@drawable/action_bar_stateful"
         android:text="@string/fontello_flash"
         tools:paddingBottom="0dip"/>
 </LinearLayout>

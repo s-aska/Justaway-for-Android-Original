@@ -109,7 +109,7 @@ public class MainActivity extends FragmentActivity {
             } else {
                 mActionBar.setDisplayOptions(options | ActionBar.DISPLAY_SHOW_CUSTOM);
                 if (mActionBar.getCustomView() == null) {
-                    mActionBar.setCustomView(R.layout.action_bar);
+                    mActionBar.setCustomView(R.layout.action_bar_main);
                     ViewGroup group = (ViewGroup) mActionBar.getCustomView();
                     mTitle = (TextView) group.findViewById(R.id.title);
                     mSignalButton = (TextView) group.findViewById(R.id.signal);
