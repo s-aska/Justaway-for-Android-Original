@@ -1,6 +1,7 @@
 package info.justaway;
 
 
+import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -64,12 +65,53 @@ public class PostActivity extends FragmentActivity {
     private boolean mWidgetMode;
     private Spinner mSpinner;
     private PostStockSettings mPostStockSettings;
+    private TextView mTitle;
+    private TextView mUndoButton;
+    private ArrayList<String> mTextHistory = new ArrayList<String>();
 
+    @SuppressWarnings("MagicConstant")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post);
         mContext = this;
+
+        ActionBar actionBar = getActionBar();
+        if (actionBar != null) {
+            int options = actionBar.getDisplayOptions();
+            if ((options & ActionBar.DISPLAY_SHOW_CUSTOM) == ActionBar.DISPLAY_SHOW_CUSTOM) {
+                actionBar.setDisplayOptions(options ^ ActionBar.DISPLAY_SHOW_CUSTOM);
+            } else {
+                actionBar.setDisplayOptions(options | ActionBar.DISPLAY_SHOW_CUSTOM);
+                if (actionBar.getCustomView() == null) {
+                    actionBar.setCustomView(R.layout.action_bar_post);
+                    ViewGroup group = (ViewGroup) actionBar.getCustomView();
+                    mTitle = (TextView) group.findViewById(R.id.title);
+                    mUndoButton = (TextView) group.findViewById(R.id.undo);
+                    mUndoButton.setTypeface(JustawayApplication.getFontello());
+                    mUndoButton.setEnabled(false);
+                    mUndoButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            String text = mTextHistory.get(mTextHistory.size() - 1);
+                            if (mEditText.getText() != null && text.equals(mEditText.getText().toString())) {
+                                mTextHistory.remove(mTextHistory.size() - 1);
+                                if (mTextHistory.size() > 0) {
+                                    text = mTextHistory.get(mTextHistory.size() - 1);
+                                }
+                            }
+                            mEditText.setText(text);
+                            mEditText.setSelection(mEditText.length());
+                            mTextHistory.remove(mTextHistory.size() - 1);
+                            if (mTextHistory.size() > 0 && text.equals(mEditText.getText().toString())) {
+                                mTextHistory.remove(mTextHistory.size() - 1);
+                            }
+                            mUndoButton.setEnabled(mTextHistory.size() > 0);
+                        }
+                    });
+                }
+            }
+        }
 
         JustawayApplication.getApplication().warmUpUserIconMap();
 
@@ -115,9 +157,9 @@ public class PostActivity extends FragmentActivity {
         Intent intent = getIntent();
         mWidgetMode = intent.getBooleanExtra("widget", false);
         if (mWidgetMode) {
-            setTitle(getString(R.string.widget_title_post_mode));
+            mTitle.setText(getString(R.string.widget_title_post_mode));
         } else {
-            setTitle(getString(R.string.title_post));
+            mTitle.setText(getString(R.string.title_post));
         }
 
         String status = intent.getStringExtra("status");
@@ -361,6 +403,11 @@ public class PostActivity extends FragmentActivity {
             }
 
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // 直近のと一緒なら保存しない
+                if (mTextHistory.size() == 0 || !s.toString().equals(mTextHistory.get(mTextHistory.size() - 1))) {
+                    mTextHistory.add(s.toString());
+                }
+                mUndoButton.setEnabled(mTextHistory.size() > 0);
             }
         });
     }

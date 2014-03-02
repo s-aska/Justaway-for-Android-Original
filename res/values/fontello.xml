@@ -24,5 +24,6 @@
     <string name="fontello_up"></string>
     <string name="fontello_down"></string>
     <string name="fontello_flash"></string>
+    <string name="fontello_undo"></string>
 
 </resources>
