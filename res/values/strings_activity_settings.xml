@@ -33,4 +33,22 @@
 
     <string name="pref_title_performance">Performance Settings</string>
     <string name="pref_description_performance" tools:ignore="TypographyEllipsis">Icon size ...etc</string>
+
+    <string name="pref_title_log_tap">Long tap menu</string>
+    <string-array name="pref_long_tap_titles">
+        <item>Quote</item>
+        <item>View conversation</item>
+        <item>View tweets around</item>
+        <item>Share</item>
+        <item>Reply to all</item>
+        <item>Nothing</item>
+    </string-array>
+    <string-array name="pref_log_tap_values">
+        <item>quote</item>
+        <item>talk</item>
+        <item>show_around</item>
+        <item>share_url</item>
+        <item>reply_all</item>
+        <item>nothing</item>
+    </string-array>
 </resources>
