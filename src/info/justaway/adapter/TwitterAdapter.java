@@ -35,6 +35,7 @@ import info.justaway.PostActivity;
 import info.justaway.ProfileActivity;
 import info.justaway.R;
 import info.justaway.ScaleImageActivity;
+import info.justaway.listener.StatusActionListener;
 import info.justaway.model.Row;
 import twitter4j.DirectMessage;
 import twitter4j.MediaEntity;
@@ -88,6 +89,16 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     private int mLimit = LIMIT;
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy/MM'/'dd' 'HH':'mm':'ss",
             Locale.ENGLISH);
+
+    private StatusActionListener mStatusActionListener;
+
+    public StatusActionListener getStatusActionListener() {
+        return mStatusActionListener;
+    }
+
+    public void setStatusActionListener(StatusActionListener statusActionListener) {
+        mStatusActionListener = statusActionListener;
+    }
 
     public TwitterAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId);
@@ -413,8 +424,8 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                                             public void onClick(DialogInterface dialog, int which) {
                                                 holder.do_retweet.setTextColor(Color.parseColor("#666666"));
                                                 mApplication.doDestroyRetweet(status);
-                                                if (isMain) {
-                                                    ((MainActivity) mContext).notifyDataSetChanged();
+                                                if (mStatusActionListener != null) {
+                                                    mStatusActionListener.notifyDataSetChanged();
                                                 }
                                                 dismiss();
                                             }
@@ -488,8 +499,8 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                                             holder.do_retweet.setTextColor(mContext.getResources()
                                                     .getColor(R.color.holo_green_light));
                                             mApplication.doRetweet(status.getId());
-                                            if (isMain) {
-                                                ((MainActivity) mContext).notifyDataSetChanged();
+                                            if (mStatusActionListener != null) {
+                                                mStatusActionListener.notifyDataSetChanged();
                                             }
                                             dismiss();
                                         }
@@ -532,8 +543,8 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                     holder.do_fav.setTextColor(mContext.getResources().getColor(R.color.holo_orange_light));
                     mApplication.doFavorite(status.getId());
                 }
-                if (isMain) {
-                    ((MainActivity) mContext).notifyDataSetChanged();
+                if (mStatusActionListener != null) {
+                    mStatusActionListener.notifyDataSetChanged();
                 }
             }
         });

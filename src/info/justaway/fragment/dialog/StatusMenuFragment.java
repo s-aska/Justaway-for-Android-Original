@@ -33,8 +33,11 @@ import info.justaway.SearchActivity;
 import info.justaway.fragment.AroundFragment;
 import info.justaway.fragment.RetweetersFragment;
 import info.justaway.fragment.TalkFragment;
+import info.justaway.listener.StatusActionListener;
+import info.justaway.model.Row;
 import info.justaway.plugin.TwiccaPlugin;
 import info.justaway.settings.MuteSettings;
+import info.justaway.task.DestroyStatusTask;
 import twitter4j.DirectMessage;
 import twitter4j.HashtagEntity;
 import twitter4j.Status;
@@ -50,10 +53,24 @@ public class StatusMenuFragment extends DialogFragment {
     static final int CLOSED_MENU_DELAY = 800;
 
     private List<ResolveInfo> mTwiccaPlugins;
-    private Runnable mCallback;
+    private StatusActionListener mStatusActionListener;
 
-    public void setCallback(Runnable callback) {
-        mCallback = callback;
+    public StatusMenuFragment(Row row) {
+        Bundle args = new Bundle();
+        if (row.isDirectMessage()) {
+            args.putSerializable("directMessage", row.getMessage());
+        } else {
+            args.putSerializable("status", row.getStatus());
+        }
+        if (row.isFavorite()) {
+            args.putSerializable("favoriteSourceUser", row.getSource());
+        }
+        this.setArguments(args);
+    }
+
+    public StatusMenuFragment setStatusActionListener(StatusActionListener statusActionListener) {
+        mStatusActionListener = statusActionListener;
+        return this;
     }
 
     @Override
@@ -232,9 +249,7 @@ public class StatusMenuFragment extends DialogFragment {
                 @Override
                 public void run() {
                     mApplication.doDestroyFavorite(status.getId());
-                    if (mCallback != null) {
-                        mCallback.run();
-                    }
+                    mStatusActionListener.notifyDataSetChanged();
                     dismiss();
                 }
             }));
@@ -243,9 +258,7 @@ public class StatusMenuFragment extends DialogFragment {
                 @Override
                 public void run() {
                     mApplication.doFavorite(status.getId());
-                    if (mCallback != null) {
-                        mCallback.run();
-                    }
+                    mStatusActionListener.notifyDataSetChanged();
                     dismiss();
                 }
             }));
@@ -268,9 +281,7 @@ public class StatusMenuFragment extends DialogFragment {
                     @Override
                     public void run() {
                         mApplication.doDestroyRetweet(status);
-                        if (mCallback != null) {
-                            mCallback.run();
-                        }
+                        mStatusActionListener.notifyDataSetChanged();
                         dismiss();
                     }
                 }));
@@ -287,10 +298,9 @@ public class StatusMenuFragment extends DialogFragment {
                 adapter.add(new Menu(R.string.context_menu_destroy_status, new Runnable() {
                     @Override
                     public void run() {
-                        mApplication.doDestroyStatus(status.getId());
-                        if (mCallback != null) {
-                            mCallback.run();
-                        }
+                        new DestroyStatusTask(status.getId())
+                                .setStatusActionListener(mStatusActionListener)
+                                .execute();
                         dismiss();
                     }
                 }));
@@ -309,9 +319,7 @@ public class StatusMenuFragment extends DialogFragment {
                 @Override
                 public void run() {
                     mApplication.doDestroyRetweet(status);
-                    if (mCallback != null) {
-                        mCallback.run();
-                    }
+                    mStatusActionListener.notifyDataSetChanged();
                     dismiss();
                 }
             }));
@@ -335,9 +343,7 @@ public class StatusMenuFragment extends DialogFragment {
                         public void run() {
                             mApplication.doFavorite(status.getId());
                             mApplication.doRetweet(status.getId());
-                            if (mCallback != null) {
-                                mCallback.run();
-                            }
+                            mStatusActionListener.notifyDataSetChanged();
                             dismiss();
                         }
                     }));
@@ -350,9 +356,7 @@ public class StatusMenuFragment extends DialogFragment {
                     @Override
                     public void run() {
                         mApplication.doRetweet(status.getId());
-                        if (mCallback != null) {
-                            mCallback.run();
-                        }
+                        mStatusActionListener.notifyDataSetChanged();
                         dismiss();
                     }
                 }));

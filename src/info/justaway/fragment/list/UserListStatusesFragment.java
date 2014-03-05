@@ -7,14 +7,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import info.justaway.JustawayApplication;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
-import info.justaway.fragment.dialog.StatusMenuFragment;
+import info.justaway.listener.StatusActionListener;
+import info.justaway.listener.StatusClickListener;
 import info.justaway.model.Row;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
@@ -47,24 +47,10 @@ public class UserListStatusesFragment extends Fragment {
         mAdapter = new TwitterAdapter(getActivity(), R.layout.row_tweet);
         mListView.setAdapter(mAdapter);
 
-        // シングルタップでコンテキストメニューを開くための指定
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                StatusMenuFragment statusMenuFragment = new StatusMenuFragment();
-                Bundle args = new Bundle();
-                Row row = mAdapter.getItem(position);
-                args.putSerializable("status", row.getStatus());
-                statusMenuFragment.setArguments(args);
-                statusMenuFragment.setCallback(new Runnable() {
-                    @Override
-                    public void run() {
-                        mAdapter.notifyDataSetChanged();
-                    }
-                });
-                statusMenuFragment.show(getActivity().getSupportFragmentManager(), "dialog");
-            }
-        });
+        // ツイートに関するアクション（ふぁぼ / RT / ツイ消し）のリスナー
+        mAdapter.setStatusActionListener(new StatusActionListener(mAdapter));
+
+        mListView.setOnItemClickListener(new StatusClickListener(getActivity()));
 
         new UserListTask().execute(mListId);
 

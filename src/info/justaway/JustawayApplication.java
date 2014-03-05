@@ -776,10 +776,6 @@ public class JustawayApplication extends Application {
         }
     }
 
-    public void doDestroyStatus(long id) {
-        new DestroyStatusTask().execute(id);
-    }
-
     public void showKeyboard(final View view) {
         showKeyboard(view, 200);
     }

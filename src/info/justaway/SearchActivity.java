@@ -15,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,7 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import info.justaway.adapter.TwitterAdapter;
-import info.justaway.fragment.dialog.StatusMenuFragment;
+import info.justaway.listener.StatusActionListener;
+import info.justaway.listener.StatusClickListener;
 import info.justaway.model.Row;
 import info.justaway.settings.MuteSettings;
 import twitter4j.Query;
@@ -82,24 +82,10 @@ public class SearchActivity extends FragmentActivity {
         mAdapter = new TwitterAdapter(mContext, R.layout.row_tweet);
         mListView.setAdapter(mAdapter);
 
-        // シングルタップでコンテキストメニューを開くための指定
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                StatusMenuFragment statusMenuFragment = new StatusMenuFragment();
-                Bundle args = new Bundle();
-                Row row = mAdapter.getItem(position);
-                args.putSerializable("status", row.getStatus());
-                statusMenuFragment.setArguments(args);
-                statusMenuFragment.setCallback(new Runnable() {
-                    @Override
-                    public void run() {
-                        mAdapter.notifyDataSetChanged();
-                    }
-                });
-                statusMenuFragment.show(getSupportFragmentManager(), "dialog");
-            }
-        });
+        // ツイートに関するアクション（ふぁぼ / RT / ツイ消し）のリスナー
+        mAdapter.setStatusActionListener(new StatusActionListener(mAdapter));
+
+        mListView.setOnItemClickListener(new StatusClickListener(this));
 
         search.setOnClickListener(new View.OnClickListener() {
             @Override
