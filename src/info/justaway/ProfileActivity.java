@@ -1,5 +1,6 @@
 package info.justaway;
 
+import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -43,6 +44,12 @@ public class ProfileActivity extends FragmentActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
+        ActionBar actionBar = getActionBar();
+        if (actionBar != null){
+            actionBar.setHomeButtonEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+
         mBanner = (ImageView) findViewById(R.id.banner);
         mBanner.setImageResource(R.drawable.suzuri);
 
@@ -77,6 +84,9 @@ public class ProfileActivity extends FragmentActivity implements
         Intent intent;
         String text;
         switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
             case R.id.send_reply:
                 intent = new Intent(this, PostActivity.class);
                 text = "@" + mUser.getScreenName() + " ";

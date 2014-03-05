@@ -11,7 +11,10 @@ import android.widget.ListView;
 import info.justaway.MainActivity;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
+import info.justaway.listener.StatusClickListener;
+import info.justaway.listener.StatusActionListener;
 import info.justaway.fragment.dialog.StatusMenuFragment;
+import info.justaway.listener.StatusLongClickListener;
 import info.justaway.model.Row;
 import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
 import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout;
@@ -77,31 +80,12 @@ public abstract class BaseFragment extends Fragment implements
 
         mListView.setAdapter(mAdapter);
 
-        // シングルタップでコンテキストメニューを開くための指定
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                StatusMenuFragment statusMenuFragment = new StatusMenuFragment();
-                Bundle args = new Bundle();
-                Row row = mAdapter.getItem(position);
-                if (row.isDirectMessage()) {
-                    args.putSerializable("directMessage", row.getMessage());
-                } else {
-                    args.putSerializable("status", row.getStatus());
-                }
-                if (row.isFavorite()) {
-                    args.putSerializable("favoriteSourceUser", row.getSource());
-                }
-                statusMenuFragment.setArguments(args);
-                statusMenuFragment.setCallback(new Runnable() {
-                    @Override
-                    public void run() {
-                        activity.notifyDataSetChanged();
-                    }
-                });
-                statusMenuFragment.show(getActivity().getSupportFragmentManager(), "dialog");
-            }
-        });
+        // ツイートに関するアクション（ふぁぼ / RT / ツイ消し）のリスナー
+        mAdapter.setStatusActionListener(new StatusActionListener(activity));
+
+        mListView.setOnItemClickListener(new StatusClickListener(activity));
+
+        mListView.setOnItemLongClickListener(new StatusLongClickListener(mAdapter, activity));
     }
 
     public void goToTop() {

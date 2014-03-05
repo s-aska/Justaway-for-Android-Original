@@ -1,5 +1,6 @@
 package info.justaway;
 
+import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -14,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -26,7 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import info.justaway.adapter.TwitterAdapter;
-import info.justaway.fragment.dialog.StatusMenuFragment;
+import info.justaway.listener.StatusActionListener;
+import info.justaway.listener.StatusClickListener;
+import info.justaway.listener.StatusLongClickListener;
 import info.justaway.model.Row;
 import info.justaway.settings.MuteSettings;
 import twitter4j.Query;
@@ -49,6 +51,13 @@ public class SearchActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+
+        ActionBar actionBar = getActionBar();
+        if (actionBar != null){
+            actionBar.setHomeButtonEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+
         mContext = this;
 
         Button search = (Button) findViewById(R.id.search);
@@ -74,24 +83,12 @@ public class SearchActivity extends FragmentActivity {
         mAdapter = new TwitterAdapter(mContext, R.layout.row_tweet);
         mListView.setAdapter(mAdapter);
 
-        // シングルタップでコンテキストメニューを開くための指定
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                StatusMenuFragment statusMenuFragment = new StatusMenuFragment();
-                Bundle args = new Bundle();
-                Row row = mAdapter.getItem(position);
-                args.putSerializable("status", row.getStatus());
-                statusMenuFragment.setArguments(args);
-                statusMenuFragment.setCallback(new Runnable() {
-                    @Override
-                    public void run() {
-                        mAdapter.notifyDataSetChanged();
-                    }
-                });
-                statusMenuFragment.show(getSupportFragmentManager(), "dialog");
-            }
-        });
+        // ツイートに関するアクション（ふぁぼ / RT / ツイ消し）のリスナー
+        mAdapter.setStatusActionListener(new StatusActionListener(mAdapter));
+
+        mListView.setOnItemClickListener(new StatusClickListener(this));
+
+        mListView.setOnItemLongClickListener(new StatusLongClickListener(mAdapter, this));
 
         search.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -157,6 +154,9 @@ public class SearchActivity extends FragmentActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
             case R.id.save_search:
                 if (mSearchWords.getText() != null) {
                     new CreateSavedSearchTask().execute(mSearchWords.getText().toString());
