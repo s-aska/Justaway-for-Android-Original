@@ -29,6 +29,11 @@ public class StatusLongClickListener implements AdapterView.OnItemLongClickListe
     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
         Bundle args = new Bundle();
         String action = JustawayApplication.getApplication().getLongTapAction();
+
+        if (mAdapter.getItem(position).isDirectMessage()) {
+            return true;
+        }
+
         Status status = mAdapter.getItem(position).getStatus();
 
         if (action.equals("quote")) {
