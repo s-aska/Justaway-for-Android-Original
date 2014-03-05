@@ -28,6 +28,7 @@ import java.util.List;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.listener.StatusActionListener;
 import info.justaway.listener.StatusClickListener;
+import info.justaway.listener.StatusLongClickListener;
 import info.justaway.model.Row;
 import info.justaway.settings.MuteSettings;
 import twitter4j.Query;
@@ -86,6 +87,8 @@ public class SearchActivity extends FragmentActivity {
         mAdapter.setStatusActionListener(new StatusActionListener(mAdapter));
 
         mListView.setOnItemClickListener(new StatusClickListener(this));
+
+        mListView.setOnItemLongClickListener(new StatusLongClickListener(mAdapter, this));
 
         search.setOnClickListener(new View.OnClickListener() {
             @Override
