@@ -14,6 +14,7 @@ import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.listener.StatusActionListener;
 import info.justaway.listener.StatusClickListener;
+import info.justaway.listener.StatusLongClickListener;
 import info.justaway.model.Row;
 import twitter4j.Twitter;
 
@@ -48,6 +49,8 @@ public class TalkFragment extends DialogFragment {
 
         // タップ操作の登録など
         listView.setOnItemClickListener(new StatusClickListener(activity));
+
+        listView.setOnItemLongClickListener(new StatusLongClickListener(mAdapter, getActivity()));
 
         Long statusId = getArguments().getLong("statusId");
         if (statusId > 0) {

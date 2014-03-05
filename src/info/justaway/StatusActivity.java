@@ -13,6 +13,7 @@ import android.widget.ListView;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.listener.StatusActionListener;
 import info.justaway.listener.StatusClickListener;
+import info.justaway.listener.StatusLongClickListener;
 import info.justaway.model.Row;
 import twitter4j.Status;
 import twitter4j.Twitter;
@@ -72,6 +73,7 @@ public class StatusActivity extends FragmentActivity {
 
         listView.setOnItemClickListener(new StatusClickListener(this));
 
+        listView.setOnItemLongClickListener(new StatusLongClickListener(mAdapter, this));
 
         if (statusId > 0) {
             mTwitter = JustawayApplication.getApplication().getTwitter();
