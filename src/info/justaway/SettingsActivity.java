@@ -60,6 +60,25 @@ public class SettingsActivity extends Activity {
                     return true;
                 }
             });
+
+            ListPreference longTapPreference = (ListPreference) findPreference("long_tap");
+            if (longTapPreference == null) {
+                return;
+            }
+            longTapPreference.setSummary(longTapPreference.getEntry());
+            longTapPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    ListPreference listPreference = (ListPreference) preference;
+                    int listId = listPreference.findIndexOfValue((String) newValue);
+                    CharSequence[] entries;
+                    entries = listPreference.getEntries();
+                    if (entries != null) {
+                        preference.setSummary(entries[listId]);
+                    }
+                    return true;
+                }
+            });
         }
     }
 }

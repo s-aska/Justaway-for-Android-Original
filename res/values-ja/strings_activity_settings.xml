@@ -33,4 +33,22 @@
 
     <string name="pref_title_performance">パフォーマンス設定</string>
     <string name="pref_description_performance">アイコンの角丸や画質、読み込み件数を指定できます</string>
+
+    <string name="pref_title_log_tap">ロングタップアクション</string>
+    <string-array name="pref_long_tap_titles">
+        <item>引用</item>
+        <item>会話を表示</item>
+        <item>前後のツイートを表示</item>
+        <item>ツイートを共有</item>
+        <item>全員にリプ</item>
+        <item>なにもしない</item>
+    </string-array>
+    <string-array name="pref_log_tap_values">
+        <item>quote</item>
+        <item>talk</item>
+        <item>show_around</item>
+        <item>share_url</item>
+        <item>reply_all</item>
+        <item>nothing</item>
+    </string-array>
 </resources>

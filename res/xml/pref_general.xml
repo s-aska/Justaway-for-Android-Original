@@ -34,4 +34,13 @@
             android:targetPackage="info.justaway"
             android:targetClass="info.justaway.PerformanceActivity"/>
     </PreferenceScreen>
+
+    <ListPreference
+        android:key="long_tap"
+        android:title="@string/pref_title_log_tap"
+        android:defaultValue="nothing"
+        android:entries="@array/pref_long_tap_titles"
+        android:entryValues="@array/pref_log_tap_values"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"/>
 </PreferenceScreen>
