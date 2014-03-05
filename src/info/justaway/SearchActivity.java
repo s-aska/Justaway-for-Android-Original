@@ -28,6 +28,7 @@ import java.util.List;
 
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.fragment.dialog.StatusMenuFragment;
+import info.justaway.listener.StatusLongClickListener;
 import info.justaway.model.Row;
 import info.justaway.settings.MuteSettings;
 import twitter4j.Query;
@@ -100,6 +101,8 @@ public class SearchActivity extends FragmentActivity {
                 statusMenuFragment.show(getSupportFragmentManager(), "dialog");
             }
         });
+
+        mListView.setOnItemLongClickListener(new StatusLongClickListener(mAdapter, this));
 
         search.setOnClickListener(new View.OnClickListener() {
             @Override

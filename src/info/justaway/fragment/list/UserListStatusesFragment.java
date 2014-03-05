@@ -15,6 +15,7 @@ import info.justaway.JustawayApplication;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.fragment.dialog.StatusMenuFragment;
+import info.justaway.listener.StatusLongClickListener;
 import info.justaway.model.Row;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
@@ -65,6 +66,8 @@ public class UserListStatusesFragment extends Fragment {
                 statusMenuFragment.show(getActivity().getSupportFragmentManager(), "dialog");
             }
         });
+
+        mListView.setOnItemLongClickListener(new StatusLongClickListener(mAdapter, getActivity()));
 
         new UserListTask().execute(mListId);
 
