@@ -29,6 +29,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import info.justaway.adapter.MainPagerAdapter;
+import info.justaway.adapter.TwitterAdapter;
 import info.justaway.fragment.main.BaseFragment;
 import info.justaway.fragment.main.DirectMessagesFragment;
 import info.justaway.fragment.main.InteractionsFragment;
@@ -839,7 +840,10 @@ public class MainActivity extends FragmentActivity {
                 for (int id = 0; id < count; id++) {
                     BaseFragment fragment = mMainPagerAdapter.findFragmentByPosition(id);
                     if (fragment != null) {
-                        fragment.getListAdapter().notifyDataSetChanged();
+                        TwitterAdapter twitterAdapter = fragment.getListAdapter();
+                        if (twitterAdapter != null) {
+                            twitterAdapter.notifyDataSetChanged();
+                        }
                     }
                 }
             }

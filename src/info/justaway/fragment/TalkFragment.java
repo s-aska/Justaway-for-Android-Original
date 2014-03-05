@@ -1,20 +1,19 @@
 package info.justaway.fragment;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.view.View;
+import android.support.v4.app.FragmentActivity;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
 import info.justaway.JustawayApplication;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
-import info.justaway.fragment.dialog.StatusMenuFragment;
+import info.justaway.listener.StatusActionListener;
+import info.justaway.listener.StatusClickListener;
 import info.justaway.model.Row;
 import twitter4j.Twitter;
 
@@ -31,7 +30,7 @@ public class TalkFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        Activity activity = getActivity();
+        FragmentActivity activity = getActivity();
         Dialog dialog = new Dialog(activity);
         dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -44,24 +43,11 @@ public class TalkFragment extends DialogFragment {
         mAdapter = new TwitterAdapter(activity, R.layout.row_tweet);
         listView.setAdapter(mAdapter);
 
-        // シングルタップでコンテキストメニューを開くための指定
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                StatusMenuFragment statusMenuFragment = new StatusMenuFragment();
-                Bundle args = new Bundle();
-                Row row = mAdapter.getItem(position);
-                args.putSerializable("status", row.getStatus());
-                statusMenuFragment.setArguments(args);
-                statusMenuFragment.setCallback(new Runnable() {
-                    @Override
-                    public void run() {
-                        mAdapter.notifyDataSetChanged();
-                    }
-                });
-                statusMenuFragment.show(getActivity().getSupportFragmentManager(), "dialog");
-            }
-        });
+        // ツイートに関するアクション（ふぁぼ / RT / ツイ消し）のリスナー
+        mAdapter.setStatusActionListener(new StatusActionListener(mAdapter));
+
+        // タップ操作の登録など
+        listView.setOnItemClickListener(new StatusClickListener(activity));
 
         Long statusId = getArguments().getLong("statusId");
         if (statusId > 0) {
