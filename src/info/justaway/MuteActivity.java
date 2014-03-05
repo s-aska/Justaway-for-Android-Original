@@ -1,9 +1,11 @@
 package info.justaway;
 
+import android.app.ActionBar;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.util.SparseArray;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
@@ -19,6 +21,12 @@ public class MuteActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         getWindow().setBackgroundDrawableResource(R.color.background);
         setContentView(R.layout.activity_mute);
+
+        ActionBar actionBar = getActionBar();
+        if (actionBar != null){
+            actionBar.setHomeButtonEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setOffscreenPageLimit(3); // 3だと不要なんだけど一応...
@@ -71,5 +79,15 @@ public class MuteActivity extends FragmentActivity {
             }
         });
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
+        }
+        return true;
     }
 }

@@ -1,5 +1,6 @@
 package info.justaway;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -26,6 +27,12 @@ public class AccountSettingActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account_setting);
+
+        ActionBar actionBar = getActionBar();
+        if (actionBar != null){
+            actionBar.setHomeButtonEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
         ListView listView = (ListView) findViewById(R.id.list_view);
 
@@ -64,6 +71,9 @@ public class AccountSettingActivity extends Activity {
                 Intent intent = new Intent(this, SignInActivity.class);
                 intent.putExtra("add_account", true);
                 startActivity(intent);
+                break;
+            case android.R.id.home:
+                finish();
                 break;
         }
         return true;

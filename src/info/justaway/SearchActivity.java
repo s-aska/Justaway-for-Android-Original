@@ -1,5 +1,6 @@
 package info.justaway;
 
+import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -49,6 +50,13 @@ public class SearchActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
+
+        ActionBar actionBar = getActionBar();
+        if (actionBar != null){
+            actionBar.setHomeButtonEnabled(true);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+
         mContext = this;
 
         Button search = (Button) findViewById(R.id.search);
@@ -157,6 +165,9 @@ public class SearchActivity extends FragmentActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
             case R.id.save_search:
                 if (mSearchWords.getText() != null) {
                     new CreateSavedSearchTask().execute(mSearchWords.getText().toString());

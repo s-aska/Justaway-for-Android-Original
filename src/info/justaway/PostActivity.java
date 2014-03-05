@@ -160,6 +160,10 @@ public class PostActivity extends FragmentActivity {
             mTitle.setText(getString(R.string.widget_title_post_mode));
         } else {
             mTitle.setText(getString(R.string.title_post));
+            if (actionBar != null){
+                actionBar.setHomeButtonEnabled(true);
+                actionBar.setDisplayHomeAsUpEnabled(true);
+            }
         }
 
         String status = intent.getStringExtra("status");
@@ -549,6 +553,9 @@ public class PostActivity extends FragmentActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
             case R.id.tweet_clear:
                 mEditText.setText("");
                 break;
