@@ -69,14 +69,10 @@ public class MainActivity extends FragmentActivity {
     private static final int TAB_ID_INTERACTIONS = -2;
     private static final int TAB_ID_DIRECT_MESSAGE = -3;
 
-    private Long mInReplyToStatusId;
+    private Status mInReplyToStatus;
 
-    public Long getInReplyToStatusId() {
-        return mInReplyToStatusId;
-    }
-
-    public void setInReplyToStatusId(Long inReplyToStatusId) {
-        this.mInReplyToStatusId = inReplyToStatusId;
+    public void setInReplyToStatus(Status inReplyToStatus) {
+        this.mInReplyToStatus = inReplyToStatus;
     }
 
     /**
@@ -233,11 +229,10 @@ public class MainActivity extends FragmentActivity {
                     }
                     String msg = status.getText() != null ? status.getText().toString() : null;
                     if (msg != null && msg.length() > 0) {
-                        Long inReplyToStatusId = getInReplyToStatusId();
                         intent.putExtra("status", msg);
                         intent.putExtra("selection", msg.length());
-                        if (inReplyToStatusId != null && inReplyToStatusId > 0) {
-                            intent.putExtra("inReplyToStatusId", inReplyToStatusId);
+                        if (mInReplyToStatus != null) {
+                            intent.putExtra("inReplyToStatus", mInReplyToStatus);
                         }
                         status.setText("");
                         status.clearFocus();
@@ -265,10 +260,9 @@ public class MainActivity extends FragmentActivity {
                 if (msg != null && msg.length() > 0) {
                     showProgressDialog(getString(R.string.progress_sending));
                     StatusUpdate statusUpdate = new StatusUpdate(msg);
-                    Long inReplyToStatusId = getInReplyToStatusId();
-                    if (inReplyToStatusId != null && inReplyToStatusId > 0) {
-                        statusUpdate.setInReplyToStatusId(inReplyToStatusId);
-                        setInReplyToStatusId((long) 0);
+                    if (mInReplyToStatus != null) {
+                        statusUpdate.setInReplyToStatusId(mInReplyToStatus.getId());
+                        setInReplyToStatus(null);
                     }
 
                     UpdateStatusTask task = new UpdateStatusTask(null) {
@@ -318,7 +312,7 @@ public class MainActivity extends FragmentActivity {
         editStatus.setEnabled(false);
         editStatus.clearFocus();
         findViewById(R.id.quick_tweet_layout).setVisibility(View.GONE);
-        setInReplyToStatusId((long) 0);
+        setInReplyToStatus(null);
         mApplication.setQuickMod(false);
     }
 
@@ -670,7 +664,7 @@ public class MainActivity extends FragmentActivity {
             EditText editText = (EditText) findViewById(R.id.quick_tweet_edit);
             if (editText != null && editText.getText() != null && editText.getText().length() > 0) {
                 editText.setText("");
-                setInReplyToStatusId((long) 0);
+                setInReplyToStatus(null);
                 return false;
             }
             finish();

@@ -42,6 +42,7 @@ import java.util.ArrayList;
 
 import info.justaway.settings.PostStockSettings;
 import info.justaway.task.UpdateStatusTask;
+import twitter4j.Status;
 import twitter4j.StatusUpdate;
 import twitter4j.TwitterException;
 import twitter4j.auth.AccessToken;
@@ -160,7 +161,7 @@ public class PostActivity extends FragmentActivity {
             mTitle.setText(getString(R.string.widget_title_post_mode));
         } else {
             mTitle.setText(getString(R.string.title_post));
-            if (actionBar != null){
+            if (actionBar != null) {
                 actionBar.setHomeButtonEnabled(true);
                 actionBar.setDisplayHomeAsUpEnabled(true);
             }
@@ -174,7 +175,16 @@ public class PostActivity extends FragmentActivity {
         if (selection > 0) {
             mEditText.setSelection(selection);
         }
-        mInReplyToStatusId = intent.getLongExtra("inReplyToStatusId", 0);
+        Status inReplyToStatus = (Status) intent.getSerializableExtra("inReplyToStatus");
+        if (inReplyToStatus != null) {
+            if (inReplyToStatus.getRetweetedStatus() != null) {
+                inReplyToStatus = inReplyToStatus.getRetweetedStatus();
+            }
+            mInReplyToStatusId = inReplyToStatus.getId();
+            ((TextView) findViewById(R.id.in_reply_to_status)).setText(inReplyToStatus.getText());
+        } else {
+            findViewById(R.id.in_reply_to_status).setVisibility(View.GONE);
+        }
 
         if (intent.getData() != null) {
             String inReplyToStatusId = intent.getData().getQueryParameter("in_reply_to");
@@ -231,7 +241,7 @@ public class PostActivity extends FragmentActivity {
             public void onClick(View v) {
                 JustawayApplication.showProgressDialog(mContext, getString(R.string.progress_sending));
                 StatusUpdate statusUpdate = new StatusUpdate(mEditText.getText().toString());
-                if (mInReplyToStatusId > 0) {
+                if (mInReplyToStatusId != null) {
                     statusUpdate.setInReplyToStatusId(mInReplyToStatusId);
                 }
                 if (mImgPath != null) {
