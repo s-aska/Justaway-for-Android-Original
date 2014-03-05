@@ -444,6 +444,7 @@ public class JustawayApplication extends Application {
      */
     private static final String PREF_NAME_SETTINGS = "settings";
     private int mFontSize;
+    private String mLongTapAction;
     private Boolean mUserIconRounded;
     private String mUserIconSize;
     private int mPageCount;
@@ -457,9 +458,14 @@ public class JustawayApplication extends Application {
         return mFontSize;
     }
 
+    public String getLongTapAction() {
+        return mLongTapAction;
+    }
+
     public void resetDisplaySettings() {
         SharedPreferences preferences = getSharedPreferences(PREF_NAME_SETTINGS, Context.MODE_PRIVATE);
         mFontSize = Integer.parseInt(preferences.getString("font_size", "12"));
+        mLongTapAction =  preferences.getString("long_tap", "nothing");
         mUserIconRounded = preferences.getBoolean("user_icon_rounded_on", true);
         mUserIconSize = preferences.getString("user_icon_size", "bigger");
         mPageCount = Integer.parseInt(preferences.getString("page_count", "200"));
@@ -779,10 +785,6 @@ public class JustawayApplication extends Application {
                 new UnRetweetTask(retweetedStatusId, statusId).execute();
             }
         }
-    }
-
-    public void doDestroyStatus(long id) {
-        new DestroyStatusTask().execute(id);
     }
 
     public void showKeyboard(final View view) {
