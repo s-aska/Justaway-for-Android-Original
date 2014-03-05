@@ -18,6 +18,7 @@ import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.listener.StatusActionListener;
 import info.justaway.listener.StatusClickListener;
+import info.justaway.listener.StatusLongClickListener;
 import info.justaway.model.Row;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
@@ -60,6 +61,8 @@ public class AroundFragment extends DialogFragment {
         mAdapter.setStatusActionListener(new StatusActionListener(mAdapter));
 
         listView.setOnItemClickListener(new StatusClickListener(activity));
+
+        listView.setOnItemLongClickListener(new StatusLongClickListener(mAdapter, getActivity()));
 
         Status status = (Status) getArguments().getSerializable("status");
         if (status != null) {
