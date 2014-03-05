@@ -446,6 +446,7 @@ public class JustawayApplication extends Application {
     private int mFontSize;
     private Boolean mUserIconRounded;
     private String mUserIconSize;
+    private int mPageCount;
 
     public boolean getKeepScreenOn() {
         SharedPreferences preferences = getSharedPreferences(PREF_NAME_SETTINGS, Context.MODE_PRIVATE);
@@ -461,6 +462,7 @@ public class JustawayApplication extends Application {
         mFontSize = Integer.parseInt(preferences.getString("font_size", "12"));
         mUserIconRounded = preferences.getBoolean("user_icon_rounded_on", true);
         mUserIconSize = preferences.getString("user_icon_size", "bigger");
+        mPageCount = Integer.parseInt(preferences.getString("page_count", "200"));
     }
 
     public boolean getUserIconRoundedOn() {
@@ -479,6 +481,15 @@ public class JustawayApplication extends Application {
         SharedPreferences preferences = getSharedPreferences(PREF_NAME_SETTINGS, Context.MODE_PRIVATE);
         mUserIconSize = preferences.getString("user_icon_size", "bigger");
         return mUserIconSize;
+    }
+
+    public int getPageCount() {
+        if (mPageCount > 0) {
+            return mPageCount;
+        }
+        SharedPreferences preferences = getSharedPreferences(PREF_NAME_SETTINGS, Context.MODE_PRIVATE);
+        mPageCount = Integer.parseInt(preferences.getString("page_count", "200"));
+        return mPageCount;
     }
 
     /**

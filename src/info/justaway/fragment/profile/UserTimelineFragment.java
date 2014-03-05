@@ -37,7 +37,7 @@ public class UserTimelineFragment extends Fragment implements
     private User mUser;
     private Boolean mAutoLoader = false;
     private Boolean mReload = false;
-    private int mPage = 1;
+    private long mMaxId = 0L;
     private PullToRefreshLayout mPullToRefreshLayout;
 
     @Override
@@ -107,7 +107,7 @@ public class UserTimelineFragment extends Fragment implements
     @Override
     public void onRefreshStarted(View view) {
         mReload = true;
-        mPage = 1;
+        mMaxId = 0;
         new UserTimelineTask().execute(mUser.getScreenName());
     }
 
@@ -124,7 +124,13 @@ public class UserTimelineFragment extends Fragment implements
         @Override
         protected ResponseList<twitter4j.Status> doInBackground(String... params) {
             try {
-                return JustawayApplication.getApplication().getTwitter().getUserTimeline(params[0], new Paging(mPage));
+                JustawayApplication application = JustawayApplication.getApplication();
+                Paging paging = new Paging();
+                if (mMaxId > 0) {
+                    paging.setMaxId(mMaxId - 1);
+                    paging.setCount(application.getPageCount());
+                }
+                return application.getTwitter().getUserTimeline(params[0], paging);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -141,6 +147,9 @@ public class UserTimelineFragment extends Fragment implements
             if (mReload) {
                 mAdapter.clear();
                 for (twitter4j.Status status : statuses) {
+                    if (mMaxId == 0L || mMaxId > status.getId()) {
+                        mMaxId = status.getId();
+                    }
                     mAdapter.add(Row.newStatus(status));
                 }
                 mReload = false;
@@ -149,9 +158,11 @@ public class UserTimelineFragment extends Fragment implements
             }
 
             for (twitter4j.Status status : statuses) {
+                if (mMaxId == 0L || mMaxId > status.getId()) {
+                    mMaxId = status.getId();
+                }
                 mAdapter.add(Row.newStatus(status));
             }
-            mPage++;
             mAutoLoader = true;
             mPullToRefreshLayout.setRefreshComplete();
             mListView.setVisibility(View.VISIBLE);

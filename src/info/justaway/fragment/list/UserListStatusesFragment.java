@@ -27,7 +27,7 @@ public class UserListStatusesFragment extends Fragment {
     private int mListId;
     private ProgressBar mFooter;
     private Boolean mAutoLoader = false;
-    private int mPage = 1;
+    private long mMaxId = 0L;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -99,7 +99,13 @@ public class UserListStatusesFragment extends Fragment {
         @Override
         protected ResponseList<twitter4j.Status> doInBackground(Integer... params) {
             try {
-                return JustawayApplication.getApplication().getTwitter().getUserListStatuses(params[0], new Paging(mPage));
+                JustawayApplication application = JustawayApplication.getApplication();
+                Paging paging = new Paging();
+                if (mMaxId > 0) {
+                    paging.setMaxId(mMaxId - 1);
+                    paging.setCount(application.getPageCount());
+                }
+                return application.getTwitter().getUserListStatuses(params[0], paging);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -115,9 +121,11 @@ public class UserListStatusesFragment extends Fragment {
             }
 
             for (twitter4j.Status status : statuses) {
+                if (mMaxId == 0L || mMaxId > status.getId()) {
+                    mMaxId = status.getId();
+                }
                 mAdapter.add(Row.newStatus(status));
             }
-            mPage++;
             mAutoLoader = true;
             mListView.setVisibility(View.VISIBLE);
         }

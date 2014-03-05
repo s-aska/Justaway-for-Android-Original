@@ -150,13 +150,14 @@ public class DirectMessagesFragment extends BaseFragment {
         @Override
         protected ResponseList<DirectMessage> doInBackground(Void... params) {
             try {
-                Twitter twitter = JustawayApplication.getApplication().getTwitter();
+                JustawayApplication application = JustawayApplication.getApplication();
+                Twitter twitter = application.getTwitter();
 
                 // 受信したDM
                 Paging directMessagesPaging = new Paging();
                 if (mDirectMessagesMaxId > 0) {
                     directMessagesPaging.setMaxId(mDirectMessagesMaxId - 1);
-                    directMessagesPaging.setCount(200);
+                    directMessagesPaging.setCount(application.getPageCount() / 2);
                 } else {
                     directMessagesPaging.setCount(10);
                 }
@@ -171,7 +172,7 @@ public class DirectMessagesFragment extends BaseFragment {
                 Paging sentDirectMessagesPaging = new Paging();
                 if (mSentDirectMessagesMaxId > 0) {
                     sentDirectMessagesPaging.setMaxId(mSentDirectMessagesMaxId - 1);
-                    sentDirectMessagesPaging.setCount(200);
+                    sentDirectMessagesPaging.setCount(application.getPageCount() / 2);
                 } else {
                     sentDirectMessagesPaging.setCount(10);
                 }
