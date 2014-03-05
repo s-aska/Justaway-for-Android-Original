@@ -14,4 +14,18 @@
         <item>normal</item>
         <item>bigger</item>
     </string-array>
+
+    <string name="pref_title_page_count">Number of records to additional</string>
+    <string-array name="pref_page_count_titles">
+        <item>20 records</item>
+        <item>50 records</item>
+        <item>100 records</item>
+        <item>200 records</item>
+    </string-array>
+    <string-array name="pref_page_count_values">
+        <item>20</item>
+        <item>50</item>
+        <item>100</item>
+        <item>200</item>
+    </string-array>
 </resources>

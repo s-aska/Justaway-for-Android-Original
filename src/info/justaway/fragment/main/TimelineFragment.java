@@ -135,12 +135,13 @@ public class TimelineFragment extends BaseFragment {
         @Override
         protected ResponseList<twitter4j.Status> doInBackground(Void... params) {
             try {
+                JustawayApplication application = JustawayApplication.getApplication();
                 Paging paging = new Paging();
                 if (mMaxId > 0) {
                     paging.setMaxId(mMaxId - 1);
-                    paging.setCount(200);
+                    paging.setCount(application.getPageCount());
                 }
-                return JustawayApplication.getApplication().getTwitter().getHomeTimeline(paging);
+                return application.getTwitter().getHomeTimeline(paging);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;

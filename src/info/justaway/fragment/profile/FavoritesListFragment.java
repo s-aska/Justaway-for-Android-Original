@@ -30,7 +30,7 @@ public class FavoritesListFragment extends Fragment {
     private ListView mListView;
     private ProgressBar mFooter;
     private Boolean mAutoLoader = false;
-    private int mPage = 1;
+    private long mMaxId = 0L;
     private User mUser;
 
     @Override
@@ -102,8 +102,13 @@ public class FavoritesListFragment extends Fragment {
         @Override
         protected ResponseList<twitter4j.Status> doInBackground(String... params) {
             try {
-                ResponseList<twitter4j.Status> statuses = JustawayApplication.getApplication().getTwitter().getFavorites(params[0], new Paging(mPage));
-                return statuses;
+                JustawayApplication application = JustawayApplication.getApplication();
+                Paging paging = new Paging();
+                if (mMaxId > 0) {
+                    paging.setMaxId(mMaxId - 1);
+                    paging.setCount(application.getPageCount());
+                }
+                return JustawayApplication.getApplication().getTwitter().getFavorites(params[0], paging);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -119,9 +124,11 @@ public class FavoritesListFragment extends Fragment {
             }
 
             for (twitter4j.Status status : statuses) {
+                if (mMaxId == 0L || mMaxId > status.getId()) {
+                    mMaxId = status.getId();
+                }
                 mAdapter.add(Row.newStatus(status));
             }
-            mPage++;
             mAutoLoader = true;
             mListView.setVisibility(View.VISIBLE);
         }

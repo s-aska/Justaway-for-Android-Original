@@ -131,11 +131,12 @@ public class UserListFragment extends BaseFragment {
         @Override
         protected ResponseList<twitter4j.Status> doInBackground(Void... params) {
             try {
-                Twitter twitter = JustawayApplication.getApplication().getTwitter();
+                JustawayApplication application = JustawayApplication.getApplication();
+                Twitter twitter = application.getTwitter();
                 Paging paging = new Paging();
                 if (mMaxId > 0) {
                     paging.setMaxId(mMaxId - 1);
-                    paging.setCount(200);
+                    paging.setCount(application.getPageCount());
                 } else {
                     ResponseList<User> members = twitter.getUserListMembers(mUserListId, 0);
                     for (User user : members) {

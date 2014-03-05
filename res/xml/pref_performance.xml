@@ -14,4 +14,13 @@
         android:entryValues="@array/pref_user_icon_size_values"
         android:negativeButtonText="@null"
         android:positiveButtonText="@null"/>
+
+    <ListPreference
+        android:key="page_count"
+        android:title="@string/pref_title_page_count"
+        android:defaultValue="100"
+        android:entries="@array/pref_page_count_titles"
+        android:entryValues="@array/pref_page_count_values"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"/>
 </PreferenceScreen>

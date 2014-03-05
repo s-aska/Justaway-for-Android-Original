@@ -31,23 +31,40 @@ public class PerformanceActivity extends Activity {
             addPreferencesFromResource(R.xml.pref_performance);
 
             ListPreference userIconSizePreference = (ListPreference) findPreference("user_icon_size");
-            if (userIconSizePreference == null) {
-                return;
-            }
-            userIconSizePreference.setSummary(userIconSizePreference.getEntry());
-            userIconSizePreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    ListPreference listPreference = (ListPreference) preference;
-                    int listId = listPreference.findIndexOfValue((String) newValue);
-                    CharSequence[] entries;
-                    entries = listPreference.getEntries();
-                    if (entries != null) {
-                        preference.setSummary(entries[listId]);
+            if (userIconSizePreference != null) {
+                userIconSizePreference.setSummary(userIconSizePreference.getEntry());
+                userIconSizePreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(Preference preference, Object newValue) {
+                        ListPreference listPreference = (ListPreference) preference;
+                        int listId = listPreference.findIndexOfValue((String) newValue);
+                        CharSequence[] entries;
+                        entries = listPreference.getEntries();
+                        if (entries != null) {
+                            preference.setSummary(entries[listId]);
+                        }
+                        return true;
                     }
-                    return true;
-                }
-            });
+                });
+            }
+
+            ListPreference pageCountPreference = (ListPreference) findPreference("page_count");
+            if (pageCountPreference != null) {
+                pageCountPreference.setSummary(pageCountPreference.getEntry());
+                pageCountPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                    @Override
+                    public boolean onPreferenceChange(Preference preference, Object newValue) {
+                        ListPreference listPreference = (ListPreference) preference;
+                        int listId = listPreference.findIndexOfValue((String) newValue);
+                        CharSequence[] entries;
+                        entries = listPreference.getEntries();
+                        if (entries != null) {
+                            preference.setSummary(entries[listId]);
+                        }
+                        return true;
+                    }
+                });
+            }
         }
     }
 }
