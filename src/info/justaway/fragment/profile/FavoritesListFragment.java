@@ -15,6 +15,7 @@ import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.listener.StatusActionListener;
 import info.justaway.listener.StatusClickListener;
+import info.justaway.listener.StatusLongClickListener;
 import info.justaway.model.Row;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
@@ -56,6 +57,8 @@ public class FavoritesListFragment extends Fragment {
         mAdapter.setStatusActionListener(new StatusActionListener(mAdapter));
 
         mListView.setOnItemClickListener(new StatusClickListener(getActivity()));
+
+        mListView.setOnItemLongClickListener(new StatusLongClickListener(mAdapter, getActivity()));
 
         new FavoritesListTask().execute(mUser.getScreenName());
 
