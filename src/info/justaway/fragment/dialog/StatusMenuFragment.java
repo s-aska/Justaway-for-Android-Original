@@ -107,7 +107,7 @@ public class StatusMenuFragment extends DialogFragment {
                 @Override
                 public void run() {
                     String text = "D " + directMessage.getSenderScreenName() + " ";
-                    tweet(text, text.length(), 0);
+                    tweet(text, text.length(), null);
                     dismiss();
                 }
             }));
@@ -195,7 +195,7 @@ public class StatusMenuFragment extends DialogFragment {
                 } else {
                     text = "@" + source.getUser().getScreenName() + " ";
                 }
-                tweet(text, text.length(), status.getId());
+                tweet(text, text.length(), status);
                 dismiss();
             }
         }));
@@ -220,7 +220,7 @@ public class StatusMenuFragment extends DialogFragment {
                         }
                         text = text.concat("@" + mention.getScreenName() + " ");
                     }
-                    tweet(text, text.length(), status.getId());
+                    tweet(text, text.length(), status);
                     dismiss();
                 }
             }));
@@ -235,7 +235,7 @@ public class StatusMenuFragment extends DialogFragment {
                 public void run() {
                     String text = " https://twitter.com/" + source.getUser().getScreenName()
                             + "/status/" + String.valueOf(source.getId());
-                    tweet(text, 0, source.getId());
+                    tweet(text, 0, source);
                     dismiss();
                 }
             }));
@@ -655,7 +655,7 @@ public class StatusMenuFragment extends DialogFragment {
         return null;
     }
 
-    private void tweet(String text, int selection, long inReplyToStatusId) {
+    private void tweet(String text, int selection, Status inReplyToStatus) {
         EditText editStatus = getQuickTweetEdit();
         if (editStatus != null) {
             editStatus.requestFocus();
@@ -663,8 +663,8 @@ public class StatusMenuFragment extends DialogFragment {
             if (selection > 0) {
                 editStatus.setSelection(selection);
             }
-            if (inReplyToStatusId > 0L) {
-                ((MainActivity) mActivity).setInReplyToStatusId(inReplyToStatusId);
+            if (inReplyToStatus!=null) {
+                ((MainActivity) mActivity).setInReplyToStatus(inReplyToStatus);
             }
             mApplication.showKeyboard(editStatus, CLOSED_MENU_DELAY);
         } else {
@@ -673,8 +673,8 @@ public class StatusMenuFragment extends DialogFragment {
             if (selection > 0) {
                 intent.putExtra("selection", selection);
             }
-            if (inReplyToStatusId > 0L) {
-                intent.putExtra("inReplyToStatusId", inReplyToStatusId);
+            if (inReplyToStatus!=null) {
+                intent.putExtra("inReplyToStatus", inReplyToStatus);
             }
             mActivity.startActivity(intent);
         }

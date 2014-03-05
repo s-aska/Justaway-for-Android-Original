@@ -39,7 +39,7 @@ public class StatusLongClickListener implements AdapterView.OnItemLongClickListe
         if (action.equals("quote")) {
             String text = " https://twitter.com/" + status.getUser().getScreenName()
                     + "/status/" + String.valueOf(status.getId());
-            tweet(text, text.length(), status.getId());
+            tweet(text, 0, status);
         } else if (action.equals("talk")) {
             TalkFragment dialog = new TalkFragment();
             args.putLong("statusId", status.getId());
@@ -72,20 +72,19 @@ public class StatusLongClickListener implements AdapterView.OnItemLongClickListe
                 }
                 text = text.concat("@" + mention.getScreenName() + " ");
             }
-            tweet(text, text.length(), status.getId());
+            tweet(text, text.length(), status);
         }
         return true;
     }
 
-    private void tweet(String text, int selection, long inReplyToStatusId) {
+    private void tweet(String text, int selection, Status inReplyToStatus) {
         Intent intent = new Intent(mActivity, PostActivity.class);
         intent.putExtra("status", text);
         if (selection > 0) {
             intent.putExtra("selection", selection);
         }
-        if (inReplyToStatusId > 0L) {
-            intent.putExtra("inReplyToStatusId", inReplyToStatusId);
-        }
+        intent.putExtra("inReplyToStatus", inReplyToStatus);
+
         mActivity.startActivity(intent);
     }
 }
