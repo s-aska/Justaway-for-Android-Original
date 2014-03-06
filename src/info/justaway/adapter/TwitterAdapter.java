@@ -372,11 +372,23 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             public void onClick(View v) {
                 UserMentionEntity[] mentions = status.getUserMentionEntities();
                 Intent intent = new Intent(mContext, PostActivity.class);
-                String text;
-                if (status.getUser().getId() == mApplication.getUserId() && mentions.length == 1) {
-                    text = "@" + mentions[0].getScreenName() + " ";
-                } else {
+                String text = "";
+                int selection_start = 0;
+                if (status.getUser().getId() != mApplication.getUserId()) {
                     text = "@" + status.getUser().getScreenName() + " ";
+                    selection_start = text.length();
+                }
+                for (UserMentionEntity mention : mentions) {
+                    if (status.getUser().getScreenName().equals(mention.getScreenName())) {
+                        continue;
+                    }
+                    if (mApplication.getScreenName().equals(mention.getScreenName())) {
+                        continue;
+                    }
+                    text = text.concat("@" + mention.getScreenName() + " ");
+                    if (selection_start == 0) {
+                        selection_start = text.length();
+                    }
                 }
 
                 if (mContext.getClass().getName().equals("info.justaway.MainActivity")) {
@@ -385,7 +397,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                     if (singleLineTweet != null && singleLineTweet.getVisibility() == View.VISIBLE) {
                         EditText editStatus = (EditText) activity.findViewById(R.id.quick_tweet_edit);
                         editStatus.setText(text);
-                        editStatus.setSelection(text.length());
+                        editStatus.setSelection(selection_start, text.length());
                         editStatus.requestFocus();
                         mApplication.showKeyboard(editStatus);
                         activity.setInReplyToStatus(status);
@@ -393,7 +405,8 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                     }
                 }
                 intent.putExtra("status", text);
-                intent.putExtra("selection", text.length());
+                intent.putExtra("selection", selection_start);
+                intent.putExtra("selection_stop", text.length());
                 intent.putExtra("inReplyToStatusId", status.getId());
                 mContext.startActivity(intent);
             }
