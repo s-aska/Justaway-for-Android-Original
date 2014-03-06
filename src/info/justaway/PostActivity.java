@@ -171,10 +171,17 @@ public class PostActivity extends FragmentActivity {
         if (status != null) {
             mEditText.setText(status);
         }
-        int selection = intent.getIntExtra("selection", 0);
-        if (selection > 0) {
-            mEditText.setSelection(selection);
+
+        int selection_start = intent.getIntExtra("selection", 0);
+        if (selection_start > 0) {
+            int selection_stop = intent.getIntExtra("selection_stop", 0);
+            if (selection_stop > 0) {
+                mEditText.setSelection(selection_start, selection_stop);
+            } else {
+                mEditText.setSelection(selection_start);
+            }
         }
+
         Status inReplyToStatus = (Status) intent.getSerializableExtra("inReplyToStatus");
         if (inReplyToStatus != null) {
             if (inReplyToStatus.getRetweetedStatus() != null) {
