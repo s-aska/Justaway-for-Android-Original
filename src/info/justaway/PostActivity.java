@@ -21,6 +21,7 @@ import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.method.ScrollingMovementMethod;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -188,7 +189,14 @@ public class PostActivity extends FragmentActivity {
                 inReplyToStatus = inReplyToStatus.getRetweetedStatus();
             }
             mInReplyToStatusId = inReplyToStatus.getId();
-            ((TextView) findViewById(R.id.in_reply_to_status)).setText(inReplyToStatus.getText());
+            JustawayApplication.getApplication().displayRoundedImage(inReplyToStatus.getUser().getProfileImageURL(),
+                    ((ImageView) findViewById(R.id.in_reply_to_user_icon)));
+
+            TextView textView = (TextView) findViewById(R.id.in_reply_to_status);
+            textView.setText(inReplyToStatus.getText());
+
+            // スクロール可能にするのに必要
+            textView.setMovementMethod(ScrollingMovementMethod.getInstance());
         } else {
             findViewById(R.id.in_reply_to_status).setVisibility(View.GONE);
         }

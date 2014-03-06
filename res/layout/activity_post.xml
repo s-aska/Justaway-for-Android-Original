@@ -13,25 +13,46 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_marginTop="0dip"
+            android:layout_marginLeft="11dip"
+            android:paddingTop="8dip"
+            android:paddingBottom="8dip"
+            android:paddingLeft="8dip"
+            android:background="@color/menu_background"
+            android:orientation="horizontal">
 
-            <Spinner
-                android:id="@+id/switchAccount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="8dip"
-                android:paddingBottom="12dip"/>
+            <ImageView
+                android:id="@+id/in_reply_to_user_icon"
+                android:layout_width="18dip"
+                android:layout_height="18dip"
+                android:contentDescription="@string/description_icon"
+                tools:src="@drawable/ic_launcher"/>
 
+            <!--
+                android:scrollbars="vertical" ... 縦スクロールバー有効化
+                android:fadeScrollbars="false" ... スクロールバー常時表示
+                android:textColor="@android:color/secondary_text_dark_nodisable" ... スクロール中に文字色が変わるのを防ぐ
+            -->
             <TextView
                 android:id="@+id/in_reply_to_status"
-                android:paddingTop="8dip"
-                android:paddingBottom="8dip"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dip"
                 android:paddingRight="8dip"
-                android:paddingLeft="8dip"
-                android:maxLines="3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:maxLines="5"
+                android:scrollbars="vertical"
+                android:fadeScrollbars="false"
+                android:textSize="12sp"
+                android:textColor="@android:color/secondary_text_dark_nodisable"
+                tools:text="New Version."/>
         </LinearLayout>
+
+        <Spinner
+            android:id="@+id/switchAccount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dip"
+            android:paddingBottom="12dip"/>
 
         <EditText
             android:id="@+id/status"
