@@ -21,11 +21,8 @@ local.properties
 .settings/
 
 # Android Studio
-gradlew
-gradlew.bat
 .idea/
 .gradle/
-gradle/
 build/
 local.properties
 *.iml
