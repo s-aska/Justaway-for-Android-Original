@@ -40,6 +40,8 @@ import android.widget.TextView;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import info.justaway.settings.PostStockSettings;
 import info.justaway.task.UpdateStatusTask;
@@ -53,6 +55,7 @@ public class PostActivity extends FragmentActivity {
     private static final int REQUEST_GALLERY = 1;
     private static final int REQUEST_CAMERA = 2;
     private static final int ERROR_CODE_DUPLICATE_STATUS = 187;
+    private static final Pattern URL_PATTERN = Pattern.compile("(http://|https://){1}[\\w\\.\\-/:\\#\\?\\=\\&\\;\\%\\~\\+]+");
 
     private Context mContext;
     private EditText mEditText;
@@ -512,7 +515,16 @@ public class PostActivity extends FragmentActivity {
 
     private void updateCount(String str) {
         int textColor;
-        int length = 140 - str.codePointCount(0, str.length());
+        int length = str.codePointCount(0, str.length());
+
+        // 短縮URLを考慮
+        Matcher matcher = URL_PATTERN.matcher(str);
+        while (matcher.find()) {
+            length = length - matcher.group().length() + 22;
+            if (matcher.group().contains("https://")) ++length;
+        }
+
+        length = 140 - length;
         // 140文字をオーバーした時は文字数を赤色に
         if (length < 0) {
             textColor = Color.RED;
@@ -522,8 +534,7 @@ public class PostActivity extends FragmentActivity {
         mTextView.setTextColor(textColor);
         mTextView.setText(String.valueOf(length));
 
-        if (str.codePointCount(0, str.length()) == 0
-                || str.codePointCount(0, str.length()) > 140) {
+        if (length == 0 || length > 140) {
             // 文字数が0文字または140文字以上の時はボタンを無効
             if (mImgPath != null) {
                 mTweetButton.setEnabled(true);
