@@ -20,7 +20,7 @@ import java.lang.Thread.UncaughtExceptionHandler;
 public class MyUncaughtExceptionHandler implements UncaughtExceptionHandler {
 
     private static final String BUG_FILE = "BUG";
-    private static final String MAIL_TO = "mailto:s.aska.org@gmail.com";
+    private static final String MAIL_TO = "mailto:s.aska.org@gmail.com,teshi04@gmail.com";
 
     private static Context sContext;
     private static PackageInfo sPackageInfo;
