@@ -9,6 +9,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -40,9 +42,11 @@ import android.widget.TextView;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import info.justaway.plugin.TwiccaPlugin;
 import info.justaway.settings.PostStockSettings;
 import info.justaway.task.UpdateStatusTask;
 import twitter4j.Status;
@@ -54,6 +58,8 @@ public class PostActivity extends FragmentActivity {
 
     private static final int REQUEST_GALLERY = 1;
     private static final int REQUEST_CAMERA = 2;
+    private static final int REQUEST_TWICCA = 3;
+    private static final int OPTION_MENU_GROUP_TWICCA = 1;
     private static final int ERROR_CODE_DUPLICATE_STATUS = 187;
     private static final Pattern URL_PATTERN = Pattern.compile("(http://|https://){1}[\\w\\.\\-/:\\#\\?\\=\\&\\;\\%\\~\\+]+");
 
@@ -73,6 +79,7 @@ public class PostActivity extends FragmentActivity {
     private TextView mTitle;
     private TextView mUndoButton;
     private ArrayList<String> mTextHistory = new ArrayList<String>();
+    private List<ResolveInfo> mTwiccaPlugins;
 
     @SuppressWarnings("MagicConstant")
     @Override
@@ -487,6 +494,8 @@ public class PostActivity extends FragmentActivity {
                 setImage(data.getData());
             } else if (requestCode == REQUEST_CAMERA) {
                 setImage(mImageUri);
+            } else if (requestCode == REQUEST_TWICCA) {
+                mEditText.setText(data.getStringExtra(Intent.EXTRA_TEXT));
             }
         }
     }
@@ -547,12 +556,6 @@ public class PostActivity extends FragmentActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.post, menu);
-        return true;
-    }
-
-    @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (mEditText.getText() != null && mEditText.getText().length() != 0) {
@@ -568,7 +571,8 @@ public class PostActivity extends FragmentActivity {
 
                                         finish();
                                     }
-                                })
+                                }
+                        )
                         .setNegativeButton(
                                 R.string.button_destroy,
                                 new DialogInterface.OnClickListener() {
@@ -576,7 +580,8 @@ public class PostActivity extends FragmentActivity {
                                     public void onClick(DialogInterface dialog, int which) {
                                         finish();
                                     }
-                                })
+                                }
+                        )
                         .show();
             } else {
                 finish();
@@ -587,7 +592,43 @@ public class PostActivity extends FragmentActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.post, menu);
+        // twiccaプラグインを読む
+        if (mTwiccaPlugins == null) {
+            mTwiccaPlugins = TwiccaPlugin.getResolveInfo(this.getPackageManager(),
+                    TwiccaPlugin.TWICCA_ACTION_EDIT_TWEET);
+        }
+        if (!mTwiccaPlugins.isEmpty()) {
+            PackageManager pm = this.getPackageManager();
+            int i = 0;
+            for (ResolveInfo resolveInfo : mTwiccaPlugins) {
+                if (pm == null || resolveInfo.activityInfo == null) {
+                    continue;
+                }
+                String label = (String) resolveInfo.activityInfo.loadLabel(pm);
+                if (label == null) {
+                    continue;
+                }
+                menu.add(OPTION_MENU_GROUP_TWICCA, i, 100, label);
+                i++;
+            }
+        }
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getGroupId() == OPTION_MENU_GROUP_TWICCA) {
+            ResolveInfo resolveInfo = mTwiccaPlugins.get(item.getItemId());
+            if (resolveInfo.activityInfo != null && mEditText.getText() != null) {
+                Intent intent = TwiccaPlugin.createIntentEditTweet(
+                        "", mEditText.getText().toString(), "", 0, resolveInfo.activityInfo.packageName,
+                        resolveInfo.activityInfo.name);
+                startActivityForResult(intent, REQUEST_TWICCA);
+            }
+            return true;
+        }
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
