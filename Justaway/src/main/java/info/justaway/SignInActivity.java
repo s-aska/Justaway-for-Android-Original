@@ -69,12 +69,11 @@ public class SignInActivity extends Activity {
     }
 
     private void startOAuth() {
-        new AsyncTask<Void, Void, String>() {
+        new AsyncTask<Void, Void, RequestToken>() {
             @Override
-            protected String doInBackground(Void... params) {
+            protected RequestToken doInBackground(Void... params) {
                 try {
-                    mRequestToken = mTwitter.getOAuthRequestToken(mCallbackURL);
-                    return mRequestToken.getAuthorizationURL();
+                    return mTwitter.getOAuthRequestToken(mCallbackURL);
                 } catch (TwitterException e) {
                     e.printStackTrace();
                     return null;
@@ -82,7 +81,9 @@ public class SignInActivity extends Activity {
             }
 
             @Override
-            protected void onPostExecute(String url) {
+            protected void onPostExecute(RequestToken token) {
+                mRequestToken = token;
+                final String url = token.getAuthorizationURL();
                 if (url == null) {
                     JustawayApplication.showToast(R.string.toast_get_authorization_url_failure);
                     return;
