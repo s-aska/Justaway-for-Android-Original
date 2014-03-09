@@ -16,6 +16,8 @@ import twitter4j.auth.RequestToken;
 
 public class SignInActivity extends Activity {
 
+    private static final String STATE_REQUEST_TOKEN = "request_token";
+
     private String mCallbackURL;
     private Twitter mTwitter;
     private RequestToken mRequestToken;
@@ -47,6 +49,23 @@ public class SignInActivity extends Activity {
                 startOAuth();
             }
         });
+
+        if (savedInstanceState != null) {
+            mRequestToken = (RequestToken) savedInstanceState.get(STATE_REQUEST_TOKEN);
+            if (mRequestToken != null) {
+                button.setVisibility(View.GONE);
+                findViewById(R.id.connect_with_twitter).setVisibility(View.GONE);
+            }
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        if (mRequestToken != null) {
+            outState.putSerializable(STATE_REQUEST_TOKEN, mRequestToken);
+        }
     }
 
     private void startOAuth() {
