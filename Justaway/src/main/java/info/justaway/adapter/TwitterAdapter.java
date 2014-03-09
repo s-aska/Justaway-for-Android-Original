@@ -407,7 +407,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                 intent.putExtra("status", text);
                 intent.putExtra("selection", selection_start);
                 intent.putExtra("selection_stop", text.length());
-                intent.putExtra("inReplyToStatusId", status.getId());
+                intent.putExtra("inReplyToStatus", status);
                 mContext.startActivity(intent);
             }
         });

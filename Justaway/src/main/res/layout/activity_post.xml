@@ -15,7 +15,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="0dip"
-            android:paddingLeft="19dip"
+            android:paddingLeft="8dip"
             android:paddingTop="8dip"
             android:paddingBottom="8dip"
             android:background="@color/menu_background"
