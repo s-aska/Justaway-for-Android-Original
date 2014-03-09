@@ -50,6 +50,7 @@ public class UpdateProfileImageFragment extends DialogFragment {
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        JustawayApplication.showProgressDialog(getActivity(), getString(R.string.progress_process));
                         new UpdateProfileImageTask().execute();
                         dismiss();
                     }
@@ -69,8 +70,7 @@ public class UpdateProfileImageFragment extends DialogFragment {
         @Override
         protected User doInBackground(Void... params) {
             try {
-                User user = JustawayApplication.getApplication().getTwitter().updateProfileImage(mImgPath);
-                return user;
+                return JustawayApplication.getApplication().getTwitter().updateProfileImage(mImgPath);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -79,7 +79,7 @@ public class UpdateProfileImageFragment extends DialogFragment {
 
         @Override
         protected void onPostExecute(User user) {
-            // dismissProgressDialog();
+            JustawayApplication.dismissProgressDialog();
             if (user != null) {
                 JustawayApplication.showToast(R.string.toast_update_profile_image_success);
             } else {
