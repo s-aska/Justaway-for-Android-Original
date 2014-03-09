@@ -2,13 +2,13 @@
 
     <item
         android:id="@+id/tweet_clear"
-        android:orderInCategory="100"
+        android:orderInCategory="1"
         android:showAsAction="never"
         android:title="@string/menu_clear"/>
 
     <item
         android:id="@+id/tweet_battery"
-        android:orderInCategory="100"
+        android:orderInCategory="2"
         android:showAsAction="never"
         android:title="@string/menu_battery_level"/>
 </menu>
