@@ -78,7 +78,7 @@ public class StatusActivity extends FragmentActivity {
         if (statusId > 0) {
             mTwitter = JustawayApplication.getApplication().getTwitter();
             showProgressDialog(getString(R.string.progress_loading));
-            new LoadTalk().execute(statusId);
+            new LoadTask().execute(statusId);
         }
     }
 
@@ -93,9 +93,9 @@ public class StatusActivity extends FragmentActivity {
             mProgressDialog.dismiss();
     }
 
-    private class LoadTalk extends AsyncTask<Long, Void, Status> {
+    private class LoadTask extends AsyncTask<Long, Void, Status> {
 
-        public LoadTalk() {
+        public LoadTask() {
             super();
         }
 
@@ -117,7 +117,7 @@ public class StatusActivity extends FragmentActivity {
                 mAdapter.notifyDataSetChanged();
                 Long inReplyToStatusId = status.getInReplyToStatusId();
                 if (inReplyToStatusId > 0) {
-                    new LoadTalk().execute(inReplyToStatusId);
+                    new LoadTask().execute(inReplyToStatusId);
                 }
             } else {
                 JustawayApplication.showToast(R.string.toast_load_data_failure);
