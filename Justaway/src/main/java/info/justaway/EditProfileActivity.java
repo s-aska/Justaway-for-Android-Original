@@ -24,6 +24,8 @@ import twitter4j.User;
 
 public class EditProfileActivity extends FragmentActivity implements LoaderManager.LoaderCallbacks<User> {
 
+    private static final int REQ_PICK_PROFILE_IMAGE = 1;
+
     private EditText mName;
     private EditText mLocation;
     private EditText mUrl;
@@ -52,7 +54,7 @@ public class EditProfileActivity extends FragmentActivity implements LoaderManag
             public void onClick(View v) {
                 Intent intent = new Intent(Intent.ACTION_PICK);
                 intent.setType("image/*");
-                startActivityForResult(intent, 1);
+                startActivityForResult(intent, REQ_PICK_PROFILE_IMAGE);
             }
         });
 
@@ -155,13 +157,17 @@ public class EditProfileActivity extends FragmentActivity implements LoaderManag
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            Uri uri = data.getData();
-            File file = uriToFile(uri);
-            if (file != null) {
-                UpdateProfileImageFragment dialog = new UpdateProfileImageFragment(file, uri);
-                dialog.show(getSupportFragmentManager(), "dialog");
-            }
+        switch (requestCode) {
+            case REQ_PICK_PROFILE_IMAGE:
+                if (resultCode == RESULT_OK) {
+                    Uri uri = data.getData();
+                    File file = uriToFile(uri);
+                    if (file != null) {
+                        UpdateProfileImageFragment dialog = new UpdateProfileImageFragment(file, uri);
+                        dialog.show(getSupportFragmentManager(), "dialog");
+                    }
+                }
+                break;
         }
     }
 }
