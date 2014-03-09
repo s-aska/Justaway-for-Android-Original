@@ -58,7 +58,7 @@ public class UserListActivity extends FragmentActivity {
         SimplePagerAdapter pagerAdapter = new SimplePagerAdapter(this, viewPager);
 
         Bundle args = new Bundle();
-        args.putSerializable("listId", mUserList.getId());
+        args.putInt("listId", mUserList.getId());
 
         pagerAdapter.addTab(UserMemberFragment.class, args);
         pagerAdapter.addTab(UserListStatusesFragment.class, args);
