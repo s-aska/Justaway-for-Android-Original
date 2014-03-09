@@ -201,7 +201,7 @@ public class PostActivity extends FragmentActivity {
             // スクロール可能にするのに必要
             textView.setMovementMethod(ScrollingMovementMethod.getInstance());
         } else {
-            findViewById(R.id.in_reply_to_status).setVisibility(View.GONE);
+            findViewById(R.id.in_reply_to_layout).setVisibility(View.GONE);
         }
 
         if (intent.getData() != null) {
