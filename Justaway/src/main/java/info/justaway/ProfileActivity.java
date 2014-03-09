@@ -12,7 +12,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
-import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -242,34 +241,37 @@ public class ProfileActivity extends FragmentActivity implements
         listViewPager.setOffscreenPageLimit(5);
 
         /**
-         * タブのラベル情報をSparseArray（高速なHashMap）に入れておく
+         * タブのラベル情報を配列に入れておく
          */
-        final SparseArray<TextView> countTexts = new SparseArray<TextView>();
-        countTexts.put(0, (TextView) findViewById(R.id.statuses_count));
-        countTexts.put(1, (TextView) findViewById(R.id.friends_count));
-        countTexts.put(2, (TextView) findViewById(R.id.followers_count));
-        countTexts.put(3, (TextView) findViewById(R.id.listed_count));
-        countTexts.put(4, (TextView) findViewById(R.id.favourites_count));
+        final TextView[] countTexts = {
+                (TextView) findViewById(R.id.statuses_count),
+                (TextView) findViewById(R.id.friends_count),
+                (TextView) findViewById(R.id.followers_count),
+                (TextView) findViewById(R.id.listed_count),
+                (TextView) findViewById(R.id.favourites_count),
+        };
 
-        final SparseArray<TextView> labelTexts = new SparseArray<TextView>();
-        labelTexts.put(0, (TextView) findViewById(R.id.statuses_count_label));
-        labelTexts.put(1, (TextView) findViewById(R.id.friends_count_label));
-        labelTexts.put(2, (TextView) findViewById(R.id.followers_count_label));
-        labelTexts.put(3, (TextView) findViewById(R.id.listed_count_label));
-        labelTexts.put(4, (TextView) findViewById(R.id.favourites_count_label));
+        final TextView[] labelTexts = {
+                (TextView) findViewById(R.id.statuses_count_label),
+                (TextView) findViewById(R.id.friends_count_label),
+                (TextView) findViewById(R.id.followers_count_label),
+                (TextView) findViewById(R.id.listed_count_label),
+                (TextView) findViewById(R.id.favourites_count_label),
+        };
 
-        final SparseArray<LinearLayout> tabs = new SparseArray<LinearLayout>();
-        tabs.put(0, (LinearLayout) findViewById(R.id.statuses));
-        tabs.put(1, (LinearLayout) findViewById(R.id.friends));
-        tabs.put(2, (LinearLayout) findViewById(R.id.followers));
-        tabs.put(3, (LinearLayout) findViewById(R.id.listed));
-        tabs.put(4, (LinearLayout) findViewById(R.id.favourites));
+        final LinearLayout[] tabs = {
+                (LinearLayout) findViewById(R.id.statuses),
+                (LinearLayout) findViewById(R.id.friends),
+                (LinearLayout) findViewById(R.id.followers),
+                (LinearLayout) findViewById(R.id.listed),
+                (LinearLayout) findViewById(R.id.favourites),
+        };
 
         final int colorBlue = getResources().getColor(R.color.holo_blue_light);
         final int colorWhite = getResources().getColor(android.R.color.secondary_text_dark);
 
-        countTexts.get(0).setTextColor(colorBlue);
-        labelTexts.get(0).setTextColor(colorBlue);
+        countTexts[0].setTextColor(colorBlue);
+        labelTexts[0].setTextColor(colorBlue);
 
         listViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
@@ -277,16 +279,16 @@ public class ProfileActivity extends FragmentActivity implements
                 /**
                  * タブのindexと選択されたpositionを比較して色を設定
                  */
-                for (int i = 0; i < countTexts.size(); i++) {
-                    countTexts.get(i).setTextColor(i == position ? colorBlue : colorWhite);
-                    labelTexts.get(i).setTextColor(i == position ? colorBlue : colorWhite);
+                for (int i = 0; i < countTexts.length; i++) {
+                    countTexts[i].setTextColor(i == position ? colorBlue : colorWhite);
+                    labelTexts[i].setTextColor(i == position ? colorBlue : colorWhite);
                 }
             }
         });
 
-        for (int i = 0; i < tabs.size(); i++) {
+        for (int i = 0; i < tabs.length; i++) {
             final int finalI = i;
-            tabs.get(i).setOnClickListener(new View.OnClickListener() {
+            tabs[i].setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     listViewPager.setCurrentItem(finalI);
