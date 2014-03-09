@@ -1,6 +1,7 @@
 package info.justaway;
 
 import android.app.ActionBar;
+import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
@@ -37,6 +38,7 @@ public class EditProfileActivity extends FragmentActivity implements LoaderManag
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_profile);
 
+        final Activity activity = this;
         ActionBar actionBar = getActionBar();
         if (actionBar != null) {
             actionBar.setHomeButtonEnabled(true);
@@ -61,6 +63,7 @@ public class EditProfileActivity extends FragmentActivity implements LoaderManag
         findViewById(R.id.save).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                JustawayApplication.showProgressDialog(activity, getString(R.string.progress_process));
                 new UpdateProfileTask().execute();
             }
         });
@@ -113,12 +116,11 @@ public class EditProfileActivity extends FragmentActivity implements LoaderManag
         protected User doInBackground(Void... params) {
             try {
                 //noinspection ConstantConditions
-                User user = JustawayApplication.getApplication().getTwitter().updateProfile(
+                return JustawayApplication.getApplication().getTwitter().updateProfile(
                         mName.getText().toString(),
                         mUrl.getText().toString(),
                         mLocation.getText().toString(),
                         mDescription.getText().toString());
-                return user;
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -127,7 +129,7 @@ public class EditProfileActivity extends FragmentActivity implements LoaderManag
 
         @Override
         protected void onPostExecute(User user) {
-            // dismissProgressDialog();
+            JustawayApplication.dismissProgressDialog();
             if (user != null) {
                 JustawayApplication.showToast(R.string.toast_update_profile_success);
                 finish();
@@ -141,12 +143,15 @@ public class EditProfileActivity extends FragmentActivity implements LoaderManag
         ContentResolver cr = getContentResolver();
         String[] columns = {MediaStore.Images.Media.DATA};
         Cursor c = cr.query(uri, columns, null, null, null);
-        if (c == null) {
+        assert c != null;
+        c.moveToFirst();
+        String fileName = c.getString(0);
+        if (fileName == null) {
+            JustawayApplication.showToast(getString(R.string.toast_set_image_failure));
             return null;
         }
+        File path = new File(fileName);
 
-        c.moveToFirst();
-        File path = new File(c.getString(0));
         if (!path.exists()) {
             return null;
         }
