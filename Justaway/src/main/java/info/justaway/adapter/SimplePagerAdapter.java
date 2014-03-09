@@ -17,7 +17,7 @@ public class SimplePagerAdapter extends FragmentPagerAdapter {
     private final ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
 
     private static final class TabInfo {
-        private final Class<?> clazz;
+        private final Class<? extends Fragment> clazz;
         private final Bundle args;
 
         /**
@@ -26,7 +26,7 @@ public class SimplePagerAdapter extends FragmentPagerAdapter {
          * @param clazz タブ内のv4.Fragment
          * @param args  タブ内のv4.Fragmentに対する引数
          */
-        TabInfo(Class<?> clazz, Bundle args) {
+        TabInfo(Class<? extends Fragment> clazz, Bundle args) {
             this.clazz = clazz;
             this.args = args;
         }
@@ -50,7 +50,7 @@ public class SimplePagerAdapter extends FragmentPagerAdapter {
      * @param clazz 起動するv4.Fragmentクラス
      * @param args  v4.Fragmentに対する引数
      */
-    public void addTab(Class<?> clazz, Bundle args) {
+    public void addTab(Class<? extends Fragment> clazz, Bundle args) {
         TabInfo info = new TabInfo(clazz, args);
         mTabs.add(info);
     }
