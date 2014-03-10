@@ -2,6 +2,7 @@ package info.justaway;
 
 import android.R.color;
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -115,64 +116,9 @@ public class MainActivity extends FragmentActivity {
                             new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    if (mApplication.getStreamingMode()) {
-                                        DialogFragment dialog = new DialogFragment() {
-                                            @Override
-                                            public Dialog onCreateDialog(Bundle savedInstanceState) {
-                                                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                                                builder.setTitle(R.string.confirm_destroy_streaming);
-                                                builder.setPositiveButton(getString(R.string.button_ok),
-                                                        new DialogInterface.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(DialogInterface dialog, int which) {
-                                                                mApplication.setStreamingMode(false);
-                                                                if (mTwitterStream != null) {
-                                                                    mTwitterStream.cleanUp();
-                                                                    mTwitterStream.shutdown();
-                                                                }
-                                                                JustawayApplication.showToast(R.string.toast_destroy_streaming);
-                                                                dismiss();
-                                                            }
-                                                        });
-                                                builder.setNegativeButton(getString(R.string.button_cancel),
-                                                        new DialogInterface.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(DialogInterface dialog, int which) {
-                                                                dismiss();
-                                                            }
-                                                        });
-                                                return builder.create();
-                                            }
-                                        };
-                                        dialog.show(getSupportFragmentManager(), "dialog");
-                                    } else {
-                                        DialogFragment dialog = new DialogFragment() {
-                                            @Override
-                                            public Dialog onCreateDialog(Bundle savedInstanceState) {
-                                                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                                                builder.setTitle(R.string.confirm_create_streaming);
-                                                builder.setPositiveButton(getString(R.string.button_ok),
-                                                        new DialogInterface.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(DialogInterface dialog, int which) {
-                                                                mApplication.setStreamingMode(true);
-                                                                setupStream();
-                                                                JustawayApplication.showToast(R.string.toast_create_streaming);
-                                                                dismiss();
-                                                            }
-                                                        });
-                                                builder.setNegativeButton(getString(R.string.button_cancel),
-                                                        new DialogInterface.OnClickListener() {
-                                                            @Override
-                                                            public void onClick(DialogInterface dialog, int which) {
-                                                                dismiss();
-                                                            }
-                                                        });
-                                                return builder.create();
-                                            }
-                                        };
-                                        dialog.show(getSupportFragmentManager(), "dialog");
-                                    }
+                                    final boolean turnOn = !mApplication.getStreamingMode();
+                                    DialogFragment dialog = StreamingSwitchDialogFragment.newInstance(turnOn);
+                                    dialog.show(getSupportFragmentManager(), "dialog");
                                 }
                             });
                 }
@@ -851,6 +797,61 @@ public class MainActivity extends FragmentActivity {
                 .findFragmentById(TAB_ID_DIRECT_MESSAGE);
         if (fragment != null) {
             fragment.remove(id);
+        }
+    }
+
+
+    public static final class StreamingSwitchDialogFragment extends DialogFragment {
+        private MainActivity mActivity;
+
+        private static StreamingSwitchDialogFragment newInstance(boolean turnOn) {
+            final Bundle args = new Bundle(1);
+            args.putBoolean("turnOn", turnOn);
+
+            final StreamingSwitchDialogFragment f = new StreamingSwitchDialogFragment();
+            f.setArguments(args);
+            return f;
+        }
+
+        @Override
+        public void onAttach(Activity activity) {
+            super.onAttach(activity);
+
+            mActivity = (MainActivity) activity;
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            final boolean turnOn = getArguments().getBoolean("turnOn");
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle(turnOn ? R.string.confirm_create_streaming : R.string.confirm_destroy_streaming);
+            builder.setPositiveButton(getString(R.string.button_ok),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            mActivity.mApplication.setStreamingMode(turnOn);
+                            if (turnOn) {
+                                mActivity.setupStream();
+                                JustawayApplication.showToast(R.string.toast_create_streaming);
+                            } else {
+                                if (mActivity.mTwitterStream != null) {
+                                    mActivity.mTwitterStream.cleanUp();
+                                    mActivity.mTwitterStream.shutdown();
+                                }
+                                JustawayApplication.showToast(R.string.toast_destroy_streaming);
+                            }
+                            dismiss();
+                        }
+                    });
+            builder.setNegativeButton(getString(R.string.button_cancel),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dismiss();
+                        }
+                    });
+            return builder.create();
         }
     }
 }
