@@ -168,7 +168,7 @@ public class EditProfileActivity extends FragmentActivity implements LoaderManag
                     Uri uri = data.getData();
                     File file = uriToFile(uri);
                     if (file != null) {
-                        UpdateProfileImageFragment dialog = new UpdateProfileImageFragment(file, uri);
+                        UpdateProfileImageFragment dialog = UpdateProfileImageFragment.newInstance(file, uri);
                         dialog.show(getSupportFragmentManager(), "dialog");
                     }
                 }
