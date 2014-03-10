@@ -55,7 +55,7 @@ public class StatusMenuFragment extends DialogFragment {
     private List<ResolveInfo> mTwiccaPlugins;
     private StatusActionListener mStatusActionListener;
 
-    public StatusMenuFragment(Row row) {
+    public static StatusMenuFragment newInstance(Row row) {
         Bundle args = new Bundle();
         if (row.isDirectMessage()) {
             args.putSerializable("directMessage", row.getMessage());
@@ -65,7 +65,12 @@ public class StatusMenuFragment extends DialogFragment {
         if (row.isFavorite()) {
             args.putSerializable("favoriteSourceUser", row.getSource());
         }
-        this.setArguments(args);
+        final StatusMenuFragment f = new StatusMenuFragment();
+        f.setArguments(args);
+        return f;
+    }
+
+    public StatusMenuFragment() {
     }
 
     public StatusMenuFragment setStatusActionListener(StatusActionListener statusActionListener) {
