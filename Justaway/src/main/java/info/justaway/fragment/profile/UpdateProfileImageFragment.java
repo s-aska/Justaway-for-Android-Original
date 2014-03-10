@@ -23,13 +23,24 @@ public class UpdateProfileImageFragment extends DialogFragment {
     private File mImgPath;
     private Uri mUri;
 
-    public UpdateProfileImageFragment(File imgPath, Uri uri) {
-        this.mImgPath = imgPath;
-        this.mUri = uri;
+    public static UpdateProfileImageFragment newInstance(File imgPath, Uri uri) {
+        final Bundle args = new Bundle(2);
+        args.putSerializable("imgPath", imgPath);
+        args.putParcelable("uri", uri);
+
+        final UpdateProfileImageFragment f = new UpdateProfileImageFragment();
+        f.setArguments(args);
+        return f;
+    }
+
+    public UpdateProfileImageFragment() {
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+        mImgPath = (File) getArguments().get("imgPath");
+        mUri = (Uri) getArguments().get("uri");
+
         Builder builder = new Builder(getActivity());
 
         builder.setTitle(R.string.confirm_update_profile_image);
