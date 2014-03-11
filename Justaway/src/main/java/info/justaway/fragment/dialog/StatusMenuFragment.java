@@ -157,20 +157,6 @@ public class StatusMenuFragment extends DialogFragment {
                 }));
             }
 
-            /**
-             * ツイート内のURL(画像)
-             */
-            URLEntity[] medias = directMessage.getMediaEntities();
-            for (final URLEntity url : medias) {
-                adapter.add(new Menu(url.getExpandedURL(), new Runnable() {
-                    @Override
-                    public void run() {
-                        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url.getExpandedURL()));
-                        mActivity.startActivity(intent);
-                    }
-                }));
-            }
-
             return builder.create();
         }
 
