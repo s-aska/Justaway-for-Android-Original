@@ -27,6 +27,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 import info.justaway.adapter.MainPagerAdapter;
@@ -56,7 +57,6 @@ import twitter4j.UserStreamAdapter;
 public class MainActivity extends FragmentActivity {
 
     private JustawayApplication mApplication;
-    private TwitterStream mTwitterStream;
     private MainPagerAdapter mMainPagerAdapter;
     private ViewPager mViewPager;
     private ProgressDialog mProgressDialog;
@@ -69,6 +69,26 @@ public class MainActivity extends FragmentActivity {
     private static final int TAB_ID_TIMELINE = -1;
     private static final int TAB_ID_INTERACTIONS = -2;
     private static final int TAB_ID_DIRECT_MESSAGE = -3;
+
+    /*
+     * Activity よりも寿命が長いインスタンスたち(画面回転後もストリームを切らないようにするため)
+     */
+    private TwitterStream mTwitterStream;
+    private MyUserStreamAdapter mUserStreamAdapter;
+    private MyConnectionLifeCycleListener mConnectionLifeCycleListener;
+    // ここまで
+
+    private static final class StreamHolder {
+        public final TwitterStream twitterStream;
+        public final MyUserStreamAdapter userStreamAdapter;
+        public final MyConnectionLifeCycleListener connectionLifeCycleListener;
+
+        private StreamHolder(TwitterStream twitterStream, MyUserStreamAdapter userStreamAdapter, MyConnectionLifeCycleListener connectionLifeCycleListener) {
+            this.twitterStream = twitterStream;
+            this.userStreamAdapter = userStreamAdapter;
+            this.connectionLifeCycleListener = connectionLifeCycleListener;
+        }
+    }
 
     private Status mInReplyToStatus;
 
@@ -229,17 +249,64 @@ public class MainActivity extends FragmentActivity {
                 }
             }
         });
+
+        final StreamHolder holder = (StreamHolder) getLastCustomNonConfigurationInstance();
+        if (holder != null) {
+            mTwitterStream = holder.twitterStream;
+            mUserStreamAdapter = holder.userStreamAdapter;
+            mConnectionLifeCycleListener = holder.connectionLifeCycleListener;
+
+            mUserStreamAdapter.updateActivity(this);
+            mConnectionLifeCycleListener.updateActivity(this);
+        }
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+
+        outState.putInt("signalButtonColor", mSignalButton.getCurrentTextColor());
+
+        LinearLayout tab_menus = (LinearLayout) findViewById(R.id.tab_menus);
+        int count = tab_menus.getChildCount();
+        final int tabColors[] = new int[count];
+        for (int i = 0; i < count; i++) {
+            Button button = (Button) tab_menus.getChildAt(i);
+            if (button == null) {
+                continue;
+            }
+            tabColors[i] = button.getCurrentTextColor();
+        }
+
+        outState.putIntArray("tabColors", tabColors);
     }
 
     @SuppressWarnings("NullableProblems")
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
+
+        mSignalButton.setTextColor(savedInstanceState.getInt("signalButtonColor"));
+
+        final int[] tabColors = savedInstanceState.getIntArray("tabColors");
+        assert tabColors != null;
+        LinearLayout tab_menus = (LinearLayout) findViewById(R.id.tab_menus);
+        int count = Math.min(tab_menus.getChildCount(), tabColors.length);
+        for (int i = 0; i < count; i++) {
+            Button button = (Button) tab_menus.getChildAt(i);
+            if (button == null) {
+                continue;
+            }
+            button.setTextColor(tabColors[i]);
+        }
+    }
+
+    @Override
+    public Object onRetainCustomNonConfigurationInstance() {
+        if (mTwitterStream == null) {
+            return null;
+        }
+        return new StreamHolder(mTwitterStream, mUserStreamAdapter, mConnectionLifeCycleListener);
     }
 
     public void showQuickPanel() {
@@ -331,7 +398,7 @@ public class MainActivity extends FragmentActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        if (mTwitterStream != null) {
+        if (mTwitterStream != null && isFinishing()) {
             mTwitterStream.cleanUp();
             mTwitterStream.shutdown();
         }
@@ -421,7 +488,7 @@ public class MainActivity extends FragmentActivity {
         };
     }
 
-    public void setup() {
+    private void setup() {
 
         /**
          * スワイプで動かせるタブを実装するのに最低限必要な実装
@@ -485,52 +552,10 @@ public class MainActivity extends FragmentActivity {
             mTwitterStream.setOAuthAccessToken(mApplication.getAccessToken());
         } else {
             mTwitterStream = mApplication.getTwitterStream();
-            mTwitterStream.addListener(getUserStreamAdapter());
-            mTwitterStream.addConnectionLifeCycleListener(new ConnectionLifeCycleListener() {
-                @Override
-                public void onConnect() {
-                    if (mSignalButton != null) {
-                        mSignalButton.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                mSignalButton.setTextColor(getResources().getColor(R.color.holo_green_light));
-                            }
-                        });
-                    }
-                }
-
-                @Override
-                public void onDisconnect() {
-                    if (mSignalButton != null) {
-                        mSignalButton.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (mApplication.getStreamingMode()) {
-                                    mSignalButton.setTextColor(getResources().getColor(R.color.holo_red_light));
-                                } else {
-                                    mSignalButton.setTextColor(Color.WHITE);
-                                }
-                            }
-                        });
-                    }
-                }
-
-                @Override
-                public void onCleanUp() {
-                    if (mSignalButton != null) {
-                        mSignalButton.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (mApplication.getStreamingMode()) {
-                                    mSignalButton.setTextColor(getResources().getColor(R.color.holo_orange_light));
-                                } else {
-                                    mSignalButton.setTextColor(Color.WHITE);
-                                }
-                            }
-                        });
-                    }
-                }
-            });
+            mUserStreamAdapter = getUserStreamAdapter();
+            mTwitterStream.addListener(mUserStreamAdapter);
+            mConnectionLifeCycleListener = new MyConnectionLifeCycleListener(this);
+            mTwitterStream.addConnectionLifeCycleListener(mConnectionLifeCycleListener);
         }
         mTwitterStream.user();
     }
@@ -668,93 +693,8 @@ public class MainActivity extends FragmentActivity {
     /**
      * ストリーミング受信時の処理
      */
-    private UserStreamAdapter getUserStreamAdapter() {
-        final View view = findViewById(R.id.action_interactions);
-        return new UserStreamAdapter() {
-
-            @Override
-            public void onStatus(Status status) {
-
-                /**
-                 * ツイートを表示するかどうかはFragmentに任せる
-                 */
-                int count = mMainPagerAdapter.getCount();
-                for (int id = 0; id < count; id++) {
-                    BaseFragment fragment = mMainPagerAdapter
-                            .findFragmentByPosition(id);
-                    if (fragment != null) {
-                        fragment.add(Row.newStatus(status));
-                    }
-                }
-            }
-
-            @Override
-            public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
-                super.onDeletionNotice(statusDeletionNotice);
-                int count = mMainPagerAdapter.getCount();
-                for (int id = 0; id < count; id++) {
-                    BaseFragment fragment = mMainPagerAdapter
-                            .findFragmentByPosition(id);
-                    if (fragment != null) {
-                        fragment.removeStatus(statusDeletionNotice.getStatusId());
-                    }
-                }
-            }
-
-            @Override
-            public void onFavorite(User source, User target, Status status) {
-                // 自分の fav を反映
-                if (source.getId() == mApplication.getUserId()) {
-                    mApplication.setFav(status.getId());
-                    return;
-                }
-                Row row = Row.newFavorite(source, target, status);
-                BaseFragment fragment = mMainPagerAdapter
-                        .findFragmentById(TAB_ID_INTERACTIONS);
-                new ReFetchFavoriteStatus(fragment).execute(row);
-            }
-
-            @Override
-            public void onUnfavorite(User arg0, User arg1, Status arg2) {
-
-                final User source = arg0;
-                final Status status = arg2;
-
-                // 自分の unfav を反映
-                if (source.getId() == mApplication.getUserId()) {
-                    mApplication.removeFav(status.getId());
-                    return;
-                }
-
-                view.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        JustawayApplication.showToast(source.getScreenName() + " unfav "
-                                + status.getText());
-                    }
-                });
-            }
-
-            @Override
-            public void onDirectMessage(DirectMessage directMessage) {
-                super.onDirectMessage(directMessage);
-                BaseFragment fragment = mMainPagerAdapter
-                        .findFragmentById(TAB_ID_DIRECT_MESSAGE);
-                if (fragment != null) {
-                    fragment.add(Row.newDirectMessage(directMessage));
-                }
-            }
-
-            @Override
-            public void onDeletionNotice(long directMessageId, long userId) {
-                super.onDeletionNotice(directMessageId, userId);
-                DirectMessagesFragment fragment = (DirectMessagesFragment) mMainPagerAdapter
-                        .findFragmentById(TAB_ID_DIRECT_MESSAGE);
-                if (fragment != null) {
-                    fragment.remove(directMessageId);
-                }
-            }
-        };
+    private MyUserStreamAdapter getUserStreamAdapter() {
+        return new MyUserStreamAdapter(this);
     }
 
     private void showProgressDialog(String message) {
@@ -800,6 +740,207 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
+    private static final class MyUserStreamAdapter extends UserStreamAdapter {
+
+        private WeakReference<MainActivity> mActivityRef;
+
+        public MyUserStreamAdapter(MainActivity act) {
+            updateActivity(act);
+        }
+
+        public void updateActivity(MainActivity act) {
+            mActivityRef = new WeakReference<MainActivity>(act);
+        }
+
+        @Override
+        public void onStatus(Status status) {
+            // TODO activity を経由すると、画面回転時に一部取りこぼしが発生するかもしれない(確認が必要)。
+            final MainActivity act = mActivityRef.get();
+            if (act == null) {
+                return;
+            }
+
+            /**
+             * ツイートを表示するかどうかはFragmentに任せる
+             */
+            int count = act.mMainPagerAdapter.getCount();
+            for (int id = 0; id < count; id++) {
+                BaseFragment fragment = act.mMainPagerAdapter
+                        .findFragmentByPosition(id);
+                if (fragment != null) {
+                    fragment.add(Row.newStatus(status));
+                }
+            }
+        }
+
+        @Override
+        public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
+            super.onDeletionNotice(statusDeletionNotice);
+
+            final MainActivity act = mActivityRef.get();
+            if (act == null) {
+                return;
+            }
+
+            int count = act.mMainPagerAdapter.getCount();
+            for (int id = 0; id < count; id++) {
+                BaseFragment fragment = act.mMainPagerAdapter
+                        .findFragmentByPosition(id);
+                if (fragment != null) {
+                    fragment.removeStatus(statusDeletionNotice.getStatusId());
+                }
+            }
+        }
+
+        @Override
+        public void onFavorite(User source, User target, Status status) {
+            final MainActivity act = mActivityRef.get();
+            if (act == null) {
+                return;
+            }
+
+            // 自分の fav を反映
+            if (source.getId() == act.mApplication.getUserId()) {
+                act.mApplication.setFav(status.getId());
+                return;
+            }
+            Row row = Row.newFavorite(source, target, status);
+            BaseFragment fragment = act.mMainPagerAdapter
+                    .findFragmentById(TAB_ID_INTERACTIONS);
+            new ReFetchFavoriteStatus(fragment).execute(row);
+        }
+
+        @Override
+        public void onUnfavorite(User arg0, User arg1, Status arg2) {
+            final MainActivity act = mActivityRef.get();
+            if (act == null) {
+                return;
+            }
+
+            final User source = arg0;
+            final Status status = arg2;
+
+            // 自分の unfav を反映
+            if (source.getId() == act.mApplication.getUserId()) {
+                act.mApplication.removeFav(status.getId());
+                return;
+            }
+
+            act.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    JustawayApplication.showToast(source.getScreenName() + " unfav "
+                            + status.getText());
+                }
+            });
+        }
+
+        @Override
+        public void onDirectMessage(DirectMessage directMessage) {
+            super.onDirectMessage(directMessage);
+
+            final MainActivity act = mActivityRef.get();
+            if (act == null) {
+                return;
+            }
+
+            BaseFragment fragment = act.mMainPagerAdapter
+                    .findFragmentById(TAB_ID_DIRECT_MESSAGE);
+            if (fragment != null) {
+                fragment.add(Row.newDirectMessage(directMessage));
+            }
+        }
+
+        @Override
+        public void onDeletionNotice(long directMessageId, long userId) {
+            super.onDeletionNotice(directMessageId, userId);
+
+            final MainActivity act = mActivityRef.get();
+            if (act == null) {
+                return;
+            }
+
+            DirectMessagesFragment fragment = (DirectMessagesFragment) act.mMainPagerAdapter
+                    .findFragmentById(TAB_ID_DIRECT_MESSAGE);
+            if (fragment != null) {
+                fragment.remove(directMessageId);
+            }
+        }
+    }
+
+    private static final class MyConnectionLifeCycleListener implements ConnectionLifeCycleListener {
+        private WeakReference<MainActivity> mActivityRef;
+
+        public MyConnectionLifeCycleListener(MainActivity act) {
+            updateActivity(act);
+        }
+
+        public void updateActivity(MainActivity act) {
+            mActivityRef = new WeakReference<MainActivity>(act);
+        }
+
+        @Override
+        public void onConnect() {
+            final MainActivity act = mActivityRef.get();
+            if (act == null) {
+                return;
+            }
+
+            act.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    final TextView signalButton = act.mSignalButton;
+                    if (signalButton != null) {
+                        act.mSignalButton.setTextColor(act.getResources().getColor(R.color.holo_green_light));
+                    }
+                }
+            });
+        }
+
+        @Override
+        public void onDisconnect() {
+            final MainActivity act = mActivityRef.get();
+            if (act == null) {
+                return;
+            }
+
+            act.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    final TextView signalButton = act.mSignalButton;
+                    if (signalButton != null) {
+                        if (act.mApplication.getStreamingMode()) {
+                            signalButton.setTextColor(act.getResources().getColor(R.color.holo_red_light));
+                        } else {
+                            signalButton.setTextColor(Color.WHITE);
+                        }
+                    }
+                }
+            });
+        }
+
+        @Override
+        public void onCleanUp() {
+            final MainActivity act = mActivityRef.get();
+            if (act == null) {
+                return;
+            }
+
+            act.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    final TextView signalButton = act.mSignalButton;
+                    if (signalButton != null) {
+                        if (act.mApplication.getStreamingMode()) {
+                            signalButton.setTextColor(act.getResources().getColor(R.color.holo_orange_light));
+                        } else {
+                            signalButton.setTextColor(Color.WHITE);
+                        }
+                    }
+                }
+            });
+        }
+    }
 
     public static final class StreamingSwitchDialogFragment extends DialogFragment {
         private MainActivity mActivity;
