@@ -8,6 +8,7 @@ import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
+import android.os.StrictMode;
 import android.support.v4.util.LongSparseArray;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -89,6 +90,11 @@ public class JustawayApplication extends Application {
     public void onCreate() {
         super.onCreate();
         sApplication = this;
+
+        // Twitter4J の user stream の shutdown() で NetworkOnMainThreadException が発生してしまうことに対する暫定対応
+        if (!BuildConfig.DEBUG) {
+            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().permitAll().build());
+        }
 
         DisplayImageOptions defaultOptions = new DisplayImageOptions
                 .Builder()
