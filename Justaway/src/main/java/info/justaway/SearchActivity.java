@@ -221,13 +221,9 @@ public class SearchActivity extends FragmentActivity {
             if (queryResult.hasNext()) {
                 mNextQuery = queryResult.nextQuery();
             }
-            MuteSettings muteSettings = JustawayApplication.getApplication().getMuteSettings();
             int count = mAdapter.getCount();
             List<twitter4j.Status> statuses = queryResult.getTweets();
             for (twitter4j.Status status : statuses) {
-                if (muteSettings.isMute(status)) {
-                    continue;
-                }
                 mAdapter.add(Row.newStatus(status));
             }
 

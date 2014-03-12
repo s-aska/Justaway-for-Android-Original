@@ -760,6 +760,11 @@ public class MainActivity extends FragmentActivity {
                 return;
             }
 
+            Row row = Row.newStatus(status);
+            if (JustawayApplication.isMute(row)) {
+                return;
+            }
+
             /**
              * ツイートを表示するかどうかはFragmentに任せる
              */
@@ -768,7 +773,7 @@ public class MainActivity extends FragmentActivity {
                 BaseFragment fragment = act.mMainPagerAdapter
                         .findFragmentByPosition(id);
                 if (fragment != null) {
-                    fragment.add(Row.newStatus(status));
+                    fragment.add(row);
                 }
             }
         }
