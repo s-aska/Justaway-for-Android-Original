@@ -97,10 +97,6 @@ public class TimelineFragment extends BaseFragment {
             return;
         }
 
-        if (application.getMuteSettings().isMute(row.getStatus())) {
-            return;
-        }
-
         listView.post(new Runnable() {
             @Override
             public void run() {
@@ -163,15 +159,11 @@ public class TimelineFragment extends BaseFragment {
                 }
                 return;
             }
-            MuteSettings muteSettings = JustawayApplication.getApplication().getMuteSettings();
             if (mReload) {
                 adapter.clear();
                 for (twitter4j.Status status : statuses) {
                     if (mMaxId == 0L || mMaxId > status.getId()) {
                         mMaxId = status.getId();
-                    }
-                    if (muteSettings.isMute(status)) {
-                        continue;
                     }
                     adapter.add(Row.newStatus(status));
                 }
@@ -181,9 +173,6 @@ public class TimelineFragment extends BaseFragment {
                 for (twitter4j.Status status : statuses) {
                     if (mMaxId == 0L || mMaxId > status.getId()) {
                         mMaxId = status.getId();
-                    }
-                    if (muteSettings.isMute(status)) {
-                        continue;
                     }
                     adapter.extensionAdd(Row.newStatus(status));
                 }
