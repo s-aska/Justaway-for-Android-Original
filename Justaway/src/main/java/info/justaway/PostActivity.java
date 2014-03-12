@@ -436,6 +436,14 @@ public class PostActivity extends FragmentActivity {
         mEditText.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 updateCount(s.toString());
+                if (s.toString().startsWith("D ")) {
+                    mImgPath = null;
+                    mImgButton.setTextColor(Color.rgb(66, 66, 66));
+                    mImgButton.setEnabled(false);
+                } else {
+                    mImgButton.setTextColor(getResources().getColor(android.R.color.secondary_text_dark));
+                    mImgButton.setEnabled(true);
+                }
             }
 
             public void afterTextChanged(Editable s) {
@@ -543,7 +551,7 @@ public class PostActivity extends FragmentActivity {
         mTextView.setTextColor(textColor);
         mTextView.setText(String.valueOf(length));
 
-        if (length == 0 || length > 140) {
+        if (length < 0 || length == 140) {
             // 文字数が0文字または140文字以上の時はボタンを無効
             if (mImgPath != null) {
                 mTweetButton.setEnabled(true);
