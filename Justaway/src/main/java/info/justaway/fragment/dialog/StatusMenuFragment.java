@@ -387,7 +387,7 @@ public class StatusMenuFragment extends DialogFragment {
                 public void run() {
                     TalkFragment dialog = new TalkFragment();
                     Bundle args = new Bundle();
-                    args.putSerializable("status", status);
+                    args.putSerializable("status", source);
                     dialog.setArguments(args);
                     dialog.show(mActivity.getSupportFragmentManager(), "dialog");
                 }
