@@ -50,7 +50,6 @@ public class ProfileActivity extends FragmentActivity implements
         }
 
         mBanner = (ImageView) findViewById(R.id.banner);
-        mBanner.setImageResource(R.drawable.suzuri);
 
         Typeface fontello = JustawayApplication.getFontello();
         ((TextView) findViewById(R.id.collapse_label)).setTypeface(fontello);
