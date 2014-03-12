@@ -16,6 +16,7 @@ import info.justaway.listener.StatusActionListener;
 import info.justaway.listener.StatusClickListener;
 import info.justaway.listener.StatusLongClickListener;
 import info.justaway.model.Row;
+import twitter4j.Status;
 import twitter4j.Twitter;
 
 /**
@@ -52,10 +53,12 @@ public class TalkFragment extends DialogFragment {
 
         listView.setOnItemLongClickListener(new StatusLongClickListener(mAdapter, getActivity()));
 
-        Long statusId = getArguments().getLong("statusId");
-        if (statusId > 0) {
+        Status status = (Status) getArguments().getSerializable("status");
+        if (status != null) {
             mTwitter = JustawayApplication.getApplication().getTwitter();
-            new LoadTalk().execute(statusId);
+            mAdapter.add(Row.newStatus(status));
+            mAdapter.notifyDataSetChanged();
+            new LoadTalk().execute(status.getInReplyToStatusId());
         }
 
         return dialog;

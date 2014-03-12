@@ -42,7 +42,7 @@ public class StatusLongClickListener implements AdapterView.OnItemLongClickListe
             tweet(text, 0, status);
         } else if (action.equals("talk")) {
             TalkFragment dialog = new TalkFragment();
-            args.putLong("statusId", status.getId());
+            args.putSerializable("status", status);
             dialog.setArguments(args);
             dialog.show(mActivity.getSupportFragmentManager(), "dialog");
         } else if (action.equals("show_around")) {
