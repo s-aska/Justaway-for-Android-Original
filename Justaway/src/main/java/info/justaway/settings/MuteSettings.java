@@ -1,5 +1,6 @@
 package info.justaway.settings;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -10,6 +11,7 @@ import java.util.HashMap;
 
 import info.justaway.JustawayApplication;
 import twitter4j.Status;
+import twitter4j.UserMentionEntity;
 
 public class MuteSettings {
 
@@ -23,6 +25,7 @@ public class MuteSettings {
         loadMuteSettings();
     }
 
+    @SuppressLint("UseSparseArrays")
     public void loadMuteSettings() {
         SharedPreferences preferences = mApplication.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         String json = preferences.getString(PREF_KEY, null);
@@ -50,6 +53,13 @@ public class MuteSettings {
         if (mMuteSettingsData.userMap.get(status.getUser().getId()) != null) {
             return true;
 
+        }
+        UserMentionEntity[] mentions = status.getUserMentionEntities();
+        for (UserMentionEntity mention : mentions) {
+            if (mMuteSettingsData.userMap.get(mention.getId()) != null) {
+                return true;
+
+            }
         }
         Status retweetedStatus = status.getRetweetedStatus();
         if (retweetedStatus != null) {
