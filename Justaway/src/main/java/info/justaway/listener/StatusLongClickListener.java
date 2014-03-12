@@ -35,6 +35,8 @@ public class StatusLongClickListener implements AdapterView.OnItemLongClickListe
         }
 
         Status status = mAdapter.getItem(position).getStatus();
+        final Status retweet = status.getRetweetedStatus();
+        final Status source = retweet != null ? retweet : status;
 
         if (action.equals("quote")) {
             String text = " https://twitter.com/" + status.getUser().getScreenName()
@@ -42,13 +44,13 @@ public class StatusLongClickListener implements AdapterView.OnItemLongClickListe
             tweet(text, 0, status);
         } else if (action.equals("talk")) {
             TalkFragment dialog = new TalkFragment();
-            args.putSerializable("status", status);
+            args.putSerializable("status", source);
             dialog.setArguments(args);
             dialog.show(mActivity.getSupportFragmentManager(), "dialog");
         } else if (action.equals("show_around")) {
             AroundFragment aroundFragment = new AroundFragment();
             Bundle aroundArgs = new Bundle();
-            aroundArgs.putSerializable("status", status);
+            aroundArgs.putSerializable("status", source);
             aroundFragment.setArguments(aroundArgs);
             aroundFragment.show(mActivity.getSupportFragmentManager(), "dialog");
         } else if (action.equals("share_url")) {
