@@ -110,6 +110,9 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     }
 
     public void extensionAdd(Row row) {
+        if (JustawayApplication.isMute(row)) {
+            return;
+        }
         super.add(row);
         this.filter(row);
         this.mStatuses.add(row);
@@ -118,6 +121,9 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
 
     @Override
     public void add(Row row) {
+        if (JustawayApplication.isMute(row)) {
+            return;
+        }
         super.add(row);
         this.filter(row);
         this.mStatuses.add(row);
@@ -126,6 +132,9 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
 
     @Override
     public void insert(Row row, int index) {
+        if (JustawayApplication.isMute(row)) {
+            return;
+        }
         super.insert(row, index);
         this.filter(row);
         this.mStatuses.add(index, row);

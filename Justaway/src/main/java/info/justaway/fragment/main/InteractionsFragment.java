@@ -14,7 +14,6 @@ import info.justaway.MainActivity;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.model.Row;
-import info.justaway.settings.MuteSettings;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
 import twitter4j.Status;
@@ -93,9 +92,6 @@ public class InteractionsFragment extends BaseFragment {
             JustawayApplication application = JustawayApplication.getApplication();
 
             Status status = row.getStatus();
-            if (application.getMuteSettings().isMute(status)) {
-                return true;
-            }
 
             long userId = application.getUserId();
             Status retweet = status.getRetweetedStatus();
@@ -194,16 +190,12 @@ public class InteractionsFragment extends BaseFragment {
             if (statuses == null || statuses.size() == 0) {
                 return;
             }
-            MuteSettings muteSettings = JustawayApplication.getApplication().getMuteSettings();
             TwitterAdapter adapter = getListAdapter();
             if (mReload) {
                 adapter.clear();
                 for (twitter4j.Status status : statuses) {
                     if (mMaxId == 0L || mMaxId > status.getId()) {
                         mMaxId = status.getId();
-                    }
-                    if (muteSettings.isMute(status)) {
-                        continue;
                     }
                     adapter.add(Row.newStatus(status));
                 }
@@ -214,9 +206,6 @@ public class InteractionsFragment extends BaseFragment {
             for (twitter4j.Status status : statuses) {
                 if (mMaxId == 0L || mMaxId > status.getId()) {
                     mMaxId = status.getId();
-                }
-                if (muteSettings.isMute(status)) {
-                    continue;
                 }
                 adapter.extensionAdd(Row.newStatus(status));
             }

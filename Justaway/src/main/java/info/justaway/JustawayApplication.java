@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import info.justaway.display.FadeInRoundedBitmapDisplayer;
+import info.justaway.model.Row;
 import info.justaway.settings.MuteSettings;
 import info.justaway.task.DestroyStatusTask;
 import info.justaway.task.FavoriteTask;
@@ -157,6 +158,14 @@ public class JustawayApplication extends Application {
 
     public MuteSettings getMuteSettings() {
         return sMuteSettings;
+    }
+
+    public static Boolean isMute(Row row) {
+        if (row.isStatus()) {
+            return sMuteSettings.isMute(row.getStatus());
+        } else {
+            return false;
+        }
     }
 
     /**
