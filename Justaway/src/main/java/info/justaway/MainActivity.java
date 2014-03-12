@@ -66,9 +66,9 @@ public class MainActivity extends FragmentActivity {
     private static final int REQUEST_CHOOSE_USER_LIST = 100;
     private static final int REQUEST_ACCOUNT_SETTING = 200;
     private static final int ERROR_CODE_DUPLICATE_STATUS = 187;
-    private static final int TAB_ID_TIMELINE = -1;
-    private static final int TAB_ID_INTERACTIONS = -2;
-    private static final int TAB_ID_DIRECT_MESSAGE = -3;
+    private static final long TAB_ID_TIMELINE = -1L;
+    private static final long TAB_ID_INTERACTIONS = -2L;
+    private static final long TAB_ID_DIRECT_MESSAGE = -3L;
 
     /*
      * Activity よりも寿命が長いインスタンスたち(画面回転後もストリームを切らないようにするため)
@@ -360,7 +360,7 @@ public class MainActivity extends FragmentActivity {
                     button.setOnClickListener(tabMenuOnClickListener(++position));
                     tab_menus.addView(button);
                     Bundle args = new Bundle();
-                    args.putInt("userListId", tab.id);
+                    args.putLong("userListId", tab.id);
                     mMainPagerAdapter.addTab(UserListFragment.class, args, tab.name, tab.id);
                 }
             }
@@ -414,12 +414,13 @@ public class MainActivity extends FragmentActivity {
                     if (bundle == null) {
                         return;
                     }
-                    ArrayList<Integer> lists = bundle.getIntegerArrayList("lists");
-                    ArrayList<Integer> tabs = new ArrayList<Integer>();
+                    @SuppressWarnings("unchecked")
+                    ArrayList<Long> lists = (ArrayList<Long>) bundle.getSerializable("lists");
+                    ArrayList<Long> tabs = new ArrayList<Long>();
                     // 後々タブ設定画面に標準のタブを含める
-                    tabs.add(-1);
-                    tabs.add(-2);
-                    tabs.add(-3);
+                    tabs.add(-1L);
+                    tabs.add(-2L);
+                    tabs.add(-3L);
                     tabs.addAll(lists);
                     mApplication.saveTabs(tabs);
                     setupTab();
@@ -432,7 +433,7 @@ public class MainActivity extends FragmentActivity {
                      * リストの削除を検出してタブを再構成
                      */
                     ArrayList<JustawayApplication.Tab> tabs = mApplication.loadTabs();
-                    ArrayList<Integer> new_tabs = new ArrayList<Integer>();
+                    ArrayList<Long> new_tabs = new ArrayList<Long>();
                     for (JustawayApplication.Tab tab : tabs) {
                         if (tab.id > 0 && mApplication.getUserList(tab.id) == null) {
                             continue;
@@ -599,7 +600,7 @@ public class MainActivity extends FragmentActivity {
     /**
      * 新しいツイートが来たアピ
      */
-    public void onNewListStatus(int listId, Boolean autoScroll) {
+    public void onNewListStatus(long listId, Boolean autoScroll) {
         // 表示中のタブかつ自動スクロール時はハイライトしない
         int position = mMainPagerAdapter.findPositionById(listId);
         if (mViewPager.getCurrentItem() == position && autoScroll) {

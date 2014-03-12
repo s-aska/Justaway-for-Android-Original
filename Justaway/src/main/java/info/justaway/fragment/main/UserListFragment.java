@@ -27,7 +27,7 @@ public class UserListFragment extends BaseFragment {
     private Boolean mReload = false;
     private long mMaxId = 0L;
     private ProgressBar mFooter;
-    private int mUserListId;
+    private long mUserListId;
     private LongSparseArray<Boolean> mMembers = new LongSparseArray<Boolean>();
 
     @Override
@@ -40,7 +40,7 @@ public class UserListFragment extends BaseFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mUserListId = getArguments().getInt("userListId");
+        mUserListId = getArguments().getLong("userListId");
         ListView listView = getListView();
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {
 
