@@ -19,7 +19,7 @@ import twitter4j.User;
 
 public class UserMemberFragment extends Fragment {
     private UserAdapter mAdapter;
-    private int mListId;
+    private long mListId;
     private long mCursor = -1;
     private ListView mListView;
     private ProgressBar mFooter;
@@ -32,7 +32,7 @@ public class UserMemberFragment extends Fragment {
             return null;
         }
 
-        mListId = getArguments().getInt("listId");
+        mListId = getArguments().getLong("listId");
 
         // リストビューの設定
         mListView = (ListView) v.findViewById(R.id.list_view);
@@ -75,9 +75,9 @@ public class UserMemberFragment extends Fragment {
     }
 
 
-    private class UserListMembersTask extends AsyncTask<Integer, Void, PagableResponseList<User>> {
+    private class UserListMembersTask extends AsyncTask<Long, Void, PagableResponseList<User>> {
         @Override
-        protected PagableResponseList<User> doInBackground(Integer... params) {
+        protected PagableResponseList<User> doInBackground(Long... params) {
             try {
                 PagableResponseList<User> userListsMembers = JustawayApplication.getApplication().getTwitter().getUserListMembers(params[0], mCursor);
                 mCursor = userListsMembers.getNextCursor();

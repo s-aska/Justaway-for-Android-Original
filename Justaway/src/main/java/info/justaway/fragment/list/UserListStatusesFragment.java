@@ -25,7 +25,7 @@ public class UserListStatusesFragment extends Fragment {
 
     private TwitterAdapter mAdapter;
     private ListView mListView;
-    private int mListId;
+    private long mListId;
     private ProgressBar mFooter;
     private Boolean mAutoLoader = false;
     private long mMaxId = 0L;
@@ -37,7 +37,7 @@ public class UserListStatusesFragment extends Fragment {
             return null;
         }
 
-        mListId = getArguments().getInt("listId");
+        mListId = getArguments().getLong("listId");
 
         // リストビューの設定
         mListView = (ListView) v.findViewById(R.id.list_view);
@@ -84,9 +84,9 @@ public class UserListStatusesFragment extends Fragment {
     }
 
 
-    private class UserListTask extends AsyncTask<Integer, Void, ResponseList<Status>> {
+    private class UserListTask extends AsyncTask<Long, Void, ResponseList<Status>> {
         @Override
-        protected ResponseList<twitter4j.Status> doInBackground(Integer... params) {
+        protected ResponseList<twitter4j.Status> doInBackground(Long... params) {
             try {
                 JustawayApplication application = JustawayApplication.getApplication();
                 Paging paging = new Paging();

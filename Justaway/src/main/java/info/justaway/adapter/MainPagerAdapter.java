@@ -25,7 +25,7 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
         private final Class<?> mClazz;
         private final Bundle mArgs;
         private String mTabTitle;
-        private final int mId;
+        private final long mId;
 
         /**
          * タブ内のActivity、引数を設定する。
@@ -35,7 +35,7 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
          * @param tabTitle タブのタイトル
          * @param id       タブの識別子、タブの取得に利用する
          */
-        TabInfo(Class<?> clazz, Bundle args, String tabTitle, int id) {
+        TabInfo(Class<?> clazz, Bundle args, String tabTitle, long id) {
             this.mClazz = clazz;
             this.mArgs = args;
             this.mTabTitle = tabTitle;
@@ -70,7 +70,7 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
         return (BaseFragment) instantiateItem(mViewPager, position);
     }
 
-    public int findPositionById(int id) {
+    public int findPositionById(long id) {
         int position = 0;
         for (TabInfo tab : mTabs) {
             if (tab.mId == id) {
@@ -81,7 +81,7 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
         return -1;
     }
 
-    public BaseFragment findFragmentById(int id) {
+    public BaseFragment findFragmentById(long id) {
         int position = 0;
         for (TabInfo tab : mTabs) {
             if (tab.mId == id) {
@@ -100,7 +100,7 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
      * @param tabTitle タブのタイトル
      * @param id       タブの識別子、タブの取得に利用する
      */
-    public void addTab(Class<?> clazz, Bundle args, String tabTitle, Integer id) {
+    public void addTab(Class<?> clazz, Bundle args, String tabTitle, long id) {
         TabInfo info = new TabInfo(clazz, args, tabTitle, id);
         mTabs.add(info);
     }
