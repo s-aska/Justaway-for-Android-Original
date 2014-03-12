@@ -6,6 +6,8 @@
 
     <string name="pref_title_font_size">フォントサイズ</string>
     <string-array name="pref_font_size_titles">
+        <item>10 pt</item>
+        <item>11 pt</item>
         <item>12 pt</item>
         <item>13 pt</item>
         <item>14 pt</item>
@@ -17,6 +19,8 @@
         <item>20 pt</item>
     </string-array>
     <string-array name="pref_font_size_values">
+        <item>10</item>
+        <item>11</item>
         <item>12</item>
         <item>13</item>
         <item>14</item>
