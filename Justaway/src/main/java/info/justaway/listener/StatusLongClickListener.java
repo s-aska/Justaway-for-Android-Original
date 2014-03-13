@@ -31,7 +31,7 @@ public class StatusLongClickListener implements AdapterView.OnItemLongClickListe
         String action = JustawayApplication.getApplication().getLongTapAction();
 
         if (mAdapter.getItem(position).isDirectMessage()) {
-            return true;
+            return false;
         }
 
         Status status = mAdapter.getItem(position).getStatus();
@@ -48,6 +48,8 @@ public class StatusLongClickListener implements AdapterView.OnItemLongClickListe
                 args.putSerializable("status", source);
                 dialog.setArguments(args);
                 dialog.show(mActivity.getSupportFragmentManager(), "dialog");
+            } else {
+                return false;
             }
         } else if (action.equals("show_around")) {
             AroundFragment aroundFragment = new AroundFragment();
@@ -77,6 +79,8 @@ public class StatusLongClickListener implements AdapterView.OnItemLongClickListe
                 text = text.concat("@" + mention.getScreenName() + " ");
             }
             tweet(text, text.length(), status);
+        } else {
+            return false;
         }
         return true;
     }
