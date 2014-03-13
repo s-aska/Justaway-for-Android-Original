@@ -13,9 +13,9 @@ import twitter4j.User;
 
 public class UserListStatusesLoader extends AbstractAsyncTaskLoader<UserListStatusesWithMembers> {
 
-    private int mUserListId;
+    private long mUserListId;
 
-    public UserListStatusesLoader(Context context, int userListId) {
+    public UserListStatusesLoader(Context context, long userListId) {
         super(context);
         this.mUserListId = userListId;
     }

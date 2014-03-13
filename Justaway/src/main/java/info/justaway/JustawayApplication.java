@@ -26,7 +26,6 @@ import java.util.HashMap;
 import info.justaway.display.FadeInRoundedBitmapDisplayer;
 import info.justaway.model.Row;
 import info.justaway.settings.MuteSettings;
-import info.justaway.task.DestroyStatusTask;
 import info.justaway.task.FavoriteTask;
 import info.justaway.task.RetweetTask;
 import info.justaway.task.UnFavoriteTask;
@@ -67,7 +66,7 @@ public class JustawayApplication extends Application {
         mUserLists = userLists;
     }
 
-    public UserList getUserList(int id) {
+    public UserList getUserList(long id) {
         if (mUserLists == null) {
             return null;
         }
@@ -339,10 +338,10 @@ public class JustawayApplication extends Application {
         } else {
             String tabs_string = preferences.getString(TABS.concat(String.valueOf(getUserId())), "-1,-2,-3");
             String[] tabs_strings = tabs_string.split(",");
-            final ArrayList<Integer> tabIds = new ArrayList<Integer>();
+            final ArrayList<Long> tabIds = new ArrayList<Long>();
             for (String tab_string : tabs_strings) {
                 Tab tab = new Tab();
-                tab.id = Integer.valueOf(tab_string);
+                tab.id = Long.valueOf(tab_string);
                 tab.name = "-";
                 mTabs.add(tab);
                 tabIds.add(tab.id);
@@ -370,9 +369,9 @@ public class JustawayApplication extends Application {
         return mTabs;
     }
 
-    public void saveTabs(ArrayList<Integer> tabIds) {
+    public void saveTabs(ArrayList<Long> tabIds) {
         mTabs.clear();
-        for (Integer tabId : tabIds) {
+        for (Long tabId : tabIds) {
             Tab tab = new Tab();
             tab.id = tabId;
             if (tabId > 0) {
@@ -408,10 +407,10 @@ public class JustawayApplication extends Application {
 
     public static class Tab {
         String name;
-        Integer id;
+        Long id;
     }
 
-    public boolean existsTab(Integer findTab) {
+    public boolean existsTab(Long findTab) {
         for (Tab tab : mTabs) {
             if (tab.id.equals(findTab)) {
                 return true;

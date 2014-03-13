@@ -51,7 +51,7 @@ public class ChooseUserListsActivity extends FragmentActivity implements
         findViewById(R.id.button_save).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ArrayList<Integer> lists = new ArrayList<Integer>();
+                ArrayList<Long> lists = new ArrayList<Long>();
 
                 // 有効なチェックボックスからリストIDを取得
                 ListView listView = (ListView) findViewById(R.id.list);
@@ -63,13 +63,13 @@ public class ChooseUserListsActivity extends FragmentActivity implements
                     }
                     CheckBox checkbox = (CheckBox) view.findViewById(R.id.checkbox);
                     if (checkbox != null && checkbox.isChecked()) {
-                        lists.add((Integer) checkbox.getTag());
+                        lists.add((Long) checkbox.getTag());
                     }
                 }
 
                 Intent data = new Intent();
                 Bundle bundle = new Bundle();
-                bundle.putIntegerArrayList("lists", lists);
+                bundle.putSerializable("lists", lists);
                 data.putExtras(bundle);
                 setResult(RESULT_OK, data);
                 finish();
