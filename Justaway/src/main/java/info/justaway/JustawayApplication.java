@@ -7,13 +7,17 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.StrictMode;
 import android.support.v4.util.LongSparseArray;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -486,6 +490,24 @@ public class JustawayApplication extends Application {
             super.setTheme(R.style.WhiteTheme);
             activity.setTheme(R.style.WhiteTheme);
         }
+    }
+
+    public void setThemeTextColor(TextView view, int resourceId) {
+        TypedValue outValue = new TypedValue();
+        Resources.Theme theme = getTheme();
+        if (theme != null) {
+            theme.resolveAttribute(resourceId, outValue, true);
+            view.setTextColor(outValue.data);
+        }
+    }
+
+    public int getThemeTextColor(int resourceId) {
+        TypedValue outValue = new TypedValue();
+        Resources.Theme theme = getTheme();
+        if (theme != null) {
+            theme.resolveAttribute(resourceId, outValue, true);
+        }
+        return outValue.data;
     }
 
     public void resetDisplaySettings() {
