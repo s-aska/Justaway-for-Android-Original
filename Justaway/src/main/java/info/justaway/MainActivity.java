@@ -185,9 +185,9 @@ public class MainActivity extends FragmentActivity {
         directMessage.setTypeface(fontello);
         tweet.setTypeface(fontello);
         send.setTypeface(fontello);
-        home.setOnClickListener(tabMenuOnClickListener(0));
-        interactions.setOnClickListener(tabMenuOnClickListener(1));
-        directMessage.setOnClickListener(tabMenuOnClickListener(2));
+        bindTabListener(home, 0);
+        bindTabListener(interactions, 1);
+        bindTabListener(directMessage, 2);
         tweet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -366,7 +366,7 @@ public class MainActivity extends FragmentActivity {
                     button.setTextSize(22);
                     button.setBackgroundResource(outValue.resourceId);
                     button.setText(R.string.fontello_list);
-                    button.setOnClickListener(tabMenuOnClickListener(++position));
+                    bindTabListener(button, ++position);
                     tab_menus.addView(button);
                     Bundle args = new Bundle();
                     args.putLong("userListId", tab.id);
@@ -477,10 +477,10 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
-    private View.OnClickListener tabMenuOnClickListener(final int position) {
-        return new View.OnClickListener() {
+    private void bindTabListener(TextView textView, final int position) {
+        textView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 BaseFragment f = mMainPagerAdapter.findFragmentByPosition(position);
                 if (f == null) {
                     return;
@@ -495,7 +495,18 @@ public class MainActivity extends FragmentActivity {
                     f.goToTop();
                 }
             }
-        };
+        });
+        textView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                BaseFragment f = mMainPagerAdapter.findFragmentByPosition(position);
+                if (f == null) {
+                    return false;
+                }
+                f.reload();
+                return true;
+            }
+        });
     }
 
     private void setup() {

@@ -64,6 +64,11 @@ public class TimelineFragment extends BaseFragment {
     public void reload() {
         mReload = true;
         mMaxId = 0L;
+        TwitterAdapter adapter = getListAdapter();
+        if (adapter != null) {
+            adapter.clear();
+        }
+        getPullToRefreshLayout().setRefreshing(true);
         new HomeTimelineTask().execute();
     }
 
