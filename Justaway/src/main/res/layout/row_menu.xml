@@ -5,6 +5,5 @@
     android:layout_height="wrap_content"
     android:padding="12dip"
     android:textSize="16dp"
-    android:textColor="@android:color/white"
     tools:text="リプ"
     tools:ignore="SpUsage"/>

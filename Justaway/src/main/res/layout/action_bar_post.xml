@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:textSize="20dp"
-        android:textColor="@android:color/white"
+        android:textColor="?attr/text_color"
         tools:text="Home"
         tools:ignore="SpUsage"/>
 
