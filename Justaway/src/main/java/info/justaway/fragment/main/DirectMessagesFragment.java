@@ -66,6 +66,11 @@ public class DirectMessagesFragment extends BaseFragment {
         mReload = true;
         mDirectMessagesMaxId = 0L;
         mSentDirectMessagesMaxId = 0L;
+        TwitterAdapter adapter = getListAdapter();
+        if (adapter != null) {
+            adapter.clear();
+        }
+        getPullToRefreshLayout().setRefreshing(true);
         new DirectMessagesTask().execute();
     }
 
