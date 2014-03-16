@@ -201,7 +201,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:textSize="18sp"
-                    android:textColor="@color/holo_blue_light"
+                    android:textColor="?attr/holo_blue"
                     android:text="@string/fontello_up"/>
             </LinearLayout>
         </LinearLayout>

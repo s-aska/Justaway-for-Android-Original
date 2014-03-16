@@ -1,6 +1,5 @@
 package info.justaway;
 
-import android.R.color;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -352,10 +351,12 @@ public class MainActivity extends FragmentActivity {
         ArrayList<JustawayApplication.Tab> tabs = mApplication.loadTabs();
         if (tabs.size() > 3) {
             int position = 2;
-            TypedValue outValue = new TypedValue();
+            TypedValue outValueBackground = new TypedValue();
+            TypedValue outValueTextColor = new TypedValue();
             Resources.Theme theme = getTheme();
             if (theme != null) {
-                getTheme().resolveAttribute(R.attr.button_stateful, outValue, true);
+                theme.resolveAttribute(R.attr.button_stateful, outValueBackground, true);
+                theme.resolveAttribute(R.attr.menu_text_color, outValueTextColor, true);
             }
             for (JustawayApplication.Tab tab : tabs) {
                 // 標準のタブを動的に生成する時に実装する
@@ -364,8 +365,9 @@ public class MainActivity extends FragmentActivity {
                     button.setWidth(60);
                     button.setTypeface(fontello);
                     button.setTextSize(22);
-                    button.setBackgroundResource(outValue.resourceId);
                     button.setText(R.string.fontello_list);
+                    button.setTextColor(outValueTextColor.data);
+                    button.setBackgroundResource(outValueBackground.resourceId);
                     bindTabListener(button, ++position);
                     tab_menus.addView(button);
                     Bundle args = new Bundle();
@@ -642,7 +644,7 @@ public class MainActivity extends FragmentActivity {
         LinearLayout tab_menus = (LinearLayout) findViewById(R.id.tab_menus);
         Button button = (Button) tab_menus.getChildAt(mViewPager.getCurrentItem());
         if (button != null) {
-            mApplication.setThemeTextColor(button, R.attr.text_color);
+            mApplication.setThemeTextColor(button, R.attr.menu_text_color);
         }
     }
 

@@ -42,6 +42,7 @@
             android:layout_height="wrap_content"
             android:background="?attr/button_stateful"
             android:text="@string/fontello_paper"
+            android:textColor="?attr/menu_text_color"
             android:textSize="22sp"/>
 
     </LinearLayout>
@@ -77,6 +78,7 @@
                         android:layout_height="wrap_content"
                         android:background="?attr/button_stateful"
                         android:text="@string/fontello_home"
+                        android:textColor="?attr/menu_text_color"
                         android:textSize="22sp"
                         tools:ignore="ButtonStyle"/>
 
@@ -86,6 +88,7 @@
                         android:layout_height="wrap_content"
                         android:background="?attr/button_stateful"
                         android:text="@string/fontello_at"
+                        android:textColor="?attr/menu_text_color"
                         android:textSize="22sp"
                         tools:ignore="ButtonStyle"/>
 
@@ -95,6 +98,7 @@
                         android:layout_height="wrap_content"
                         android:background="?attr/button_stateful"
                         android:text="@string/fontello_mail"
+                        android:textColor="?attr/menu_text_color"
                         android:textSize="22sp"
                         tools:ignore="ButtonStyle"/>
                 </LinearLayout>
@@ -105,6 +109,7 @@
                 android:layout_width="58dip"
                 android:layout_height="wrap_content"
                 android:background="?attr/button_stateful"
+                android:textColor="?attr/menu_text_color"
                 android:text="@string/fontello_edit"/>
         </TableRow>
     </TableLayout>
