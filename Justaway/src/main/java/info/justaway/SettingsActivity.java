@@ -95,6 +95,10 @@ public class SettingsActivity extends Activity {
                     if (entries != null) {
                         preference.setSummary(entries[listId]);
                     }
+                    // TODO: ダイアログを出してアプリを終了する
+//                    Intent intent = new Intent(getActivity(), MainActivity.class);
+//                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                    startActivity(intent);
                     return true;
                 }
             });

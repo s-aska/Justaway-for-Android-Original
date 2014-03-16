@@ -78,6 +78,7 @@
                     android:layout_height="wrap_content"
                     android:background="?attr/button_stateful"
                     android:text="@string/fontello_uni"
+                    android:textColor="?attr/menu_text_color"
                     android:textSize="22sp"/>
 
                 <Button
@@ -86,6 +87,7 @@
                     android:layout_height="wrap_content"
                     android:background="?attr/button_stateful"
                     android:text="@string/fontello_picture"
+                    android:textColor="?attr/menu_text_color"
                     android:textSize="22sp"/>
 
                 <Button
@@ -124,6 +126,7 @@
                     android:layout_height="wrap_content"
                     android:background="?attr/button_stateful"
                     android:text="@string/fontello_paper"
+                    android:textColor="?attr/menu_text_color"
                     android:textSize="22sp"/>
             </LinearLayout>
         </LinearLayout>

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="Style">
+        <attr name="menu_text_color" format="color"/>
+        <attr name="menu_text_color_disabled" format="color"/>
         <attr name="menu_background" format="color"/>
         <attr name="menu_active_background" format="color"/>
         <attr name="background" format="color"/>

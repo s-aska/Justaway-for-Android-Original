@@ -439,10 +439,10 @@ public class PostActivity extends FragmentActivity {
                 updateCount(s.toString());
                 if (s.toString().startsWith("D ")) {
                     mImgPath = null;
-                    mImgButton.setTextColor(Color.rgb(66, 66, 66));
+                    JustawayApplication.getApplication().setThemeTextColor(mImgButton, R.attr.menu_text_color_disabled);
                     mImgButton.setEnabled(false);
                 } else {
-                    mImgButton.setTextColor(getResources().getColor(android.R.color.secondary_text_dark));
+                    JustawayApplication.getApplication().setThemeTextColor(mImgButton, R.attr.menu_text_color);
                     mImgButton.setEnabled(true);
                 }
             }
@@ -527,7 +527,7 @@ public class PostActivity extends FragmentActivity {
         }
         this.mImgPath = path;
         JustawayApplication.showToast(R.string.toast_set_image_success);
-        mImgButton.setTextColor(getResources().getColor(R.color.holo_blue_bright));
+        JustawayApplication.getApplication().setThemeTextColor(mImgButton, R.attr.holo_blue);
         mTweetButton.setEnabled(true);
     }
 
@@ -547,7 +547,7 @@ public class PostActivity extends FragmentActivity {
         if (length < 0) {
             textColor = Color.RED;
         } else {
-            textColor = Color.WHITE;
+            textColor = JustawayApplication.getApplication().getThemeTextColor(R.attr.menu_text_color);
         }
         mTextView.setTextColor(textColor);
         mTextView.setText(String.valueOf(length));
