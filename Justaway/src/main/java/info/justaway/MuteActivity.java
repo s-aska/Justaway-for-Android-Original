@@ -18,7 +18,7 @@ public class MuteActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setBackgroundDrawableResource(R.color.background);
+        JustawayApplication.getApplication().setTheme(this);
         setContentView(R.layout.activity_mute);
 
         ActionBar actionBar = getActionBar();

@@ -36,6 +36,7 @@ public class EditProfileActivity extends FragmentActivity implements LoaderManag
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        JustawayApplication.getApplication().setTheme(this);
         setContentView(R.layout.activity_edit_profile);
 
         final Activity activity = this;

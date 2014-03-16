@@ -4,7 +4,6 @@
               android:layout_width="fill_parent"
               android:layout_height="fill_parent"
               android:orientation="vertical"
-              android:background="@color/background"
               android:focusableInTouchMode="true"
               tools:context=".MainActivity">
 
@@ -27,7 +26,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        android:background="@color/menu_background">
+        android:background="?attr/menu_background">
 
         <info.justaway.widget.ClearEditText
             android:id="@+id/quick_tweet_edit"
@@ -41,7 +40,7 @@
             android:id="@+id/send"
             android:layout_width="58dip"
             android:layout_height="wrap_content"
-            android:background="@drawable/button_stateful"
+            android:background="?attr/button_stateful"
             android:text="@string/fontello_paper"
             android:textSize="22sp"/>
 
@@ -52,7 +51,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="invisible"
-        android:background="@color/menu_background">
+        android:background="?attr/menu_background">
 
         <!-- TableRow 無いと2段になる(◞‸◟) -->
         <TableRow tools:ignore="UselessParent">
@@ -70,31 +69,34 @@
                     android:layout_gravity="left"
                     android:gravity="left"
                     android:orientation="horizontal"
-                    android:background="@color/menu_background">
+                    android:background="?attr/menu_background">
 
                     <Button
                         android:id="@+id/action_timeline"
                         android:layout_width="58dip"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/tab_stateful"
+                        android:background="?attr/button_stateful"
                         android:text="@string/fontello_home"
-                        android:textSize="22sp"/>
+                        android:textSize="22sp"
+                        tools:ignore="ButtonStyle"/>
 
                     <Button
                         android:id="@+id/action_interactions"
                         android:layout_width="58dip"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/tab_stateful"
+                        android:background="?attr/button_stateful"
                         android:text="@string/fontello_at"
-                        android:textSize="22sp"/>
+                        android:textSize="22sp"
+                        tools:ignore="ButtonStyle"/>
 
                     <Button
                         android:id="@+id/action_direct_message"
                         android:layout_width="58dip"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/tab_stateful"
+                        android:background="?attr/button_stateful"
                         android:text="@string/fontello_mail"
-                        android:textSize="22sp"/>
+                        android:textSize="22sp"
+                        tools:ignore="ButtonStyle"/>
                 </LinearLayout>
             </HorizontalScrollView>
 
@@ -102,7 +104,7 @@
                 android:id="@+id/action_tweet"
                 android:layout_width="58dip"
                 android:layout_height="wrap_content"
-                android:background="@drawable/button_stateful"
+                android:background="?attr/button_stateful"
                 android:text="@string/fontello_edit"/>
         </TableRow>
     </TableLayout>

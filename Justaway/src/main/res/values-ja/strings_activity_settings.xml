@@ -55,4 +55,14 @@
         <item>reply_all</item>
         <item>nothing</item>
     </string-array>
+
+    <string name="pref_title_theme">テーマ色</string>
+    <string-array name="pref_theme_titles">
+        <item>黒</item>
+        <item>白</item>
+    </string-array>
+    <string-array name="pref_theme_values">
+        <item>black</item>
+        <item>white</item>
+    </string-array>
 </resources>

@@ -43,4 +43,13 @@
         android:entryValues="@array/pref_log_tap_values"
         android:negativeButtonText="@null"
         android:positiveButtonText="@null"/>
+
+    <ListPreference
+        android:key="themeName"
+        android:title="@string/pref_title_theme"
+        android:defaultValue="black"
+        android:entries="@array/pref_theme_titles"
+        android:entryValues="@array/pref_theme_values"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"/>
 </PreferenceScreen>

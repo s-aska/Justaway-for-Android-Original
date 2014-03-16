@@ -13,13 +13,13 @@ public class SettingsActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        JustawayApplication.getApplication().setTheme(this);
         super.onCreate(savedInstanceState);
-        getWindow().setBackgroundDrawableResource(R.color.background);
         getFragmentManager().beginTransaction().replace(android.R.id.content,
                 new SettingsFragment()).commit();
 
         ActionBar actionBar = getActionBar();
-        if (actionBar != null){
+        if (actionBar != null) {
             actionBar.setHomeButtonEnabled(true);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
@@ -67,6 +67,25 @@ public class SettingsActivity extends Activity {
             }
             longTapPreference.setSummary(longTapPreference.getEntry());
             longTapPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    ListPreference listPreference = (ListPreference) preference;
+                    int listId = listPreference.findIndexOfValue((String) newValue);
+                    CharSequence[] entries;
+                    entries = listPreference.getEntries();
+                    if (entries != null) {
+                        preference.setSummary(entries[listId]);
+                    }
+                    return true;
+                }
+            });
+
+            ListPreference themePreference = (ListPreference) findPreference("themeName");
+            if (themePreference == null) {
+                return;
+            }
+            themePreference.setSummary(themePreference.getEntry());
+            themePreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     ListPreference listPreference = (ListPreference) preference;

@@ -41,6 +41,7 @@ public class ProfileActivity extends FragmentActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        JustawayApplication.getApplication().setTheme(this);
         setContentView(R.layout.activity_profile);
 
         ActionBar actionBar = getActionBar();
