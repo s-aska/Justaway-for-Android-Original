@@ -9,4 +9,12 @@
         <!-- API 14 theme customizations can go here. -->
     </style>
 
+    <style name="BlackBaseTheme" parent="android:Theme.Holo">
+        <!-- API 14 theme customizations can go here. -->
+    </style>
+
+    <style name="WhiteBaseTheme" parent="android:Theme.Holo.Light">
+        <!-- API 14 theme customizations can go here. -->
+    </style>
+
 </resources>

@@ -85,6 +85,7 @@ public class PostActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        JustawayApplication.getApplication().setTheme(this);
         setContentView(R.layout.activity_post);
         mContext = this;
 

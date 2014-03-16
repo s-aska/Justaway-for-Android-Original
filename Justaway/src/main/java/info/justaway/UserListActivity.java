@@ -30,6 +30,7 @@ public class UserListActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        JustawayApplication.getApplication().setTheme(this);
         setContentView(R.layout.activity_user_list);
 
         ActionBar actionBar = getActionBar();

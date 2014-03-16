@@ -1,5 +1,6 @@
 package info.justaway;
 
+import android.app.Activity;
 import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -459,6 +460,7 @@ public class JustawayApplication extends Application {
     private static final String PREF_NAME_SETTINGS = "settings";
     private int mFontSize;
     private String mLongTapAction;
+    private String mThemeName;
     private Boolean mUserIconRounded;
     private String mUserIconSize;
     private int mPageCount;
@@ -476,10 +478,21 @@ public class JustawayApplication extends Application {
         return mLongTapAction;
     }
 
+    public void setTheme(Activity activity) {
+        if (mThemeName.equals("black")) {
+            super.setTheme(R.style.BlackTheme);
+            activity.setTheme(R.style.BlackTheme);
+        } else {
+            super.setTheme(R.style.WhiteTheme);
+            activity.setTheme(R.style.WhiteTheme);
+        }
+    }
+
     public void resetDisplaySettings() {
         SharedPreferences preferences = getSharedPreferences(PREF_NAME_SETTINGS, Context.MODE_PRIVATE);
         mFontSize = Integer.parseInt(preferences.getString("font_size", "12"));
-        mLongTapAction =  preferences.getString("long_tap", "nothing");
+        mLongTapAction = preferences.getString("long_tap", "nothing");
+        mThemeName = preferences.getString("themeName", "black");
         mUserIconRounded = preferences.getBoolean("user_icon_rounded_on", true);
         mUserIconSize = preferences.getString("user_icon_size", "bigger");
         mPageCount = Integer.parseInt(preferences.getString("page_count", "200"));

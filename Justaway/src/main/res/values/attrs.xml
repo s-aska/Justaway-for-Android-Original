@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="Style">
+        <attr name="menu_background" format="color"/>
+        <attr name="menu_active_background" format="color"/>
+        <attr name="background" format="color"/>
+        <attr name="holo_green_light" format="color"/>
+        <attr name="holo_orange_light" format="color"/>
+        <attr name="holo_red_light" format="color"/>
+        <attr name="holo_blue_bright" format="color"/>
+        <attr name="holo_blue_light" format="color"/>
+        <attr name="text_color" format="color"/>
+        <attr name="button_stateful" format="reference"/>
+    </declare-styleable>
+</resources>

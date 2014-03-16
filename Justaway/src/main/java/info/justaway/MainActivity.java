@@ -8,6 +8,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
@@ -16,6 +17,7 @@ import android.os.Handler;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -115,6 +117,7 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        JustawayApplication.getApplication().setTheme(this);
 
         // クイックモード時に起動と同時にキーボードが出現するのを抑止
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
@@ -140,7 +143,8 @@ public class MainActivity extends FragmentActivity {
                                     DialogFragment dialog = StreamingSwitchDialogFragment.newInstance(turnOn);
                                     dialog.show(getSupportFragmentManager(), "dialog");
                                 }
-                            });
+                            }
+                    );
                 }
             }
         }
@@ -348,6 +352,11 @@ public class MainActivity extends FragmentActivity {
         ArrayList<JustawayApplication.Tab> tabs = mApplication.loadTabs();
         if (tabs.size() > 3) {
             int position = 2;
+            TypedValue outValue = new TypedValue();
+            Resources.Theme theme = getTheme();
+            if (theme != null) {
+                getTheme().resolveAttribute(R.attr.button_stateful, outValue, true);
+            }
             for (JustawayApplication.Tab tab : tabs) {
                 // 標準のタブを動的に生成する時に実装する
                 if (tab.id > 0) {
@@ -355,7 +364,7 @@ public class MainActivity extends FragmentActivity {
                     button.setWidth(60);
                     button.setTypeface(fontello);
                     button.setTextSize(22);
-                    button.setBackgroundResource(R.drawable.tab_stateful);
+                    button.setBackgroundResource(outValue.resourceId);
                     button.setText(R.string.fontello_list);
                     button.setOnClickListener(tabMenuOnClickListener(++position));
                     tab_menus.addView(button);
@@ -990,14 +999,16 @@ public class MainActivity extends FragmentActivity {
                             }
                             dismiss();
                         }
-                    });
+                    }
+            );
             builder.setNegativeButton(getString(R.string.button_cancel),
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dismiss();
                         }
-                    });
+                    }
+            );
             return builder.create();
         }
     }
