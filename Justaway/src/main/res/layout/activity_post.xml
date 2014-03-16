@@ -2,7 +2,7 @@
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/background"
+                android:background="?attr/background"
                 tools:context=".MainActivity">
 
     <LinearLayout
@@ -18,7 +18,7 @@
             android:paddingLeft="8dip"
             android:paddingTop="8dip"
             android:paddingBottom="8dip"
-            android:background="@color/menu_background"
+            android:background="?attr/menu_background"
             android:orientation="horizontal">
 
             <ImageView
@@ -43,7 +43,7 @@
                 android:scrollbars="vertical"
                 android:fadeScrollbars="false"
                 android:textSize="12sp"
-                android:textColor="@android:color/secondary_text_dark_nodisable"
+                android:textColor="?attr/text_color"
                 tools:text="New Version."/>
         </LinearLayout>
 
@@ -76,7 +76,7 @@
                     android:id="@+id/suddenly"
                     android:layout_width="58dip"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/button_stateful"
+                    android:background="?attr/button_stateful"
                     android:text="@string/fontello_uni"
                     android:textSize="22sp"/>
 
@@ -84,7 +84,7 @@
                     android:id="@+id/img"
                     android:layout_width="58dip"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/button_stateful"
+                    android:background="?attr/button_stateful"
                     android:text="@string/fontello_picture"
                     android:textSize="22sp"/>
 
@@ -92,7 +92,7 @@
                     android:id="@+id/draft"
                     android:layout_width="58dip"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/button_stateful"
+                    android:background="?attr/button_stateful"
                     android:text="@string/fontello_archive"
                     android:textSize="22sp"/>
 
@@ -100,7 +100,7 @@
                     android:id="@+id/hashtag"
                     android:layout_width="58dip"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/button_stateful"
+                    android:background="?attr/button_stateful"
                     android:text="@string/fontello_tag"
                     android:textSize="22sp"/>
             </LinearLayout>
@@ -122,7 +122,7 @@
                     android:id="@+id/tweet"
                     android:layout_width="58dip"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/button_stateful"
+                    android:background="?attr/button_stateful"
                     android:text="@string/fontello_paper"
                     android:textSize="22sp"/>
             </LinearLayout>
