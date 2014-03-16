@@ -590,7 +590,7 @@ public class MainActivity extends FragmentActivity {
             return;
         }
         Button button = (Button) findViewById(R.id.action_timeline);
-        button.setTextColor(getResources().getColor(color.holo_blue_bright));
+        mApplication.setThemeTextColor(button, R.attr.holo_blue);
     }
 
     /**
@@ -602,7 +602,7 @@ public class MainActivity extends FragmentActivity {
             return;
         }
         Button button = (Button) findViewById(R.id.action_interactions);
-        button.setTextColor(getResources().getColor(color.holo_blue_bright));
+        mApplication.setThemeTextColor(button, R.attr.holo_blue);
     }
 
     /**
@@ -614,7 +614,7 @@ public class MainActivity extends FragmentActivity {
             return;
         }
         Button button = (Button) findViewById(R.id.action_direct_message);
-        button.setTextColor(getResources().getColor(color.holo_blue_bright));
+        mApplication.setThemeTextColor(button, R.attr.holo_blue);
     }
 
     /**
@@ -630,7 +630,7 @@ public class MainActivity extends FragmentActivity {
             LinearLayout tab_menus = (LinearLayout) findViewById(R.id.tab_menus);
             Button button = (Button) tab_menus.getChildAt(position);
             if (button != null) {
-                button.setTextColor(getResources().getColor(color.holo_blue_bright));
+                mApplication.setThemeTextColor(button, R.attr.holo_blue);
             }
         }
     }
@@ -642,7 +642,7 @@ public class MainActivity extends FragmentActivity {
         LinearLayout tab_menus = (LinearLayout) findViewById(R.id.tab_menus);
         Button button = (Button) tab_menus.getChildAt(mViewPager.getCurrentItem());
         if (button != null) {
-            button.setTextColor(getResources().getColor(color.white));
+            mApplication.setThemeTextColor(button, R.attr.text_color);
         }
     }
 
@@ -917,7 +917,7 @@ public class MainActivity extends FragmentActivity {
                 public void run() {
                     final TextView signalButton = act.mSignalButton;
                     if (signalButton != null) {
-                        act.mSignalButton.setTextColor(act.getResources().getColor(R.color.holo_green_light));
+                        act.mApplication.setThemeTextColor(act.mSignalButton, R.attr.holo_green);
                     }
                 }
             });
@@ -936,7 +936,7 @@ public class MainActivity extends FragmentActivity {
                     final TextView signalButton = act.mSignalButton;
                     if (signalButton != null) {
                         if (act.mApplication.getStreamingMode()) {
-                            signalButton.setTextColor(act.getResources().getColor(R.color.holo_red_light));
+                            act.mApplication.setThemeTextColor(signalButton, R.attr.holo_red);
                         } else {
                             signalButton.setTextColor(Color.WHITE);
                         }
@@ -958,7 +958,7 @@ public class MainActivity extends FragmentActivity {
                     final TextView signalButton = act.mSignalButton;
                     if (signalButton != null) {
                         if (act.mApplication.getStreamingMode()) {
-                            signalButton.setTextColor(act.getResources().getColor(R.color.holo_orange_light));
+                            act.mApplication.setThemeTextColor(signalButton, R.attr.holo_orange);
                         } else {
                             signalButton.setTextColor(Color.WHITE);
                         }

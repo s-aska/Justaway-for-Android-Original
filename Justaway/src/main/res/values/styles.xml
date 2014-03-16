@@ -13,13 +13,8 @@
     </style>
 
     <!-- Application theme. -->
-    <style name="AppTheme" parent="AppBaseTheme">
+    <style name="AppTheme" parent="BlackBaseTheme">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
-        <item name="menu_background">#2b2b2b</item>
-        <item name="menu_active_background">#1f1f1f</item>
-        <item name="background">#101112</item>
-        <item name="text_color">#ffffff</item>
-        <item name="button_stateful">@drawable/button_stateful</item>
     </style>
 
     <style name="BlackTheme" parent="BlackBaseTheme">
@@ -29,6 +24,10 @@
         <item name="background">#101112</item>
         <item name="text_color">#ffffff</item>
         <item name="button_stateful">@drawable/button_stateful</item>
+        <item name="holo_green">@color/holo_green_light</item>
+        <item name="holo_orange">@color/holo_orange_light</item>
+        <item name="holo_red">@color/holo_red_light</item>
+        <item name="holo_blue">@color/holo_blue_bright</item>
     </style>
 
     <style name="WhiteTheme" parent="WhiteBaseTheme">
@@ -36,8 +35,12 @@
         <item name="menu_background">#dcdcdc</item>
         <item name="menu_active_background">#808080</item>
         <item name="background">#ffffff</item>
-        <item name="text_color">#000000</item>
+        <item name="text_color">#323232</item>
         <item name="button_stateful">@drawable/button_stateful_light</item>
+        <item name="holo_green">@color/holo_green_dark</item>
+        <item name="holo_orange">@color/holo_orange_dark</item>
+        <item name="holo_red">@color/holo_red_dark</item>
+        <item name="holo_blue">@color/holo_blue_dark</item>
     </style>
 
     <drawable name="translucent_background">#99000000</drawable>

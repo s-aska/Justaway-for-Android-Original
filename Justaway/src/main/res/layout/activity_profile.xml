@@ -9,7 +9,6 @@
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/background"
         android:orientation="vertical">
 
         <FrameLayout
@@ -51,7 +50,7 @@
             android:layout_height="wrap_content"
             android:paddingTop="8dip"
             android:paddingBottom="8dip"
-            android:background="@color/menu_background"
+            android:background="?attr/menu_background"
             android:orientation="horizontal">
 
             <LinearLayout
