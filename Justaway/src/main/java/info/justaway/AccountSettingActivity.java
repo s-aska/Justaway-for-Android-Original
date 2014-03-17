@@ -30,7 +30,7 @@ public class AccountSettingActivity extends Activity {
         setContentView(R.layout.activity_account_setting);
 
         ActionBar actionBar = getActionBar();
-        if (actionBar != null){
+        if (actionBar != null) {
             actionBar.setHomeButtonEnabled(true);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
@@ -138,14 +138,16 @@ public class AccountSettingActivity extends Activity {
                                             JustawayApplication.getApplication().removeAccessToken(position);
                                             finish();
                                         }
-                                    })
+                                    }
+                            )
                             .setNegativeButton(
                                     R.string.button_no,
                                     new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                         }
-                                    })
+                                    }
+                            )
                             .show();
                 }
             });

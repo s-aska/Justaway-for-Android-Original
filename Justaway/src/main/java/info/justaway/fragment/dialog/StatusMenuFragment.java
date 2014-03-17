@@ -654,7 +654,7 @@ public class StatusMenuFragment extends DialogFragment {
             if (selection > 0) {
                 editStatus.setSelection(selection);
             }
-            if (inReplyToStatus!=null) {
+            if (inReplyToStatus != null) {
                 ((MainActivity) mActivity).setInReplyToStatus(inReplyToStatus);
             }
             mApplication.showKeyboard(editStatus, CLOSED_MENU_DELAY);
@@ -664,7 +664,7 @@ public class StatusMenuFragment extends DialogFragment {
             if (selection > 0) {
                 intent.putExtra("selection", selection);
             }
-            if (inReplyToStatus!=null) {
+            if (inReplyToStatus != null) {
                 intent.putExtra("inReplyToStatus", inReplyToStatus);
             }
             mActivity.startActivity(intent);

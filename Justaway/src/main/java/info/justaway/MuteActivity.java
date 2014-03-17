@@ -22,7 +22,7 @@ public class MuteActivity extends FragmentActivity {
         setContentView(R.layout.activity_mute);
 
         ActionBar actionBar = getActionBar();
-        if (actionBar != null){
+        if (actionBar != null) {
             actionBar.setHomeButtonEnabled(true);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }

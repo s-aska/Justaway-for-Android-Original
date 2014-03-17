@@ -19,7 +19,7 @@ public class PerformanceActivity extends Activity {
                 new SettingsFragment()).commit();
 
         ActionBar actionBar = getActionBar();
-        if (actionBar != null){
+        if (actionBar != null) {
             actionBar.setHomeButtonEnabled(true);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }

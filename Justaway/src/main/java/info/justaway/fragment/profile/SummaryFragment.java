@@ -127,14 +127,16 @@ public class SummaryFragment extends Fragment {
                                             };
                                             task.execute(user.getId());
                                         }
-                                    })
+                                    }
+                            )
                             .setNegativeButton(
                                     R.string.button_cancel,
                                     new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                         }
-                                    })
+                                    }
+                            )
                             .show();
                 } else if (mBlocking) {
                     // TODO:
@@ -163,14 +165,16 @@ public class SummaryFragment extends Fragment {
                                             };
                                             task.execute(user.getId());
                                         }
-                                    })
+                                    }
+                            )
                             .setNegativeButton(
                                     R.string.button_cancel,
                                     new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                         }
-                                    })
+                                    }
+                            )
                             .show();
                 } else {
                     new AlertDialog.Builder(getActivity())
@@ -198,14 +202,16 @@ public class SummaryFragment extends Fragment {
                                             };
                                             task.execute(user.getId());
                                         }
-                                    })
+                                    }
+                            )
                             .setNegativeButton(
                                     R.string.button_cancel,
                                     new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                         }
-                                    })
+                                    }
+                            )
                             .show();
                 }
             }

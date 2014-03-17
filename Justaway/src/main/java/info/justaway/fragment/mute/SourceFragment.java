@@ -98,14 +98,16 @@ public class SourceFragment extends Fragment {
                                             mMuteSettings.removeSource(source);
                                             mMuteSettings.saveMuteSettings();
                                         }
-                                    })
+                                    }
+                            )
                             .setNegativeButton(
                                     R.string.button_no,
                                     new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                         }
-                                    })
+                                    }
+                            )
                             .show();
                 }
             });

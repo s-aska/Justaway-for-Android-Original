@@ -66,14 +66,16 @@ public class WordFragment extends Fragment {
                                         mMuteSettings.saveMuteSettings();
                                         JustawayApplication.showToast(R.string.toast_create_mute);
                                     }
-                                })
+                                }
+                        )
                         .setNegativeButton(
                                 R.string.button_cancel,
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                     }
-                                })
+                                }
+                        )
                         .show();
             }
         });
@@ -136,14 +138,16 @@ public class WordFragment extends Fragment {
                                             mMuteSettings.removeWord(word);
                                             mMuteSettings.saveMuteSettings();
                                         }
-                                    })
+                                    }
+                            )
                             .setNegativeButton(
                                     R.string.button_no,
                                     new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                         }
-                                    })
+                                    }
+                            )
                             .show();
                 }
             });

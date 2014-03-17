@@ -5,15 +5,13 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
 import info.justaway.MainActivity;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
-import info.justaway.listener.StatusClickListener;
 import info.justaway.listener.StatusActionListener;
-import info.justaway.fragment.dialog.StatusMenuFragment;
+import info.justaway.listener.StatusClickListener;
 import info.justaway.listener.StatusLongClickListener;
 import info.justaway.model.Row;
 import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;

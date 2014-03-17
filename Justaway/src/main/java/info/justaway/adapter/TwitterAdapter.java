@@ -451,14 +451,16 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                                                 }
                                                 dismiss();
                                             }
-                                        });
+                                        }
+                                );
                                 builder.setNegativeButton(getString(R.string.button_cancel),
                                         new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
                                                 dismiss();
                                             }
-                                        });
+                                        }
+                                );
 
                                 return builder.create();
                             }
@@ -513,7 +515,8 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                                             startActivity(intent);
                                             dismiss();
                                         }
-                                    });
+                                    }
+                            );
                             builder.setPositiveButton(getString(R.string.button_retweet),
                                     new DialogInterface.OnClickListener() {
                                         @Override
@@ -526,14 +529,16 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                                             }
                                             dismiss();
                                         }
-                                    });
+                                    }
+                            );
                             builder.setNegativeButton(getString(R.string.button_cancel),
                                     new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             dismiss();
                                         }
-                                    });
+                                    }
+                            );
 
                             return builder.create();
                         }
@@ -746,7 +751,6 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             holder.images.setVisibility(View.GONE);
         }
     }
-
 
 
     private String getRelativeTime(Date date) {

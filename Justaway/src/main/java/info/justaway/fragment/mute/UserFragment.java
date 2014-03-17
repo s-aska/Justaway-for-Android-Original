@@ -109,14 +109,16 @@ public class UserFragment extends Fragment {
                                             mMuteSettings.removeUser(user.userId);
                                             mMuteSettings.saveMuteSettings();
                                         }
-                                    })
+                                    }
+                            )
                             .setNegativeButton(
                                     R.string.button_no,
                                     new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                         }
-                                    })
+                                    }
+                            )
                             .show();
                 }
             });
