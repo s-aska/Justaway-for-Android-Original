@@ -267,10 +267,8 @@ public class ProfileActivity extends FragmentActivity implements
                 (LinearLayout) findViewById(R.id.favourites),
         };
 
-        final int colorBlue = JustawayApplication.getApplication().getThemeTextColor(R.attr.holo_blue);
-        final int colorWhite = JustawayApplication.getApplication().getThemeTextColor(R.attr.text_color);
-//        final int colorBlue = getResources().getColor(R.color.holo_blue_light);
-//        final int colorWhite = getResources().getColor(android.R.color.secondary_text_dark);
+        final int colorBlue = JustawayApplication.getApplication().getThemeTextColor(this, R.attr.holo_blue);
+        final int colorWhite = JustawayApplication.getApplication().getThemeTextColor(this, R.attr.text_color);
 
         countTexts[0].setTextColor(colorBlue);
         labelTexts[0].setTextColor(colorBlue);
