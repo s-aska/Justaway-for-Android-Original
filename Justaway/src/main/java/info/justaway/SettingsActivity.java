@@ -2,6 +2,11 @@ package info.justaway;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.DialogFragment;
+import android.app.FragmentManager;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -33,6 +38,11 @@ public class SettingsActivity extends Activity {
                 break;
         }
         return true;
+    }
+
+    public void applyTheme() {
+        setResult(RESULT_OK);
+        finish();
     }
 
     public static class SettingsFragment extends PreferenceFragment {
@@ -95,13 +105,49 @@ public class SettingsActivity extends Activity {
                     if (entries != null) {
                         preference.setSummary(entries[listId]);
                     }
-                    // TODO: ダイアログを出してアプリを終了する
-//                    Intent intent = new Intent(getActivity(), MainActivity.class);
-//                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                    startActivity(intent);
+                    FragmentManager fragmentManager = getFragmentManager();
+                    if (fragmentManager != null) {
+                        new ThemeSwitchDialogFragment().show(fragmentManager, "dialog");
+                    }
                     return true;
                 }
             });
+        }
+    }
+
+    public static final class ThemeSwitchDialogFragment extends DialogFragment {
+
+        private SettingsActivity mActivity;
+
+        @Override
+        public void onAttach(Activity activity) {
+            super.onAttach(activity);
+
+            mActivity = (SettingsActivity) activity;
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
+            builder.setTitle(R.string.confirm_theme_apply_finish);
+            builder.setPositiveButton(getString(R.string.button_yes),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            mActivity.applyTheme();
+                            dismiss();
+                        }
+                    }
+            );
+            builder.setNegativeButton(getString(R.string.button_no),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dismiss();
+                        }
+                    }
+            );
+            return builder.create();
         }
     }
 }

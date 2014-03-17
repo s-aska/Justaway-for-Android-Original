@@ -66,6 +66,7 @@ public class MainActivity extends FragmentActivity {
     private TextView mSignalButton;
     private static final int REQUEST_CHOOSE_USER_LIST = 100;
     private static final int REQUEST_ACCOUNT_SETTING = 200;
+    private static final int REQUEST_SETTINGS = 300;
     private static final int ERROR_CODE_DUPLICATE_STATUS = 187;
     private static final long TAB_ID_TIMELINE = -1L;
     private static final long TAB_ID_INTERACTIONS = -2L;
@@ -474,6 +475,11 @@ public class MainActivity extends FragmentActivity {
                         fragment.reload();
                     }
                 }
+            case REQUEST_SETTINGS:
+                if (resultCode == RESULT_OK) {
+                    mApplication.resetDisplaySettings();
+                    finish();
+                }
             default:
                 break;
         }
@@ -690,7 +696,7 @@ public class MainActivity extends FragmentActivity {
             startActivity(intent);
         } else if (itemId == R.id.settings) {
             Intent intent = new Intent(this, SettingsActivity.class);
-            startActivity(intent);
+            startActivityForResult(intent, REQUEST_SETTINGS);
         } else if (itemId == R.id.official_website) {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.official_website)));
             startActivity(intent);
