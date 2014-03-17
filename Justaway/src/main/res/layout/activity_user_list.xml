@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:paddingTop="8dip"
         android:paddingBottom="8dip"
-        android:background="@color/menu_background"
+        android:background="?attr/menu_background"
         android:orientation="horizontal">
 
         <LinearLayout
