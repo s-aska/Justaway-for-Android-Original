@@ -285,7 +285,6 @@ public class PostActivity extends FragmentActivity {
                                 finish();
                             } else {
                                 mImgPath = null;
-                                mImgButton.setTextColor(getResources().getColor(android.R.color.secondary_text_dark));
                                 mTweetButton.setEnabled(false);
                             }
                         } else if (e.getErrorCode() == ERROR_CODE_DUPLICATE_STATUS) {

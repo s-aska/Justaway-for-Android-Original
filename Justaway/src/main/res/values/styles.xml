@@ -35,6 +35,9 @@
 
     <style name="WhiteTheme" parent="WhiteBaseTheme">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+        <item name="android:textColor">#323232</item><!-- TextViewとか -->
+        <item name="android:textColorPrimary">#323232</item><!-- EditTextとか -->
+        <item name="android:buttonStyle">@style/WhiteButton</item>
         <item name="menu_text_color">#323232</item>
         <item name="menu_text_color_disabled">#b2b2b2</item>
         <item name="menu_background">#dcdcdc</item>
@@ -46,6 +49,10 @@
         <item name="holo_orange">@color/holo_orange_dark</item>
         <item name="holo_red">@color/holo_red_dark</item>
         <item name="holo_blue">@color/holo_blue_dark</item>
+    </style>
+
+    <style name="WhiteButton" parent="@android:style/Widget.Holo.Light.Button">
+        <item name="android:textColor">@android:color/secondary_text_light</item><!-- Button -->
     </style>
 
     <drawable name="translucent_background">#99000000</drawable>
