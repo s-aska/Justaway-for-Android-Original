@@ -23,12 +23,15 @@ import twitter4j.auth.AccessToken;
 
 public class AccountSettingActivity extends Activity {
 
+    private Activity mActivity;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         JustawayApplication.getApplication().setTheme(this);
         setContentView(R.layout.activity_account_setting);
 
+        mActivity = this;
         ActionBar actionBar = getActionBar();
         if (actionBar != null) {
             actionBar.setHomeButtonEnabled(true);
@@ -120,7 +123,7 @@ public class AccountSettingActivity extends Activity {
             trash.setTypeface(JustawayApplication.getFontello());
             screenName.setText("@".concat(accessToken.getScreenName()));
             if (JustawayApplication.getApplication().getUserId() == accessToken.getUserId()) {
-                screenName.setTextColor(getResources().getColor(R.color.holo_blue_bright));
+                screenName.setTextColor(JustawayApplication.getApplication().getThemeTextColor(mActivity, R.attr.holo_blue));
                 trash.setVisibility(View.GONE);
             }
 
