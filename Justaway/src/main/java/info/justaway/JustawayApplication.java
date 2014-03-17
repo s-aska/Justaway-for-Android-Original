@@ -8,7 +8,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.StrictMode;
@@ -484,26 +483,24 @@ public class JustawayApplication extends Application {
 
     public void setTheme(Activity activity) {
         if (mThemeName.equals("black")) {
-            super.setTheme(R.style.BlackTheme);
             activity.setTheme(R.style.BlackTheme);
         } else {
-            super.setTheme(R.style.WhiteTheme);
             activity.setTheme(R.style.WhiteTheme);
         }
     }
 
-    public void setThemeTextColor(TextView view, int resourceId) {
+    public void setThemeTextColor(Activity activity, TextView view, int resourceId) {
         TypedValue outValue = new TypedValue();
-        Resources.Theme theme = getTheme();
+        Resources.Theme theme = activity.getTheme();
         if (theme != null) {
             theme.resolveAttribute(resourceId, outValue, true);
             view.setTextColor(outValue.data);
         }
     }
 
-    public int getThemeTextColor(int resourceId) {
+    public int getThemeTextColor(Activity activity, int resourceId) {
         TypedValue outValue = new TypedValue();
-        Resources.Theme theme = getTheme();
+        Resources.Theme theme = activity.getTheme();
         if (theme != null) {
             theme.resolveAttribute(resourceId, outValue, true);
         }

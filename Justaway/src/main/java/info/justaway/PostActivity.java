@@ -2,6 +2,7 @@ package info.justaway;
 
 
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -63,7 +64,7 @@ public class PostActivity extends FragmentActivity {
     private static final int ERROR_CODE_DUPLICATE_STATUS = 187;
     private static final Pattern URL_PATTERN = Pattern.compile("(http://|https://){1}[\\w\\.\\-/:\\#\\?\\=\\&\\;\\%\\~\\+]+");
 
-    private Context mContext;
+    private Activity mContext;
     private EditText mEditText;
     private TextView mTextView;
     private Button mTweetButton;
@@ -439,10 +440,10 @@ public class PostActivity extends FragmentActivity {
                 updateCount(s.toString());
                 if (s.toString().startsWith("D ")) {
                     mImgPath = null;
-                    JustawayApplication.getApplication().setThemeTextColor(mImgButton, R.attr.menu_text_color_disabled);
+                    JustawayApplication.getApplication().setThemeTextColor(mContext, mImgButton, R.attr.menu_text_color_disabled);
                     mImgButton.setEnabled(false);
                 } else {
-                    JustawayApplication.getApplication().setThemeTextColor(mImgButton, R.attr.menu_text_color);
+                    JustawayApplication.getApplication().setThemeTextColor(mContext, mImgButton, R.attr.menu_text_color);
                     mImgButton.setEnabled(true);
                 }
             }
@@ -527,7 +528,7 @@ public class PostActivity extends FragmentActivity {
         }
         this.mImgPath = path;
         JustawayApplication.showToast(R.string.toast_set_image_success);
-        JustawayApplication.getApplication().setThemeTextColor(mImgButton, R.attr.holo_blue);
+        JustawayApplication.getApplication().setThemeTextColor(mContext, mImgButton, R.attr.holo_blue);
         mTweetButton.setEnabled(true);
     }
 
@@ -547,7 +548,7 @@ public class PostActivity extends FragmentActivity {
         if (length < 0) {
             textColor = Color.RED;
         } else {
-            textColor = JustawayApplication.getApplication().getThemeTextColor(R.attr.menu_text_color);
+            textColor = JustawayApplication.getApplication().getThemeTextColor(mContext, R.attr.menu_text_color);
         }
         mTextView.setTextColor(textColor);
         mTextView.setText(String.valueOf(length));
