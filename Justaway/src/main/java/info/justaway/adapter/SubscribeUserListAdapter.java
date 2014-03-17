@@ -99,14 +99,16 @@ public class SubscribeUserListAdapter extends ArrayAdapter<UserList> {
                                                 }
                                             }.execute();
                                         }
-                                    })
+                                    }
+                            )
                             .setNegativeButton(
                                     R.string.button_no,
                                     new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                         }
-                                    })
+                                    }
+                            )
                             .show();
                 }
 
@@ -143,14 +145,16 @@ public class SubscribeUserListAdapter extends ArrayAdapter<UserList> {
                                                 }
                                             }.execute();
                                         }
-                                    })
+                                    }
+                            )
                             .setNegativeButton(
                                     R.string.button_no,
                                     new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                         }
-                                    })
+                                    }
+                            )
                             .show();
                 }
 

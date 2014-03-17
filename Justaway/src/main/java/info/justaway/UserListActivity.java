@@ -34,7 +34,7 @@ public class UserListActivity extends FragmentActivity {
         setContentView(R.layout.activity_user_list);
 
         ActionBar actionBar = getActionBar();
-        if (actionBar != null){
+        if (actionBar != null) {
             actionBar.setHomeButtonEnabled(true);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }

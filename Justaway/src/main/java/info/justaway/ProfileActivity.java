@@ -45,7 +45,7 @@ public class ProfileActivity extends FragmentActivity implements
         setContentView(R.layout.activity_profile);
 
         ActionBar actionBar = getActionBar();
-        if (actionBar != null){
+        if (actionBar != null) {
             actionBar.setHomeButtonEnabled(true);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
@@ -126,14 +126,16 @@ public class ProfileActivity extends FragmentActivity implements
                                         JustawayApplication.showProgressDialog(ProfileActivity.this, getString(R.string.progress_process));
                                         new ReportSpamTask().execute(mUser.getId());
                                     }
-                                })
+                                }
+                        )
                         .setNegativeButton(
                                 R.string.button_cancel,
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                     }
-                                })
+                                }
+                        )
                         .show();
 
                 break;
@@ -148,14 +150,16 @@ public class ProfileActivity extends FragmentActivity implements
                                         JustawayApplication.showProgressDialog(ProfileActivity.this, getString(R.string.progress_process));
                                         new CreateBlockTask().execute(mUser.getId());
                                     }
-                                })
+                                }
+                        )
                         .setNegativeButton(
                                 R.string.button_cancel,
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                     }
-                                })
+                                }
+                        )
                         .show();
 
                 break;

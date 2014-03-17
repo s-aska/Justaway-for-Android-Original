@@ -57,9 +57,10 @@ public class MyUncaughtExceptionHandler implements UncaughtExceptionHandler {
             try {
                 writer
                         .printf("Runtime Memory: total: %dKB, free: %dKB, used: %dKB\n", Runtime
-                                .getRuntime().totalMemory() / 1024,
+                                        .getRuntime().totalMemory() / 1024,
                                 Runtime.getRuntime().freeMemory() / 1024, (Runtime.getRuntime()
-                                .totalMemory() - Runtime.getRuntime().freeMemory()) / 1024);
+                                        .totalMemory() - Runtime.getRuntime().freeMemory()) / 1024
+                        );
             } catch (Exception e) {
                 e.printStackTrace();
             }

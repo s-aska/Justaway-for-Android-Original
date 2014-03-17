@@ -65,14 +65,16 @@ public class UpdateProfileImageFragment extends DialogFragment {
                         new UpdateProfileImageTask().execute();
                         dismiss();
                     }
-                });
+                }
+        );
         builder.setNegativeButton(getString(R.string.button_cancel),
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dismiss();
                     }
-                });
+                }
+        );
 
         return builder.create();
     }

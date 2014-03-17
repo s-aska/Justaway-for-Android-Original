@@ -30,7 +30,6 @@ import info.justaway.listener.StatusActionListener;
 import info.justaway.listener.StatusClickListener;
 import info.justaway.listener.StatusLongClickListener;
 import info.justaway.model.Row;
-import info.justaway.settings.MuteSettings;
 import twitter4j.Query;
 import twitter4j.QueryResult;
 import twitter4j.ResponseList;
@@ -54,7 +53,7 @@ public class SearchActivity extends FragmentActivity {
         setContentView(R.layout.activity_search);
 
         ActionBar actionBar = getActionBar();
-        if (actionBar != null){
+        if (actionBar != null) {
             actionBar.setHomeButtonEnabled(true);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
