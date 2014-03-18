@@ -41,6 +41,7 @@ import info.justaway.fragment.main.UserListFragment;
 import info.justaway.model.Row;
 import info.justaway.task.DestroyDirectMessageTask;
 import info.justaway.task.ReFetchFavoriteStatus;
+import info.justaway.task.SendDirectMessageTask;
 import info.justaway.task.UpdateStatusTask;
 import twitter4j.ConnectionLifeCycleListener;
 import twitter4j.DirectMessage;
@@ -51,6 +52,7 @@ import twitter4j.TwitterException;
 import twitter4j.TwitterStream;
 import twitter4j.User;
 import twitter4j.UserStreamAdapter;
+import twitter4j.auth.AccessToken;
 
 /**
  * @author aska
@@ -229,27 +231,44 @@ public class MainActivity extends FragmentActivity {
                 String msg = status.getText() != null ? status.getText().toString() : null;
                 if (msg != null && msg.length() > 0) {
                     showProgressDialog(getString(R.string.progress_sending));
-                    StatusUpdate statusUpdate = new StatusUpdate(msg);
-                    if (mInReplyToStatus != null) {
-                        statusUpdate.setInReplyToStatusId(mInReplyToStatus.getId());
-                        setInReplyToStatus(null);
-                    }
 
-                    UpdateStatusTask task = new UpdateStatusTask(null) {
-                        @Override
-                        protected void onPostExecute(TwitterException e) {
-                            dismissProgressDialog();
-                            if (e == null) {
-                                EditText status = (EditText) findViewById(R.id.quick_tweet_edit);
-                                status.setText("");
-                            } else if (e.getErrorCode() == ERROR_CODE_DUPLICATE_STATUS) {
-                                JustawayApplication.showToast(getString(R.string.toast_update_status_already));
-                            } else {
-                                JustawayApplication.showToast(R.string.toast_update_status_failure);
+                    if (msg.startsWith("D ")) {
+                        SendDirectMessageTask task = new SendDirectMessageTask(null) {
+                            @Override
+                            protected void onPostExecute(TwitterException e) {
+                                dismissProgressDialog();
+                                if (e == null) {
+                                    EditText status = (EditText) findViewById(R.id.quick_tweet_edit);
+                                    status.setText("");
+                                } else {
+                                    JustawayApplication.showToast(R.string.toast_update_status_failure);
+                                }
                             }
+                        };
+                        task.execute(msg);
+                    } else {
+                        StatusUpdate statusUpdate = new StatusUpdate(msg);
+                        if (mInReplyToStatus != null) {
+                            statusUpdate.setInReplyToStatusId(mInReplyToStatus.getId());
+                            setInReplyToStatus(null);
                         }
-                    };
-                    task.execute(statusUpdate);
+
+                        UpdateStatusTask task = new UpdateStatusTask(null) {
+                            @Override
+                            protected void onPostExecute(TwitterException e) {
+                                dismissProgressDialog();
+                                if (e == null) {
+                                    EditText status = (EditText) findViewById(R.id.quick_tweet_edit);
+                                    status.setText("");
+                                } else if (e.getErrorCode() == ERROR_CODE_DUPLICATE_STATUS) {
+                                    JustawayApplication.showToast(getString(R.string.toast_update_status_already));
+                                } else {
+                                    JustawayApplication.showToast(R.string.toast_update_status_failure);
+                                }
+                            }
+                        };
+                        task.execute(statusUpdate);
+                    }
                 }
             }
         });

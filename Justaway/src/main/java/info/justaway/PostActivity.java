@@ -49,6 +49,7 @@ import java.util.regex.Pattern;
 
 import info.justaway.plugin.TwiccaPlugin;
 import info.justaway.settings.PostStockSettings;
+import info.justaway.task.SendDirectMessageTask;
 import info.justaway.task.UpdateStatusTask;
 import twitter4j.Status;
 import twitter4j.StatusUpdate;
@@ -267,34 +268,54 @@ public class PostActivity extends FragmentActivity {
             @Override
             public void onClick(View v) {
                 JustawayApplication.showProgressDialog(mContext, getString(R.string.progress_sending));
-                StatusUpdate statusUpdate = new StatusUpdate(mEditText.getText().toString());
-                if (mInReplyToStatusId != null) {
-                    statusUpdate.setInReplyToStatusId(mInReplyToStatusId);
-                }
-                if (mImgPath != null) {
-                    statusUpdate.setMedia(mImgPath);
-                }
+                String text = mEditText.getText().toString();
 
-                UpdateStatusTask task = new UpdateStatusTask((AccessToken) mSpinner.getSelectedItem()) {
-                    @Override
-                    protected void onPostExecute(TwitterException e) {
-                        JustawayApplication.dismissProgressDialog();
-                        if (e == null) {
-                            mEditText.setText("");
-                            if (!mWidgetMode) {
-                                finish();
+                if (text.startsWith("D ")) {
+                    SendDirectMessageTask task = new SendDirectMessageTask((AccessToken) mSpinner.getSelectedItem()) {
+                        @Override
+                        protected void onPostExecute(TwitterException e) {
+                            JustawayApplication.dismissProgressDialog();
+                            if (e == null) {
+                                mEditText.setText("");
+                                if (!mWidgetMode) {
+                                    finish();
+                                }
                             } else {
-                                mImgPath = null;
-                                mTweetButton.setEnabled(false);
+                                JustawayApplication.showToast(R.string.toast_update_status_failure);
                             }
-                        } else if (e.getErrorCode() == ERROR_CODE_DUPLICATE_STATUS) {
-                            JustawayApplication.showToast(getString(R.string.toast_update_status_already));
-                        } else {
-                            JustawayApplication.showToast(R.string.toast_update_status_failure);
                         }
+                    };
+                    task.execute(text);
+                } else {
+                    StatusUpdate statusUpdate = new StatusUpdate(text);
+                    if (mInReplyToStatusId != null) {
+                        statusUpdate.setInReplyToStatusId(mInReplyToStatusId);
                     }
-                };
-                task.execute(statusUpdate);
+                    if (mImgPath != null) {
+                        statusUpdate.setMedia(mImgPath);
+                    }
+
+                    UpdateStatusTask task = new UpdateStatusTask((AccessToken) mSpinner.getSelectedItem()) {
+                        @Override
+                        protected void onPostExecute(TwitterException e) {
+                            JustawayApplication.dismissProgressDialog();
+                            if (e == null) {
+                                mEditText.setText("");
+                                if (!mWidgetMode) {
+                                    finish();
+                                } else {
+                                    mImgPath = null;
+                                    mTweetButton.setEnabled(false);
+                                }
+                            } else if (e.getErrorCode() == ERROR_CODE_DUPLICATE_STATUS) {
+                                JustawayApplication.showToast(getString(R.string.toast_update_status_already));
+                            } else {
+                                JustawayApplication.showToast(R.string.toast_update_status_failure);
+                            }
+                        }
+                    };
+                    task.execute(statusUpdate);
+                }
             }
         });
 
