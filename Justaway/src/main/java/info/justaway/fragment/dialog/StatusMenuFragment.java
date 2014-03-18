@@ -83,6 +83,7 @@ public class StatusMenuFragment extends DialogFragment {
 
         mActivity = getActivity();
         mApplication = JustawayApplication.getApplication();
+        mApplication.setTheme(mActivity);
 
         final MenuAdapter adapter = new MenuAdapter(getActivity(), R.layout.row_menu);
         ListView listView = new ListView(mActivity);
