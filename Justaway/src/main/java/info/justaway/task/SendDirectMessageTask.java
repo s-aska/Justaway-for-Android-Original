@@ -20,18 +20,25 @@ public class SendDirectMessageTask extends AsyncTask<String, Void, TwitterExcept
     @Override
     protected TwitterException doInBackground(String... params) {
         try {
-            String[] s = params[0].split(" ");
+            String[] s = params[0].split(" ", 3);
             if (mAccessToken == null) {
-                mApplication.getTwitter().sendDirectMessage(s[1], s[2]);
+                mApplication.getTwitter().sendDirectMessage(getOrEmpty(s, 1), getOrEmpty(s, 2));
             } else {
                 // ツイート画面から来たとき
                 Twitter twitter = mApplication.getTwitterInstance();
                 twitter.setOAuthAccessToken(mAccessToken);
-                twitter.sendDirectMessage(s[1], s[2]);
+                twitter.sendDirectMessage(getOrEmpty(s, 1), getOrEmpty(s, 2));
             }
         } catch (TwitterException e) {
             return e;
         }
         return null;
+    }
+
+    private static String getOrEmpty(String[] array, int index) {
+        if (index <= 0 || array.length <= index) {
+            return "";
+        }
+        return array[index];
     }
 }
