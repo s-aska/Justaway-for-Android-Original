@@ -15,6 +15,15 @@
         android:negativeButtonText="@null"
         android:positiveButtonText="@null"/>
 
+    <ListPreference
+        android:key="themeName"
+        android:title="@string/pref_title_theme"
+        android:defaultValue="black"
+        android:entries="@array/pref_theme_titles"
+        android:entryValues="@array/pref_theme_values"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"/>
+
     <PreferenceScreen
         android:key="mute"
         android:title="@string/pref_title_mute"
@@ -44,12 +53,4 @@
         android:negativeButtonText="@null"
         android:positiveButtonText="@null"/>
 
-    <ListPreference
-        android:key="themeName"
-        android:title="@string/pref_title_theme"
-        android:defaultValue="black"
-        android:entries="@array/pref_theme_titles"
-        android:entryValues="@array/pref_theme_values"
-        android:negativeButtonText="@null"
-        android:positiveButtonText="@null"/>
 </PreferenceScreen>
