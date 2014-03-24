@@ -20,6 +20,7 @@ import android.net.Uri;
 import android.os.BatteryManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
@@ -42,6 +43,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -479,6 +481,29 @@ public class PostActivity extends FragmentActivity {
                 mUndoButton.setEnabled(mTextHistory.size() > 0);
             }
         });
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putParcelable("image_uri", mImageUri);
+        outState.putSerializable("image_path", mImgPath);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        final Parcelable imageUri = savedInstanceState.getParcelable("image_uri");
+        mImageUri = (Uri) imageUri;
+        final Serializable imagePath = savedInstanceState.getSerializable("image_path");
+        mImgPath = (File) imagePath;
+
+        if (mImgPath != null && mImgPath.exists()) {
+            JustawayApplication.getApplication().setThemeTextColor(mContext, mImgButton, R.attr.holo_blue);
+            mTweetButton.setEnabled(true);
+        }
     }
 
     @Override
