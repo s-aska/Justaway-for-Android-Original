@@ -117,6 +117,7 @@
     <string name="title_performance">Performance Settings</string>
     <string name="title_post">Tweet</string>
     <string name="title_profile">Profile</string>
+    <string name="title_register_list">Register list</string>
     <string name="title_search">Search</string>
     <string name="toast_create_block_failure">You failed to block.</string>
     <string name="toast_create_block_success">You are blocking this user.</string>
@@ -175,4 +176,5 @@
     <string name="widget_title_post_mode">Post Only Mode</string>
     <string name="dialog_title_draft">Drafts</string>
     <string name="dialog_title_hashtag">Hashtags</string>
+    <string name="menu_add_to_list">Add to list</string>
 </resources>
