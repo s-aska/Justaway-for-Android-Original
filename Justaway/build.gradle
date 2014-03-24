@@ -32,6 +32,26 @@ android {
         release.setRoot('build-types/release')
     }
 
+    signingConfigs {
+        // debug {
+        //     storeFile file("debug.keystore")
+        // }
+
+        release
+    }
+
+    buildTypes {
+        release {
+            runProguard false
+            proguardFile getDefaultProguardFile('proguard-android.txt')
+            proguardFile file('proguard-project.txt')
+
+            if (project.hasProperty('storeFile')) {
+                signingConfig signingConfigs.release
+            }
+        }
+    }
+
     lintOptions {
         //checkReleaseBuilds false
         abortOnError false
@@ -41,3 +61,17 @@ android {
         exclude 'META-INF/LICENSE.txt'
     }
 }
+
+if (project.hasProperty('storeFile')) {
+    android.signingConfigs.release.storeFile = file(storeFile)
+}
+if (project.hasProperty('storePassword')) {
+    android.signingConfigs.release.storePassword = storePassword
+}
+if (project.hasProperty('keyAlias')) {
+    android.signingConfigs.release.keyAlias = keyAlias
+}
+if (project.hasProperty('keyPassword')) {
+    android.signingConfigs.release.keyPassword = keyPassword
+}
+
