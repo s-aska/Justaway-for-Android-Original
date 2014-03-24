@@ -100,6 +100,11 @@ public class ProfileActivity extends FragmentActivity implements
                 intent.putExtra("selection", text.length());
                 startActivity(intent);
                 break;
+            case R.id.add_to_list:
+                intent = new Intent(this, RegisterListActivity.class);
+                intent.putExtra("userId", mUser.getId());
+                startActivity(intent);
+                break;
             case R.id.open_twitter:
                 intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://twitter.com/"
                         + mUser.getScreenName()));
