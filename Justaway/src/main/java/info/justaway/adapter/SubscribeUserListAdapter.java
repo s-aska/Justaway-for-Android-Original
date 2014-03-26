@@ -160,7 +160,6 @@ public class SubscribeUserListAdapter extends ArrayAdapter<UserListWithRegistere
                             )
                             .show();
                 }
-
             }
         });
 
@@ -171,6 +170,7 @@ public class SubscribeUserListAdapter extends ArrayAdapter<UserListWithRegistere
             } else {
                 checkbox.setText(userList.getFullName());
             }
+            checkbox.setOnCheckedChangeListener(null);
             checkbox.setChecked(userListWithRegistered.isRegistered());
             checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
