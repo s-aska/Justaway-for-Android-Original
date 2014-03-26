@@ -4,7 +4,6 @@ package info.justaway;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -12,7 +11,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
@@ -43,6 +41,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +67,7 @@ public class PostActivity extends FragmentActivity {
     private static final int REQUEST_TWICCA = 3;
     private static final int OPTION_MENU_GROUP_TWICCA = 1;
     private static final int ERROR_CODE_DUPLICATE_STATUS = 187;
-    private static final Pattern URL_PATTERN = Pattern.compile("(http://|https://){1}[\\w\\.\\-/:\\#\\?\\=\\&\\;\\%\\~\\+]+");
+    private static final Pattern URL_PATTERN = Pattern.compile("(http://|https://)[\\w\\.\\-/:\\#\\?\\=\\&\\;\\%\\~\\+]+");
 
     private Activity mContext;
     private EditText mEditText;
@@ -556,25 +558,41 @@ public class PostActivity extends FragmentActivity {
     }
 
     private void setImage(Uri uri) {
-        ContentResolver cr = getContentResolver();
-        String[] columns = {MediaStore.Images.Media.DATA};
-        Cursor c = cr.query(uri, columns, null, null, null);
-        assert c != null;
-        c.moveToFirst();
-        String fileName = c.getString(0);
-        if (fileName == null) {
-            JustawayApplication.showToast(getString(R.string.toast_set_image_failure));
-            return;
+        try {
+            InputStream inputStream = getContentResolver().openInputStream(uri);
+            this.mImgPath = writeToTempFile(inputStream);
+            JustawayApplication.showToast(R.string.toast_set_image_success);
+            JustawayApplication.getApplication().setThemeTextColor(mContext, mImgButton, R.attr.holo_blue);
+            mTweetButton.setEnabled(true);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
-        File path = new File(fileName);
+    }
 
-        if (!path.exists()) {
-            return;
+    private File writeToTempFile(InputStream inputStream) {
+        File cacheDir = getCacheDir();
+        if (cacheDir == null) {
+            return null;
         }
-        this.mImgPath = path;
-        JustawayApplication.showToast(R.string.toast_set_image_success);
-        JustawayApplication.getApplication().setThemeTextColor(mContext, mImgButton, R.attr.holo_blue);
-        mTweetButton.setEnabled(true);
+        if (!cacheDir.exists()) {
+            if (!cacheDir.mkdirs()) {
+                return null;
+            }
+        }
+        File file = new File(cacheDir, "justaway-temp-" + System.currentTimeMillis() + ".jpg");
+        try {
+            OutputStream outputStream = new FileOutputStream(file);
+            byte[] buffer = new byte[4096];
+            int size;
+            while (-1 != (size = inputStream.read(buffer))) {
+                outputStream.write(buffer, 0, size);
+            }
+            inputStream.close();
+            outputStream.close();
+        } catch(Exception e) {
+            return null;
+        }
+        return file;
     }
 
     private void updateCount(String str) {
