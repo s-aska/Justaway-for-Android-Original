@@ -8,12 +8,12 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.CheckBox;
 import android.widget.ListView;
 
 import java.util.ArrayList;
 
 import info.justaway.adapter.SubscribeUserListAdapter;
+import info.justaway.model.UserListWithRegistered;
 import info.justaway.task.UserListsLoader;
 import twitter4j.ResponseList;
 import twitter4j.UserList;
@@ -54,17 +54,11 @@ public class ChooseUserListsActivity extends FragmentActivity implements
             public void onClick(View v) {
                 ArrayList<Long> lists = new ArrayList<Long>();
 
-                // 有効なチェックボックスからリストIDを取得
-                ListView listView = (ListView) findViewById(R.id.list);
-                int count = listView.getChildCount();
+                int count = mAdapter.getCount();
                 for (int i = 0; i < count; i++) {
-                    View view = listView.getChildAt(i);
-                    if (view == null) {
-                        continue;
-                    }
-                    CheckBox checkbox = (CheckBox) view.findViewById(R.id.checkbox);
-                    if (checkbox != null && checkbox.isChecked()) {
-                        lists.add((Long) checkbox.getTag());
+                    UserListWithRegistered userListWithRegistered = mAdapter.getItem(i);
+                    if (userListWithRegistered.isRegistered()) {
+                        lists.add(userListWithRegistered.getUserList().getId());
                     }
                 }
 
@@ -97,12 +91,16 @@ public class ChooseUserListsActivity extends FragmentActivity implements
 
     @Override
     public void onLoadFinished(Loader<ResponseList<UserList>> arg0, ResponseList<UserList> userLists) {
+        JustawayApplication application = JustawayApplication.getApplication();
         if (userLists != null) {
             for (UserList userList : userLists) {
-                mAdapter.add(userList);
+                UserListWithRegistered userListWithRegistered = new UserListWithRegistered();
+                userListWithRegistered.setRegistered(application.existsTab(userList.getId()));
+                userListWithRegistered.setUserList(userList);
+                mAdapter.add(userListWithRegistered);
             }
         }
-        JustawayApplication.getApplication().setUserLists(userLists);
+        application.setUserLists(userLists);
     }
 
     @Override

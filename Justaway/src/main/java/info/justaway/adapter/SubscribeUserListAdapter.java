@@ -9,17 +9,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
 import info.justaway.JustawayApplication;
 import info.justaway.R;
+import info.justaway.model.UserListWithRegistered;
 import twitter4j.UserList;
 
-public class SubscribeUserListAdapter extends ArrayAdapter<UserList> {
+public class SubscribeUserListAdapter extends ArrayAdapter<UserListWithRegistered> {
 
-    private ArrayList<UserList> mUserLists = new ArrayList<UserList>();
+    private ArrayList<UserListWithRegistered> mUserLists = new ArrayList<UserListWithRegistered>();
     private Context mContext;
     private LayoutInflater mInflater;
     private JustawayApplication mApplication;
@@ -34,15 +36,15 @@ public class SubscribeUserListAdapter extends ArrayAdapter<UserList> {
     }
 
     @Override
-    public void add(UserList userList) {
-        super.add(userList);
-        mUserLists.add(userList);
+    public void add(UserListWithRegistered userListWithRegistered) {
+        super.add(userListWithRegistered);
+        mUserLists.add(userListWithRegistered);
     }
 
     @Override
-    public void remove(UserList userList) {
-        super.remove(userList);
-        mUserLists.remove(userList);
+    public void remove(UserListWithRegistered userListWithRegistered) {
+        super.remove(userListWithRegistered);
+        mUserLists.remove(userListWithRegistered);
     }
 
     @Override
@@ -58,7 +60,8 @@ public class SubscribeUserListAdapter extends ArrayAdapter<UserList> {
             }
         }
 
-        final UserList userList = mUserLists.get(position);
+        final UserListWithRegistered userListWithRegistered = mUserLists.get(position);
+        final UserList userList = userListWithRegistered.getUserList();
 
         TextView trash = (TextView) view.findViewById(R.id.trash);
         trash.setTypeface(JustawayApplication.getFontello());
@@ -91,7 +94,7 @@ public class SubscribeUserListAdapter extends ArrayAdapter<UserList> {
                                                 protected void onPostExecute(Boolean success) {
                                                     if (success) {
                                                         JustawayApplication.showToast(R.string.toast_destroy_user_list_success);
-                                                        remove(userList);
+                                                        remove(userListWithRegistered);
                                                         mApplication.getUserLists().remove(userList);
                                                     } else {
                                                         JustawayApplication.showToast(R.string.toast_destroy_user_list_failure);
@@ -137,7 +140,7 @@ public class SubscribeUserListAdapter extends ArrayAdapter<UserList> {
                                                 protected void onPostExecute(Boolean success) {
                                                     if (success) {
                                                         JustawayApplication.showToast(R.string.toast_destroy_user_list_subscription_success);
-                                                        remove(userList);
+                                                        remove(userListWithRegistered);
                                                         mApplication.getUserLists().remove(userList);
                                                     } else {
                                                         JustawayApplication.showToast(R.string.toast_destroy_user_list_subscription_failure);
@@ -168,11 +171,15 @@ public class SubscribeUserListAdapter extends ArrayAdapter<UserList> {
             } else {
                 checkbox.setText(userList.getFullName());
             }
-            checkbox.setChecked(mApplication.existsTab(userList.getId()));
-            checkbox.setTag(userList.getId());
+            checkbox.setChecked(userListWithRegistered.isRegistered());
+            checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    userListWithRegistered.setRegistered(b);
+                }
+            });
         }
 
         return view;
     }
-
 }
