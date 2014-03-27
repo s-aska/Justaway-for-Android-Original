@@ -748,19 +748,15 @@ public class JustawayApplication extends Application {
     }
 
     public void removeFav(Long id) {
-        mIsFavMap.put(id, false);
         mIsFavMap.remove(id);
     }
 
     public Boolean isFav(Status status) {
-        if (status.isFavorited()) {
-            return true;
-        }
-        if (mIsFavMap.get(status.getId()) != null && mIsFavMap.get(status.getId())) {
+        if (mIsFavMap.get(status.getId(), false)) {
             return true;
         }
         Status retweet = status.getRetweetedStatus();
-        return retweet != null && ((mIsFavMap.get(status.getId()) != null && mIsFavMap.get(retweet.getId())) || retweet.isFavorited());
+        return retweet != null && (mIsFavMap.get(retweet.getId(), false));
     }
 
     public void setRtId(Long sourceId, Long retweetId) {
