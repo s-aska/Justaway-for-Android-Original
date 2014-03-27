@@ -29,8 +29,7 @@ import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
 /**
  * ユーザーのタイムライン
  */
-public class UserTimelineFragment extends Fragment implements
-        OnRefreshListener {
+public class UserTimelineFragment extends Fragment implements OnRefreshListener, StatusActionListener {
 
     private TwitterAdapter mAdapter;
     private ListView mListView;
@@ -68,9 +67,6 @@ public class UserTimelineFragment extends Fragment implements
         mAdapter = new TwitterAdapter(getActivity(), R.layout.row_tweet);
         mListView.setAdapter(mAdapter);
 
-        // ツイートに関するアクション（ふぁぼ / RT / ツイ消し）のリスナー
-        mAdapter.setStatusActionListener(new StatusActionListener(mAdapter));
-
         mListView.setOnItemClickListener(new StatusClickListener(getActivity()));
 
         mListView.setOnItemLongClickListener(new StatusLongClickListener(mAdapter, getActivity()));
@@ -92,6 +88,16 @@ public class UserTimelineFragment extends Fragment implements
             }
         });
         return v;
+    }
+
+    @Override
+    public void onStatusAction() {
+        mAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onRemoveStatus(long statusId) {
+        mAdapter.removeStatus(statusId);
     }
 
     @Override

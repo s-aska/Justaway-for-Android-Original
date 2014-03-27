@@ -21,7 +21,7 @@ import twitter4j.Twitter;
 /**
  * ツイート表示用のアクティビティ
  */
-public class StatusActivity extends FragmentActivity {
+public class StatusActivity extends FragmentActivity implements StatusActionListener {
 
     private ProgressDialog mProgressDialog;
     private TwitterAdapter mAdapter;
@@ -67,10 +67,6 @@ public class StatusActivity extends FragmentActivity {
         mAdapter = new TwitterAdapter(this, R.layout.row_tweet);
         listView.setAdapter(mAdapter);
 
-
-        // ツイートに関するアクション（ふぁぼ / RT / ツイ消し）のリスナー
-        mAdapter.setStatusActionListener(new StatusActionListener(mAdapter));
-
         listView.setOnItemClickListener(new StatusClickListener(this));
 
         listView.setOnItemLongClickListener(new StatusLongClickListener(mAdapter, this));
@@ -80,6 +76,16 @@ public class StatusActivity extends FragmentActivity {
             showProgressDialog(getString(R.string.progress_loading));
             new LoadTask().execute(statusId);
         }
+    }
+
+    @Override
+    public void onStatusAction() {
+        mAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onRemoveStatus(long statusId) {
+        mAdapter.removeStatus(statusId);
     }
 
     private void showProgressDialog(String message) {

@@ -22,10 +22,7 @@ import twitter4j.ResponseList;
 import twitter4j.Status;
 import twitter4j.User;
 
-/**
- * Created by teshi on 2013/12/21.
- */
-public class FavoritesListFragment extends Fragment {
+public class FavoritesListFragment extends Fragment implements StatusActionListener {
 
     private TwitterAdapter mAdapter;
     private ListView mListView;
@@ -53,9 +50,6 @@ public class FavoritesListFragment extends Fragment {
         mAdapter = new TwitterAdapter(getActivity(), R.layout.row_tweet);
         mListView.setAdapter(mAdapter);
 
-        // ツイートに関するアクション（ふぁぼ / RT / ツイ消し）のリスナー
-        mAdapter.setStatusActionListener(new StatusActionListener(mAdapter));
-
         mListView.setOnItemClickListener(new StatusClickListener(getActivity()));
 
         mListView.setOnItemLongClickListener(new StatusLongClickListener(mAdapter, getActivity()));
@@ -77,6 +71,16 @@ public class FavoritesListFragment extends Fragment {
             }
         });
         return v;
+    }
+
+    @Override
+    public void onStatusAction() {
+        mAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onRemoveStatus(long statusId) {
+        mAdapter.removeStatus(statusId);
     }
 
     private void additionalReading() {

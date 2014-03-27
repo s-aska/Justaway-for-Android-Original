@@ -8,6 +8,8 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -27,16 +29,18 @@ import info.justaway.fragment.profile.FollowingListFragment;
 import info.justaway.fragment.profile.SummaryFragment;
 import info.justaway.fragment.profile.UserListMembershipsFragment;
 import info.justaway.fragment.profile.UserTimelineFragment;
+import info.justaway.listener.StatusActionListener;
 import info.justaway.model.Profile;
 import info.justaway.task.ShowUserLoader;
 import twitter4j.Relationship;
 import twitter4j.User;
 
 public class ProfileActivity extends FragmentActivity implements
-        LoaderManager.LoaderCallbacks<Profile> {
+        LoaderManager.LoaderCallbacks<Profile>, StatusActionListener {
 
     private ImageView mBanner;
     private User mUser;
+    private SimplePagerAdapter mListPagerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +74,46 @@ public class ProfileActivity extends FragmentActivity implements
         }
         JustawayApplication.showProgressDialog(this, getString(R.string.progress_loading));
         getSupportLoaderManager().initLoader(0, args, this);
+    }
+
+    @Override
+    public void onStatusAction() {
+        if (mListPagerAdapter == null) {
+            return;
+        }
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                int count = mListPagerAdapter.getCount();
+                for (int id = 0; id < count; id++) {
+                    Fragment fragment = mListPagerAdapter.findFragmentByPosition(id);
+                    if (fragment != null && fragment instanceof StatusActionListener) {
+                        StatusActionListener statusActionListener = (StatusActionListener) fragment;
+                        statusActionListener.onStatusAction();
+                    }
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onRemoveStatus(final long statusId) {
+        if (mListPagerAdapter == null) {
+            return;
+        }
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                int count = mListPagerAdapter.getCount();
+                for (int id = 0; id < count; id++) {
+                    Fragment fragment = mListPagerAdapter.findFragmentByPosition(id);
+                    if (fragment != null && fragment instanceof StatusActionListener) {
+                        StatusActionListener statusActionListener = (StatusActionListener) fragment;
+                        statusActionListener.onRemoveStatus(statusId);
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -216,14 +260,14 @@ public class ProfileActivity extends FragmentActivity implements
          * スワイプで動かせるタブを実装するのに最低限必要な実装
          */
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-        SimplePagerAdapter pagerAdapter = new SimplePagerAdapter(this, viewPager);
+        SimplePagerAdapter simplePagerAdapter = new SimplePagerAdapter(this, viewPager);
 
         Bundle args = new Bundle();
         args.putSerializable("user", mUser);
         args.putSerializable("relationship", relationship);
-        pagerAdapter.addTab(SummaryFragment.class, args);
-        pagerAdapter.addTab(DescriptionFragment.class, args);
-        pagerAdapter.notifyDataSetChanged();
+        simplePagerAdapter.addTab(SummaryFragment.class, args);
+        simplePagerAdapter.addTab(DescriptionFragment.class, args);
+        simplePagerAdapter.notifyDataSetChanged();
         viewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
@@ -237,16 +281,16 @@ public class ProfileActivity extends FragmentActivity implements
 
         // ユーザリスト用のタブ
         final ViewPager listViewPager = (ViewPager) findViewById(R.id.list_pager);
-        SimplePagerAdapter listPagerAdapter = new SimplePagerAdapter(this, listViewPager);
+        mListPagerAdapter = new SimplePagerAdapter(this, listViewPager);
 
         Bundle listArgs = new Bundle();
         listArgs.putSerializable("user", mUser);
-        listPagerAdapter.addTab(UserTimelineFragment.class, listArgs);
-        listPagerAdapter.addTab(FollowingListFragment.class, listArgs);
-        listPagerAdapter.addTab(FollowersListFragment.class, listArgs);
-        listPagerAdapter.addTab(UserListMembershipsFragment.class, listArgs);
-        listPagerAdapter.addTab(FavoritesListFragment.class, listArgs);
-        listPagerAdapter.notifyDataSetChanged();
+        mListPagerAdapter.addTab(UserTimelineFragment.class, listArgs);
+        mListPagerAdapter.addTab(FollowingListFragment.class, listArgs);
+        mListPagerAdapter.addTab(FollowersListFragment.class, listArgs);
+        mListPagerAdapter.addTab(UserListMembershipsFragment.class, listArgs);
+        mListPagerAdapter.addTab(FavoritesListFragment.class, listArgs);
+        mListPagerAdapter.notifyDataSetChanged();
         listViewPager.setOffscreenPageLimit(5);
 
         /**

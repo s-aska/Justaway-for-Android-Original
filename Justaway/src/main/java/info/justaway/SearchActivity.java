@@ -35,7 +35,7 @@ import twitter4j.QueryResult;
 import twitter4j.ResponseList;
 import twitter4j.SavedSearch;
 
-public class SearchActivity extends FragmentActivity {
+public class SearchActivity extends FragmentActivity implements StatusActionListener {
 
     private Context mContext;
     private EditText mSearchWords;
@@ -82,9 +82,6 @@ public class SearchActivity extends FragmentActivity {
         // Status(ツイート)をViewに描写するアダプター
         mAdapter = new TwitterAdapter(mContext, R.layout.row_tweet);
         mListView.setAdapter(mAdapter);
-
-        // ツイートに関するアクション（ふぁぼ / RT / ツイ消し）のリスナー
-        mAdapter.setStatusActionListener(new StatusActionListener(mAdapter));
 
         mListView.setOnItemClickListener(new StatusClickListener(this));
 
@@ -143,6 +140,16 @@ public class SearchActivity extends FragmentActivity {
                 }
             }
         });
+    }
+
+    @Override
+    public void onStatusAction() {
+        mAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onRemoveStatus(long statusId) {
+        mAdapter.removeStatus(statusId);
     }
 
     @Override

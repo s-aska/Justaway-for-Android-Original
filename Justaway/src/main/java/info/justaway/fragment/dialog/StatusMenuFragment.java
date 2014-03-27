@@ -1,5 +1,6 @@
 package info.justaway.fragment.dialog;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -70,12 +71,12 @@ public class StatusMenuFragment extends DialogFragment {
         return f;
     }
 
-    public StatusMenuFragment() {
-    }
-
-    public StatusMenuFragment setStatusActionListener(StatusActionListener statusActionListener) {
-        mStatusActionListener = statusActionListener;
-        return this;
+    @Override
+    public void onAttach(Activity activity){
+        super.onAttach(activity);
+        if (activity instanceof StatusActionListener) {
+            mStatusActionListener = (StatusActionListener) activity;
+        }
     }
 
     @Override
@@ -241,7 +242,9 @@ public class StatusMenuFragment extends DialogFragment {
                 @Override
                 public void run() {
                     mApplication.doDestroyFavorite(status.getId());
-                    mStatusActionListener.notifyDataSetChanged();
+                    if (mStatusActionListener != null) {
+                        mStatusActionListener.onStatusAction();
+                    }
                     dismiss();
                 }
             }));
@@ -250,7 +253,9 @@ public class StatusMenuFragment extends DialogFragment {
                 @Override
                 public void run() {
                     mApplication.doFavorite(status.getId());
-                    mStatusActionListener.notifyDataSetChanged();
+                    if (mStatusActionListener != null) {
+                        mStatusActionListener.onStatusAction();
+                    }
                     dismiss();
                 }
             }));
@@ -273,7 +278,9 @@ public class StatusMenuFragment extends DialogFragment {
                     @Override
                     public void run() {
                         mApplication.doDestroyRetweet(status);
-                        mStatusActionListener.notifyDataSetChanged();
+                        if (mStatusActionListener != null) {
+                            mStatusActionListener.onStatusAction();
+                        }
                         dismiss();
                     }
                 }));
@@ -311,7 +318,9 @@ public class StatusMenuFragment extends DialogFragment {
                 @Override
                 public void run() {
                     mApplication.doDestroyRetweet(status);
-                    mStatusActionListener.notifyDataSetChanged();
+                    if (mStatusActionListener != null) {
+                        mStatusActionListener.onStatusAction();
+                    }
                     dismiss();
                 }
             }));
@@ -335,7 +344,9 @@ public class StatusMenuFragment extends DialogFragment {
                         public void run() {
                             mApplication.doFavorite(status.getId());
                             mApplication.doRetweet(status.getId());
-                            mStatusActionListener.notifyDataSetChanged();
+                            if (mStatusActionListener != null) {
+                                mStatusActionListener.onStatusAction();
+                            }
                             dismiss();
                         }
                     }));
@@ -348,7 +359,9 @@ public class StatusMenuFragment extends DialogFragment {
                     @Override
                     public void run() {
                         mApplication.doRetweet(status.getId());
-                        mStatusActionListener.notifyDataSetChanged();
+                        if (mStatusActionListener != null) {
+                            mStatusActionListener.onStatusAction();
+                        }
                         dismiss();
                     }
                 }));

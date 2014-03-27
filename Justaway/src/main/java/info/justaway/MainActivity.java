@@ -38,6 +38,7 @@ import info.justaway.fragment.main.DirectMessagesFragment;
 import info.justaway.fragment.main.InteractionsFragment;
 import info.justaway.fragment.main.TimelineFragment;
 import info.justaway.fragment.main.UserListFragment;
+import info.justaway.listener.StatusActionListener;
 import info.justaway.model.Row;
 import info.justaway.task.DestroyDirectMessageTask;
 import info.justaway.task.ReFetchFavoriteStatus;
@@ -52,12 +53,11 @@ import twitter4j.TwitterException;
 import twitter4j.TwitterStream;
 import twitter4j.User;
 import twitter4j.UserStreamAdapter;
-import twitter4j.auth.AccessToken;
 
 /**
  * @author aska
  */
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity implements StatusActionListener {
 
     private JustawayApplication mApplication;
     private MainPagerAdapter mMainPagerAdapter;
@@ -756,8 +756,8 @@ public class MainActivity extends FragmentActivity {
             mProgressDialog.dismiss();
     }
 
-    public void notifyDataSetChanged() {
-
+    @Override
+    public void onStatusAction() {
         /**
          * 重く同期で処理すると一瞬画面が固まる
          */
@@ -771,6 +771,25 @@ public class MainActivity extends FragmentActivity {
                         TwitterAdapter twitterAdapter = fragment.getListAdapter();
                         if (twitterAdapter != null) {
                             twitterAdapter.notifyDataSetChanged();
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onRemoveStatus(final long statusId) {
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                int count = mMainPagerAdapter.getCount();
+                for (int id = 0; id < count; id++) {
+                    BaseFragment fragment = mMainPagerAdapter.findFragmentByPosition(id);
+                    if (fragment != null) {
+                        TwitterAdapter twitterAdapter = fragment.getListAdapter();
+                        if (twitterAdapter != null) {
+                            twitterAdapter.removeStatus(statusId);
                         }
                     }
                 }

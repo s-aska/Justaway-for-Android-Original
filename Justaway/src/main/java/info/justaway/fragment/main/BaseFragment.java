@@ -10,7 +10,6 @@ import android.widget.ListView;
 import info.justaway.MainActivity;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
-import info.justaway.listener.StatusActionListener;
 import info.justaway.listener.StatusClickListener;
 import info.justaway.listener.StatusLongClickListener;
 import info.justaway.model.Row;
@@ -71,7 +70,7 @@ public abstract class BaseFragment extends Fragment implements
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        final MainActivity activity = (MainActivity) getActivity();
+        MainActivity activity = (MainActivity) getActivity();
 
         // mMainPagerAdapter.notifyDataSetChanged() された時に
         // onCreateView と onActivityCreated インスタンスが生きたまま呼ばれる
@@ -83,9 +82,6 @@ public abstract class BaseFragment extends Fragment implements
         }
 
         mListView.setAdapter(mAdapter);
-
-        // ツイートに関するアクション（ふぁぼ / RT / ツイ消し）のリスナー
-        mAdapter.setStatusActionListener(new StatusActionListener(activity));
 
         mListView.setOnItemClickListener(new StatusClickListener(activity));
 

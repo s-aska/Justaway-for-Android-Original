@@ -45,9 +45,6 @@ public class TalkFragment extends DialogFragment {
         mAdapter = new TwitterAdapter(activity, R.layout.row_tweet);
         listView.setAdapter(mAdapter);
 
-        // ツイートに関するアクション（ふぁぼ / RT / ツイ消し）のリスナー
-        mAdapter.setStatusActionListener(new StatusActionListener(mAdapter));
-
         // タップ操作の登録など
         listView.setOnItemClickListener(new StatusClickListener(activity));
 
