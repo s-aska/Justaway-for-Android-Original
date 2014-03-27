@@ -38,13 +38,13 @@ public class RegisterListActivity extends FragmentActivity implements
 
         ListView listView = (ListView) findViewById(R.id.list);
 
-        mAdapter = new RegisterListAdapter(this, R.layout.row_subscribe_user_list);
-
-        listView.setAdapter(mAdapter);
-
         Intent intent = getIntent();
         Bundle args = new Bundle(1);
         args.putLong("userId", intent.getLongExtra("userId", -1));
+
+        mAdapter = new RegisterListAdapter(this, R.layout.row_subscribe_user_list, intent.getLongExtra("userId", -1));
+        listView.setAdapter(mAdapter);
+
         getSupportLoaderManager().initLoader(0, args, this);
     }
 

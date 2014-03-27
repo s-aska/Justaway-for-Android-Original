@@ -177,4 +177,8 @@
     <string name="dialog_title_draft">下書き</string>
     <string name="dialog_title_hashtag">ハッシュタグ</string>
     <string name="menu_add_to_list">リストに登録</string>
+    <string name="toast_add_to_list_failure">リスト追加に失敗しました</string>
+    <string name="toast_add_to_list_success">リスト追加に成功しました</string>
+    <string name="toast_remove_from_list_failure">リストから削除に失敗しました</string>
+    <string name="toast_remove_from_list_success">リストから削除に成功しました</string>
 </resources>
