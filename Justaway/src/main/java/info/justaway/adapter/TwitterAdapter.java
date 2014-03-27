@@ -92,21 +92,16 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
 
     private StatusActionListener mStatusActionListener;
 
-    public StatusActionListener getStatusActionListener() {
-        return mStatusActionListener;
-    }
-
-    public void setStatusActionListener(StatusActionListener statusActionListener) {
-        mStatusActionListener = statusActionListener;
-    }
-
     public TwitterAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId);
         this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.mContext = context;
         this.mLayout = textViewResourceId;
-        this.mApplication = (JustawayApplication) context.getApplicationContext();
+        this.mApplication = JustawayApplication.getApplication();
         this.isMain = mContext.getClass().getName().equals("info.justaway.MainActivity");
+        if (mContext instanceof StatusActionListener) {
+            mStatusActionListener = (StatusActionListener) mContext;
+        }
     }
 
     public void extensionAdd(Row row) {
@@ -447,7 +442,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                                                 holder.do_retweet.setTextColor(Color.parseColor("#666666"));
                                                 mApplication.doDestroyRetweet(status);
                                                 if (mStatusActionListener != null) {
-                                                    mStatusActionListener.notifyDataSetChanged();
+                                                    mStatusActionListener.onStatusAction();
                                                 }
                                                 dismiss();
                                             }
@@ -525,7 +520,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                                                     .getColor(R.color.holo_green_light));
                                             mApplication.doRetweet(status.getId());
                                             if (mStatusActionListener != null) {
-                                                mStatusActionListener.notifyDataSetChanged();
+                                                mStatusActionListener.onStatusAction();
                                             }
                                             dismiss();
                                         }
@@ -571,7 +566,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                     mApplication.doFavorite(status.getId());
                 }
                 if (mStatusActionListener != null) {
-                    mStatusActionListener.notifyDataSetChanged();
+                    mStatusActionListener.onStatusAction();
                 }
             }
         });

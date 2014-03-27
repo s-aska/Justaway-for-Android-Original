@@ -57,9 +57,6 @@ public class AroundFragment extends DialogFragment {
         mAdapter = new TwitterAdapter(activity, R.layout.row_tweet);
         listView.setAdapter(mAdapter);
 
-        // ツイートに関するアクション（ふぁぼ / RT / ツイ消し）のリスナー
-        mAdapter.setStatusActionListener(new StatusActionListener(mAdapter));
-
         listView.setOnItemClickListener(new StatusClickListener(activity));
 
         listView.setOnItemLongClickListener(new StatusLongClickListener(mAdapter, getActivity()));

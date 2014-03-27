@@ -21,7 +21,7 @@ import twitter4j.Paging;
 import twitter4j.ResponseList;
 import twitter4j.Status;
 
-public class UserListStatusesFragment extends Fragment {
+public class UserListStatusesFragment extends Fragment implements StatusActionListener {
 
     private TwitterAdapter mAdapter;
     private ListView mListView;
@@ -48,9 +48,6 @@ public class UserListStatusesFragment extends Fragment {
         mAdapter = new TwitterAdapter(getActivity(), R.layout.row_tweet);
         mListView.setAdapter(mAdapter);
 
-        // ツイートに関するアクション（ふぁぼ / RT / ツイ消し）のリスナー
-        mAdapter.setStatusActionListener(new StatusActionListener(mAdapter));
-
         mListView.setOnItemClickListener(new StatusClickListener(getActivity()));
 
         mListView.setOnItemLongClickListener(new StatusLongClickListener(mAdapter, getActivity()));
@@ -72,6 +69,16 @@ public class UserListStatusesFragment extends Fragment {
             }
         });
         return v;
+    }
+
+    @Override
+    public void onStatusAction() {
+        mAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void onRemoveStatus(long statusId) {
+        mAdapter.removeStatus(statusId);
     }
 
     private void additionalReading() {

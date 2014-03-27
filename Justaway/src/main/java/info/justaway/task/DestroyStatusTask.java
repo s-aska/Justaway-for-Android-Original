@@ -36,7 +36,7 @@ public class DestroyStatusTask extends AsyncTask<Long, Void, Boolean> {
         if (success) {
             JustawayApplication.showToast(R.string.toast_destroy_status_success);
             if (mStatusActionListener != null) {
-                mStatusActionListener.removeStatus(mStatusId);
+                mStatusActionListener.onRemoveStatus(mStatusId);
             }
         } else {
             JustawayApplication.showToast(R.string.toast_destroy_status_failure);

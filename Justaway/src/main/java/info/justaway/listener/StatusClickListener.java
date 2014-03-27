@@ -19,7 +19,6 @@ public class StatusClickListener implements AdapterView.OnItemClickListener {
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         TwitterAdapter twitterAdapter = (TwitterAdapter) adapterView.getAdapter();
         StatusMenuFragment.newInstance(twitterAdapter.getItem(i))
-                .setStatusActionListener(twitterAdapter.getStatusActionListener())
                 .show(mFragmentActivity.getSupportFragmentManager(), "dialog");
     }
 }
