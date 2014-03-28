@@ -181,4 +181,5 @@
     <string name="toast_add_to_list_success">You failed to add to list this user.</string>
     <string name="toast_remove_from_list_failure">You are now remove from list this user.</string>
     <string name="toast_remove_from_list_success">You are now remove from list this user.</string>
+    <string name="toast_connection_failure">NetWork error.</string>
 </resources>
