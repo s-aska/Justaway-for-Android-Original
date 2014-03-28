@@ -83,6 +83,10 @@ public class SignInActivity extends Activity {
 
             @Override
             protected void onPostExecute(RequestToken token) {
+                if (token == null) {
+                    JustawayApplication.showToast(R.string.toast_connection_failure);
+                    return;
+                }
                 mRequestToken = token;
                 final String url = token.getAuthorizationURL();
                 if (url == null) {
