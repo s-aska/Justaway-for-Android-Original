@@ -2,22 +2,18 @@ package info.justaway.task;
 
 import android.os.AsyncTask;
 
+import de.greenrobot.event.EventBus;
 import info.justaway.JustawayApplication;
 import info.justaway.R;
-import info.justaway.listener.StatusActionListener;
+import info.justaway.event.DestroyStatusEvent;
+import info.justaway.event.StatusActionEvent;
 
 public class DestroyStatusTask extends AsyncTask<Long, Void, Boolean> {
 
-    private StatusActionListener mStatusActionListener;
     private long mStatusId;
 
     public DestroyStatusTask(long statusId) {
         this.mStatusId = statusId;
-    }
-
-    public DestroyStatusTask setStatusActionListener(StatusActionListener statusActionListener) {
-        this.mStatusActionListener = statusActionListener;
-        return this;
     }
 
     @Override
@@ -35,9 +31,7 @@ public class DestroyStatusTask extends AsyncTask<Long, Void, Boolean> {
     protected void onPostExecute(Boolean success) {
         if (success) {
             JustawayApplication.showToast(R.string.toast_destroy_status_success);
-            if (mStatusActionListener != null) {
-                mStatusActionListener.onRemoveStatus(mStatusId);
-            }
+            EventBus.getDefault().post(new DestroyStatusEvent(mStatusId));
         } else {
             JustawayApplication.showToast(R.string.toast_destroy_status_failure);
         }

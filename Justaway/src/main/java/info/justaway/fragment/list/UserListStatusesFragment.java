@@ -10,10 +10,13 @@ import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
+import de.greenrobot.event.EventBus;
 import info.justaway.JustawayApplication;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
-import info.justaway.listener.StatusActionListener;
+import info.justaway.event.AlertDialogEvent;
+import info.justaway.event.DestroyStatusEvent;
+import info.justaway.event.StatusActionEvent;
 import info.justaway.listener.StatusClickListener;
 import info.justaway.listener.StatusLongClickListener;
 import info.justaway.model.Row;
@@ -21,7 +24,7 @@ import twitter4j.Paging;
 import twitter4j.ResponseList;
 import twitter4j.Status;
 
-public class UserListStatusesFragment extends Fragment implements StatusActionListener {
+public class UserListStatusesFragment extends Fragment {
 
     private TwitterAdapter mAdapter;
     private ListView mListView;
@@ -72,13 +75,25 @@ public class UserListStatusesFragment extends Fragment implements StatusActionLi
     }
 
     @Override
-    public void onStatusAction() {
-        mAdapter.notifyDataSetChanged();
+    public void onResume() {
+        super.onResume();
+        EventBus.getDefault().register(this);
     }
 
     @Override
-    public void onRemoveStatus(long statusId) {
-        mAdapter.removeStatus(statusId);
+    public void onPause() {
+        EventBus.getDefault().unregister(this);
+        super.onPause();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public void onEventMainThread(StatusActionEvent event) {
+        mAdapter.notifyDataSetChanged();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public void onEventMainThread(DestroyStatusEvent event) {
+        mAdapter.removeStatus(event.getStatusId());
     }
 
     private void additionalReading() {

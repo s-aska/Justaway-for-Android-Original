@@ -4,8 +4,6 @@ import android.app.ActionBar;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
@@ -16,13 +14,11 @@ import android.widget.TextView;
 import info.justaway.adapter.SimplePagerAdapter;
 import info.justaway.fragment.list.UserListStatusesFragment;
 import info.justaway.fragment.list.UserMemberFragment;
-import info.justaway.listener.StatusActionListener;
 import twitter4j.ResponseList;
 import twitter4j.UserList;
 
-public class UserListActivity extends FragmentActivity implements StatusActionListener {
+public class UserListActivity extends FragmentActivity {
 
-    private SimplePagerAdapter mPagerAdapter;
     private UserList mUserList;
     private Boolean mIsFollowing;
     private int mCurrentPosition = 0;
@@ -60,14 +56,14 @@ public class UserListActivity extends FragmentActivity implements StatusActionLi
          * スワイプで動かせるタブを実装するのに最低限必要な実装
          */
         final ViewPager viewPager = (ViewPager) findViewById(R.id.list_pager);
-        mPagerAdapter = new SimplePagerAdapter(this, viewPager);
+        SimplePagerAdapter pagerAdapter = new SimplePagerAdapter(this, viewPager);
 
         Bundle args = new Bundle();
         args.putLong("listId", mUserList.getId());
 
-        mPagerAdapter.addTab(UserMemberFragment.class, args);
-        mPagerAdapter.addTab(UserListStatusesFragment.class, args);
-        mPagerAdapter.notifyDataSetChanged();
+        pagerAdapter.addTab(UserMemberFragment.class, args);
+        pagerAdapter.addTab(UserListStatusesFragment.class, args);
+        pagerAdapter.notifyDataSetChanged();
         viewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
@@ -97,46 +93,6 @@ public class UserListActivity extends FragmentActivity implements StatusActionLi
             @Override
             public void onClick(View v) {
                 viewPager.setCurrentItem(1);
-            }
-        });
-    }
-
-    @Override
-    public void onStatusAction() {
-        if (mPagerAdapter == null) {
-            return;
-        }
-        new Handler().post(new Runnable() {
-            @Override
-            public void run() {
-                int count = mPagerAdapter.getCount();
-                for (int id = 0; id < count; id++) {
-                    Fragment fragment = mPagerAdapter.findFragmentByPosition(id);
-                    if (fragment != null && fragment instanceof StatusActionListener) {
-                        StatusActionListener statusActionListener = (StatusActionListener) fragment;
-                        statusActionListener.onStatusAction();
-                    }
-                }
-            }
-        });
-    }
-
-    @Override
-    public void onRemoveStatus(final long statusId) {
-        if (mPagerAdapter == null) {
-            return;
-        }
-        new Handler().post(new Runnable() {
-            @Override
-            public void run() {
-                int count = mPagerAdapter.getCount();
-                for (int id = 0; id < count; id++) {
-                    Fragment fragment = mPagerAdapter.findFragmentByPosition(id);
-                    if (fragment != null && fragment instanceof StatusActionListener) {
-                        StatusActionListener statusActionListener = (StatusActionListener) fragment;
-                        statusActionListener.onRemoveStatus(statusId);
-                    }
-                }
             }
         });
     }
