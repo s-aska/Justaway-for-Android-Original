@@ -74,7 +74,7 @@ public class CreateUserListActivity extends Activity {
         protected void onPostExecute(Boolean success) {
             JustawayApplication.dismissProgressDialog();
             if (success) {
-                JustawayApplication.showToast(R.string.toast_reate_user_list_success);
+                JustawayApplication.showToast(R.string.toast_create_user_list_success);
                 finish();
             } else {
                 JustawayApplication.showToast(R.string.toast_create_user_list_failure);
