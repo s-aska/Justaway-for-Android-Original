@@ -8,8 +8,6 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -21,7 +19,9 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import de.greenrobot.event.EventBus;
 import info.justaway.adapter.SimplePagerAdapter;
+import info.justaway.event.AlertDialogEvent;
 import info.justaway.fragment.profile.DescriptionFragment;
 import info.justaway.fragment.profile.FavoritesListFragment;
 import info.justaway.fragment.profile.FollowersListFragment;
@@ -29,18 +29,16 @@ import info.justaway.fragment.profile.FollowingListFragment;
 import info.justaway.fragment.profile.SummaryFragment;
 import info.justaway.fragment.profile.UserListMembershipsFragment;
 import info.justaway.fragment.profile.UserTimelineFragment;
-import info.justaway.listener.StatusActionListener;
 import info.justaway.model.Profile;
 import info.justaway.task.ShowUserLoader;
 import twitter4j.Relationship;
 import twitter4j.User;
 
 public class ProfileActivity extends FragmentActivity implements
-        LoaderManager.LoaderCallbacks<Profile>, StatusActionListener {
+        LoaderManager.LoaderCallbacks<Profile> {
 
     private ImageView mBanner;
     private User mUser;
-    private SimplePagerAdapter mListPagerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,43 +75,20 @@ public class ProfileActivity extends FragmentActivity implements
     }
 
     @Override
-    public void onStatusAction() {
-        if (mListPagerAdapter == null) {
-            return;
-        }
-        new Handler().post(new Runnable() {
-            @Override
-            public void run() {
-                int count = mListPagerAdapter.getCount();
-                for (int id = 0; id < count; id++) {
-                    Fragment fragment = mListPagerAdapter.findFragmentByPosition(id);
-                    if (fragment != null && fragment instanceof StatusActionListener) {
-                        StatusActionListener statusActionListener = (StatusActionListener) fragment;
-                        statusActionListener.onStatusAction();
-                    }
-                }
-            }
-        });
+    protected void onResume() {
+        super.onResume();
+        EventBus.getDefault().register(this);
     }
 
     @Override
-    public void onRemoveStatus(final long statusId) {
-        if (mListPagerAdapter == null) {
-            return;
-        }
-        new Handler().post(new Runnable() {
-            @Override
-            public void run() {
-                int count = mListPagerAdapter.getCount();
-                for (int id = 0; id < count; id++) {
-                    Fragment fragment = mListPagerAdapter.findFragmentByPosition(id);
-                    if (fragment != null && fragment instanceof StatusActionListener) {
-                        StatusActionListener statusActionListener = (StatusActionListener) fragment;
-                        statusActionListener.onRemoveStatus(statusId);
-                    }
-                }
-            }
-        });
+    protected void onPause() {
+        EventBus.getDefault().unregister(this);
+        super.onPause();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public void onEventMainThread(AlertDialogEvent event) {
+        event.getDialogFragment().show(getSupportFragmentManager(), "dialog");
     }
 
     @Override
@@ -281,16 +256,16 @@ public class ProfileActivity extends FragmentActivity implements
 
         // ユーザリスト用のタブ
         final ViewPager listViewPager = (ViewPager) findViewById(R.id.list_pager);
-        mListPagerAdapter = new SimplePagerAdapter(this, listViewPager);
+        SimplePagerAdapter listPagerAdapter = new SimplePagerAdapter(this, listViewPager);
 
         Bundle listArgs = new Bundle();
         listArgs.putSerializable("user", mUser);
-        mListPagerAdapter.addTab(UserTimelineFragment.class, listArgs);
-        mListPagerAdapter.addTab(FollowingListFragment.class, listArgs);
-        mListPagerAdapter.addTab(FollowersListFragment.class, listArgs);
-        mListPagerAdapter.addTab(UserListMembershipsFragment.class, listArgs);
-        mListPagerAdapter.addTab(FavoritesListFragment.class, listArgs);
-        mListPagerAdapter.notifyDataSetChanged();
+        listPagerAdapter.addTab(UserTimelineFragment.class, listArgs);
+        listPagerAdapter.addTab(FollowingListFragment.class, listArgs);
+        listPagerAdapter.addTab(FollowersListFragment.class, listArgs);
+        listPagerAdapter.addTab(UserListMembershipsFragment.class, listArgs);
+        listPagerAdapter.addTab(FavoritesListFragment.class, listArgs);
+        listPagerAdapter.notifyDataSetChanged();
         listViewPager.setOffscreenPageLimit(5);
 
         /**

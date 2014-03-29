@@ -7,9 +7,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import de.greenrobot.event.EventBus;
 import info.justaway.MainActivity;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
+import info.justaway.event.AlertDialogEvent;
+import info.justaway.event.DestroyStatusEvent;
+import info.justaway.event.StatusActionEvent;
 import info.justaway.listener.StatusClickListener;
 import info.justaway.listener.StatusLongClickListener;
 import info.justaway.model.Row;
@@ -86,6 +90,28 @@ public abstract class BaseFragment extends Fragment implements
         mListView.setOnItemClickListener(new StatusClickListener(activity));
 
         mListView.setOnItemLongClickListener(new StatusLongClickListener(mAdapter, activity));
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    public void onPause() {
+        EventBus.getDefault().unregister(this);
+        super.onPause();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public void onEventMainThread(StatusActionEvent event) {
+        mAdapter.notifyDataSetChanged();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public void onEventMainThread(DestroyStatusEvent event) {
+        mAdapter.removeStatus(event.getStatusId());
     }
 
     public void goToTop() {

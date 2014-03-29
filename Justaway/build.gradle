@@ -3,6 +3,7 @@ apply plugin: 'android'
 dependencies {
     compile "com.android.support:support-v4:19.0.+"
     compile "com.google.code.gson:gson:2.2.4"
+    compile "de.greenrobot:eventbus:2.2.0"
     def t4jVersion = "4.0.1"
     compile "org.twitter4j:twitter4j-core:${t4jVersion}"
     compile "org.twitter4j:twitter4j-async:${t4jVersion}"

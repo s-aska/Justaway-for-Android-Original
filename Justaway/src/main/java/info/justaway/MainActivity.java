@@ -12,7 +12,6 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
@@ -31,14 +30,14 @@ import android.widget.TextView;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
+import de.greenrobot.event.EventBus;
 import info.justaway.adapter.MainPagerAdapter;
-import info.justaway.adapter.TwitterAdapter;
+import info.justaway.event.AlertDialogEvent;
 import info.justaway.fragment.main.BaseFragment;
 import info.justaway.fragment.main.DirectMessagesFragment;
 import info.justaway.fragment.main.InteractionsFragment;
 import info.justaway.fragment.main.TimelineFragment;
 import info.justaway.fragment.main.UserListFragment;
-import info.justaway.listener.StatusActionListener;
 import info.justaway.model.Row;
 import info.justaway.task.DestroyDirectMessageTask;
 import info.justaway.task.ReFetchFavoriteStatus;
@@ -57,7 +56,7 @@ import twitter4j.UserStreamAdapter;
 /**
  * @author aska
  */
-public class MainActivity extends FragmentActivity implements StatusActionListener {
+public class MainActivity extends FragmentActivity {
 
     private JustawayApplication mApplication;
     private MainPagerAdapter mMainPagerAdapter;
@@ -285,6 +284,23 @@ public class MainActivity extends FragmentActivity implements StatusActionListen
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onPause() {
+        EventBus.getDefault().unregister(this);
+        super.onPause();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public void onEventMainThread(AlertDialogEvent event) {
+        event.getDialogFragment().show(getSupportFragmentManager(), "dialog");
+    }
+
+    @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
@@ -418,11 +434,6 @@ public class MainActivity extends FragmentActivity implements StatusActionListen
 
         // フォントサイズの変更や他のアクティビティでのfav/RTを反映
         mMainPagerAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
     }
 
     @Override
@@ -754,47 +765,6 @@ public class MainActivity extends FragmentActivity implements StatusActionListen
     private void dismissProgressDialog() {
         if (mProgressDialog != null)
             mProgressDialog.dismiss();
-    }
-
-    @Override
-    public void onStatusAction() {
-        /**
-         * 重く同期で処理すると一瞬画面が固まる
-         */
-        new Handler().post(new Runnable() {
-            @Override
-            public void run() {
-                int count = mMainPagerAdapter.getCount();
-                for (int id = 0; id < count; id++) {
-                    BaseFragment fragment = mMainPagerAdapter.findFragmentByPosition(id);
-                    if (fragment != null) {
-                        TwitterAdapter twitterAdapter = fragment.getListAdapter();
-                        if (twitterAdapter != null) {
-                            twitterAdapter.notifyDataSetChanged();
-                        }
-                    }
-                }
-            }
-        });
-    }
-
-    @Override
-    public void onRemoveStatus(final long statusId) {
-        new Handler().post(new Runnable() {
-            @Override
-            public void run() {
-                int count = mMainPagerAdapter.getCount();
-                for (int id = 0; id < count; id++) {
-                    BaseFragment fragment = mMainPagerAdapter.findFragmentByPosition(id);
-                    if (fragment != null) {
-                        TwitterAdapter twitterAdapter = fragment.getListAdapter();
-                        if (twitterAdapter != null) {
-                            twitterAdapter.removeStatus(statusId);
-                        }
-                    }
-                }
-            }
-        });
     }
 
     public void doDestroyDirectMessage(Long id) {

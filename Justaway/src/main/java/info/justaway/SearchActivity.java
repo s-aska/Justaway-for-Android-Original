@@ -25,8 +25,11 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.greenrobot.event.EventBus;
 import info.justaway.adapter.TwitterAdapter;
-import info.justaway.listener.StatusActionListener;
+import info.justaway.event.AlertDialogEvent;
+import info.justaway.event.DestroyStatusEvent;
+import info.justaway.event.StatusActionEvent;
 import info.justaway.listener.StatusClickListener;
 import info.justaway.listener.StatusLongClickListener;
 import info.justaway.model.Row;
@@ -35,7 +38,7 @@ import twitter4j.QueryResult;
 import twitter4j.ResponseList;
 import twitter4j.SavedSearch;
 
-public class SearchActivity extends FragmentActivity implements StatusActionListener {
+public class SearchActivity extends FragmentActivity {
 
     private Context mContext;
     private EditText mSearchWords;
@@ -143,13 +146,30 @@ public class SearchActivity extends FragmentActivity implements StatusActionList
     }
 
     @Override
-    public void onStatusAction() {
-        mAdapter.notifyDataSetChanged();
+    protected void onResume() {
+        super.onResume();
+        EventBus.getDefault().register(this);
     }
 
     @Override
-    public void onRemoveStatus(long statusId) {
-        mAdapter.removeStatus(statusId);
+    protected void onPause() {
+        EventBus.getDefault().unregister(this);
+        super.onPause();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public void onEventMainThread(AlertDialogEvent event) {
+        event.getDialogFragment().show(getSupportFragmentManager(), "dialog");
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public void onEventMainThread(StatusActionEvent event) {
+        mAdapter.notifyDataSetChanged();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public void onEventMainThread(DestroyStatusEvent event) {
+        mAdapter.removeStatus(event.getStatusId());
     }
 
     @Override

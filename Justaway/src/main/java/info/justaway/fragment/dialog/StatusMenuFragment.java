@@ -25,16 +25,17 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.greenrobot.event.EventBus;
 import info.justaway.JustawayApplication;
 import info.justaway.MainActivity;
 import info.justaway.PostActivity;
 import info.justaway.ProfileActivity;
 import info.justaway.R;
 import info.justaway.SearchActivity;
+import info.justaway.event.StatusActionEvent;
 import info.justaway.fragment.AroundFragment;
 import info.justaway.fragment.RetweetersFragment;
 import info.justaway.fragment.TalkFragment;
-import info.justaway.listener.StatusActionListener;
 import info.justaway.model.Row;
 import info.justaway.plugin.TwiccaPlugin;
 import info.justaway.settings.MuteSettings;
@@ -54,7 +55,6 @@ public class StatusMenuFragment extends DialogFragment {
     static final int CLOSED_MENU_DELAY = 800;
 
     private List<ResolveInfo> mTwiccaPlugins;
-    private StatusActionListener mStatusActionListener;
 
     public static StatusMenuFragment newInstance(Row row) {
         Bundle args = new Bundle();
@@ -74,9 +74,6 @@ public class StatusMenuFragment extends DialogFragment {
     @Override
     public void onAttach(Activity activity){
         super.onAttach(activity);
-        if (activity instanceof StatusActionListener) {
-            mStatusActionListener = (StatusActionListener) activity;
-        }
     }
 
     @Override
@@ -242,9 +239,7 @@ public class StatusMenuFragment extends DialogFragment {
                 @Override
                 public void run() {
                     mApplication.doDestroyFavorite(status.getId());
-                    if (mStatusActionListener != null) {
-                        mStatusActionListener.onStatusAction();
-                    }
+                    EventBus.getDefault().post(new StatusActionEvent(status));
                     dismiss();
                 }
             }));
@@ -253,9 +248,7 @@ public class StatusMenuFragment extends DialogFragment {
                 @Override
                 public void run() {
                     mApplication.doFavorite(status.getId());
-                    if (mStatusActionListener != null) {
-                        mStatusActionListener.onStatusAction();
-                    }
+                    EventBus.getDefault().post(new StatusActionEvent(status));
                     dismiss();
                 }
             }));
@@ -278,9 +271,7 @@ public class StatusMenuFragment extends DialogFragment {
                     @Override
                     public void run() {
                         mApplication.doDestroyRetweet(status);
-                        if (mStatusActionListener != null) {
-                            mStatusActionListener.onStatusAction();
-                        }
+                        EventBus.getDefault().post(new StatusActionEvent(status));
                         dismiss();
                     }
                 }));
@@ -297,9 +288,7 @@ public class StatusMenuFragment extends DialogFragment {
                 adapter.add(new Menu(R.string.context_menu_destroy_status, new Runnable() {
                     @Override
                     public void run() {
-                        new DestroyStatusTask(status.getId())
-                                .setStatusActionListener(mStatusActionListener)
-                                .execute();
+                        new DestroyStatusTask(status.getId()).execute();
                         dismiss();
                     }
                 }));
@@ -318,9 +307,7 @@ public class StatusMenuFragment extends DialogFragment {
                 @Override
                 public void run() {
                     mApplication.doDestroyRetweet(status);
-                    if (mStatusActionListener != null) {
-                        mStatusActionListener.onStatusAction();
-                    }
+                    EventBus.getDefault().post(new StatusActionEvent(status));
                     dismiss();
                 }
             }));
@@ -344,9 +331,7 @@ public class StatusMenuFragment extends DialogFragment {
                         public void run() {
                             mApplication.doFavorite(status.getId());
                             mApplication.doRetweet(status.getId());
-                            if (mStatusActionListener != null) {
-                                mStatusActionListener.onStatusAction();
-                            }
+                            EventBus.getDefault().post(new StatusActionEvent(status));
                             dismiss();
                         }
                     }));
@@ -359,9 +344,7 @@ public class StatusMenuFragment extends DialogFragment {
                     @Override
                     public void run() {
                         mApplication.doRetweet(status.getId());
-                        if (mStatusActionListener != null) {
-                            mStatusActionListener.onStatusAction();
-                        }
+                        EventBus.getDefault().post(new StatusActionEvent(status));
                         dismiss();
                     }
                 }));

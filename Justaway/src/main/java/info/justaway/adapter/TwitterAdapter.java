@@ -28,6 +28,7 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import de.greenrobot.event.EventBus;
 import info.justaway.BuildConfig;
 import info.justaway.JustawayApplication;
 import info.justaway.MainActivity;
@@ -35,7 +36,8 @@ import info.justaway.PostActivity;
 import info.justaway.ProfileActivity;
 import info.justaway.R;
 import info.justaway.ScaleImageActivity;
-import info.justaway.listener.StatusActionListener;
+import info.justaway.event.AlertDialogEvent;
+import info.justaway.event.StatusActionEvent;
 import info.justaway.model.Row;
 import twitter4j.DirectMessage;
 import twitter4j.MediaEntity;
@@ -90,8 +92,6 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy/MM'/'dd' 'HH':'mm':'ss",
             Locale.ENGLISH);
 
-    private StatusActionListener mStatusActionListener;
-
     public TwitterAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId);
         this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -99,9 +99,6 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         this.mLayout = textViewResourceId;
         this.mApplication = JustawayApplication.getApplication();
         this.isMain = mContext.getClass().getName().equals("info.justaway.MainActivity");
-        if (mContext instanceof StatusActionListener) {
-            mStatusActionListener = (StatusActionListener) mContext;
-        }
     }
 
     public void extensionAdd(Row row) {
@@ -441,9 +438,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                                             public void onClick(DialogInterface dialog, int which) {
                                                 holder.do_retweet.setTextColor(Color.parseColor("#666666"));
                                                 mApplication.doDestroyRetweet(status);
-                                                if (mStatusActionListener != null) {
-                                                    mStatusActionListener.onStatusAction();
-                                                }
+                                                EventBus.getDefault().post(new StatusActionEvent(status));
                                                 dismiss();
                                             }
                                         }
@@ -460,8 +455,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                                 return builder.create();
                             }
                         };
-                        FragmentActivity activity = (FragmentActivity) mContext;
-                        dialog.show(activity.getSupportFragmentManager(), "dialog");
+                        EventBus.getDefault().post(new AlertDialogEvent(dialog));
                     }
                 } else {
                     DialogFragment dialog = new DialogFragment() {
@@ -519,9 +513,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                                             holder.do_retweet.setTextColor(mContext.getResources()
                                                     .getColor(R.color.holo_green_light));
                                             mApplication.doRetweet(status.getId());
-                                            if (mStatusActionListener != null) {
-                                                mStatusActionListener.onStatusAction();
-                                            }
+                                            EventBus.getDefault().post(new StatusActionEvent(status));
                                             dismiss();
                                         }
                                     }
@@ -546,8 +538,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                             }
                         }
                     };
-                    FragmentActivity activity = (FragmentActivity) mContext;
-                    dialog.show(activity.getSupportFragmentManager(), "dialog");
+                    EventBus.getDefault().post(new AlertDialogEvent(dialog));
                 }
             }
         });
@@ -565,9 +556,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                     holder.do_fav.setTextColor(mContext.getResources().getColor(R.color.holo_orange_light));
                     mApplication.doFavorite(status.getId());
                 }
-                if (mStatusActionListener != null) {
-                    mStatusActionListener.onStatusAction();
-                }
+                EventBus.getDefault().post(new StatusActionEvent(status));
             }
         });
 
