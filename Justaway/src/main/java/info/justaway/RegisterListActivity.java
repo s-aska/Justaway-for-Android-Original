@@ -15,6 +15,7 @@ import java.util.HashMap;
 
 import info.justaway.adapter.RegisterListAdapter;
 import info.justaway.model.UserListWithRegistered;
+import info.justaway.task.RegisterUserListsLoader;
 import twitter4j.ResponseList;
 import twitter4j.UserList;
 
