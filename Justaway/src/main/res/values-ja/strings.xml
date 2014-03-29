@@ -182,4 +182,12 @@
     <string name="toast_remove_from_list_failure">リストから削除に失敗しました</string>
     <string name="toast_remove_from_list_success">リストから削除に成功しました</string>
     <string name="toast_connection_failure">ネットに接続してない</string>
+    <string name="menu_create_user_list">リストを作成</string>
+    <string name="label_user_list_name">リスト名</string>
+    <string name="label_description">説明</string>
+    <string name="radio_private">非公開</string>
+    <string name="radio_public">公開</string>
+    <string name="title_create_user_list">リストを作成</string>
+    <string name="toast_create_user_list_success">リスト作成に成功しました</string>
+    <string name="toast_create_user_list_failure">リスト作成に失敗しました</string>
 </resources>

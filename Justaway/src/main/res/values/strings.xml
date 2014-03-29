@@ -182,4 +182,12 @@
     <string name="toast_remove_from_list_failure">You are now remove from list this user.</string>
     <string name="toast_remove_from_list_success">You are now remove from list this user.</string>
     <string name="toast_connection_failure">NetWork error.</string>
+    <string name="menu_create_user_list">Create user list</string>
+    <string name="label_user_list_name">List name</string>
+    <string name="label_description">Description</string>
+    <string name="radio_private">Private</string>
+    <string name="radio_public">Public</string>
+    <string name="title_create_user_list">Create user list</string>
+    <string name="toast_create_user_list_success">You are now create list.</string>
+    <string name="toast_create_user_list_failure">You failed to create list.</string>
 </resources>

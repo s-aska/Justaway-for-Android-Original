@@ -1,0 +1,86 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:background="?attr/background"
+              android:padding="16dip">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="20dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="80dip"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/label_user_list_name"/>
+
+            <EditText
+                android:id="@+id/list_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:maxLength="25"
+                android:hint="25文字以内"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="80dip"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/label_description"/>
+
+            <EditText
+                android:id="@+id/list_description"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:maxLength="100"
+                android:hint="100文字以内"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <RadioGroup
+        android:id="@+id/privacy_radio_group"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:paddingLeft="80dp"
+        android:orientation="horizontal"
+        android:layout_marginBottom="20dp">
+
+        <RadioButton
+            android:id="@+id/public_radio"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="@string/radio_public"
+            android:layout_marginRight="24dp">
+        </RadioButton>
+
+        <RadioButton
+            android:id="@+id/private_radio"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="@string/radio_private"
+            android:checked="true">
+        </RadioButton>
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:text="@string/button_save"/>
+</LinearLayout>

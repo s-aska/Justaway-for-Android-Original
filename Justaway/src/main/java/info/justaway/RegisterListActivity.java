@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
 
@@ -50,10 +51,20 @@ public class RegisterListActivity extends FragmentActivity implements
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.register_list, menu);
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
+                break;
+            case R.id.create_user_list:
+                Intent intent = new Intent(this, CreateUserListActivity.class);
+                startActivity(intent);
                 break;
         }
         return true;
