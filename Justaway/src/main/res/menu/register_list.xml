@@ -1,0 +1,8 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/create_user_list"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/menu_create_user_list"/>
+</menu>

@@ -140,6 +140,9 @@
         <activity
             android:name=".RegisterListActivity"
             android:label="@string/title_register_list"/>
+        <activity
+            android:name=".CreateUserListActivity"
+            android:label="@string/title_create_user_list"/>
     </application>
 
 </manifest>
