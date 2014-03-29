@@ -8,12 +8,10 @@ import android.view.View;
 import android.widget.AdapterView;
 
 import info.justaway.JustawayApplication;
-import info.justaway.PostActivity;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.fragment.AroundFragment;
 import info.justaway.fragment.TalkFragment;
 import twitter4j.Status;
-import twitter4j.UserMentionEntity;
 
 public class StatusLongClickListener implements AdapterView.OnItemLongClickListener {
 
@@ -28,7 +26,8 @@ public class StatusLongClickListener implements AdapterView.OnItemLongClickListe
     @Override
     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
         Bundle args = new Bundle();
-        String action = JustawayApplication.getApplication().getLongTapAction();
+        JustawayApplication application = JustawayApplication.getApplication();
+        String action = application.getLongTapAction();
 
         if (mAdapter.getItem(position).isDirectMessage()) {
             return false;
@@ -39,9 +38,7 @@ public class StatusLongClickListener implements AdapterView.OnItemLongClickListe
         final Status source = retweet != null ? retweet : status;
 
         if (action.equals("quote")) {
-            String text = " https://twitter.com/" + status.getUser().getScreenName()
-                    + "/status/" + String.valueOf(status.getId());
-            tweet(text, 0, status);
+            application.doQuote(source, mActivity);
         } else if (action.equals("talk")) {
             if (source.getInReplyToStatusId() > 0) {
                 TalkFragment dialog = new TalkFragment();
@@ -65,34 +62,10 @@ public class StatusLongClickListener implements AdapterView.OnItemLongClickListe
                     + "/status/" + String.valueOf(status.getId()));
             mActivity.startActivity(intent);
         } else if (action.equals("reply_all")) {
-            String text = "";
-            if (status.getUser().getId() != JustawayApplication.getApplication().getUserId()) {
-                text = "@" + status.getUser().getScreenName() + " ";
-            }
-            for (UserMentionEntity mention : status.getUserMentionEntities()) {
-                if (status.getUser().getScreenName().equals(mention.getScreenName())) {
-                    continue;
-                }
-                if (JustawayApplication.getApplication().getScreenName().equals(mention.getScreenName())) {
-                    continue;
-                }
-                text = text.concat("@" + mention.getScreenName() + " ");
-            }
-            tweet(text, text.length(), status);
+            application.doReplyAll(source, mActivity);
         } else {
             return false;
         }
         return true;
-    }
-
-    private void tweet(String text, int selection, Status inReplyToStatus) {
-        Intent intent = new Intent(mActivity, PostActivity.class);
-        intent.putExtra("status", text);
-        if (selection > 0) {
-            intent.putExtra("selection", selection);
-        }
-        intent.putExtra("inReplyToStatus", inReplyToStatus);
-
-        mActivity.startActivity(intent);
     }
 }

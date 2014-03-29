@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
@@ -27,13 +28,16 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import de.greenrobot.event.EventBus;
 import info.justaway.display.FadeInRoundedBitmapDisplayer;
+import info.justaway.event.EditorEvent;
 import info.justaway.model.Row;
 import info.justaway.settings.MuteSettings;
 import info.justaway.task.FavoriteTask;
 import info.justaway.task.RetweetTask;
 import info.justaway.task.UnFavoriteTask;
 import info.justaway.task.UnRetweetTask;
+import twitter4j.DirectMessage;
 import twitter4j.ResponseList;
 import twitter4j.Status;
 import twitter4j.Twitter;
@@ -827,6 +831,88 @@ public class JustawayApplication extends Application {
             } else if (statusId != null && statusId > 0) {
                 new UnRetweetTask(retweetedStatusId, statusId).execute();
             }
+        }
+    }
+
+    public void doReply(Status status, Context context) {
+        UserMentionEntity[] mentions = status.getUserMentionEntities();
+        String text;
+        if (status.getUser().getId() == getUserId() && mentions.length == 1) {
+            text = "@" + mentions[0].getScreenName() + " ";
+        } else {
+            text = "@" + status.getUser().getScreenName() + " ";
+        }
+        if (context instanceof MainActivity) {
+            EventBus.getDefault().post(new EditorEvent(text, status, text.length(), null));
+        } else {
+            Intent intent = new Intent(this, PostActivity.class);
+            intent.putExtra("status", text);
+            intent.putExtra("selection", text.length());
+            intent.putExtra("inReplyToStatus", status);
+            startActivity(intent);
+        }
+    }
+
+    public void doReplyAll(Status status, Context context) {
+        UserMentionEntity[] mentions = status.getUserMentionEntities();
+        String text = "";
+        int selection_start = 0;
+        if (status.getUser().getId() != getUserId()) {
+            text = "@" + status.getUser().getScreenName() + " ";
+            selection_start = text.length();
+        }
+        for (UserMentionEntity mention : mentions) {
+            if (status.getUser().getId() == mention.getId()) {
+                continue;
+            }
+            if (getUserId() == mention.getId()) {
+                continue;
+            }
+            text = text.concat("@" + mention.getScreenName() + " ");
+            if (selection_start == 0) {
+                selection_start = text.length();
+            }
+        }
+        if (context instanceof MainActivity) {
+            EventBus.getDefault().post(new EditorEvent(text, status, selection_start, text.length()));
+        } else {
+            Intent intent = new Intent(this, PostActivity.class);
+            intent.putExtra("status", text);
+            intent.putExtra("selection", selection_start);
+            intent.putExtra("selection_stop", text.length());
+            intent.putExtra("inReplyToStatus", status);
+            startActivity(intent);
+        }
+    }
+
+    public void doReplyDirectMessage(DirectMessage directMessage, Context context) {
+        String text;
+        if (getUserId() == directMessage.getSender().getId()) {
+            text = "D " + directMessage.getRecipient().getScreenName() + " ";
+        } else {
+            text = "D " + directMessage.getSender().getScreenName() + " ";
+        }
+        if (context instanceof MainActivity) {
+            EventBus.getDefault().post(new EditorEvent(text, null, text.length(), null));
+        } else {
+            Intent intent = new Intent(this, PostActivity.class);
+            intent.putExtra("status", text);
+            intent.putExtra("selection", text.length());
+            startActivity(intent);
+        }
+    }
+
+    public void doQuote(Status status, Context context) {
+        String text = " https://twitter.com/"
+                + status.getUser().getScreenName()
+                + "/status/" + String.valueOf(status.getId());
+        if (context instanceof MainActivity) {
+            EventBus.getDefault().post(new EditorEvent(text, status, null, null));
+        } else {
+            Intent intent = new Intent(this, PostActivity.class);
+            intent.putExtra("status", text);
+            intent.putExtra("inReplyToStatus", status);
+            startActivity(intent);
         }
     }
 
