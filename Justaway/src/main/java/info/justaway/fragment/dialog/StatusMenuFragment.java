@@ -18,7 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -27,7 +26,6 @@ import java.util.List;
 
 import info.justaway.JustawayApplication;
 import info.justaway.MainActivity;
-import info.justaway.PostActivity;
 import info.justaway.ProfileActivity;
 import info.justaway.R;
 import info.justaway.SearchActivity;
@@ -49,8 +47,6 @@ public class StatusMenuFragment extends DialogFragment {
 
     private FragmentActivity mActivity;
     private JustawayApplication mApplication;
-
-    static final int CLOSED_MENU_DELAY = 800;
 
     private List<ResolveInfo> mTwiccaPlugins;
 
@@ -108,8 +104,7 @@ public class StatusMenuFragment extends DialogFragment {
             adapter.add(new Menu(R.string.context_menu_reply_direct_message, new Runnable() {
                 @Override
                 public void run() {
-                    String text = "D " + directMessage.getSenderScreenName() + " ";
-                    tweet(text, text.length(), null);
+                    mApplication.doReplyDirectMessage(directMessage, mActivity);
                     dismiss();
                 }
             }));
@@ -177,13 +172,7 @@ public class StatusMenuFragment extends DialogFragment {
         adapter.add(new Menu(R.string.context_menu_reply, new Runnable() {
             @Override
             public void run() {
-                String text;
-                if (source.getUser().getId() == mApplication.getUserId() && mentions.length == 1) {
-                    text = "@" + mentions[0].getScreenName() + " ";
-                } else {
-                    text = "@" + source.getUser().getScreenName() + " ";
-                }
-                tweet(text, text.length(), status);
+                mApplication.doReply(source, mActivity);
                 dismiss();
             }
         }));
@@ -195,20 +184,7 @@ public class StatusMenuFragment extends DialogFragment {
             adapter.add(new Menu(R.string.context_menu_reply_all, new Runnable() {
                 @Override
                 public void run() {
-                    String text = "";
-                    if (source.getUser().getId() != mApplication.getUserId()) {
-                        text = "@" + source.getUser().getScreenName() + " ";
-                    }
-                    for (UserMentionEntity mention : mentions) {
-                        if (source.getUser().getScreenName().equals(mention.getScreenName())) {
-                            continue;
-                        }
-                        if (mApplication.getScreenName().equals(mention.getScreenName())) {
-                            continue;
-                        }
-                        text = text.concat("@" + mention.getScreenName() + " ");
-                    }
-                    tweet(text, text.length(), status);
+                    mApplication.doReplyAll(source, mActivity);
                     dismiss();
                 }
             }));
@@ -221,9 +197,7 @@ public class StatusMenuFragment extends DialogFragment {
             adapter.add(new Menu(R.string.context_menu_qt, new Runnable() {
                 @Override
                 public void run() {
-                    String text = " https://twitter.com/" + source.getUser().getScreenName()
-                            + "/status/" + String.valueOf(source.getId());
-                    tweet(text, 0, source);
+                    mApplication.doQuote(source, mActivity);
                     dismiss();
                 }
             }));
@@ -625,39 +599,6 @@ public class StatusMenuFragment extends DialogFragment {
         }));
 
         return builder.create();
-    }
-
-    private EditText getQuickTweetEdit() {
-        View singleLineTweet = mActivity.findViewById(R.id.quick_tweet_layout);
-        if (singleLineTweet != null && singleLineTweet.getVisibility() == View.VISIBLE) {
-            return (EditText) mActivity.findViewById(R.id.quick_tweet_edit);
-        }
-        return null;
-    }
-
-    private void tweet(String text, int selection, Status inReplyToStatus) {
-        EditText editStatus = getQuickTweetEdit();
-        if (editStatus != null) {
-            editStatus.requestFocus();
-            editStatus.setText(text);
-            if (selection > 0) {
-                editStatus.setSelection(selection);
-            }
-            if (inReplyToStatus != null) {
-                ((MainActivity) mActivity).setInReplyToStatus(inReplyToStatus);
-            }
-            mApplication.showKeyboard(editStatus, CLOSED_MENU_DELAY);
-        } else {
-            Intent intent = new Intent(mActivity, PostActivity.class);
-            intent.putExtra("status", text);
-            if (selection > 0) {
-                intent.putExtra("selection", selection);
-            }
-            if (inReplyToStatus != null) {
-                intent.putExtra("inReplyToStatus", inReplyToStatus);
-            }
-            mActivity.startActivity(intent);
-        }
     }
 
     public class Menu {
