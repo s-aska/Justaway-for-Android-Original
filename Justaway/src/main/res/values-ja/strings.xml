@@ -181,4 +181,5 @@
     <string name="toast_add_to_list_success">リスト追加に成功しました</string>
     <string name="toast_remove_from_list_failure">リストから削除に失敗しました</string>
     <string name="toast_remove_from_list_success">リストから削除に成功しました</string>
+    <string name="toast_connection_failure">ネットに接続してない</string>
 </resources>
