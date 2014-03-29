@@ -138,7 +138,7 @@
             android:name=".PerformanceActivity"
             android:label="@string/title_performance"/>
         <activity
-            android:name=".RegisterListActivity"
+            android:name=".RegisterUserListActivity"
             android:label="@string/title_register_list"/>
         <activity
             android:name=".CreateUserListActivity"
