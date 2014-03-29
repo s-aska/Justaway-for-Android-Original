@@ -58,6 +58,7 @@ public class RegisterListAdapter extends ArrayAdapter<UserListWithRegistered> {
         final CheckBox checkbox = (CheckBox) view.findViewById(R.id.checkbox);
         if (checkbox != null) {
             checkbox.setText(userListWithRegistered.getUserList().getName());
+            checkbox.setOnCheckedChangeListener(null);
             checkbox.setChecked(userListWithRegistered.isRegistered());
             checkbox.setTag(userListWithRegistered.getUserList().getId());
         }
@@ -80,7 +81,7 @@ public class RegisterListAdapter extends ArrayAdapter<UserListWithRegistered> {
                             } else {
                                 JustawayApplication.showToast(R.string.toast_add_to_list_failure);
                                 userListWithRegistered.setRegistered(false);
-                                checkbox.setChecked(false);
+                                notifyDataSetChanged();
                             }
                         }
 
@@ -97,7 +98,7 @@ public class RegisterListAdapter extends ArrayAdapter<UserListWithRegistered> {
                             } else {
                                 JustawayApplication.showToast(R.string.toast_remove_from_list_failure);
                                 userListWithRegistered.setRegistered(true);
-                                checkbox.setChecked(true);
+                                notifyDataSetChanged();
                             }
                         }
                     };
