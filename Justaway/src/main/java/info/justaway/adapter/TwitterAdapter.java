@@ -9,13 +9,11 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentActivity;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TableLayout;
@@ -32,18 +30,17 @@ import de.greenrobot.event.EventBus;
 import info.justaway.BuildConfig;
 import info.justaway.JustawayApplication;
 import info.justaway.MainActivity;
-import info.justaway.PostActivity;
 import info.justaway.ProfileActivity;
 import info.justaway.R;
 import info.justaway.ScaleImageActivity;
 import info.justaway.event.AlertDialogEvent;
+import info.justaway.event.GoToTopEvent;
 import info.justaway.model.Row;
 import twitter4j.DirectMessage;
 import twitter4j.MediaEntity;
 import twitter4j.Status;
 import twitter4j.URLEntity;
 import twitter4j.User;
-import twitter4j.UserMentionEntity;
 
 public class TwitterAdapter extends ArrayAdapter<Row> {
 
@@ -272,6 +269,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         }
 
         if (isMain && position == 0) {
+            EventBus.getDefault().post(new GoToTopEvent());
             ((MainActivity) mContext).showTopView();
         }
 
@@ -297,24 +295,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             holder.do_reply.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String text = "D " + message.getSender().getScreenName() + " ";
-                    if (mContext.getClass().getName().equals("info.justaway.MainActivity")) {
-                        MainActivity activity = (MainActivity) mContext;
-                        View singleLineTweet = activity.findViewById(R.id.quick_tweet_layout);
-                        if (singleLineTweet != null && singleLineTweet.getVisibility() == View.VISIBLE) {
-                            EditText editStatus = (EditText) activity.findViewById(R.id.quick_tweet_edit);
-                            editStatus.setText(text);
-                            editStatus.setSelection(text.length());
-                            editStatus.requestFocus();
-                            mApplication.showKeyboard(editStatus);
-                            activity.setInReplyToStatus(null);
-                            return;
-                        }
-                    }
-                    Intent intent = new Intent(mContext, PostActivity.class);
-                    intent.putExtra("status", text);
-                    intent.putExtra("selection", text.length());
-                    mContext.startActivity(intent);
+                    mApplication.doReplyDirectMessage(message, mContext);
                 }
             });
         }
@@ -336,7 +317,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), ProfileActivity.class);
                 intent.putExtra("screenName", message.getSender().getScreenName());
-                mContext.startActivity(intent);
+                mApplication.startActivity(intent);
             }
         });
         holder.action.setVisibility(View.GONE);
@@ -370,45 +351,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         holder.do_reply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                UserMentionEntity[] mentions = status.getUserMentionEntities();
-                Intent intent = new Intent(mContext, PostActivity.class);
-                String text = "";
-                int selection_start = 0;
-                if (status.getUser().getId() != mApplication.getUserId()) {
-                    text = "@" + status.getUser().getScreenName() + " ";
-                    selection_start = text.length();
-                }
-                for (UserMentionEntity mention : mentions) {
-                    if (status.getUser().getScreenName().equals(mention.getScreenName())) {
-                        continue;
-                    }
-                    if (mApplication.getScreenName().equals(mention.getScreenName())) {
-                        continue;
-                    }
-                    text = text.concat("@" + mention.getScreenName() + " ");
-                    if (selection_start == 0) {
-                        selection_start = text.length();
-                    }
-                }
-
-                if (mContext.getClass().getName().equals("info.justaway.MainActivity")) {
-                    MainActivity activity = (MainActivity) mContext;
-                    View singleLineTweet = activity.findViewById(R.id.quick_tweet_layout);
-                    if (singleLineTweet != null && singleLineTweet.getVisibility() == View.VISIBLE) {
-                        EditText editStatus = (EditText) activity.findViewById(R.id.quick_tweet_edit);
-                        editStatus.setText(text);
-                        editStatus.setSelection(selection_start, text.length());
-                        editStatus.requestFocus();
-                        mApplication.showKeyboard(editStatus);
-                        activity.setInReplyToStatus(status);
-                        return;
-                    }
-                }
-                intent.putExtra("status", text);
-                intent.putExtra("selection", selection_start);
-                intent.putExtra("selection_stop", text.length());
-                intent.putExtra("inReplyToStatus", status);
-                mContext.startActivity(intent);
+                mApplication.doReplyAll(status, mContext);
             }
         });
 
@@ -449,7 +392,6 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                                             }
                                         }
                                 );
-
                                 return builder.create();
                             }
                         };
@@ -472,34 +414,12 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                                     new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
-                                            FragmentActivity activity = (FragmentActivity) mContext;
-                                            EditText editStatus = null;
-                                            View singleLineTweet = activity.findViewById(R.id.quick_tweet_layout);
-                                            if (singleLineTweet != null && singleLineTweet.getVisibility() == View.VISIBLE) {
-                                                editStatus = (EditText) activity.findViewById(R.id.quick_tweet_edit);
-                                            }
-                                            String text = " https://twitter.com/"
-                                                    + status.getUser().getScreenName()
-                                                    + "/status/" + String.valueOf(status.getId());
-                                            if (editStatus != null) {
-                                                editStatus.requestFocus();
-                                                editStatus.setText(text);
-                                                /**
-                                                 * ダイアログ閉じた後じゃないとキーボードを出せない
-                                                 */
-                                                final View view = editStatus;
-                                                mOnDismiss = new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        mApplication.showKeyboard(view);
-                                                    }
-                                                };
-                                                return;
-                                            }
-                                            Intent intent = new Intent(activity, PostActivity.class);
-                                            intent.putExtra("status", text);
-                                            intent.putExtra("inReplyToStatusId", status.getId());
-                                            startActivity(intent);
+                                            mOnDismiss = new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    mApplication.doQuote(status, mContext);
+                                                }
+                                            };
                                             dismiss();
                                         }
                                     }
@@ -523,7 +443,6 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                                         }
                                     }
                             );
-
                             return builder.create();
                         }
 

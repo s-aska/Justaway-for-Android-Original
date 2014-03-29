@@ -33,6 +33,8 @@ import java.util.ArrayList;
 import de.greenrobot.event.EventBus;
 import info.justaway.adapter.MainPagerAdapter;
 import info.justaway.event.AlertDialogEvent;
+import info.justaway.event.EditorEvent;
+import info.justaway.event.GoToTopEvent;
 import info.justaway.fragment.main.BaseFragment;
 import info.justaway.fragment.main.DirectMessagesFragment;
 import info.justaway.fragment.main.InteractionsFragment;
@@ -295,9 +297,56 @@ public class MainActivity extends FragmentActivity {
         super.onPause();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        if (mTwitterStream != null && isFinishing()) {
+            mTwitterStream.cleanUp();
+            mTwitterStream.shutdown();
+        }
+    }
+
     @SuppressWarnings("UnusedDeclaration")
     public void onEventMainThread(AlertDialogEvent event) {
         event.getDialogFragment().show(getSupportFragmentManager(), "dialog");
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public void onEventMainThread(GoToTopEvent event) {
+        showTopView();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public void onEventMainThread(EditorEvent event) {
+        View singleLineTweet = findViewById(R.id.quick_tweet_layout);
+        if (singleLineTweet != null && singleLineTweet.getVisibility() == View.VISIBLE) {
+            EditText editStatus = (EditText) findViewById(R.id.quick_tweet_edit);
+            editStatus.setText( event.getText());
+            if (event.getSelectionStart() != null) {
+                if (event.getSelectionStop() != null) {
+                    editStatus.setSelection(event.getSelectionStart(), event.getSelectionStop());
+                } else {
+                    editStatus.setSelection(event.getSelectionStart());
+                }
+            }
+            setInReplyToStatus(event.getInReplyToStatus());
+            editStatus.requestFocus();
+            mApplication.showKeyboard(editStatus);
+        } else {
+            Intent intent = new Intent(this, PostActivity.class);
+            intent.putExtra("status",  event.getText());
+            if (event.getSelectionStart() != null) {
+                intent.putExtra("selection", event.getSelectionStart());
+            }
+            if (event.getSelectionStop() != null) {
+                intent.putExtra("selection_stop", event.getSelectionStop());
+            }
+            if (event.getInReplyToStatus() != null) {
+                intent.putExtra("inReplyToStatus", event.getInReplyToStatus());
+            }
+            startActivity(intent);
+        }
     }
 
     @Override
@@ -434,16 +483,6 @@ public class MainActivity extends FragmentActivity {
 
         // フォントサイズの変更や他のアクティビティでのfav/RTを反映
         mMainPagerAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        if (mTwitterStream != null && isFinishing()) {
-            mTwitterStream.cleanUp();
-            mTwitterStream.shutdown();
-        }
     }
 
     @Override
