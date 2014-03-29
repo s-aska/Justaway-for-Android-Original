@@ -120,7 +120,7 @@ public class ProfileActivity extends FragmentActivity implements
                 startActivity(intent);
                 break;
             case R.id.add_to_list:
-                intent = new Intent(this, RegisterListActivity.class);
+                intent = new Intent(this, RegisterUserListActivity.class);
                 intent.putExtra("userId", mUser.getId());
                 startActivity(intent);
                 break;

@@ -21,7 +21,7 @@ import twitter4j.ResponseList;
 import twitter4j.UserList;
 
 
-public class RegisterListActivity extends FragmentActivity implements
+public class RegisterUserListActivity extends FragmentActivity implements
         LoaderManager.LoaderCallbacks<ArrayList<ResponseList<UserList>>> {
 
     private RegisterListAdapter mAdapter;
