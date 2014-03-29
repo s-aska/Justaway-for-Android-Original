@@ -1,10 +1,10 @@
-package info.justaway;
+package info.justaway.task;
 
 import android.content.Context;
 
 import java.util.ArrayList;
 
-import info.justaway.task.AbstractAsyncTaskLoader;
+import info.justaway.JustawayApplication;
 import twitter4j.ResponseList;
 import twitter4j.TwitterException;
 import twitter4j.UserList;
