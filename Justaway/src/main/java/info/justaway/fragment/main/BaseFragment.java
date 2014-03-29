@@ -11,7 +11,6 @@ import de.greenrobot.event.EventBus;
 import info.justaway.MainActivity;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
-import info.justaway.event.AlertDialogEvent;
 import info.justaway.event.DestroyStatusEvent;
 import info.justaway.event.StatusActionEvent;
 import info.justaway.listener.StatusClickListener;

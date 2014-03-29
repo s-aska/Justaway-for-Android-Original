@@ -37,7 +37,6 @@ import info.justaway.ProfileActivity;
 import info.justaway.R;
 import info.justaway.ScaleImageActivity;
 import info.justaway.event.AlertDialogEvent;
-import info.justaway.event.StatusActionEvent;
 import info.justaway.model.Row;
 import twitter4j.DirectMessage;
 import twitter4j.MediaEntity;
@@ -438,7 +437,6 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                                             public void onClick(DialogInterface dialog, int which) {
                                                 holder.do_retweet.setTextColor(Color.parseColor("#666666"));
                                                 mApplication.doDestroyRetweet(status);
-                                                EventBus.getDefault().post(new StatusActionEvent(status));
                                                 dismiss();
                                             }
                                         }
@@ -513,7 +511,6 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                                             holder.do_retweet.setTextColor(mContext.getResources()
                                                     .getColor(R.color.holo_green_light));
                                             mApplication.doRetweet(status.getId());
-                                            EventBus.getDefault().post(new StatusActionEvent(status));
                                             dismiss();
                                         }
                                     }
@@ -556,7 +553,6 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                     holder.do_fav.setTextColor(mContext.getResources().getColor(R.color.holo_orange_light));
                     mApplication.doFavorite(status.getId());
                 }
-                EventBus.getDefault().post(new StatusActionEvent(status));
             }
         });
 
