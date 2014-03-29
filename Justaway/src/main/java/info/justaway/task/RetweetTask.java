@@ -2,8 +2,10 @@ package info.justaway.task;
 
 import android.os.AsyncTask;
 
+import de.greenrobot.event.EventBus;
 import info.justaway.JustawayApplication;
 import info.justaway.R;
+import info.justaway.event.StatusActionEvent;
 import twitter4j.TwitterException;
 
 public class RetweetTask extends AsyncTask<Void, Void, TwitterException> {
@@ -16,6 +18,7 @@ public class RetweetTask extends AsyncTask<Void, Void, TwitterException> {
         mStatusId = statusId;
         mApplication = JustawayApplication.getApplication();
         mApplication.setRtId(statusId, (long) 0);
+        EventBus.getDefault().post(new StatusActionEvent());
     }
 
     @Override
@@ -38,6 +41,7 @@ public class RetweetTask extends AsyncTask<Void, Void, TwitterException> {
         } else if (e.getErrorCode() == ERROR_CODE_DUPLICATE) {
             JustawayApplication.showToast(R.string.toast_retweet_already);
         } else {
+            EventBus.getDefault().post(new StatusActionEvent());
             JustawayApplication.showToast(R.string.toast_retweet_failure);
         }
     }

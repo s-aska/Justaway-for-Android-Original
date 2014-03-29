@@ -25,14 +25,12 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.greenrobot.event.EventBus;
 import info.justaway.JustawayApplication;
 import info.justaway.MainActivity;
 import info.justaway.PostActivity;
 import info.justaway.ProfileActivity;
 import info.justaway.R;
 import info.justaway.SearchActivity;
-import info.justaway.event.StatusActionEvent;
 import info.justaway.fragment.AroundFragment;
 import info.justaway.fragment.RetweetersFragment;
 import info.justaway.fragment.TalkFragment;
@@ -239,7 +237,6 @@ public class StatusMenuFragment extends DialogFragment {
                 @Override
                 public void run() {
                     mApplication.doDestroyFavorite(status.getId());
-                    EventBus.getDefault().post(new StatusActionEvent(status));
                     dismiss();
                 }
             }));
@@ -248,7 +245,6 @@ public class StatusMenuFragment extends DialogFragment {
                 @Override
                 public void run() {
                     mApplication.doFavorite(status.getId());
-                    EventBus.getDefault().post(new StatusActionEvent(status));
                     dismiss();
                 }
             }));
@@ -271,7 +267,6 @@ public class StatusMenuFragment extends DialogFragment {
                     @Override
                     public void run() {
                         mApplication.doDestroyRetweet(status);
-                        EventBus.getDefault().post(new StatusActionEvent(status));
                         dismiss();
                     }
                 }));
@@ -307,7 +302,6 @@ public class StatusMenuFragment extends DialogFragment {
                 @Override
                 public void run() {
                     mApplication.doDestroyRetweet(status);
-                    EventBus.getDefault().post(new StatusActionEvent(status));
                     dismiss();
                 }
             }));
@@ -331,7 +325,6 @@ public class StatusMenuFragment extends DialogFragment {
                         public void run() {
                             mApplication.doFavorite(status.getId());
                             mApplication.doRetweet(status.getId());
-                            EventBus.getDefault().post(new StatusActionEvent(status));
                             dismiss();
                         }
                     }));
@@ -344,7 +337,6 @@ public class StatusMenuFragment extends DialogFragment {
                     @Override
                     public void run() {
                         mApplication.doRetweet(status.getId());
-                        EventBus.getDefault().post(new StatusActionEvent(status));
                         dismiss();
                     }
                 }));
