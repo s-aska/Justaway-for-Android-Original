@@ -177,9 +177,9 @@
     <string name="dialog_title_draft">Drafts</string>
     <string name="dialog_title_hashtag">Hashtags</string>
     <string name="menu_add_to_list">Add to list</string>
-    <string name="toast_add_to_list_failure">You are now add to list this user.</string>
-    <string name="toast_add_to_list_success">You failed to add to list this user.</string>
-    <string name="toast_remove_from_list_failure">You are now remove from list this user.</string>
+    <string name="toast_add_to_list_failure">You failed to add to list this user.</string>
+    <string name="toast_add_to_list_success">You are now add to list this user.</string>
+    <string name="toast_remove_from_list_failure">You failed to remove from list this user.</string>
     <string name="toast_remove_from_list_success">You are now remove from list this user.</string>
     <string name="toast_connection_failure">NetWork error.</string>
     <string name="menu_create_user_list">Create user list</string>
