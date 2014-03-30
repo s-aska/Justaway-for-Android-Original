@@ -189,6 +189,7 @@ public class JustawayApplication extends Application {
         } else if (getUserIconSize().equals("mini")) {
             url = user.getMiniProfileImageURL();
         } else {
+            view.setVisibility(View.GONE);
             return;
         }
         if (getUserIconRoundedOn()) {
@@ -469,6 +470,7 @@ public class JustawayApplication extends Application {
     private String mLongTapAction;
     private String mThemeName;
     private Boolean mUserIconRounded;
+    private Boolean mDisplayThumbnail;
     private String mUserIconSize;
     private int mPageCount;
 
@@ -518,6 +520,7 @@ public class JustawayApplication extends Application {
         mThemeName = preferences.getString("themeName", "black");
         mUserIconRounded = preferences.getBoolean("user_icon_rounded_on", true);
         mUserIconSize = preferences.getString("user_icon_size", "bigger");
+        mDisplayThumbnail = preferences.getBoolean("display_thumbnail_on", true);
         mPageCount = Integer.parseInt(preferences.getString("page_count", "200"));
     }
 
@@ -537,6 +540,15 @@ public class JustawayApplication extends Application {
         SharedPreferences preferences = getSharedPreferences(PREF_NAME_SETTINGS, Context.MODE_PRIVATE);
         mUserIconSize = preferences.getString("user_icon_size", "bigger");
         return mUserIconSize;
+    }
+
+    public boolean getDisplayThumbnailOn() {
+        if (mDisplayThumbnail != null) {
+            return mDisplayThumbnail;
+        }
+        SharedPreferences preferences = getSharedPreferences(PREF_NAME_SETTINGS, Context.MODE_PRIVATE);
+        mDisplayThumbnail = preferences.getBoolean("display_thumbnail_on", true);
+        return mDisplayThumbnail;
     }
 
     public int getPageCount() {

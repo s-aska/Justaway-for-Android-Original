@@ -89,6 +89,12 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     private int mLimit = LIMIT;
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy/MM'/'dd' 'HH':'mm':'ss",
             Locale.ENGLISH);
+    private static final Pattern TWITPIC_PATTERN = Pattern.compile("^http://twitpic\\.com/(\\w+)$");
+    private static final Pattern TWIPPLE_PATTERN = Pattern.compile("^http://p\\.twipple\\.jp/(\\w+)$");
+    private static final Pattern INSTAGRAM_PATTERN = Pattern.compile("^http://instagram\\.com/p/([^/]+)/$");
+    private static final Pattern IMAGES_PATTERN = Pattern.compile("^https?://.*\\.(png|gif|jpeg|jpg)$");
+    private static final Pattern YOUTUBE_PATTERN = Pattern.compile("^https?://(?:www\\.youtube\\.com/watch\\?.*v=|youtu\\.be/)([\\w-]+)");
+    private static final Pattern NICONICO_PATTERN = Pattern.compile("^http://(?:www\\.nicovideo\\.jp/watch|nico\\.ms)/sm(\\d+)$");
 
     public TwitterAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId);
@@ -464,7 +470,12 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                 holder.menu_and_via.setVisibility(View.VISIBLE);
                 holder.action.setVisibility(View.VISIBLE);
             } else {
-                mApplication.displayRoundedImage(retweet.getUser().getProfileImageURL(), holder.retweet_icon);
+                if (mApplication.getUserIconSize().equals("none")) {
+                    holder.retweet_icon.setVisibility(View.GONE);
+                } else {
+                    holder.retweet_icon.setVisibility(View.VISIBLE);
+                    mApplication.displayRoundedImage(retweet.getUser().getProfileImageURL(), holder.retweet_icon);
+                }
                 holder.retweet_by.setText("RT by " + retweet.getUser().getName() + " @" + retweet.getUser().getScreenName());
                 holder.action.setVisibility(View.GONE);
                 holder.menu_and_via.setVisibility(View.VISIBLE);
@@ -503,56 +514,56 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             }
         });
 
-        MediaEntity[] medias = retweet != null ? retweet.getMediaEntities() : status
-                .getMediaEntities();
+        boolean displayThumbnail = mApplication.getDisplayThumbnailOn();
         URLEntity[] urls = retweet != null ? retweet.getURLEntities() : status.getURLEntities();
         ArrayList<String> imageUrls = new ArrayList<String>();
-        Pattern twitpic_pattern = Pattern.compile("^http://twitpic\\.com/(\\w+)$");
-        Pattern twipple_pattern = Pattern.compile("^http://p\\.twipple\\.jp/(\\w+)$");
-        Pattern instagram_pattern = Pattern.compile("^http://instagram\\.com/p/([^/]+)/$");
-        Pattern images_pattern = Pattern.compile("^https?://.*\\.(png|gif|jpeg|jpg)$");
-        Pattern youtube_pattern = Pattern.compile("^https?://(?:www\\.youtube\\.com/watch\\?.*v=|youtu\\.be/)([\\w-]+)");
-        Pattern niconico_pattern = Pattern.compile("^http://(?:www\\.nicovideo\\.jp/watch|nico\\.ms)/sm(\\d+)$");
         String statusString = status.getText();
         for (URLEntity url : urls) {
             Pattern p = Pattern.compile(url.getURL());
             Matcher m = p.matcher(statusString);
             statusString = m.replaceAll(url.getExpandedURL());
-
-            Matcher twitpic_matcher = twitpic_pattern.matcher(url.getExpandedURL());
+            if (!displayThumbnail) {
+                continue;
+            }
+            Matcher twitpic_matcher = TWITPIC_PATTERN.matcher(url.getExpandedURL());
             if (twitpic_matcher.find()) {
                 imageUrls.add("http://twitpic.com/show/full/" + twitpic_matcher.group(1));
                 continue;
             }
-            Matcher twipple_matcher = twipple_pattern.matcher(url.getExpandedURL());
+            Matcher twipple_matcher = TWIPPLE_PATTERN.matcher(url.getExpandedURL());
             if (twipple_matcher.find()) {
                 imageUrls.add("http://p.twpl.jp/show/orig/" + twipple_matcher.group(1));
                 continue;
             }
-            Matcher instagram_matcher = instagram_pattern.matcher(url.getExpandedURL());
+            Matcher instagram_matcher = INSTAGRAM_PATTERN.matcher(url.getExpandedURL());
             if (instagram_matcher.find()) {
                 imageUrls.add(url.getExpandedURL() + "media?size=l");
                 continue;
             }
-            Matcher youtube_matcher = youtube_pattern.matcher(url.getExpandedURL());
+            Matcher youtube_matcher = YOUTUBE_PATTERN.matcher(url.getExpandedURL());
             if (youtube_matcher.find()) {
                 imageUrls.add("http://i.ytimg.com/vi/" + youtube_matcher.group(1) + "/hqdefault.jpg");
                 continue;
             }
-            Matcher niconico_matcher = niconico_pattern.matcher(url.getExpandedURL());
+            Matcher niconico_matcher = NICONICO_PATTERN.matcher(url.getExpandedURL());
             if (niconico_matcher.find()) {
                 int id = Integer.valueOf(niconico_matcher.group(1));
                 int host = id % 4 + 1;
                 imageUrls.add("http://tn-skr" + host + ".smilevideo.jp/smile?i=" + id + ".L");
                 continue;
             }
-            Matcher images_matcher = images_pattern.matcher(url.getExpandedURL());
+            Matcher images_matcher = IMAGES_PATTERN.matcher(url.getExpandedURL());
             if (images_matcher.find()) {
                 imageUrls.add(url.getExpandedURL());
             }
         }
         holder.status.setText(statusString);
 
+        if (!displayThumbnail) {
+            holder.images.setVisibility(View.GONE);
+            return;
+        }
+        MediaEntity[] medias = retweet != null ? retweet.getMediaEntities() : status.getMediaEntities();
         for (MediaEntity media : medias) {
             imageUrls.add(media.getMediaURL());
         }

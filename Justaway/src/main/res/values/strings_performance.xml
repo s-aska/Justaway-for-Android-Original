@@ -5,15 +5,20 @@
 
     <string name="pref_title_user_icon_size">Icon image quality</string>
     <string-array name="pref_user_icon_size_titles">
+        <item>none</item>
         <item>low</item>
         <item>middle</item>
         <item>high</item>
     </string-array>
     <string-array name="pref_user_icon_size_values">
+        <item>none</item>
         <item>mini</item>
         <item>normal</item>
         <item>bigger</item>
     </string-array>
+
+    <string name="pref_title_display_thumbnail_on">Display Thumbnail</string>
+    <string name="pref_description_display_thumbnail_on">Display thumbnail images that are attached.</string>
 
     <string name="pref_title_page_count">Number of records to additional</string>
     <string-array name="pref_page_count_titles">
