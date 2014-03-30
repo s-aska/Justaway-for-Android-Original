@@ -21,7 +21,6 @@ import static android.app.AlertDialog.Builder;
 public class UpdateProfileImageFragment extends DialogFragment {
 
     private File mImgPath;
-    private Uri mUri;
 
     public static UpdateProfileImageFragment newInstance(File imgPath, Uri uri) {
         final Bundle args = new Bundle(2);
@@ -39,7 +38,7 @@ public class UpdateProfileImageFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         mImgPath = (File) getArguments().get("imgPath");
-        mUri = (Uri) getArguments().get("uri");
+        Uri uri = (Uri) getArguments().get("uri");
 
         Builder builder = new Builder(getActivity());
 
@@ -53,7 +52,7 @@ public class UpdateProfileImageFragment extends DialogFragment {
         image.setLayoutParams(new LinearLayout.LayoutParams(
                 340,
                 340));
-        JustawayApplication.getApplication().displayImage(mUri.toString(), image);
+        JustawayApplication.getApplication().displayImage(uri.toString(), image);
         layout.addView(image);
         builder.setView(layout);
 

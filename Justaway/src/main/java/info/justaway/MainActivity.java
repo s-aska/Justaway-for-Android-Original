@@ -64,7 +64,6 @@ public class MainActivity extends FragmentActivity {
     private MainPagerAdapter mMainPagerAdapter;
     private ViewPager mViewPager;
     private ProgressDialog mProgressDialog;
-    ActionBar mActionBar;
     private TextView mTitle;
     private TextView mSignalButton;
     private static final int REQUEST_CHOOSE_USER_LIST = 100;
@@ -125,16 +124,16 @@ public class MainActivity extends FragmentActivity {
         // クイックモード時に起動と同時にキーボードが出現するのを抑止
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-        mActionBar = getActionBar();
-        if (mActionBar != null) {
-            int options = mActionBar.getDisplayOptions();
+        ActionBar actionBar = getActionBar();
+        if (actionBar != null) {
+            int options = actionBar.getDisplayOptions();
             if ((options & ActionBar.DISPLAY_SHOW_CUSTOM) == ActionBar.DISPLAY_SHOW_CUSTOM) {
-                mActionBar.setDisplayOptions(options ^ ActionBar.DISPLAY_SHOW_CUSTOM);
+                actionBar.setDisplayOptions(options ^ ActionBar.DISPLAY_SHOW_CUSTOM);
             } else {
-                mActionBar.setDisplayOptions(options | ActionBar.DISPLAY_SHOW_CUSTOM);
-                if (mActionBar.getCustomView() == null) {
-                    mActionBar.setCustomView(R.layout.action_bar_main);
-                    ViewGroup group = (ViewGroup) mActionBar.getCustomView();
+                actionBar.setDisplayOptions(options | ActionBar.DISPLAY_SHOW_CUSTOM);
+                if (actionBar.getCustomView() == null) {
+                    actionBar.setCustomView(R.layout.action_bar_main);
+                    ViewGroup group = (ViewGroup) actionBar.getCustomView();
                     mTitle = (TextView) group.findViewById(R.id.title);
                     mSignalButton = (TextView) group.findViewById(R.id.signal);
                     mSignalButton.setTypeface(JustawayApplication.getFontello());
