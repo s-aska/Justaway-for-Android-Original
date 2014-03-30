@@ -15,6 +15,8 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -45,6 +47,7 @@ import info.justaway.task.DestroyDirectMessageTask;
 import info.justaway.task.ReFetchFavoriteStatus;
 import info.justaway.task.SendDirectMessageTask;
 import info.justaway.task.UpdateStatusTask;
+import info.justaway.util.TwitterUtil;
 import twitter4j.ConnectionLifeCycleListener;
 import twitter4j.DirectMessage;
 import twitter4j.Status;
@@ -213,6 +216,43 @@ public class MainActivity extends FragmentActivity {
                 startActivity(intent);
             }
         });
+
+        final int defaultTextColor = JustawayApplication.getApplication().getThemeTextColor(this, R.attr.menu_text_color);
+        ((EditText) findViewById(R.id.quick_tweet_edit)).addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+                int textColor;
+                int length = TwitterUtil.count(charSequence.toString());
+                // 140文字をオーバーした時は文字数を赤色に
+                if (length < 0) {
+                    textColor = Color.RED;
+                } else {
+                    textColor = defaultTextColor;
+                }
+                TextView count = ((TextView) findViewById(R.id.count));
+                count.setTextColor(textColor);
+                count.setText(String.valueOf(length));
+
+                Button tweet = (Button) findViewById(R.id.action_tweet);
+                if (length < 0 || length == 140) {
+                    // 文字数が0文字または140文字以上の時はボタンを無効
+                    tweet.setEnabled(false);
+                } else {
+                    tweet.setEnabled(true);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
         tweet.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
