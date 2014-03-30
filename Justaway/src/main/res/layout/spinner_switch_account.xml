@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="?android:attr/listPreferredItemHeight"
               android:baselineAligned="false"
@@ -7,7 +8,8 @@
               android:paddingTop="8dip"
               android:paddingBottom="8dip"
               android:paddingLeft="8dp"
-              android:paddingRight="8dp">
+              android:paddingRight="8dp"
+              tools:ignore="UseCompoundDrawables">
 
     <ImageView
         android:id="@+id/icon"
