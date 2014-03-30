@@ -369,92 +369,17 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                     if (id == 0) {
                         JustawayApplication.showToast(R.string.toast_destroy_retweet_progress);
                     } else {
-                        DialogFragment dialog = new DialogFragment() {
-                            @Override
-                            public Dialog onCreateDialog(Bundle savedInstanceState) {
-                                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                                builder.setTitle(R.string.confirm_destroy_retweet);
-                                builder.setMessage(status.getText());
-                                builder.setPositiveButton(getString(R.string.button_destroy_retweet),
-                                        new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                holder.do_retweet.setTextColor(Color.parseColor("#666666"));
-                                                mApplication.doDestroyRetweet(status);
-                                                dismiss();
-                                            }
-                                        }
-                                );
-                                builder.setNegativeButton(getString(R.string.button_cancel),
-                                        new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                dismiss();
-                                            }
-                                        }
-                                );
-                                return builder.create();
-                            }
-                        };
+                        DialogFragment dialog = new DestroyRetweetDialogFragment();
+                        Bundle args = new Bundle(1);
+                        args.putSerializable("status", status);
+                        dialog.setArguments(args);
                         EventBus.getDefault().post(new AlertDialogEvent(dialog));
                     }
                 } else {
-                    DialogFragment dialog = new DialogFragment() {
-
-                        /**
-                         * ダイアログ閉じたあとの処理を定義できるようにしておく
-                         */
-                        private Runnable mOnDismiss;
-
-                        @Override
-                        public Dialog onCreateDialog(Bundle savedInstanceState) {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                            builder.setTitle(R.string.confirm_retweet);
-                            builder.setMessage(status.getText());
-                            builder.setNeutralButton(getString(R.string.button_quote),
-                                    new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            mOnDismiss = new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    mApplication.doQuote(status, mContext);
-                                                }
-                                            };
-                                            dismiss();
-                                        }
-                                    }
-                            );
-                            builder.setPositiveButton(getString(R.string.button_retweet),
-                                    new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            holder.do_retweet.setTextColor(mContext.getResources()
-                                                    .getColor(R.color.holo_green_light));
-                                            mApplication.doRetweet(status.getId());
-                                            dismiss();
-                                        }
-                                    }
-                            );
-                            builder.setNegativeButton(getString(R.string.button_cancel),
-                                    new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            dismiss();
-                                        }
-                                    }
-                            );
-                            return builder.create();
-                        }
-
-                        @Override
-                        public void onDismiss(DialogInterface dialog) {
-                            super.onDismiss(dialog);
-                            if (mOnDismiss != null) {
-                                mOnDismiss.run();
-                            }
-                        }
-                    };
+                    DialogFragment dialog = new RetweetDialogFragment();
+                    Bundle args = new Bundle(1);
+                    args.putSerializable("status", status);
+                    dialog.setArguments(args);
                     EventBus.getDefault().post(new AlertDialogEvent(dialog));
                 }
             }
@@ -673,5 +598,76 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
 
     private String getAbsoluteTime(Date date) {
         return DATE_FORMAT.format(date);
+    }
+
+    public static final class RetweetDialogFragment extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            final Status status = (Status) getArguments().getSerializable("status");
+            if (status == null) {
+                return null;
+            }
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle(R.string.confirm_retweet);
+            builder.setMessage(status.getText());
+            builder.setNeutralButton(getString(R.string.button_quote),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            JustawayApplication.getApplication().doQuote(status, getActivity());
+                            dismiss();
+                        }
+                    }
+            );
+            builder.setPositiveButton(getString(R.string.button_retweet),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            JustawayApplication.getApplication().doRetweet(status.getId());
+                            dismiss();
+                        }
+                    }
+            );
+            builder.setNegativeButton(getString(R.string.button_cancel),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dismiss();
+                        }
+                    }
+            );
+            return builder.create();
+        }
+    }
+
+    public static final class DestroyRetweetDialogFragment extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            final Status status = (Status) getArguments().getSerializable("status");
+            if (status == null) {
+                return null;
+            }
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle(R.string.confirm_destroy_retweet);
+            builder.setMessage(status.getText());
+            builder.setPositiveButton(getString(R.string.button_destroy_retweet),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            JustawayApplication.getApplication().doDestroyRetweet(status);
+                            dismiss();
+                        }
+                    }
+            );
+            builder.setNegativeButton(getString(R.string.button_cancel),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dismiss();
+                        }
+                    }
+            );
+            return builder.create();
+        }
     }
 }
