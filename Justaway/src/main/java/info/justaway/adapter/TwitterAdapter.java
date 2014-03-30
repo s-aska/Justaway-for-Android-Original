@@ -1,5 +1,6 @@
 package info.justaway.adapter;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -82,6 +83,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     private ArrayList<Row> mStatuses = new ArrayList<Row>();
     private LayoutInflater mInflater;
     private int mLayout;
+    private int mColorBlue = 0;
     private Boolean isMain;
     private static final int LIMIT = 100;
     private int mLimit = LIMIT;
@@ -94,7 +96,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         this.mContext = context;
         this.mLayout = textViewResourceId;
         this.mApplication = JustawayApplication.getApplication();
-        this.isMain = mContext.getClass().getName().equals("info.justaway.MainActivity");
+        this.isMain = mContext instanceof MainActivity;
     }
 
     public void extensionAdd(Row row) {
@@ -270,7 +272,6 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
 
         if (isMain && position == 0) {
             EventBus.getDefault().post(new GoToTopEvent());
-            ((MainActivity) mContext).showTopView();
         }
 
         return view;
@@ -503,7 +504,10 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
          */
         if (BuildConfig.DEBUG) {
             if (via.equals("Justaway for Android")) {
-                holder.via.setTextColor(mContext.getResources().getColor(R.color.holo_blue_light));
+                if (mColorBlue == 0) {
+                    mColorBlue = mApplication.getThemeTextColor((Activity) mContext, R.attr.holo_blue);
+                }
+                holder.via.setTextColor(mColorBlue);
             } else {
                 holder.via.setTextColor(Color.parseColor("#666666"));
             }
