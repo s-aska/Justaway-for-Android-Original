@@ -417,6 +417,19 @@ public class StatusMenuFragment extends DialogFragment {
         LongSparseArray<Boolean> users = new LongSparseArray<Boolean>();
 
         /**
+         * ツイートした人
+         */
+        users.put(source.getUser().getId(), true);
+        adapter.add(new Menu("@" + source.getUser().getScreenName(), new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(mActivity, ProfileActivity.class);
+                intent.putExtra("screenName", source.getUser().getScreenName());
+                mActivity.startActivity(intent);
+            }
+        }));
+
+        /**
          * ふぁぼした人
          */
         final User favoriteSourceUser = (User) getArguments().getSerializable("favoriteSourceUser");

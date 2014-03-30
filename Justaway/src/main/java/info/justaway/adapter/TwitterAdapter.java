@@ -318,7 +318,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), ProfileActivity.class);
                 intent.putExtra("screenName", message.getSender().getScreenName());
-                mApplication.startActivity(intent);
+                mContext.startActivity(intent);
             }
         });
         holder.action.setVisibility(View.GONE);
