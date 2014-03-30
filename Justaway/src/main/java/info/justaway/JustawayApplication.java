@@ -845,11 +845,11 @@ public class JustawayApplication extends Application {
         if (context instanceof MainActivity) {
             EventBus.getDefault().post(new EditorEvent(text, status, text.length(), null));
         } else {
-            Intent intent = new Intent(this, PostActivity.class);
+            Intent intent = new Intent(context, PostActivity.class);
             intent.putExtra("status", text);
             intent.putExtra("selection", text.length());
             intent.putExtra("inReplyToStatus", status);
-            startActivity(intent);
+            context.startActivity(intent);
         }
     }
 
@@ -876,12 +876,12 @@ public class JustawayApplication extends Application {
         if (context instanceof MainActivity) {
             EventBus.getDefault().post(new EditorEvent(text, status, selection_start, text.length()));
         } else {
-            Intent intent = new Intent(this, PostActivity.class);
+            Intent intent = new Intent(context, PostActivity.class);
             intent.putExtra("status", text);
             intent.putExtra("selection", selection_start);
             intent.putExtra("selection_stop", text.length());
             intent.putExtra("inReplyToStatus", status);
-            startActivity(intent);
+            context.startActivity(intent);
         }
     }
 
@@ -895,10 +895,10 @@ public class JustawayApplication extends Application {
         if (context instanceof MainActivity) {
             EventBus.getDefault().post(new EditorEvent(text, null, text.length(), null));
         } else {
-            Intent intent = new Intent(this, PostActivity.class);
+            Intent intent = new Intent(context, PostActivity.class);
             intent.putExtra("status", text);
             intent.putExtra("selection", text.length());
-            startActivity(intent);
+            context.startActivity(intent);
         }
     }
 
@@ -909,10 +909,10 @@ public class JustawayApplication extends Application {
         if (context instanceof MainActivity) {
             EventBus.getDefault().post(new EditorEvent(text, status, null, null));
         } else {
-            Intent intent = new Intent(this, PostActivity.class);
+            Intent intent = new Intent(context, PostActivity.class);
             intent.putExtra("status", text);
             intent.putExtra("inReplyToStatus", status);
-            startActivity(intent);
+            context.startActivity(intent);
         }
     }
 
