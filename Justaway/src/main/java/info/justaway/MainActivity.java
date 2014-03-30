@@ -183,7 +183,7 @@ public class MainActivity extends FragmentActivity {
         Button interactions = (Button) findViewById(R.id.action_interactions);
         Button directMessage = (Button) findViewById(R.id.action_direct_message);
         Button tweet = (Button) findViewById(R.id.action_tweet);
-        Button send = (Button) findViewById(R.id.send);
+        final Button send = (Button) findViewById(R.id.send);
         findViewById(R.id.action_timeline).setSelected(true);
         home.setTypeface(fontello);
         interactions.setTypeface(fontello);
@@ -238,12 +238,11 @@ public class MainActivity extends FragmentActivity {
                 count.setTextColor(textColor);
                 count.setText(String.valueOf(length));
 
-                Button tweet = (Button) findViewById(R.id.action_tweet);
                 if (length < 0 || length == 140) {
                     // 文字数が0文字または140文字以上の時はボタンを無効
-                    tweet.setEnabled(false);
+                    send.setEnabled(false);
                 } else {
-                    tweet.setEnabled(true);
+                    send.setEnabled(true);
                 }
             }
 
