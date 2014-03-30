@@ -5,15 +5,20 @@
 
     <string name="pref_title_user_icon_size">アイコン画質</string>
     <string-array name="pref_user_icon_size_titles">
+        <item>なし</item>
         <item>低</item>
         <item>中</item>
         <item>高</item>
     </string-array>
     <string-array name="pref_user_icon_size_values">
+        <item>none</item>
         <item>mini</item>
         <item>normal</item>
         <item>bigger</item>
     </string-array>
+
+    <string name="pref_title_display_thumbnail_on">サムネイルを表示する</string>
+    <string name="pref_description_display_thumbnail_on">添付された画像をサムネイル表示します</string>
 
     <string name="pref_title_page_count">追加読み込み件数</string>
     <string-array name="pref_page_count_titles">
