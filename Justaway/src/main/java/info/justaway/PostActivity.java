@@ -55,6 +55,7 @@ import info.justaway.plugin.TwiccaPlugin;
 import info.justaway.settings.PostStockSettings;
 import info.justaway.task.SendDirectMessageTask;
 import info.justaway.task.UpdateStatusTask;
+import info.justaway.util.TwitterUtil;
 import twitter4j.Status;
 import twitter4j.StatusUpdate;
 import twitter4j.TwitterException;
@@ -67,7 +68,6 @@ public class PostActivity extends FragmentActivity {
     private static final int REQUEST_TWICCA = 3;
     private static final int OPTION_MENU_GROUP_TWICCA = 1;
     private static final int ERROR_CODE_DUPLICATE_STATUS = 187;
-    private static final Pattern URL_PATTERN = Pattern.compile("(http://|https://)[\\w\\.\\-/:\\#\\?\\=\\&\\;\\%\\~\\+]+");
 
     private Activity mContext;
     private EditText mEditText;
@@ -597,16 +597,8 @@ public class PostActivity extends FragmentActivity {
 
     private void updateCount(String str) {
         int textColor;
-        int length = str.codePointCount(0, str.length());
 
-        // 短縮URLを考慮
-        Matcher matcher = URL_PATTERN.matcher(str);
-        while (matcher.find()) {
-            length = length - matcher.group().length() + 22;
-            if (matcher.group().contains("https://")) ++length;
-        }
-
-        length = 140 - length;
+        int length = TwitterUtil.count(str);
         // 140文字をオーバーした時は文字数を赤色に
         if (length < 0) {
             textColor = Color.RED;
