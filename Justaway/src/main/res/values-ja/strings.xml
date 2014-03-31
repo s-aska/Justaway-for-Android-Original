@@ -190,4 +190,6 @@
     <string name="title_create_user_list">リストを作成</string>
     <string name="toast_create_user_list_success">リスト作成に成功しました</string>
     <string name="toast_create_user_list_failure">リスト作成に失敗しました</string>
+    <string name="label_created_by">さんが作成</string>
+    <string name="label_members">人のメンバー</string>
 </resources>

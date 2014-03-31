@@ -22,7 +22,7 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
     private final ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
 
     private static final class TabInfo {
-        private final Class<?> mClazz;
+        private final Class<? extends Fragment> mClazz;
         private final Bundle mArgs;
         private String mTabTitle;
         private final long mId;
@@ -35,7 +35,7 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
          * @param tabTitle タブのタイトル
          * @param id       タブの識別子、タブの取得に利用する
          */
-        TabInfo(Class<?> clazz, Bundle args, String tabTitle, long id) {
+        TabInfo(Class<? extends Fragment> clazz, Bundle args, String tabTitle, long id) {
             this.mClazz = clazz;
             this.mArgs = args;
             this.mTabTitle = tabTitle;
@@ -100,7 +100,7 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
      * @param tabTitle タブのタイトル
      * @param id       タブの識別子、タブの取得に利用する
      */
-    public void addTab(Class<?> clazz, Bundle args, String tabTitle, long id) {
+    public void addTab(Class<? extends Fragment> clazz, Bundle args, String tabTitle, long id) {
         TabInfo info = new TabInfo(clazz, args, tabTitle, id);
         mTabs.add(info);
     }

@@ -11,8 +11,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import info.justaway.JustawayApplication;
 import info.justaway.ProfileActivity;
@@ -21,6 +19,14 @@ import twitter4j.URLEntity;
 import twitter4j.User;
 
 public class UserAdapter extends ArrayAdapter<User> {
+
+    static class ViewHolder {
+        TextView screen_name;
+        TextView display_name;
+        TextView description;
+        TextView fontello_lock;
+    }
+
     private ArrayList<User> mUsers = new ArrayList<User>();
     private Context mContext;
     private LayoutInflater mInflater;
@@ -43,6 +49,7 @@ public class UserAdapter extends ArrayAdapter<User> {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         // ビューを受け取る
+        ViewHolder holder;
         View view = convertView;
         if (view == null) {
             // 受け取ったビューがnullなら新しくビューを生成
@@ -50,6 +57,14 @@ public class UserAdapter extends ArrayAdapter<User> {
             if (view == null) {
                 return null;
             }
+            holder = new ViewHolder();
+            holder.screen_name = ((TextView) view.findViewById(R.id.screen_name));
+            holder.display_name = ((TextView) view.findViewById(R.id.display_name));
+            holder.description = ((TextView) view.findViewById(R.id.description));
+            holder.fontello_lock = ((TextView) view.findViewById(R.id.fontello_lock));
+            view.setTag(holder);
+        } else {
+            holder = (ViewHolder) view.getTag();
         }
 
         final User user = mUsers.get(position);
@@ -58,33 +73,28 @@ public class UserAdapter extends ArrayAdapter<User> {
         String iconUrl = user.getBiggerProfileImageURL();
         JustawayApplication.getApplication().displayRoundedImage(iconUrl, icon);
 
-        ((TextView) view.findViewById(R.id.display_name)).setText(user.getName());
-        ((TextView) view.findViewById(R.id.screen_name)).setText("@" + user.getScreenName());
+        holder.display_name.setText(user.getName());
+        holder.screen_name.setText("@" + user.getScreenName());
 
-        TextView description = (TextView) view.findViewById(R.id.description);
-
-        if (user.getDescription() != null && user.getDescription().length() > 0) {
-            String descriptionString = user.getDescription();
-            if (user.getDescriptionURLEntities() != null) {
-                URLEntity[] urls = user.getDescriptionURLEntities();
-                for (URLEntity descriptionUrl : urls) {
-                    Pattern p = Pattern.compile(descriptionUrl.getURL());
-                    Matcher m = p.matcher(descriptionString);
-                    descriptionString = m.replaceAll(descriptionUrl.getExpandedURL());
-                }
+        String descriptionString = user.getDescription();
+        if (descriptionString != null && descriptionString.length() > 0) {
+            URLEntity[] urls = user.getDescriptionURLEntities();
+            for (URLEntity descriptionUrl : urls) {
+                descriptionString = descriptionString.replaceAll(descriptionUrl.getURL(),
+                        descriptionUrl.getExpandedURL());
             }
-            description.setText(descriptionString);
-            description.setVisibility(View.VISIBLE);
+            holder.description.setText(descriptionString);
+            holder.description.setVisibility(View.VISIBLE);
         } else {
-            description.setVisibility(View.GONE);
+            holder.description.setVisibility(View.GONE);
         }
 
         Typeface fontello = JustawayApplication.getFontello();
         if (user.isProtected()) {
-            ((TextView) view.findViewById(R.id.fontello_lock)).setTypeface(fontello);
-            view.findViewById(R.id.fontello_lock).setVisibility(View.VISIBLE);
+            holder.fontello_lock.setTypeface(fontello);
+            holder.fontello_lock.setVisibility(View.VISIBLE);
         } else {
-            view.findViewById(R.id.fontello_lock).setVisibility(View.INVISIBLE);
+            holder.fontello_lock.setVisibility(View.INVISIBLE);
         }
 
         view.setOnClickListener(new View.OnClickListener() {
