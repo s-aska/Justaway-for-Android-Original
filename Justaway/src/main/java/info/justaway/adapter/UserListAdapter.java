@@ -19,6 +19,13 @@ import twitter4j.UserList;
 
 public class UserListAdapter extends ArrayAdapter<UserList> {
 
+    static class ViewHolder {
+        TextView list_name;
+        TextView screen_name;
+        TextView description;
+        TextView member_count;
+    }
+
     private JustawayApplication mApplication;
     private ArrayList<UserList> mUserLists = new ArrayList<UserList>();
     private Context mContext;
@@ -43,6 +50,7 @@ public class UserListAdapter extends ArrayAdapter<UserList> {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         // ビューを受け取る
+        ViewHolder holder;
         View view = convertView;
         if (view == null) {
             // 受け取ったビューがnullなら新しくビューを生成
@@ -50,6 +58,14 @@ public class UserListAdapter extends ArrayAdapter<UserList> {
             if (view == null) {
                 return null;
             }
+            holder = new ViewHolder();
+            holder.list_name = ((TextView) view.findViewById(R.id.list_name));
+            holder.screen_name = ((TextView) view.findViewById(R.id.screen_name));
+            holder.description = ((TextView) view.findViewById(R.id.description));
+            holder.member_count = ((TextView) view.findViewById(R.id.member_count));
+            view.setTag(holder);
+        } else {
+            holder = (ViewHolder) view.getTag();
         }
 
         final UserList userList = mUserLists.get(position);
@@ -58,10 +74,12 @@ public class UserListAdapter extends ArrayAdapter<UserList> {
         String iconUrl = userList.getUser().getBiggerProfileImageURL();
         mApplication.displayRoundedImage(iconUrl, icon);
 
-        ((TextView) view.findViewById(R.id.list_name)).setText(userList.getName());
-        ((TextView) view.findViewById(R.id.screen_name)).setText(userList.getUser().getScreenName() + "さんが作成");
-        ((TextView) view.findViewById(R.id.description)).setText(userList.getDescription());
-        ((TextView) view.findViewById(R.id.member_count)).setText(userList.getMemberCount() + "人のメンバー");
+        holder.list_name.setText(userList.getName());
+        holder.screen_name.setText(userList.getUser().getScreenName()
+                .concat(mContext.getString(R.string.label_created_by)));
+        holder.description.setText(userList.getDescription());
+        holder.member_count.setText(String.valueOf(userList.getMemberCount())
+                .concat(mContext.getString(R.string.label_members)));
 
         icon.setOnClickListener(new View.OnClickListener() {
             @Override

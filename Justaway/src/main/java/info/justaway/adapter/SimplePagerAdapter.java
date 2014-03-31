@@ -13,7 +13,6 @@ import java.util.ArrayList;
  * タブの切替毎に必要なFragmentを取得するためのAdapterクラス
  */
 public class SimplePagerAdapter extends FragmentPagerAdapter {
-    private ViewPager mViewPager;
     private final Context mContext;
     private final ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
 
@@ -36,7 +35,6 @@ public class SimplePagerAdapter extends FragmentPagerAdapter {
     public SimplePagerAdapter(FragmentActivity context, ViewPager viewPager) {
         super(context.getSupportFragmentManager());
         viewPager.setAdapter(this);
-        mViewPager = viewPager;
         mContext = context;
     }
 
@@ -44,10 +42,6 @@ public class SimplePagerAdapter extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         TabInfo info = mTabs.get(position);
         return Fragment.instantiate(mContext, info.clazz.getName(), info.args);
-    }
-
-    public Fragment findFragmentByPosition(int position) {
-        return (Fragment) instantiateItem(mViewPager, position);
     }
 
     /**
