@@ -1,9 +1,11 @@
 package info.justaway.adapter;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,22 +16,24 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import de.greenrobot.event.EventBus;
 import info.justaway.JustawayApplication;
 import info.justaway.R;
+import info.justaway.event.AlertDialogEvent;
 import info.justaway.model.UserListWithRegistered;
+import info.justaway.task.DestroyUserListSubscriptionTask;
+import info.justaway.task.DestroyUserListTask;
 import twitter4j.UserList;
 
 public class SubscribeUserListAdapter extends ArrayAdapter<UserListWithRegistered> {
 
     private ArrayList<UserListWithRegistered> mUserLists = new ArrayList<UserListWithRegistered>();
-    private Context mContext;
     private LayoutInflater mInflater;
     private JustawayApplication mApplication;
     private int mLayout;
 
     public SubscribeUserListAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId);
-        this.mContext = context;
         this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.mLayout = textViewResourceId;
         this.mApplication = JustawayApplication.getApplication();
@@ -45,6 +49,15 @@ public class SubscribeUserListAdapter extends ArrayAdapter<UserListWithRegistere
     public void remove(UserListWithRegistered userListWithRegistered) {
         super.remove(userListWithRegistered);
         mUserLists.remove(userListWithRegistered);
+    }
+
+    public UserListWithRegistered findByUserListId(Long userListId) {
+        for (UserListWithRegistered userListWithRegistered : mUserLists) {
+            if (userListWithRegistered.getUserList().getId() == userListId) {
+                return userListWithRegistered;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -69,96 +82,20 @@ public class SubscribeUserListAdapter extends ArrayAdapter<UserListWithRegistere
             @Override
             public void onClick(View view) {
 
-                // 自分のリストの場合はリスト削除
                 if (mApplication.getUserId() == userList.getUser().getId()) {
-                    new AlertDialog.Builder(mContext)
-                            .setTitle(R.string.confirm_destroy_user_list)
-                            .setPositiveButton(
-                                    R.string.button_yes,
-                                    new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            new AsyncTask<Void, Void, Boolean>() {
-                                                @Override
-                                                protected Boolean doInBackground(Void... params) {
-                                                    try {
-                                                        mApplication.getTwitter().destroyUserList(userList.getId());
-                                                        return true;
-                                                    } catch (Exception e) {
-                                                        e.printStackTrace();
-                                                        return false;
-                                                    }
-                                                }
-
-                                                @Override
-                                                protected void onPostExecute(Boolean success) {
-                                                    if (success) {
-                                                        JustawayApplication.showToast(R.string.toast_destroy_user_list_success);
-                                                        remove(userListWithRegistered);
-                                                        mApplication.getUserLists().remove(userList);
-                                                    } else {
-                                                        JustawayApplication.showToast(R.string.toast_destroy_user_list_failure);
-                                                    }
-                                                }
-                                            }.execute();
-                                        }
-                                    }
-                            )
-                            .setNegativeButton(
-                                    R.string.button_no,
-                                    new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                        }
-                                    }
-                            )
-                            .show();
-                }
-
-                // 他人のリストの場合はリストの購読解除
-                else {
-                    new AlertDialog.Builder(mContext)
-                            .setTitle(R.string.confirm_destroy_user_list_subscribe)
-                            .setPositiveButton(
-                                    R.string.button_yes,
-                                    new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            new AsyncTask<Void, Void, Boolean>() {
-                                                @Override
-                                                protected Boolean doInBackground(Void... params) {
-                                                    try {
-                                                        mApplication.getTwitter().destroyUserListSubscription(userList.getId());
-                                                        return true;
-                                                    } catch (Exception e) {
-                                                        e.printStackTrace();
-                                                        return false;
-                                                    }
-                                                }
-
-                                                @Override
-                                                protected void onPostExecute(Boolean success) {
-                                                    if (success) {
-                                                        JustawayApplication.showToast(R.string.toast_destroy_user_list_subscription_success);
-                                                        remove(userListWithRegistered);
-                                                        mApplication.getUserLists().remove(userList);
-                                                    } else {
-                                                        JustawayApplication.showToast(R.string.toast_destroy_user_list_subscription_failure);
-                                                    }
-                                                }
-                                            }.execute();
-                                        }
-                                    }
-                            )
-                            .setNegativeButton(
-                                    R.string.button_no,
-                                    new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                        }
-                                    }
-                            )
-                            .show();
+                    // 自分のリストの場合はリスト削除
+                    DialogFragment dialog = new DestroyUserListDialogFragment();
+                    Bundle args = new Bundle(1);
+                    args.putSerializable("userList", userList);
+                    dialog.setArguments(args);
+                    EventBus.getDefault().post(new AlertDialogEvent(dialog));
+                } else {
+                    // 他人のリストの場合はリストの購読解除
+                    DialogFragment dialog = new DestroyUserListSubscriptionDialogFragment();
+                    Bundle args = new Bundle(1);
+                    args.putSerializable("userList", userList);
+                    dialog.setArguments(args);
+                    EventBus.getDefault().post(new AlertDialogEvent(dialog));
                 }
             }
         });
@@ -181,5 +118,67 @@ public class SubscribeUserListAdapter extends ArrayAdapter<UserListWithRegistere
         }
 
         return view;
+    }
+
+    public static final class DestroyUserListDialogFragment extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            final UserList userList = (UserList) getArguments().getSerializable("userList");
+            if (userList == null) {
+                return null;
+            }
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle(R.string.confirm_destroy_user_list);
+            builder.setMessage(userList.getName());
+            builder.setPositiveButton(getString(R.string.button_yes),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            new DestroyUserListTask(userList).execute();
+                            dismiss();
+                        }
+                    }
+            );
+            builder.setNegativeButton(getString(R.string.button_no),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dismiss();
+                        }
+                    }
+            );
+            return builder.create();
+        }
+    }
+
+    public static final class DestroyUserListSubscriptionDialogFragment extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            final UserList userList = (UserList) getArguments().getSerializable("userList");
+            if (userList == null) {
+                return null;
+            }
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle(R.string.confirm_destroy_user_list_subscribe);
+            builder.setMessage(userList.getName());
+            builder.setPositiveButton(getString(R.string.button_yes),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            new DestroyUserListSubscriptionTask(userList).execute();
+                            dismiss();
+                        }
+                    }
+            );
+            builder.setNegativeButton(getString(R.string.button_no),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dismiss();
+                        }
+                    }
+            );
+            return builder.create();
+        }
     }
 }

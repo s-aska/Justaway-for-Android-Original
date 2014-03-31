@@ -12,7 +12,10 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 
+import de.greenrobot.event.EventBus;
 import info.justaway.adapter.SubscribeUserListAdapter;
+import info.justaway.event.AlertDialogEvent;
+import info.justaway.event.DestroyUserListEvent;
 import info.justaway.model.UserListWithRegistered;
 import info.justaway.task.UserListsLoader;
 import twitter4j.ResponseList;
@@ -72,6 +75,31 @@ public class ChooseUserListsActivity extends FragmentActivity implements
         });
 
         getSupportLoaderManager().initLoader(0, null, this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onPause() {
+        EventBus.getDefault().unregister(this);
+        super.onPause();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public void onEventMainThread(AlertDialogEvent event) {
+        event.getDialogFragment().show(getSupportFragmentManager(), "dialog");
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public void onEventMainThread(DestroyUserListEvent event) {
+        UserListWithRegistered userListWithRegistered = mAdapter.findByUserListId(event.getUserListId());
+        if (userListWithRegistered != null) {
+            mAdapter.remove(userListWithRegistered);
+        }
     }
 
     @Override
