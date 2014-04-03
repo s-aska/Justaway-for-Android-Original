@@ -48,8 +48,6 @@ import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import info.justaway.plugin.TwiccaPlugin;
 import info.justaway.settings.PostStockSettings;
@@ -310,6 +308,7 @@ public class PostActivity extends FragmentActivity {
                                 } else {
                                     mImgPath = null;
                                     mTweetButton.setEnabled(false);
+                                    JustawayApplication.getApplication().setThemeTextColor(mContext, mImgButton, R.attr.menu_text_color);
                                 }
                             } else if (e.getErrorCode() == ERROR_CODE_DUPLICATE_STATUS) {
                                 JustawayApplication.showToast(getString(R.string.toast_update_status_already));
@@ -467,7 +466,11 @@ public class PostActivity extends FragmentActivity {
                     JustawayApplication.getApplication().setThemeTextColor(mContext, mImgButton, R.attr.menu_text_color_disabled);
                     mImgButton.setEnabled(false);
                 } else {
-                    JustawayApplication.getApplication().setThemeTextColor(mContext, mImgButton, R.attr.menu_text_color);
+                    if (mImgPath == null) {
+                        JustawayApplication.getApplication().setThemeTextColor(mContext, mImgButton, R.attr.menu_text_color);
+                    } else {
+                        JustawayApplication.getApplication().setThemeTextColor(mContext, mImgButton, R.attr.holo_blue);
+                    }
                     mImgButton.setEnabled(true);
                 }
             }
@@ -589,7 +592,7 @@ public class PostActivity extends FragmentActivity {
             }
             inputStream.close();
             outputStream.close();
-        } catch(Exception e) {
+        } catch (Exception e) {
             return null;
         }
         return file;
