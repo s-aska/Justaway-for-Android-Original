@@ -13,6 +13,7 @@ import info.justaway.JustawayApplication;
 import info.justaway.MainActivity;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
+import info.justaway.event.CreateStatusEvent;
 import info.justaway.model.Row;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
@@ -127,6 +128,10 @@ public class InteractionsFragment extends BaseFragment {
             }
         }
         return true;
+    }
+
+    public void onEventMainThread(CreateStatusEvent event) {
+        add(event.getRow());
     }
 
     /**

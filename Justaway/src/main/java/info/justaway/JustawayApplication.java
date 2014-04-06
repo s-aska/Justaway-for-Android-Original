@@ -29,8 +29,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import de.greenrobot.event.EventBus;
+import info.justaway.adapter.JustawayUserStreamAdapter;
 import info.justaway.display.FadeInRoundedBitmapDisplayer;
 import info.justaway.event.EditorEvent;
+import info.justaway.listener.JustawayConnectionLifeCycleListener;
 import info.justaway.model.Row;
 import info.justaway.settings.MuteSettings;
 import info.justaway.task.FavoriteTask;
@@ -731,6 +733,36 @@ public class JustawayApplication extends Application {
                 .setOAuthConsumerSecret(getConsumerSecret()).setOAuthAccessToken(token.getToken())
                 .setOAuthAccessTokenSecret(token.getTokenSecret()).build();
         return new TwitterStreamFactory(conf).getInstance();
+    }
+
+    private TwitterStream mTwitterStream;
+    private JustawayUserStreamAdapter mUserStreamAdapter;
+    private JustawayConnectionLifeCycleListener mConnectionLifeCycleListener;
+
+    public void startStreaming() {
+        if (!getStreamingMode()) {
+            return;
+        }
+        if (mTwitterStream != null) {
+            mTwitterStream.cleanUp();
+            mTwitterStream.shutdown();
+            mTwitterStream.setOAuthAccessToken(getAccessToken());
+        } else {
+            mTwitterStream = getTwitterStream();
+            mUserStreamAdapter = new JustawayUserStreamAdapter();
+            mTwitterStream.addListener(mUserStreamAdapter);
+            mConnectionLifeCycleListener = new JustawayConnectionLifeCycleListener();
+            mTwitterStream.addConnectionLifeCycleListener(mConnectionLifeCycleListener);
+        }
+        mTwitterStream.user();
+
+    }
+
+    public void stopStreaming() {
+        if (mTwitterStream != null) {
+            mTwitterStream.cleanUp();
+            mTwitterStream.shutdown();
+        }
     }
 
     public void removeAccessToken(int position) {

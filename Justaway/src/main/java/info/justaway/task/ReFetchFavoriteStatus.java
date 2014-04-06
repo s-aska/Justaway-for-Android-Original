@@ -2,19 +2,18 @@ package info.justaway.task;
 
 import android.os.AsyncTask;
 
+import de.greenrobot.event.EventBus;
 import info.justaway.JustawayApplication;
-import info.justaway.fragment.main.BaseFragment;
+import info.justaway.event.CreateFavoriteEvent;
 import info.justaway.model.Row;
 
 public class ReFetchFavoriteStatus extends AsyncTask<Row, Void, twitter4j.Status> {
 
-    private BaseFragment mFragment;
     private Row mRow;
     // TODO: use http://cdn.api.twitter.com/1/urls/count.json
 
-    public ReFetchFavoriteStatus(BaseFragment fragment) {
+    public ReFetchFavoriteStatus() {
         super();
-        this.mFragment = fragment;
     }
 
     @Override
@@ -32,7 +31,7 @@ public class ReFetchFavoriteStatus extends AsyncTask<Row, Void, twitter4j.Status
     protected void onPostExecute(twitter4j.Status status) {
         if (status != null) {
             mRow.setStatus(status);
-            mFragment.add(mRow);
+            EventBus.getDefault().post(new CreateFavoriteEvent(mRow));
             JustawayApplication.showToast(mRow.getSource().getScreenName() + " fav "
                     + mRow.getStatus().getText());
         }

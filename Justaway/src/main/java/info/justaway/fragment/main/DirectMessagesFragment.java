@@ -16,6 +16,8 @@ import info.justaway.JustawayApplication;
 import info.justaway.MainActivity;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
+import info.justaway.event.CreateStatusEvent;
+import info.justaway.event.DestroyDirectMessageEvent;
 import info.justaway.model.Row;
 import twitter4j.DirectMessage;
 import twitter4j.Paging;
@@ -86,6 +88,10 @@ public class DirectMessagesFragment extends BaseFragment {
         mFooter.setVisibility(View.VISIBLE);
         mAutoLoader = false;
         new DirectMessagesTask().execute();
+    }
+
+    public void onEventMainThread(DestroyDirectMessageEvent event) {
+        remove(event.getStatusId());
     }
 
     /**
