@@ -11,6 +11,7 @@ import de.greenrobot.event.EventBus;
 import info.justaway.MainActivity;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
+import info.justaway.event.CreateStatusEvent;
 import info.justaway.event.DestroyStatusEvent;
 import info.justaway.event.StatusActionEvent;
 import info.justaway.listener.StatusClickListener;
@@ -108,9 +109,12 @@ public abstract class BaseFragment extends Fragment implements
         mAdapter.notifyDataSetChanged();
     }
 
-    @SuppressWarnings("UnusedDeclaration")
     public void onEventMainThread(DestroyStatusEvent event) {
         mAdapter.removeStatus(event.getStatusId());
+    }
+
+    public void onEventMainThread(CreateStatusEvent event) {
+        add(event.getRow());
     }
 
     public void goToTop() {

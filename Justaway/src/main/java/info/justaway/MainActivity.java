@@ -37,7 +37,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 import de.greenrobot.event.EventBus;
@@ -45,26 +44,22 @@ import info.justaway.adapter.MainPagerAdapter;
 import info.justaway.event.AlertDialogEvent;
 import info.justaway.event.EditorEvent;
 import info.justaway.event.GoToTopEvent;
+import info.justaway.event.UnFavoriteEvent;
+import info.justaway.event.UserStreamingOnCleanupEvent;
+import info.justaway.event.UserStreamingOnConnectEvent;
+import info.justaway.event.UserStreamingOnDisconnectEvent;
 import info.justaway.fragment.main.BaseFragment;
 import info.justaway.fragment.main.DirectMessagesFragment;
 import info.justaway.fragment.main.InteractionsFragment;
 import info.justaway.fragment.main.TimelineFragment;
 import info.justaway.fragment.main.UserListFragment;
-import info.justaway.model.Row;
 import info.justaway.task.DestroyDirectMessageTask;
-import info.justaway.task.ReFetchFavoriteStatus;
 import info.justaway.task.SendDirectMessageTask;
 import info.justaway.task.UpdateStatusTask;
 import info.justaway.util.TwitterUtil;
-import twitter4j.ConnectionLifeCycleListener;
-import twitter4j.DirectMessage;
 import twitter4j.Status;
-import twitter4j.StatusDeletionNotice;
 import twitter4j.StatusUpdate;
 import twitter4j.TwitterException;
-import twitter4j.TwitterStream;
-import twitter4j.User;
-import twitter4j.UserStreamAdapter;
 import twitter4j.auth.AccessToken;
 
 /**
@@ -85,26 +80,6 @@ public class MainActivity extends FragmentActivity {
     private static final long TAB_ID_TIMELINE = -1L;
     private static final long TAB_ID_INTERACTIONS = -2L;
     private static final long TAB_ID_DIRECT_MESSAGE = -3L;
-
-    /*
-     * Activity よりも寿命が長いインスタンスたち(画面回転後もストリームを切らないようにするため)
-     */
-    private TwitterStream mTwitterStream;
-    private MyUserStreamAdapter mUserStreamAdapter;
-    private MyConnectionLifeCycleListener mConnectionLifeCycleListener;
-    // ここまで
-
-    private static final class StreamHolder {
-        public final TwitterStream twitterStream;
-        public final MyUserStreamAdapter userStreamAdapter;
-        public final MyConnectionLifeCycleListener connectionLifeCycleListener;
-
-        private StreamHolder(TwitterStream twitterStream, MyUserStreamAdapter userStreamAdapter, MyConnectionLifeCycleListener connectionLifeCycleListener) {
-            this.twitterStream = twitterStream;
-            this.userStreamAdapter = userStreamAdapter;
-            this.connectionLifeCycleListener = connectionLifeCycleListener;
-        }
-    }
 
     private Status mInReplyToStatus;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -357,16 +332,6 @@ public class MainActivity extends FragmentActivity {
                 }
             }
         });
-
-        final StreamHolder holder = (StreamHolder) getLastCustomNonConfigurationInstance();
-        if (holder != null) {
-            mTwitterStream = holder.twitterStream;
-            mUserStreamAdapter = holder.userStreamAdapter;
-            mConnectionLifeCycleListener = holder.connectionLifeCycleListener;
-
-            mUserStreamAdapter.updateActivity(this);
-            mConnectionLifeCycleListener.updateActivity(this);
-        }
     }
 
     @Override
@@ -390,10 +355,8 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
-        if (mTwitterStream != null && isFinishing()) {
-            mTwitterStream.cleanUp();
-            mTwitterStream.shutdown();
+        if (isFinishing()) {
+            mApplication.stopStreaming();
         }
     }
 
@@ -439,6 +402,35 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
+    public void onEventMainThread(UnFavoriteEvent event) {
+        JustawayApplication.showToast(event.getUser().getScreenName() + " unfav "
+                + event.getStatus().getText());
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public void onEventMainThread(UserStreamingOnConnectEvent event) {
+        mApplication.setThemeTextColor(this, mSignalButton, R.attr.holo_green);
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public void onEventMainThread(UserStreamingOnDisconnectEvent event) {
+        if (mApplication.getStreamingMode()) {
+            mApplication.setThemeTextColor(this, mSignalButton, R.attr.holo_red);
+        } else {
+            mSignalButton.setTextColor(Color.WHITE);
+        }
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public void onEventMainThread(UserStreamingOnCleanupEvent event) {
+        if (mApplication.getStreamingMode()) {
+            mApplication.setThemeTextColor(this, mSignalButton, R.attr.holo_orange);
+        } else {
+            mSignalButton.setTextColor(Color.WHITE);
+        }
+    }
+
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -477,14 +469,6 @@ public class MainActivity extends FragmentActivity {
             }
             button.setTextColor(tabColors[i]);
         }
-    }
-
-    @Override
-    public Object onRetainCustomNonConfigurationInstance() {
-        if (mTwitterStream == null) {
-            return null;
-        }
-        return new StreamHolder(mTwitterStream, mUserStreamAdapter, mConnectionLifeCycleListener);
     }
 
     public void showQuickPanel() {
@@ -597,21 +581,19 @@ public class MainActivity extends FragmentActivity {
 
     private void changeAccount() {
         showProgressDialog(getString(R.string.progress_process));
-        if (mTwitterStream != null) {
-            mTwitterStream.cleanUp();
-            mTwitterStream.shutdown();
-        }
+
+        mApplication.startStreaming();
 
         setupTab();
-        int count = mMainPagerAdapter.getCount();
-        for (int id = 0; id < count; id++) {
-            BaseFragment fragment = mMainPagerAdapter
-                    .findFragmentByPosition(id);
-            if (fragment != null) {
-                fragment.getListAdapter().clear();
-                fragment.reload();
-            }
-        }
+//        int count = mMainPagerAdapter.getCount();
+//        for (int id = 0; id < count; id++) {
+//            BaseFragment fragment = mMainPagerAdapter
+//                    .findFragmentByPosition(id);
+//            if (fragment != null) {
+//                fragment.getListAdapter().clear();
+//                fragment.reload();
+//            }
+//        }
 
         dismissProgressDialog();
     }
@@ -700,21 +682,7 @@ public class MainActivity extends FragmentActivity {
     }
 
     public void setupStream() {
-        if (!mApplication.getStreamingMode()) {
-            return;
-        }
-        if (mTwitterStream != null) {
-            mTwitterStream.cleanUp();
-            mTwitterStream.shutdown();
-            mTwitterStream.setOAuthAccessToken(mApplication.getAccessToken());
-        } else {
-            mTwitterStream = mApplication.getTwitterStream();
-            mUserStreamAdapter = getUserStreamAdapter();
-            mTwitterStream.addListener(mUserStreamAdapter);
-            mConnectionLifeCycleListener = new MyConnectionLifeCycleListener(this);
-            mTwitterStream.addConnectionLifeCycleListener(mConnectionLifeCycleListener);
-        }
-        mTwitterStream.user();
+        mApplication.startStreaming();
     }
 
     /**
@@ -838,13 +806,6 @@ public class MainActivity extends FragmentActivity {
         return true;
     }
 
-    /**
-     * ストリーミング受信時の処理
-     */
-    private MyUserStreamAdapter getUserStreamAdapter() {
-        return new MyUserStreamAdapter(this);
-    }
-
     private void showProgressDialog(String message) {
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setMessage(message);
@@ -866,215 +827,7 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
-    private static final class MyUserStreamAdapter extends UserStreamAdapter {
-
-        private WeakReference<MainActivity> mActivityRef;
-
-        public MyUserStreamAdapter(MainActivity act) {
-            updateActivity(act);
-        }
-
-        public void updateActivity(MainActivity act) {
-            mActivityRef = new WeakReference<MainActivity>(act);
-        }
-
-        @Override
-        public void onStatus(Status status) {
-            // TODO activity を経由すると、画面回転時に一部取りこぼしが発生するかもしれない(確認が必要)。
-            final MainActivity act = mActivityRef.get();
-            if (act == null) {
-                return;
-            }
-
-            Row row = Row.newStatus(status);
-            if (JustawayApplication.isMute(row)) {
-                return;
-            }
-
-            /**
-             * ツイートを表示するかどうかはFragmentに任せる
-             */
-            int count = act.mMainPagerAdapter.getCount();
-            for (int id = 0; id < count; id++) {
-                BaseFragment fragment = act.mMainPagerAdapter
-                        .findFragmentByPosition(id);
-                if (fragment != null) {
-                    fragment.add(row);
-                }
-            }
-        }
-
-        @Override
-        public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
-            super.onDeletionNotice(statusDeletionNotice);
-
-            final MainActivity act = mActivityRef.get();
-            if (act == null) {
-                return;
-            }
-
-            int count = act.mMainPagerAdapter.getCount();
-            for (int id = 0; id < count; id++) {
-                BaseFragment fragment = act.mMainPagerAdapter
-                        .findFragmentByPosition(id);
-                if (fragment != null) {
-                    fragment.removeStatus(statusDeletionNotice.getStatusId());
-                }
-            }
-        }
-
-        @Override
-        public void onFavorite(User source, User target, Status status) {
-            final MainActivity act = mActivityRef.get();
-            if (act == null) {
-                return;
-            }
-
-            // 自分の fav を反映
-            if (source.getId() == act.mApplication.getUserId()) {
-                act.mApplication.setFav(status.getId());
-                return;
-            }
-            Row row = Row.newFavorite(source, target, status);
-            BaseFragment fragment = act.mMainPagerAdapter
-                    .findFragmentById(TAB_ID_INTERACTIONS);
-            new ReFetchFavoriteStatus(fragment).execute(row);
-        }
-
-        @Override
-        public void onUnfavorite(User arg0, User arg1, Status arg2) {
-            final MainActivity act = mActivityRef.get();
-            if (act == null) {
-                return;
-            }
-
-            final User source = arg0;
-            final Status status = arg2;
-
-            // 自分の unfav を反映
-            if (source.getId() == act.mApplication.getUserId()) {
-                act.mApplication.removeFav(status.getId());
-                return;
-            }
-
-            act.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    JustawayApplication.showToast(source.getScreenName() + " unfav "
-                            + status.getText());
-                }
-            });
-        }
-
-        @Override
-        public void onDirectMessage(DirectMessage directMessage) {
-            super.onDirectMessage(directMessage);
-
-            final MainActivity act = mActivityRef.get();
-            if (act == null) {
-                return;
-            }
-
-            BaseFragment fragment = act.mMainPagerAdapter
-                    .findFragmentById(TAB_ID_DIRECT_MESSAGE);
-            if (fragment != null) {
-                fragment.add(Row.newDirectMessage(directMessage));
-            }
-        }
-
-        @Override
-        public void onDeletionNotice(long directMessageId, long userId) {
-            super.onDeletionNotice(directMessageId, userId);
-
-            final MainActivity act = mActivityRef.get();
-            if (act == null) {
-                return;
-            }
-
-            DirectMessagesFragment fragment = (DirectMessagesFragment) act.mMainPagerAdapter
-                    .findFragmentById(TAB_ID_DIRECT_MESSAGE);
-            if (fragment != null) {
-                fragment.remove(directMessageId);
-            }
-        }
-    }
-
-    private static final class MyConnectionLifeCycleListener implements ConnectionLifeCycleListener {
-        private WeakReference<MainActivity> mActivityRef;
-
-        public MyConnectionLifeCycleListener(MainActivity act) {
-            updateActivity(act);
-        }
-
-        public void updateActivity(MainActivity act) {
-            mActivityRef = new WeakReference<MainActivity>(act);
-        }
-
-        @Override
-        public void onConnect() {
-            final MainActivity act = mActivityRef.get();
-            if (act == null) {
-                return;
-            }
-
-            act.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    final TextView signalButton = act.mSignalButton;
-                    if (signalButton != null) {
-                        act.mApplication.setThemeTextColor(act, act.mSignalButton, R.attr.holo_green);
-                    }
-                }
-            });
-        }
-
-        @Override
-        public void onDisconnect() {
-            final MainActivity act = mActivityRef.get();
-            if (act == null) {
-                return;
-            }
-
-            act.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    final TextView signalButton = act.mSignalButton;
-                    if (signalButton != null) {
-                        if (act.mApplication.getStreamingMode()) {
-                            act.mApplication.setThemeTextColor(act, signalButton, R.attr.holo_red);
-                        } else {
-                            signalButton.setTextColor(Color.WHITE);
-                        }
-                    }
-                }
-            });
-        }
-
-        @Override
-        public void onCleanUp() {
-            final MainActivity act = mActivityRef.get();
-            if (act == null) {
-                return;
-            }
-
-            act.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    final TextView signalButton = act.mSignalButton;
-                    if (signalButton != null) {
-                        if (act.mApplication.getStreamingMode()) {
-                            act.mApplication.setThemeTextColor(act, signalButton, R.attr.holo_orange);
-                        } else {
-                            signalButton.setTextColor(Color.WHITE);
-                        }
-                    }
-                }
-            });
-        }
-    }
-
     public static final class StreamingSwitchDialogFragment extends DialogFragment {
-        private MainActivity mActivity;
 
         private static StreamingSwitchDialogFragment newInstance(boolean turnOn) {
             final Bundle args = new Bundle(1);
@@ -1083,13 +836,6 @@ public class MainActivity extends FragmentActivity {
             final StreamingSwitchDialogFragment f = new StreamingSwitchDialogFragment();
             f.setArguments(args);
             return f;
-        }
-
-        @Override
-        public void onAttach(Activity activity) {
-            super.onAttach(activity);
-
-            mActivity = (MainActivity) activity;
         }
 
         @Override
@@ -1102,15 +848,12 @@ public class MainActivity extends FragmentActivity {
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            mActivity.mApplication.setStreamingMode(turnOn);
+                            JustawayApplication.getApplication().setStreamingMode(turnOn);
                             if (turnOn) {
-                                mActivity.setupStream();
+                                JustawayApplication.getApplication().startStreaming();
                                 JustawayApplication.showToast(R.string.toast_create_streaming);
                             } else {
-                                if (mActivity.mTwitterStream != null) {
-                                    mActivity.mTwitterStream.cleanUp();
-                                    mActivity.mTwitterStream.shutdown();
-                                }
+                                JustawayApplication.getApplication().stopStreaming();
                                 JustawayApplication.showToast(R.string.toast_destroy_streaming);
                             }
                             dismiss();
