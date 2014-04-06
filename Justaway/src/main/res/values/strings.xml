@@ -192,4 +192,6 @@
     <string name="toast_create_user_list_failure">You failed to create list.</string>
     <string name="label_created_by">\'s creation</string>
     <string name="label_members">members</string>
+    <string name="open">open</string>
+    <string name="close">close</string>
 </resources>
