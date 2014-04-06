@@ -5,6 +5,15 @@
               android:baselineAligned="false"
               android:orientation="vertical">
 
+    <Switch
+        android:id="@+id/mode_switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:textOn="@string/mode_remove"
+        android:textOff="@string/mode_sort"
+        android:layout_margin="8dp"/>
+
     <ListView
         android:id="@+id/list"
         android:layout_width="match_parent"

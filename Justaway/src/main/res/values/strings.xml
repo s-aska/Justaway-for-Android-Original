@@ -98,7 +98,12 @@
     <string name="menu_settings">Settings</string>
     <string name="menu_sign_out">Sign out</string>
     <string name="menu_store">Google Play</string>
+    <string name="menu_tab_settings">Tab</string>
     <string name="menu_website">Web</string>
+    <string name="menu_add_home_tab">Add Home tab</string>
+    <string name="menu_add_interactions_tab">Add Interactions tab</string>
+    <string name="menu_add_direct_messages_tab">Add Direct Messages tab</string>
+    <string name="menu_user_list_tab">Choose user list tab</string>
     <string name="official_website">http://justaway.info/</string>
     <string name="profile_pointer">●　○</string>
     <string name="profile_pointer_right">○　●</string>
@@ -119,6 +124,7 @@
     <string name="title_profile">Profile</string>
     <string name="title_register_list">Register list</string>
     <string name="title_search">Search</string>
+    <string name="title_tab_settings">Tab</string>
     <string name="toast_create_block_failure">You failed to block.</string>
     <string name="toast_create_block_success">You are blocking this user.</string>
     <string name="toast_create_mute">Added mute.</string>
@@ -192,4 +198,6 @@
     <string name="toast_create_user_list_failure">You failed to create list.</string>
     <string name="label_created_by">\'s creation</string>
     <string name="label_members">members</string>
+    <string name="mode_sort">Sort</string>
+    <string name="mode_remove">Remove</string>
 </resources>

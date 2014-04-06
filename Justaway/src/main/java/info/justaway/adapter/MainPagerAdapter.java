@@ -105,8 +105,8 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
         mTabs.add(info);
     }
 
-    public void removeTab(int position) {
-        mTabs.remove(position);
+    public void clearTab() {
+        mTabs.clear();
     }
 
     @Override

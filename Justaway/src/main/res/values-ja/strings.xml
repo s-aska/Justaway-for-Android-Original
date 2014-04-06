@@ -98,7 +98,12 @@
     <string name="menu_settings">設定</string>
     <string name="menu_sign_out">サインアウト</string>
     <string name="menu_store">Google Play</string>
+    <string name="menu_tab_settings">タブ</string>
     <string name="menu_website">オフィシャルサイト</string>
+    <string name="menu_add_home_tab">Homeを追加</string>
+    <string name="menu_add_interactions_tab">リプ・通知を追加</string>
+    <string name="menu_add_direct_messages_tab">DMを追加</string>
+    <string name="menu_user_list_tab">ユーザーリストを選択</string>
     <string name="official_website">http://justaway.info/</string>
     <string name="profile_pointer">●　○</string>
     <string name="profile_pointer_right">○　●</string>
@@ -119,6 +124,7 @@
     <string name="title_profile">プロフィール</string>
     <string name="title_register_list">リストに登録</string>
     <string name="title_search">検索</string>
+    <string name="title_tab_settings">タブ管理</string>
     <string name="toast_create_block_failure">ブロックに失敗しました</string>
     <string name="toast_create_block_success">ブロックに成功しました>゜))彡</string>
     <string name="toast_create_mute">ミュートを追加ました</string>
@@ -192,4 +198,6 @@
     <string name="toast_create_user_list_failure">リスト作成に失敗しました</string>
     <string name="label_created_by">さんが作成</string>
     <string name="label_members">人のメンバー</string>
+    <string name="mode_sort">並び替え</string>
+    <string name="mode_remove">削除</string>
 </resources>
