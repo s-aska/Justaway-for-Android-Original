@@ -36,6 +36,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -141,12 +142,14 @@ public class PostActivity extends FragmentActivity {
         Button suddenlyButton = (Button) findViewById(R.id.suddenly);
         Button draftButton = (Button) findViewById(R.id.draft);
         Button hashtagButton = (Button) findViewById(R.id.hashtag);
+        TextView cancel = (TextView) findViewById(R.id.cancel);
 
         mTweetButton.setTypeface(fontello);
         mImgButton.setTypeface(fontello);
         suddenlyButton.setTypeface(fontello);
         draftButton.setTypeface(fontello);
         hashtagButton.setTypeface(fontello);
+        cancel.setTypeface(fontello);
 
         registerForContextMenu(mImgButton);
 
@@ -457,6 +460,12 @@ public class PostActivity extends FragmentActivity {
             }
         });
 
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                findViewById(R.id.in_reply_to_layout).setVisibility(View.GONE);
+            }
+        });
         // 文字数をカウントしてボタンを制御する
         mEditText.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
