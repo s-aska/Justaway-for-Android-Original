@@ -1,7 +1,7 @@
 package info.justaway;
 
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import de.greenrobot.event.EventBus;
 import info.justaway.adapter.SubscribeUserListAdapter;
@@ -25,11 +26,14 @@ public class ChooseUserListsActivity extends FragmentActivity implements
         LoaderManager.LoaderCallbacks<ResponseList<UserList>> {
 
     private SubscribeUserListAdapter mAdapter;
+    private JustawayApplication mApplication;
 
+    @SuppressLint("UseSparseArrays")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        JustawayApplication.getApplication().setTheme(this);
+        mApplication = JustawayApplication.getApplication();
+        mApplication.setTheme(this);
         setContentView(R.layout.activity_choose_user_lists);
 
         ActionBar actionBar = getActionBar();
@@ -39,9 +43,7 @@ public class ChooseUserListsActivity extends FragmentActivity implements
         }
 
         ListView listView = (ListView) findViewById(R.id.list);
-
         mAdapter = new SubscribeUserListAdapter(this, R.layout.row_subscribe_user_list);
-
         listView.setAdapter(mAdapter);
 
         findViewById(R.id.button_cancel).setOnClickListener(new View.OnClickListener() {
@@ -55,21 +57,43 @@ public class ChooseUserListsActivity extends FragmentActivity implements
         findViewById(R.id.button_save).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ArrayList<Long> lists = new ArrayList<Long>();
-
+                HashMap<Long, Boolean> checkMap = new HashMap<Long, Boolean>();
+                ArrayList<UserList> checkList = new ArrayList<UserList>();
                 int count = mAdapter.getCount();
                 for (int i = 0; i < count; i++) {
                     UserListWithRegistered userListWithRegistered = mAdapter.getItem(i);
+                    UserList userList = userListWithRegistered.getUserList();
                     if (userListWithRegistered.isRegistered()) {
-                        lists.add(userListWithRegistered.getUserList().getId());
+                        checkMap.put(userList.getId(), true);
+                        checkList.add(userList);
                     }
                 }
-
-                Intent data = new Intent();
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("lists", lists);
-                data.putExtras(bundle);
-                setResult(RESULT_OK, data);
+                HashMap<Long, Boolean> tabMap = new HashMap<Long, Boolean>();
+                ArrayList<JustawayApplication.Tab> tabs = new ArrayList<JustawayApplication.Tab>();
+                for (JustawayApplication.Tab tab : mApplication.loadTabs()) {
+                    if (tabMap.get(tab.id) != null) {
+                        continue;
+                    }
+                    if (tab.id < 0 || checkMap.get(tab.id) != null) {
+                        tabs.add(tab);
+                        tabMap.put(tab.id, true);
+                    }
+                }
+                for (UserList userList : checkList) {
+                    if (tabMap.get(userList.getId()) != null) {
+                        continue;
+                    }
+                    JustawayApplication.Tab tab = new JustawayApplication.Tab(userList.getId());
+                    if (userList.getUser().getId() == mApplication.getUserId()) {
+                        tab.name = userList.getName();
+                    } else {
+                        tab.name = userList.getFullName();
+                    }
+                    tabs.add(tab);
+                    tabMap.put(tab.id, true);
+                }
+                mApplication.saveTabs(tabs);
+                setResult(RESULT_OK);
                 finish();
             }
         });
@@ -123,7 +147,7 @@ public class ChooseUserListsActivity extends FragmentActivity implements
         if (userLists != null) {
             for (UserList userList : userLists) {
                 UserListWithRegistered userListWithRegistered = new UserListWithRegistered();
-                userListWithRegistered.setRegistered(application.existsTab(userList.getId()));
+                userListWithRegistered.setRegistered(application.hasTabId(userList.getId()));
                 userListWithRegistered.setUserList(userList);
                 mAdapter.add(userListWithRegistered);
             }

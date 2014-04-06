@@ -69,9 +69,9 @@ public class MainActivity extends FragmentActivity {
     private ProgressDialog mProgressDialog;
     private TextView mTitle;
     private TextView mSignalButton;
-    private static final int REQUEST_CHOOSE_USER_LIST = 100;
     private static final int REQUEST_ACCOUNT_SETTING = 200;
     private static final int REQUEST_SETTINGS = 300;
+    private static final int REQUEST_TAB_SETTINGS = 400;
     private static final int ERROR_CODE_DUPLICATE_STATUS = 187;
     private static final long TAB_ID_TIMELINE = -1L;
     private static final long TAB_ID_INTERACTIONS = -2L;
@@ -179,20 +179,11 @@ public class MainActivity extends FragmentActivity {
          * タブの切替がスワイプだけで良い場合はこの処理すら不要
          */
         Typeface fontello = JustawayApplication.getFontello();
-        Button home = (Button) findViewById(R.id.action_timeline);
-        Button interactions = (Button) findViewById(R.id.action_interactions);
-        Button directMessage = (Button) findViewById(R.id.action_direct_message);
         Button tweet = (Button) findViewById(R.id.action_tweet);
         final Button send = (Button) findViewById(R.id.send);
-        findViewById(R.id.action_timeline).setSelected(true);
-        home.setTypeface(fontello);
-        interactions.setTypeface(fontello);
-        directMessage.setTypeface(fontello);
+//        findViewById(R.id.action_timeline).setSelected(true);
         tweet.setTypeface(fontello);
         send.setTypeface(fontello);
-        bindTabListener(home, 0);
-        bindTabListener(interactions, 1);
-        bindTabListener(directMessage, 2);
         tweet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -456,24 +447,9 @@ public class MainActivity extends FragmentActivity {
     }
 
     public void setupTab() {
-        LinearLayout tab_menus = (LinearLayout) findViewById(R.id.tab_menus);
-
-        int count = tab_menus.getChildCount();
-        // 4つめ以降のタブを消す
-        if (count > 3) {
-            for (int position = count - 1; position > 2; position--) {
-                View view = tab_menus.getChildAt(position);
-                if (view != null) {
-                    tab_menus.removeView(view);
-                }
-                mMainPagerAdapter.removeTab(position);
-            }
-        }
-
-        Typeface fontello = JustawayApplication.getFontello();
         ArrayList<JustawayApplication.Tab> tabs = mApplication.loadTabs();
-        if (tabs.size() > 3) {
-            int position = 2;
+        if (tabs.size() > 0) {
+            Typeface fontello = JustawayApplication.getFontello();
             TypedValue outValueBackground = new TypedValue();
             TypedValue outValueTextColor = new TypedValue();
             Resources.Theme theme = getTheme();
@@ -481,26 +457,35 @@ public class MainActivity extends FragmentActivity {
                 theme.resolveAttribute(R.attr.button_stateful, outValueBackground, true);
                 theme.resolveAttribute(R.attr.menu_text_color, outValueTextColor, true);
             }
+            LinearLayout tabMenus = (LinearLayout) findViewById(R.id.tab_menus);
+            tabMenus.removeAllViews();
+            mMainPagerAdapter.clearTab();
+            int position = 0;
             for (JustawayApplication.Tab tab : tabs) {
                 // 標準のタブを動的に生成する時に実装する
-                if (tab.id > 0) {
-                    Button button = new Button(this);
-                    button.setWidth(60);
-                    button.setTypeface(fontello);
-                    button.setTextSize(22);
-                    button.setText(R.string.fontello_list);
-                    button.setTextColor(outValueTextColor.data);
-                    button.setBackgroundResource(outValueBackground.resourceId);
-                    bindTabListener(button, ++position);
-                    tab_menus.addView(button);
+                Button button = new Button(this);
+                button.setWidth(54);
+                button.setTypeface(fontello);
+                button.setTextSize(22);
+                button.setText(tab.getIcon());
+                button.setTextColor(outValueTextColor.data);
+                button.setBackgroundResource(outValueBackground.resourceId);
+                bindTabListener(button, position++);
+                tabMenus.addView(button);
+                if (tab.id == TAB_ID_TIMELINE) {
+                    mMainPagerAdapter.addTab(TimelineFragment.class, null, tab.getName(), tab.id);
+                } else if (tab.id == TAB_ID_INTERACTIONS) {
+                    mMainPagerAdapter.addTab(InteractionsFragment.class, null, tab.getName(), tab.id);
+                } else if (tab.id == TAB_ID_DIRECT_MESSAGE) {
+                    mMainPagerAdapter.addTab(DirectMessagesFragment.class, null, tab.getName(), tab.id);
+                } else {
                     Bundle args = new Bundle();
                     args.putLong("userListId", tab.id);
-                    mMainPagerAdapter.addTab(UserListFragment.class, args, tab.name, tab.id);
+                    mMainPagerAdapter.addTab(UserListFragment.class, args, tab.getName(), tab.id);
                 }
             }
+            mMainPagerAdapter.notifyDataSetChanged();
         }
-
-        mMainPagerAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -527,42 +512,9 @@ public class MainActivity extends FragmentActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case REQUEST_CHOOSE_USER_LIST:
+            case REQUEST_TAB_SETTINGS:
                 if (resultCode == RESULT_OK) {
-                    Bundle bundle = data.getExtras();
-                    if (bundle == null) {
-                        return;
-                    }
-                    @SuppressWarnings("unchecked")
-                    ArrayList<Long> lists = (ArrayList<Long>) bundle.getSerializable("lists");
-                    ArrayList<Long> tabs = new ArrayList<Long>();
-                    // 後々タブ設定画面に標準のタブを含める
-                    tabs.add(-1L);
-                    tabs.add(-2L);
-                    tabs.add(-3L);
-                    tabs.addAll(lists);
-                    mApplication.saveTabs(tabs);
                     setupTab();
-                    if (lists != null && lists.size() > 0) {
-                        JustawayApplication.showToast(R.string.toast_register_list_for_tab);
-                    }
-                } else {
-
-                    /**
-                     * リストの削除を検出してタブを再構成
-                     */
-                    ArrayList<JustawayApplication.Tab> tabs = mApplication.loadTabs();
-                    ArrayList<Long> new_tabs = new ArrayList<Long>();
-                    for (JustawayApplication.Tab tab : tabs) {
-                        if (tab.id > 0 && mApplication.getUserList(tab.id) == null) {
-                            continue;
-                        }
-                        new_tabs.add(tab.id);
-                    }
-                    if (tabs.size() != new_tabs.size()) {
-                        mApplication.saveTabs(new_tabs);
-                        setupTab();
-                    }
                 }
                 break;
             case REQUEST_ACCOUNT_SETTING:
@@ -632,9 +584,6 @@ public class MainActivity extends FragmentActivity {
         mViewPager = (ViewPager) findViewById(R.id.pager);
         mMainPagerAdapter = new MainPagerAdapter(this, mViewPager);
 
-        mMainPagerAdapter.addTab(TimelineFragment.class, null, getString(R.string.title_main), TAB_ID_TIMELINE);
-        mMainPagerAdapter.addTab(InteractionsFragment.class, null, getString(R.string.title_interactions), TAB_ID_INTERACTIONS);
-        mMainPagerAdapter.addTab(DirectMessagesFragment.class, null, getString(R.string.title_direct_messages), TAB_ID_DIRECT_MESSAGE);
         setupTab();
 
         findViewById(R.id.footer).setVisibility(View.VISIBLE);
@@ -700,53 +649,42 @@ public class MainActivity extends FragmentActivity {
      * 新しいツイートが来たアピ
      */
     public void onNewTimeline(Boolean autoScroll) {
-        // 表示中のタブかつ自動スクロール時はハイライトしない
-        if (mViewPager.getCurrentItem() == 0 && autoScroll) {
-            return;
-        }
-        Button button = (Button) findViewById(R.id.action_timeline);
-        mApplication.setThemeTextColor(this, button, R.attr.holo_blue);
+        onNewStatus(TAB_ID_TIMELINE, autoScroll);
     }
 
     /**
      * 新しいリプが来たアピ
      */
     public void onNewInteractions(Boolean autoScroll) {
-        // 表示中のタブかつ自動スクロール時はハイライトしない
-        if (mViewPager.getCurrentItem() == 1 && autoScroll) {
-            return;
-        }
-        Button button = (Button) findViewById(R.id.action_interactions);
-        mApplication.setThemeTextColor(this, button, R.attr.holo_blue);
+        onNewStatus(TAB_ID_INTERACTIONS, autoScroll);
     }
 
     /**
      * 新しいDMが来たアピ
      */
     public void onNewDirectMessage(Boolean autoScroll) {
-        // 表示中のタブかつ自動スクロール時はハイライトしない
-        if (mViewPager.getCurrentItem() == 2 && autoScroll) {
-            return;
-        }
-        Button button = (Button) findViewById(R.id.action_direct_message);
-        mApplication.setThemeTextColor(this, button, R.attr.holo_blue);
+        onNewStatus(TAB_ID_DIRECT_MESSAGE, autoScroll);
     }
 
     /**
      * 新しいツイートが来たアピ
      */
     public void onNewListStatus(long listId, Boolean autoScroll) {
-        // 表示中のタブかつ自動スクロール時はハイライトしない
-        int position = mMainPagerAdapter.findPositionById(listId);
+        onNewStatus(listId, autoScroll);
+    }
+
+    public void onNewStatus(long tabId, Boolean autoScroll) {
+        int position = mMainPagerAdapter.findPositionById(tabId);
         if (mViewPager.getCurrentItem() == position && autoScroll) {
             return;
         }
-        if (position >= 0) {
-            LinearLayout tab_menus = (LinearLayout) findViewById(R.id.tab_menus);
-            Button button = (Button) tab_menus.getChildAt(position);
-            if (button != null) {
-                mApplication.setThemeTextColor(this, button, R.attr.holo_blue);
-            }
+        if (position < 0) {
+            return;
+        }
+        LinearLayout tabMenus = (LinearLayout) findViewById(R.id.tab_menus);
+        Button button = (Button) tabMenus.getChildAt(position);
+        if (button != null) {
+            mApplication.setThemeTextColor(this, button, R.attr.holo_blue);
         }
     }
 
@@ -795,9 +733,9 @@ public class MainActivity extends FragmentActivity {
             Intent intent = new Intent(this, ProfileActivity.class);
             intent.putExtra("userId", mApplication.getUserId());
             startActivity(intent);
-        } else if (itemId == R.id.user_list) {
-            Intent intent = new Intent(this, ChooseUserListsActivity.class);
-            startActivityForResult(intent, REQUEST_CHOOSE_USER_LIST);
+        } else if (itemId == R.id.tab_settings) {
+            Intent intent = new Intent(this, TabSettingsActivity.class);
+            startActivityForResult(intent, REQUEST_TAB_SETTINGS);
         } else if (itemId == R.id.search) {
             Intent intent = new Intent(this, SearchActivity.class);
             startActivity(intent);

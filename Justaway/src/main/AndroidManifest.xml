@@ -113,6 +113,9 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".TabSettingsActivity"
+            android:label="@string/title_tab_settings"/>
+        <activity
             android:name=".ChooseUserListsActivity"
             android:label="@string/title_choose_user_lists"/>
         <activity

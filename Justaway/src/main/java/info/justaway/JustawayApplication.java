@@ -344,63 +344,16 @@ public class JustawayApplication extends Application {
             Gson gson = new Gson();
             TabData tabData = gson.fromJson(json, TabData.class);
             mTabs = tabData.tabs;
-        } else {
-            String tabs_string = preferences.getString(TABS.concat(String.valueOf(getUserId())), "-1,-2,-3");
-            String[] tabs_strings = tabs_string.split(",");
-            final ArrayList<Long> tabIds = new ArrayList<Long>();
-            for (String tab_string : tabs_strings) {
-                Tab tab = new Tab();
-                tab.id = Long.valueOf(tab_string);
-                tab.name = "-";
-                mTabs.add(tab);
-                tabIds.add(tab.id);
-            }
-            new AsyncTask<Void, Void, ResponseList<UserList>>() {
-                @Override
-                protected ResponseList<UserList> doInBackground(Void... params) {
-                    try {
-                        return getTwitter().getUserLists(getUserId());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        return null;
-                    }
-                }
-
-                @Override
-                protected void onPostExecute(ResponseList<UserList> userLists) {
-                    if (userLists != null) {
-                        setUserLists(userLists);
-                        saveTabs(tabIds);
-                    }
-                }
-            }.execute();
+        }
+        if (mTabs.size() == 0) {
+            mTabs = generalTabs();
         }
         return mTabs;
     }
 
-    public void saveTabs(ArrayList<Long> tabIds) {
-        mTabs.clear();
-        for (Long tabId : tabIds) {
-            Tab tab = new Tab();
-            tab.id = tabId;
-            if (tabId > 0) {
-                UserList userList = getUserList(tabId);
-                if (userList != null) {
-                    if (userList.getUser().getId() == getUserId()) {
-                        tab.name = userList.getName();
-                    } else {
-                        tab.name = userList.getFullName();
-                    }
-                } else {
-                    tab.name = "-";
-                }
-            } else {
-                tab.name = "";
-            }
-            mTabs.add(tab);
-        }
+    public void saveTabs(ArrayList<Tab> tabs) {
         TabData tabData = new TabData();
-        tabData.tabs = mTabs;
+        tabData.tabs = tabs;
         Gson gson = new Gson();
         String json = gson.toJson(tabData);
         SharedPreferences preferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
@@ -408,6 +361,15 @@ public class JustawayApplication extends Application {
         editor.remove(TABS.concat(String.valueOf(getUserId())));
         editor.putString(TABS.concat(String.valueOf(getUserId())).concat("/v2"), json);
         editor.commit();
+        mTabs = tabs;
+    }
+
+    public ArrayList<Tab> generalTabs() {
+        ArrayList<Tab> tabs = new ArrayList<Tab>();
+        tabs.add(new Tab(-1L));
+        tabs.add(new Tab(-2L));
+        tabs.add(new Tab(-3L));
+        return tabs;
     }
 
     public static class TabData {
@@ -415,11 +377,39 @@ public class JustawayApplication extends Application {
     }
 
     public static class Tab {
-        String name;
-        Long id;
+        public Long id;
+        public String name;
+
+        public Tab(Long id) {
+            this.id = id;
+        }
+
+        public String getName() {
+            if (id == -1L) {
+                return getApplication().getString(R.string.title_main);
+            } else if (id == -2L) {
+                return getApplication().getString(R.string.title_interactions);
+            } else if (id == -3L) {
+                return getApplication().getString(R.string.title_direct_messages);
+            } else {
+                return name;
+            }
+        }
+
+        public int getIcon() {
+            if (id == -1L) {
+                return R.string.fontello_home;
+            } else if (id == -2L) {
+                return R.string.fontello_at;
+            } else if (id == -3L) {
+                return R.string.fontello_mail;
+            } else {
+                return R.string.fontello_list;
+            }
+        }
     }
 
-    public boolean existsTab(Long findTab) {
+    public boolean hasTabId(Long findTab) {
         for (Tab tab : mTabs) {
             if (tab.id.equals(findTab)) {
                 return true;
