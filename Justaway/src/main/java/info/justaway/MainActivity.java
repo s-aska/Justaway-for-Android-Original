@@ -522,11 +522,15 @@ public class MainActivity extends FragmentActivity {
             tabMenus.removeAllViews();
             mMainPagerAdapter.clearTab();
             int position = 0;
+            float density = getResources().getDisplayMetrics().density;
+            int width = (int) (60 * density + 0.5f);
+            LinearLayout.LayoutParams layoutParams =
+                    new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.WRAP_CONTENT);
             for (JustawayApplication.Tab tab : tabs) {
                 // 標準のタブを動的に生成する時に実装する
                 Button button = new Button(this);
-                button.setWidth(54);
                 button.setTypeface(fontello);
+                button.setLayoutParams(layoutParams);
                 button.setTextSize(22);
                 button.setText(tab.getIcon());
                 button.setTextColor(outValueTextColor.data);
@@ -592,6 +596,7 @@ public class MainActivity extends FragmentActivity {
     }
 
     private void changeAccount() {
+        showProgressDialog(getString(R.string.progress_process));
         if (mTwitterStream != null) {
             mTwitterStream.cleanUp();
             mTwitterStream.shutdown();
@@ -607,6 +612,8 @@ public class MainActivity extends FragmentActivity {
                 fragment.reload();
             }
         }
+
+        dismissProgressDialog();
     }
 
     private void bindTabListener(TextView textView, final int position) {
