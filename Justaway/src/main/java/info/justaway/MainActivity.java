@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -12,21 +13,28 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.TypedValue;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
@@ -57,6 +65,7 @@ import twitter4j.TwitterException;
 import twitter4j.TwitterStream;
 import twitter4j.User;
 import twitter4j.UserStreamAdapter;
+import twitter4j.auth.AccessToken;
 
 /**
  * @author aska
@@ -98,6 +107,8 @@ public class MainActivity extends FragmentActivity {
     }
 
     private Status mInReplyToStatus;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private Activity mActivity;
 
     public void setInReplyToStatus(Status inReplyToStatus) {
         this.mInReplyToStatus = inReplyToStatus;
@@ -123,12 +134,17 @@ public class MainActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         JustawayApplication.getApplication().setTheme(this);
+        mActivity = this;
 
         // クイックモード時に起動と同時にキーボードが出現するのを抑止
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         ActionBar actionBar = getActionBar();
         if (actionBar != null) {
+            // アプリアイコンのクリックを有効化
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setHomeButtonEnabled(true);
+
             int options = actionBar.getDisplayOptions();
             if ((options & ActionBar.DISPLAY_SHOW_CUSTOM) == ActionBar.DISPLAY_SHOW_CUSTOM) {
                 actionBar.setDisplayOptions(options ^ ActionBar.DISPLAY_SHOW_CUSTOM);
@@ -155,6 +171,45 @@ public class MainActivity extends FragmentActivity {
         }
 
         setContentView(R.layout.activity_main);
+        int drawer = JustawayApplication.getApplication().getThemeName().equals("black") ? R.drawable.ic_dark_drawer :R.drawable.ic_dark_drawer;
+
+        // DrawerLayout
+        final DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
+                drawer, R.string.open, R.string.close) {
+
+            public void onDrawerClosed(View view) {
+                invalidateOptionsMenu();
+            }
+
+            public void onDrawerOpened(View drawerView) {
+                invalidateOptionsMenu(); //
+            }
+        };
+
+        // アカウント切り替え
+        ListView drawerList = (ListView) findViewById(R.id.account_list);
+        final AccessTokenAdapter adapter = new AccessTokenAdapter(this, R.layout.row_switch_account);
+        ArrayList<AccessToken> accessTokens = JustawayApplication.getApplication().getAccessTokens();
+        if (accessTokens != null) {
+            for (AccessToken accessToken : accessTokens) {
+                adapter.add(accessToken);
+            }
+        }
+
+        drawerList.setAdapter(adapter);
+        drawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                AccessToken accessToken = adapter.getItem(i);
+                if (JustawayApplication.getApplication().getUserId() != accessToken.getUserId()) {
+                    JustawayApplication.getApplication().setAccessToken(accessToken);
+                    mDrawerLayout.closeDrawer(findViewById(R.id.left_drawer));
+                    changeAccount();
+                }
+            }
+        });
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
 
         setTitle(R.string.title_main);
 
@@ -315,6 +370,12 @@ public class MainActivity extends FragmentActivity {
     }
 
     @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mDrawerToggle.syncState();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         EventBus.getDefault().register(this);
@@ -351,7 +412,7 @@ public class MainActivity extends FragmentActivity {
         View singleLineTweet = findViewById(R.id.quick_tweet_layout);
         if (singleLineTweet != null && singleLineTweet.getVisibility() == View.VISIBLE) {
             EditText editStatus = (EditText) findViewById(R.id.quick_tweet_edit);
-            editStatus.setText( event.getText());
+            editStatus.setText(event.getText());
             if (event.getSelectionStart() != null) {
                 if (event.getSelectionStop() != null) {
                     editStatus.setSelection(event.getSelectionStart(), event.getSelectionStop());
@@ -518,22 +579,8 @@ public class MainActivity extends FragmentActivity {
                 }
                 break;
             case REQUEST_ACCOUNT_SETTING:
-
-                if (mTwitterStream != null) {
-                    mTwitterStream.cleanUp();
-                    mTwitterStream.shutdown();
-                }
-
-                setupTab();
-                int count = mMainPagerAdapter.getCount();
-                for (int id = 0; id < count; id++) {
-                    BaseFragment fragment = mMainPagerAdapter
-                            .findFragmentByPosition(id);
-                    if (fragment != null) {
-                        fragment.getListAdapter().clear();
-                        fragment.reload();
-                    }
-                }
+                changeAccount();
+                break;
             case REQUEST_SETTINGS:
                 if (resultCode == RESULT_OK) {
                     mApplication.resetDisplaySettings();
@@ -541,6 +588,24 @@ public class MainActivity extends FragmentActivity {
                 }
             default:
                 break;
+        }
+    }
+
+    private void changeAccount() {
+        if (mTwitterStream != null) {
+            mTwitterStream.cleanUp();
+            mTwitterStream.shutdown();
+        }
+
+        setupTab();
+        int count = mMainPagerAdapter.getCount();
+        for (int id = 0; id < count; id++) {
+            BaseFragment fragment = mMainPagerAdapter
+                    .findFragmentByPosition(id);
+            if (fragment != null) {
+                fragment.getListAdapter().clear();
+                fragment.reload();
+            }
         }
     }
 
@@ -760,6 +825,8 @@ public class MainActivity extends FragmentActivity {
         } else if (itemId == R.id.account) {
             Intent intent = new Intent(this, AccountSettingActivity.class);
             startActivityForResult(intent, REQUEST_ACCOUNT_SETTING);
+        } else if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
         }
         return true;
     }
@@ -1052,6 +1119,50 @@ public class MainActivity extends FragmentActivity {
                     }
             );
             return builder.create();
+        }
+    }
+
+    public class AccessTokenAdapter extends ArrayAdapter<AccessToken> {
+
+        private ArrayList<AccessToken> mAccessTokenList = new ArrayList<AccessToken>();
+        private LayoutInflater mInflater;
+        private int mLayout;
+
+        public AccessTokenAdapter(Context context, int textViewResourceId) {
+            super(context, textViewResourceId);
+            this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            this.mLayout = textViewResourceId;
+        }
+
+        @Override
+        public void add(AccessToken accessToken) {
+            super.add(accessToken);
+            mAccessTokenList.add(accessToken);
+        }
+
+        @Override
+        public View getView(final int position, View convertView, ViewGroup parent) {
+            // ビューを受け取る
+            View view = convertView;
+            if (view == null) {
+                // 受け取ったビューがnullなら新しくビューを生成
+                view = mInflater.inflate(this.mLayout, null);
+            }
+
+            AccessToken accessToken = mAccessTokenList.get(position);
+
+            assert view != null;
+            ImageView icon = (ImageView) view.findViewById(R.id.icon);
+            JustawayApplication.getApplication().displayUserIcon(accessToken.getUserId(), icon);
+            ((TextView) view.findViewById(R.id.screen_name)).setText(accessToken.getScreenName());
+
+            if (JustawayApplication.getApplication().getUserId() == accessToken.getUserId()) {
+                ((TextView) view.findViewById(R.id.screen_name)).setTextColor(JustawayApplication.getApplication().getThemeTextColor(mActivity, R.attr.holo_blue));
+            } else {
+                ((TextView) view.findViewById(R.id.screen_name)).setTextColor(JustawayApplication.getApplication().getThemeTextColor(mActivity, R.attr.text_color));
+            }
+
+            return view;
         }
     }
 }

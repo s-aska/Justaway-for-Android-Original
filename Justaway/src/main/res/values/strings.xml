@@ -200,4 +200,6 @@
     <string name="label_members">members</string>
     <string name="mode_sort">Sort</string>
     <string name="mode_remove">Remove</string>
+    <string name="open">open</string>
+    <string name="close">close</string>
 </resources>

@@ -139,6 +139,8 @@ public class JustawayApplication extends Application {
         getAccessToken();
 
         sMuteSettings = new MuteSettings();
+
+        warmUpUserIconMap();
     }
 
     public void displayImage(String url, ImageView view) {
@@ -492,6 +494,10 @@ public class JustawayApplication extends Application {
             theme.resolveAttribute(resourceId, outValue, true);
             view.setTextColor(outValue.data);
         }
+    }
+
+    public String getThemeName() {
+        return mThemeName;
     }
 
     public int getThemeTextColor(Activity activity, int resourceId) {
