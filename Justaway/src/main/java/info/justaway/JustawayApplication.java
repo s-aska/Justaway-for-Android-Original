@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.StrictMode;
@@ -31,7 +32,12 @@ import java.util.HashMap;
 import de.greenrobot.event.EventBus;
 import info.justaway.adapter.JustawayUserStreamAdapter;
 import info.justaway.display.FadeInRoundedBitmapDisplayer;
+import info.justaway.event.AccountChangePostEvent;
+import info.justaway.event.AccountChangePreEvent;
 import info.justaway.event.EditorEvent;
+import info.justaway.event.UserStreamingOnCleanupEvent;
+import info.justaway.event.UserStreamingOnConnectEvent;
+import info.justaway.event.UserStreamingOnDisconnectEvent;
 import info.justaway.listener.JustawayConnectionLifeCycleListener;
 import info.justaway.model.Row;
 import info.justaway.settings.MuteSettings;
@@ -736,33 +742,79 @@ public class JustawayApplication extends Application {
     }
 
     private TwitterStream mTwitterStream;
-    private JustawayUserStreamAdapter mUserStreamAdapter;
-    private JustawayConnectionLifeCycleListener mConnectionLifeCycleListener;
+    private boolean mTwitterStreamConnected;
+
+    public boolean getTwitterStreamConnected() {
+        return mTwitterStreamConnected;
+    }
 
     public void startStreaming() {
+        if (mTwitterStream != null) {
+            return;
+        }
+        mTwitterStream = getTwitterStream();
+        mTwitterStream.addListener(new JustawayUserStreamAdapter());
+        mTwitterStream.addConnectionLifeCycleListener(new JustawayConnectionLifeCycleListener());
+        mTwitterStream.user();
+    }
+
+    public void restartStreaming() {
         if (!getStreamingMode()) {
             return;
         }
         if (mTwitterStream != null) {
-            mTwitterStream.cleanUp();
-            mTwitterStream.shutdown();
-            mTwitterStream.setOAuthAccessToken(getAccessToken());
-        } else {
-            mTwitterStream = getTwitterStream();
-            mUserStreamAdapter = new JustawayUserStreamAdapter();
-            mTwitterStream.addListener(mUserStreamAdapter);
-            mConnectionLifeCycleListener = new JustawayConnectionLifeCycleListener();
-            mTwitterStream.addConnectionLifeCycleListener(mConnectionLifeCycleListener);
-        }
-        mTwitterStream.user();
+            new AsyncTask<Void, Void, Void>() {
+                @Override
+                protected Void doInBackground(Void... params) {
+                    mTwitterStream.cleanUp();
+                    mTwitterStream.shutdown();
+                    mTwitterStream.setOAuthAccessToken(getAccessToken());
+                    mTwitterStream.user();
+                    return null;
+                }
 
+                @Override
+                protected void onPostExecute(Void status) {
+                    EventBus.getDefault().post(new AccountChangePostEvent());
+                }
+            }.execute();
+        } else {
+            startStreaming();
+        }
     }
 
     public void stopStreaming() {
-        if (mTwitterStream != null) {
-            mTwitterStream.cleanUp();
-            mTwitterStream.shutdown();
+        if (mTwitterStream == null) {
+            return;
         }
+        new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                mTwitterStream.cleanUp();
+                mTwitterStream.shutdown();
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void status) {
+
+            }
+        }.execute();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public void onEventMainThread(UserStreamingOnConnectEvent event) {
+        mTwitterStreamConnected = true;
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public void onEventMainThread(UserStreamingOnDisconnectEvent event) {
+        mTwitterStreamConnected = false;
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public void onEventMainThread(UserStreamingOnCleanupEvent event) {
+        mTwitterStreamConnected = false;
     }
 
     public void removeAccessToken(int position) {

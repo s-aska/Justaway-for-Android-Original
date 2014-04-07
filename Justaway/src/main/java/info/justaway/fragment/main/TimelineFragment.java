@@ -152,15 +152,7 @@ public class TimelineFragment extends BaseFragment {
         protected void onPostExecute(ResponseList<twitter4j.Status> statuses) {
             mFooter.setVisibility(View.GONE);
             TwitterAdapter adapter = getListAdapter();
-            boolean streamingRestart = mReload || adapter.getCount() == 0;
             if (statuses == null || statuses.size() == 0) {
-                if (streamingRestart) {
-                    MainActivity activity = (MainActivity) getActivity();
-                    // アプリの終了処理中にnullになるっぽい
-                    if (activity != null) {
-                        activity.setupStream();
-                    }
-                }
                 return;
             }
             if (mReload) {
@@ -182,13 +174,6 @@ public class TimelineFragment extends BaseFragment {
                 }
                 mAutoLoader = true;
                 getListView().setVisibility(View.VISIBLE);
-            }
-            if (streamingRestart) {
-                MainActivity activity = (MainActivity) getActivity();
-                // アプリの終了処理中にnullになるっぽい
-                if (activity != null) {
-                    activity.setupStream();
-                }
             }
         }
     }
