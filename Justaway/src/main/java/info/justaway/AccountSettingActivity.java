@@ -178,7 +178,6 @@ public class AccountSettingActivity extends FragmentActivity {
                         public void onClick(DialogInterface dialog, int which) {
                             activity.mAccountAdapter.remove(position);
                             JustawayApplication.getApplication().removeAccessToken(position);
-                            activity.finish();
                         }
                     }
             );
