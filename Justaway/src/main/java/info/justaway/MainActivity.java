@@ -244,6 +244,7 @@ public class MainActivity extends FragmentActivity {
         });
 
         final int defaultTextColor = JustawayApplication.getApplication().getThemeTextColor(this, R.attr.menu_text_color);
+        final int disabledTextColor = JustawayApplication.getApplication().getThemeTextColor(this, R.attr.menu_text_color_disabled);
         ((EditText) findViewById(R.id.quick_tweet_edit)).addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
@@ -257,6 +258,8 @@ public class MainActivity extends FragmentActivity {
                 // 140文字をオーバーした時は文字数を赤色に
                 if (length < 0) {
                     textColor = Color.RED;
+                } else if (length == 140) {
+                    textColor = disabledTextColor;
                 } else {
                     textColor = defaultTextColor;
                 }
