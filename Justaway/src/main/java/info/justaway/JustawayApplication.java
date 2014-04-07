@@ -11,6 +11,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.os.StrictMode;
 import android.support.v4.util.LongSparseArray;
 import android.util.TypedValue;
@@ -834,11 +835,32 @@ public class JustawayApplication extends Application {
         editor.commit();
     }
 
-    public void switchAccessToken(AccessToken accessToken) {
+    public void switchAccessToken(final AccessToken accessToken) {
         setAccessToken(accessToken);
         if (getStreamingMode()) {
             showToast(R.string.toast_destroy_streaming);
-            stopStreaming();
+            mUserStreamAdapter.stop();
+            new AsyncTask<Void, Void, Void>() {
+                @Override
+                protected Void doInBackground(Void... params) {
+                    mTwitterStream.cleanUp();
+                    mTwitterStream.shutdown();
+                    return null;
+                }
+
+                @Override
+                protected void onPostExecute(Void status) {
+                    mTwitterStream.setOAuthAccessToken(accessToken);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            showToast(R.string.toast_create_streaming);
+                            mUserStreamAdapter.start();
+                            mTwitterStream.user();
+                        }
+                    }, 5000);
+                }
+            }.execute();
         }
         EventBus.getDefault().post(new AccountChangeEvent());
     }

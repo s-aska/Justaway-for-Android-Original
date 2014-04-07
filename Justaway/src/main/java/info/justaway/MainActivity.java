@@ -193,12 +193,8 @@ public class MainActivity extends FragmentActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 AccessToken accessToken = mAccessTokenAdapter.getItem(i);
                 if (mApplication.getUserId() != accessToken.getUserId()) {
-                    if (mApplication.getStreamingMode()) {
-                        AccountSwitchDialogFragment.newInstance(accessToken).show(getSupportFragmentManager(), "dialog");
-                    } else {
-                        mApplication.switchAccessToken(accessToken);
-                        mAccessTokenAdapter.notifyDataSetChanged();
-                    }
+                    mApplication.switchAccessToken(accessToken);
+                    mAccessTokenAdapter.notifyDataSetChanged();
                 }
                 mDrawerLayout.closeDrawer(findViewById(R.id.left_drawer));
             }
@@ -852,45 +848,6 @@ public class MainActivity extends FragmentActivity {
                                 JustawayApplication.getApplication().stopStreaming();
                                 JustawayApplication.showToast(R.string.toast_destroy_streaming);
                             }
-                            dismiss();
-                        }
-                    }
-            );
-            builder.setNegativeButton(getString(R.string.button_cancel),
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dismiss();
-                        }
-                    }
-            );
-            return builder.create();
-        }
-    }
-
-    public static final class AccountSwitchDialogFragment extends DialogFragment {
-
-        private static AccountSwitchDialogFragment newInstance(AccessToken accessToken) {
-            final Bundle args = new Bundle(1);
-            args.putSerializable("accessToken", accessToken);
-
-            final AccountSwitchDialogFragment f = new AccountSwitchDialogFragment();
-            f.setArguments(args);
-            return f;
-        }
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            final AccessToken accessToken = (AccessToken) getArguments().getSerializable("accessToken");
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle(R.string.menu_change_account);
-            builder.setMessage(R.string.confirm_switch_account);
-            builder.setPositiveButton(getString(R.string.button_ok),
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            JustawayApplication.getApplication().switchAccessToken(accessToken);
                             dismiss();
                         }
                     }
