@@ -85,6 +85,7 @@ public class MainActivity extends FragmentActivity {
     private ActionBarDrawerToggle mDrawerToggle;
     private Activity mActivity;
     private AccessTokenAdapter mAccessTokenAdapter;
+    private AccessToken mSwitchAccessToken;
 
     public void setInReplyToStatus(Status inReplyToStatus) {
         this.mInReplyToStatus = inReplyToStatus;
@@ -355,6 +356,15 @@ public class MainActivity extends FragmentActivity {
     }
 
     @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        if (mSwitchAccessToken != null) {
+            mApplication.switchAccessToken(mSwitchAccessToken);
+            mSwitchAccessToken = null;
+        }
+    }
+
+    @Override
     protected void onPause() {
         EventBus.getDefault().unregister(this);
         super.onPause();
@@ -600,10 +610,10 @@ public class MainActivity extends FragmentActivity {
                 break;
             case REQUEST_ACCOUNT_SETTING:
                 if (resultCode == RESULT_OK) {
-                    AccessToken accessToken = (AccessToken) data.getSerializableExtra("accessToken");
-                    if (accessToken != null) {
-                        mApplication.switchAccessToken(accessToken);
-                    }
+                    mSwitchAccessToken = (AccessToken) data.getSerializableExtra("accessToken");
+//                    if (accessToken != null) {
+//                        mApplication.switchAccessToken(accessToken);
+//                    }
                 }
                 break;
             case REQUEST_SETTINGS:

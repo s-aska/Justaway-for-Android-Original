@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
+import twitter4j.User;
 import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
 
@@ -70,6 +71,7 @@ public class SignInActivity extends Activity {
     }
 
     private void startOAuth() {
+        JustawayApplication.showProgressDialog(this, getString(R.string.progress_process));
         new AsyncTask<Void, Void, RequestToken>() {
             @Override
             protected RequestToken doInBackground(Void... params) {
@@ -83,6 +85,7 @@ public class SignInActivity extends Activity {
 
             @Override
             protected void onPostExecute(RequestToken token) {
+                JustawayApplication.dismissProgressDialog();
                 if (token == null) {
                     JustawayApplication.showToast(R.string.toast_connection_failure);
                     return;
@@ -125,12 +128,16 @@ public class SignInActivity extends Activity {
         if (oauth_verifier == null || oauth_verifier.isEmpty()) {
             return;
         }
-        new AsyncTask<String, Void, AccessToken>() {
+        JustawayApplication.showProgressDialog(this, getString(R.string.progress_process));
+        new AsyncTask<String, Void, User>() {
             @Override
-            protected AccessToken doInBackground(String... params) {
+            protected User doInBackground(String... params) {
                 String verifier = params[0];
                 try {
-                    return mTwitter.getOAuthAccessToken(mRequestToken, verifier);
+                    AccessToken accessToken = mTwitter.getOAuthAccessToken(mRequestToken, verifier);
+                    JustawayApplication.getApplication().setAccessToken(accessToken);
+                    mTwitter.setOAuthAccessToken(accessToken);
+                    return mTwitter.verifyCredentials();
                 } catch (Exception e) {
                     e.printStackTrace();
                     return null;
@@ -138,22 +145,18 @@ public class SignInActivity extends Activity {
             }
 
             @Override
-            protected void onPostExecute(AccessToken accessToken) {
-                if (accessToken != null) {
+            protected void onPostExecute(User user) {
+                JustawayApplication.dismissProgressDialog();
+                if (user != null) {
+                    JustawayApplication.getApplication().addUserIconMap(user);
                     JustawayApplication.showToast(R.string.toast_sign_in_success);
-                    successOAuth(accessToken);
-                    // 認証画面で別アカウントにして認証した時に誤爆する
-//                } else {
-//                    JustawayApplication.showToast(R.string.toast_sign_in_failure);
+                    successOAuth();
                 }
             }
         }.execute(oauth_verifier);
     }
 
-    private void successOAuth(AccessToken accessToken) {
-        JustawayApplication application = JustawayApplication.getApplication();
-        application.setAccessToken(accessToken);
-
+    private void successOAuth() {
         Intent intent = new Intent(this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
