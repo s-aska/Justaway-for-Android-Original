@@ -174,6 +174,18 @@ public class MainActivity extends FragmentActivity {
             }
         }
 
+        LayoutInflater inflater = getLayoutInflater();
+        View footer = inflater.inflate(R.layout.drawer_menu, null, false);
+        assert footer != null;
+        footer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, AccountSettingActivity.class);
+                startActivityForResult(intent, REQUEST_ACCOUNT_SETTING);
+            }
+        });
+        drawerList.addFooterView(footer, null, true);
+
         drawerList.setAdapter(mAccessTokenAdapter);
         drawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -768,9 +780,6 @@ public class MainActivity extends FragmentActivity {
             Intent intent = new Intent(this, PostActivity.class);
             intent.putExtra("status", " #justaway");
             startActivity(intent);
-        } else if (itemId == R.id.account) {
-            Intent intent = new Intent(this, AccountSettingActivity.class);
-            startActivityForResult(intent, REQUEST_ACCOUNT_SETTING);
         } else if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
