@@ -1,11 +1,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/account"
-        android:orderInCategory="100"
-        android:showAsAction="never"
-        android:title="@string/menu_account_setting"/>
-    <item
         android:id="@+id/tab_settings"
         android:orderInCategory="100"
         android:showAsAction="never"
