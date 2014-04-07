@@ -11,7 +11,7 @@ import de.greenrobot.event.EventBus;
 import info.justaway.MainActivity;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
-import info.justaway.event.action.AccountChangeEvent;
+import info.justaway.event.action.AccountChangePostEvent;
 import info.justaway.event.model.CreateStatusEvent;
 import info.justaway.event.model.DestroyStatusEvent;
 import info.justaway.event.action.StatusActionEvent;
@@ -118,11 +118,12 @@ public abstract class BaseFragment extends Fragment implements
         add(event.getRow());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
-    public void onEventMainThread(AccountChangeEvent event) {
-        mAdapter.clear();
-        mAdapter.notifyDataSetChanged();
-        reload();
+    public void onEventMainThread(AccountChangePostEvent event) {
+        if (event.getTabId() == getTabId()) {
+            reload();
+        } else {
+            clear();
+        }
     }
 
     public void goToTop() {
@@ -145,4 +146,8 @@ public abstract class BaseFragment extends Fragment implements
     public abstract void add(Row row);
 
     public abstract void reload();
+
+    public abstract void clear();
+
+    public abstract long getTabId();
 }

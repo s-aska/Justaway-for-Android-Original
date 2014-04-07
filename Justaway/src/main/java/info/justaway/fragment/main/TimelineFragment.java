@@ -11,7 +11,6 @@ import android.widget.ProgressBar;
 
 import de.greenrobot.event.EventBus;
 import info.justaway.JustawayApplication;
-import info.justaway.MainActivity;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.event.NewRecordEvent;
@@ -29,6 +28,10 @@ public class TimelineFragment extends BaseFragment {
     private Boolean mReload = false;
     private long mMaxId = 0L;
     private ProgressBar mFooter;
+
+    public long getTabId() {
+        return -1L;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -64,13 +67,18 @@ public class TimelineFragment extends BaseFragment {
     @Override
     public void reload() {
         mReload = true;
+        clear();
+        getPullToRefreshLayout().setRefreshing(true);
+        new HomeTimelineTask().execute();
+    }
+
+    @Override
+    public void clear() {
         mMaxId = 0L;
         TwitterAdapter adapter = getListAdapter();
         if (adapter != null) {
             adapter.clear();
         }
-        getPullToRefreshLayout().setRefreshing(true);
-        new HomeTimelineTask().execute();
     }
 
     @Override
@@ -121,9 +129,9 @@ public class TimelineFragment extends BaseFragment {
                 // 少しでもスクロールさせている時は画面を動かさない様にスクロー位置を復元する
                 if (position != 0 || y != 0) {
                     listView.setSelectionFromTop(position + 1, y);
-                    EventBus.getDefault().post(new NewRecordEvent(-1L, false));
+                    EventBus.getDefault().post(new NewRecordEvent(getTabId(), false));
                 } else {
-                    EventBus.getDefault().post(new NewRecordEvent(-1L, true));
+                    EventBus.getDefault().post(new NewRecordEvent(getTabId(), true));
                 }
             }
         });

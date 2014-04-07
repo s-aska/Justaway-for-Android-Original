@@ -31,6 +31,10 @@ public class UserListFragment extends BaseFragment {
     private long mUserListId;
     private LongSparseArray<Boolean> mMembers = new LongSparseArray<Boolean>();
 
+    public long getTabId() {
+        return mUserListId;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = super.onCreateView(inflater, container, savedInstanceState);
@@ -66,13 +70,18 @@ public class UserListFragment extends BaseFragment {
     @Override
     public void reload() {
         mReload = true;
+        clear();
+        getPullToRefreshLayout().setRefreshing(true);
+        new UserListStatusesTask().execute();
+    }
+
+    @Override
+    public void clear() {
         mMaxId = 0L;
         TwitterAdapter adapter = getListAdapter();
         if (adapter != null) {
             adapter.clear();
         }
-        getPullToRefreshLayout().setRefreshing(true);
-        new UserListStatusesTask().execute();
     }
 
     @Override
