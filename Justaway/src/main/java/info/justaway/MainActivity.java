@@ -41,6 +41,8 @@ import java.util.ArrayList;
 
 import de.greenrobot.event.EventBus;
 import info.justaway.adapter.MainPagerAdapter;
+import info.justaway.event.AccountChangePostEvent;
+import info.justaway.event.AccountChangePreEvent;
 import info.justaway.event.AlertDialogEvent;
 import info.justaway.event.EditorEvent;
 import info.justaway.event.GoToTopEvent;
@@ -179,9 +181,10 @@ public class MainActivity extends FragmentActivity {
                 AccessToken accessToken = adapter.getItem(i);
                 if (JustawayApplication.getApplication().getUserId() != accessToken.getUserId()) {
                     JustawayApplication.getApplication().setAccessToken(accessToken);
-                    mDrawerLayout.closeDrawer(findViewById(R.id.left_drawer));
                     changeAccount();
+                    adapter.notifyDataSetChanged();
                 }
+                mDrawerLayout.closeDrawer(findViewById(R.id.left_drawer));
             }
         });
         mDrawerLayout.setDrawerListener(mDrawerToggle);
@@ -332,6 +335,10 @@ public class MainActivity extends FragmentActivity {
                 }
             }
         });
+
+        if (mApplication.getStreamingMode()) {
+            mApplication.startStreaming();
+        }
     }
 
     @Override
@@ -429,7 +436,6 @@ public class MainActivity extends FragmentActivity {
             mSignalButton.setTextColor(Color.WHITE);
         }
     }
-
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -580,22 +586,13 @@ public class MainActivity extends FragmentActivity {
     }
 
     private void changeAccount() {
-        showProgressDialog(getString(R.string.progress_process));
-
-        mApplication.startStreaming();
-
+        EventBus.getDefault().post(new AccountChangePreEvent());
+        if (mApplication.getStreamingMode()) {
+            mApplication.restartStreaming();
+        } else {
+            EventBus.getDefault().post(new AccountChangePostEvent());
+        }
         setupTab();
-//        int count = mMainPagerAdapter.getCount();
-//        for (int id = 0; id < count; id++) {
-//            BaseFragment fragment = mMainPagerAdapter
-//                    .findFragmentByPosition(id);
-//            if (fragment != null) {
-//                fragment.getListAdapter().clear();
-//                fragment.reload();
-//            }
-//        }
-
-        dismissProgressDialog();
     }
 
     private void bindTabListener(TextView textView, final int position) {
@@ -679,10 +676,6 @@ public class MainActivity extends FragmentActivity {
         if (mApplication.getQuickMode()) {
             showQuickPanel();
         }
-    }
-
-    public void setupStream() {
-        mApplication.startStreaming();
     }
 
     /**
