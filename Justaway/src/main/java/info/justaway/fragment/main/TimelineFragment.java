@@ -151,10 +151,13 @@ public class TimelineFragment extends BaseFragment {
         @Override
         protected void onPostExecute(ResponseList<twitter4j.Status> statuses) {
             mFooter.setVisibility(View.GONE);
-            TwitterAdapter adapter = getListAdapter();
             if (statuses == null || statuses.size() == 0) {
+                mReload = false;
+                getPullToRefreshLayout().setRefreshComplete();
+                getListView().setVisibility(View.VISIBLE);
                 return;
             }
+            TwitterAdapter adapter = getListAdapter();
             if (mReload) {
                 adapter.clear();
                 for (twitter4j.Status status : statuses) {

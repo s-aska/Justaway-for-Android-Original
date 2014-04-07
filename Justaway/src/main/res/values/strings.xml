@@ -37,6 +37,7 @@
     <string name="confirm_unfollow">Do you want to unfollow?</string>
     <string name="confirm_update_profile_image">Do you want to change profile image?</string>
     <string name="confirm_theme_apply_finish">You need to end once To adapt a theme \nAre you sure you want to exit?</string>
+    <string name="confirm_switch_account">You are limited when you switch the account frequently the streaming connection.</string>
     <string name="context_menu_create_favorite">Favorite</string>
     <string name="context_menu_destroy_direct_message">Delete message</string>
     <string name="context_menu_destroy_favorite">Undo favorite</string>

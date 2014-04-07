@@ -44,12 +44,13 @@ import info.justaway.adapter.MainPagerAdapter;
 import info.justaway.event.AccountChangePostEvent;
 import info.justaway.event.AccountChangePreEvent;
 import info.justaway.event.AlertDialogEvent;
-import info.justaway.event.EditorEvent;
-import info.justaway.event.GoToTopEvent;
-import info.justaway.event.UnFavoriteEvent;
-import info.justaway.event.UserStreamingOnCleanupEvent;
-import info.justaway.event.UserStreamingOnConnectEvent;
-import info.justaway.event.UserStreamingOnDisconnectEvent;
+import info.justaway.event.action.AccountChangeEvent;
+import info.justaway.event.action.SeenTopEvent;
+import info.justaway.event.connection.CleanupEvent;
+import info.justaway.event.action.EditorEvent;
+import info.justaway.event.model.UnFavoriteEvent;
+import info.justaway.event.connection.ConnectEvent;
+import info.justaway.event.connection.DisconnectEvent;
 import info.justaway.fragment.main.BaseFragment;
 import info.justaway.fragment.main.DirectMessagesFragment;
 import info.justaway.fragment.main.InteractionsFragment;
@@ -86,6 +87,7 @@ public class MainActivity extends FragmentActivity {
     private Status mInReplyToStatus;
     private ActionBarDrawerToggle mDrawerToggle;
     private Activity mActivity;
+    private AccessTokenAdapter mAccessTokenAdapter;
 
     public void setInReplyToStatus(Status inReplyToStatus) {
         this.mInReplyToStatus = inReplyToStatus;
@@ -166,23 +168,27 @@ public class MainActivity extends FragmentActivity {
 
         // アカウント切り替え
         ListView drawerList = (ListView) findViewById(R.id.account_list);
-        final AccessTokenAdapter adapter = new AccessTokenAdapter(this, R.layout.row_switch_account);
+        mAccessTokenAdapter = new AccessTokenAdapter(this, R.layout.row_switch_account);
         ArrayList<AccessToken> accessTokens = JustawayApplication.getApplication().getAccessTokens();
         if (accessTokens != null) {
             for (AccessToken accessToken : accessTokens) {
-                adapter.add(accessToken);
+                mAccessTokenAdapter.add(accessToken);
             }
         }
 
-        drawerList.setAdapter(adapter);
+        drawerList.setAdapter(mAccessTokenAdapter);
         drawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                AccessToken accessToken = adapter.getItem(i);
+                AccessToken accessToken = mAccessTokenAdapter.getItem(i);
                 if (JustawayApplication.getApplication().getUserId() != accessToken.getUserId()) {
-                    JustawayApplication.getApplication().setAccessToken(accessToken);
-                    changeAccount();
-                    adapter.notifyDataSetChanged();
+                    if (JustawayApplication.getApplication().getStreamingMode()) {
+                        AccountSwitchDialogFragment.newInstance(accessToken).show(getSupportFragmentManager(), "dialog");
+                    } else {
+                        JustawayApplication.getApplication().setAccessToken(accessToken);
+                        changeAccount();
+                        mAccessTokenAdapter.notifyDataSetChanged();
+                    }
                 }
                 mDrawerLayout.closeDrawer(findViewById(R.id.left_drawer));
             }
@@ -373,7 +379,7 @@ public class MainActivity extends FragmentActivity {
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public void onEventMainThread(GoToTopEvent event) {
+    public void onEventMainThread(SeenTopEvent event) {
         showTopView();
     }
 
@@ -415,12 +421,12 @@ public class MainActivity extends FragmentActivity {
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public void onEventMainThread(UserStreamingOnConnectEvent event) {
+    public void onEventMainThread(ConnectEvent event) {
         mApplication.setThemeTextColor(this, mSignalButton, R.attr.holo_green);
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public void onEventMainThread(UserStreamingOnDisconnectEvent event) {
+    public void onEventMainThread(DisconnectEvent event) {
         if (mApplication.getStreamingMode()) {
             mApplication.setThemeTextColor(this, mSignalButton, R.attr.holo_red);
         } else {
@@ -429,12 +435,30 @@ public class MainActivity extends FragmentActivity {
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public void onEventMainThread(UserStreamingOnCleanupEvent event) {
+    public void onEventMainThread(CleanupEvent event) {
         if (mApplication.getStreamingMode()) {
             mApplication.setThemeTextColor(this, mSignalButton, R.attr.holo_orange);
         } else {
             mSignalButton.setTextColor(Color.WHITE);
         }
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public void onEventMainThread(AccountChangeEvent event) {
+        if (mAccessTokenAdapter != null) {
+            mAccessTokenAdapter.notifyDataSetChanged();
+        }
+        changeAccount();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public void onEventMainThread(AccountChangePreEvent event) {
+        showProgressDialog(getString(R.string.progress_process));
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public void onEventMainThread(AccountChangePostEvent event) {
+        dismissProgressDialog();
     }
 
     @Override
@@ -586,10 +610,10 @@ public class MainActivity extends FragmentActivity {
     }
 
     private void changeAccount() {
-        EventBus.getDefault().post(new AccountChangePreEvent());
         if (mApplication.getStreamingMode()) {
             mApplication.restartStreaming();
         } else {
+            EventBus.getDefault().post(new AccountChangePreEvent());
             EventBus.getDefault().post(new AccountChangePostEvent());
         }
         setupTab();
@@ -849,6 +873,47 @@ public class MainActivity extends FragmentActivity {
                                 JustawayApplication.getApplication().stopStreaming();
                                 JustawayApplication.showToast(R.string.toast_destroy_streaming);
                             }
+                            dismiss();
+                        }
+                    }
+            );
+            builder.setNegativeButton(getString(R.string.button_cancel),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dismiss();
+                        }
+                    }
+            );
+            return builder.create();
+        }
+    }
+
+    public static final class AccountSwitchDialogFragment extends DialogFragment {
+
+        private static AccountSwitchDialogFragment newInstance(AccessToken accessToken) {
+            final Bundle args = new Bundle(1);
+            args.putSerializable("accessToken", accessToken);
+
+            final AccountSwitchDialogFragment f = new AccountSwitchDialogFragment();
+            f.setArguments(args);
+            return f;
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            final AccessToken accessToken = (AccessToken) getArguments().getSerializable("accessToken");
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle(R.string.menu_change_account);
+            builder.setMessage(R.string.confirm_switch_account);
+            builder.setPositiveButton(getString(R.string.button_ok),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            JustawayApplication application = JustawayApplication.getApplication();
+                            application.setAccessToken(accessToken);
+                            EventBus.getDefault().post(new AccountChangeEvent());
                             dismiss();
                         }
                     }

@@ -2,10 +2,10 @@ package info.justaway.adapter;
 
 import de.greenrobot.event.EventBus;
 import info.justaway.JustawayApplication;
-import info.justaway.event.CreateStatusEvent;
-import info.justaway.event.DestroyDirectMessageEvent;
-import info.justaway.event.DestroyStatusEvent;
-import info.justaway.event.UnFavoriteEvent;
+import info.justaway.event.model.CreateStatusEvent;
+import info.justaway.event.model.DestroyDirectMessageEvent;
+import info.justaway.event.model.DestroyStatusEvent;
+import info.justaway.event.model.UnFavoriteEvent;
 import info.justaway.model.Row;
 import info.justaway.task.ReFetchFavoriteStatus;
 import twitter4j.DirectMessage;
@@ -14,7 +14,7 @@ import twitter4j.StatusDeletionNotice;
 import twitter4j.User;
 import twitter4j.UserStreamAdapter;
 
-public class JustawayUserStreamAdapter extends UserStreamAdapter {
+public class MyUserStreamAdapter extends UserStreamAdapter {
     private boolean mStopped;
 
     public void stop() {

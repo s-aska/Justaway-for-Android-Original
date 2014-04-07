@@ -1,4 +1,4 @@
-package info.justaway.event;
+package info.justaway.event.model;
 
 import twitter4j.Status;
 import twitter4j.User;

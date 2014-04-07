@@ -155,6 +155,9 @@ public class UserListFragment extends BaseFragment {
         protected void onPostExecute(ResponseList<twitter4j.Status> statuses) {
             mFooter.setVisibility(View.GONE);
             if (statuses == null || statuses.size() == 0) {
+                mReload = false;
+                getPullToRefreshLayout().setRefreshComplete();
+                getListView().setVisibility(View.VISIBLE);
                 return;
             }
             TwitterAdapter adapter = getListAdapter();
@@ -168,20 +171,20 @@ public class UserListFragment extends BaseFragment {
                 }
                 mReload = false;
                 getPullToRefreshLayout().setRefreshComplete();
-                return;
-            }
-            for (twitter4j.Status status : statuses) {
-                if (mMaxId == 0L || mMaxId > status.getId()) {
-                    mMaxId = status.getId();
+            } else {
+                for (twitter4j.Status status : statuses) {
+                    if (mMaxId == 0L || mMaxId > status.getId()) {
+                        mMaxId = status.getId();
+                    }
+
+                    // 最初のツイートに登場ユーザーをStreaming APIからの取り込み対象にすることでAPI節約!!!
+                    mMembers.append(status.getUser().getId(), true);
+
+                    adapter.extensionAdd(Row.newStatus(status));
                 }
-
-                // 最初のツイートに登場ユーザーをStreaming APIからの取り込み対象にすることでAPI節約!!!
-                mMembers.append(status.getUser().getId(), true);
-
-                adapter.extensionAdd(Row.newStatus(status));
+                mAutoLoader = true;
+                getListView().setVisibility(View.VISIBLE);
             }
-            mAutoLoader = true;
-            getListView().setVisibility(View.VISIBLE);
         }
     }
 }

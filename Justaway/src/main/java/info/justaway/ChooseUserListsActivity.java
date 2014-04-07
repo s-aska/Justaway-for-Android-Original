@@ -16,7 +16,7 @@ import java.util.HashMap;
 import de.greenrobot.event.EventBus;
 import info.justaway.adapter.SubscribeUserListAdapter;
 import info.justaway.event.AlertDialogEvent;
-import info.justaway.event.DestroyUserListEvent;
+import info.justaway.event.model.DestroyUserListEvent;
 import info.justaway.model.UserListWithRegistered;
 import info.justaway.task.UserListsLoader;
 import twitter4j.ResponseList;
