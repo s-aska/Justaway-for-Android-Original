@@ -41,9 +41,8 @@ import java.util.ArrayList;
 
 import de.greenrobot.event.EventBus;
 import info.justaway.adapter.MainPagerAdapter;
-import info.justaway.event.AccountChangePostEvent;
-import info.justaway.event.AccountChangePreEvent;
 import info.justaway.event.AlertDialogEvent;
+import info.justaway.event.NewRecordEvent;
 import info.justaway.event.action.AccountChangeEvent;
 import info.justaway.event.action.SeenTopEvent;
 import info.justaway.event.connection.CleanupEvent;
@@ -65,9 +64,6 @@ import twitter4j.StatusUpdate;
 import twitter4j.TwitterException;
 import twitter4j.auth.AccessToken;
 
-/**
- * @author aska
- */
 public class MainActivity extends FragmentActivity {
 
     private JustawayApplication mApplication;
@@ -112,7 +108,8 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        JustawayApplication.getApplication().setTheme(this);
+        mApplication = JustawayApplication.getApplication();
+        mApplication.setTheme(this);
         mActivity = this;
 
         // クイックモード時に起動と同時にキーボードが出現するのを抑止
@@ -150,7 +147,7 @@ public class MainActivity extends FragmentActivity {
         }
 
         setContentView(R.layout.activity_main);
-        int drawer = JustawayApplication.getApplication().getThemeName().equals("black") ? R.drawable.ic_dark_drawer :R.drawable.ic_dark_drawer;
+        int drawer = mApplication.getThemeName().equals("black") ? R.drawable.ic_dark_drawer :R.drawable.ic_dark_drawer;
 
         // DrawerLayout
         final DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -169,7 +166,7 @@ public class MainActivity extends FragmentActivity {
         // アカウント切り替え
         ListView drawerList = (ListView) findViewById(R.id.account_list);
         mAccessTokenAdapter = new AccessTokenAdapter(this, R.layout.row_switch_account);
-        ArrayList<AccessToken> accessTokens = JustawayApplication.getApplication().getAccessTokens();
+        ArrayList<AccessToken> accessTokens = mApplication.getAccessTokens();
         if (accessTokens != null) {
             for (AccessToken accessToken : accessTokens) {
                 mAccessTokenAdapter.add(accessToken);
@@ -181,12 +178,11 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 AccessToken accessToken = mAccessTokenAdapter.getItem(i);
-                if (JustawayApplication.getApplication().getUserId() != accessToken.getUserId()) {
-                    if (JustawayApplication.getApplication().getStreamingMode()) {
+                if (mApplication.getUserId() != accessToken.getUserId()) {
+                    if (mApplication.getStreamingMode()) {
                         AccountSwitchDialogFragment.newInstance(accessToken).show(getSupportFragmentManager(), "dialog");
                     } else {
-                        JustawayApplication.getApplication().setAccessToken(accessToken);
-                        changeAccount();
+                        mApplication.switchAccessToken(accessToken);
                         mAccessTokenAdapter.notifyDataSetChanged();
                     }
                 }
@@ -199,8 +195,6 @@ public class MainActivity extends FragmentActivity {
 
         // クイックモード時に起動と同時に入力エリアにフォーカスするのを抑止
         findViewById(R.id.main).requestFocus();
-
-        mApplication = JustawayApplication.getApplication();
 
         // アクセストークンがない場合に認証用のアクティビティを起動する
         if (!mApplication.hasAccessToken()) {
@@ -448,17 +442,22 @@ public class MainActivity extends FragmentActivity {
         if (mAccessTokenAdapter != null) {
             mAccessTokenAdapter.notifyDataSetChanged();
         }
-        changeAccount();
+        setupTab();
     }
 
-    @SuppressWarnings("UnusedDeclaration")
-    public void onEventMainThread(AccountChangePreEvent event) {
-        showProgressDialog(getString(R.string.progress_process));
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    public void onEventMainThread(AccountChangePostEvent event) {
-        dismissProgressDialog();
+    public void onEventMainThread(NewRecordEvent event) {
+        int position = mMainPagerAdapter.findPositionById(event.getTabId());
+        if (mViewPager.getCurrentItem() == position && event.getAutoScroll()) {
+            return;
+        }
+        if (position < 0) {
+            return;
+        }
+        LinearLayout tabMenus = (LinearLayout) findViewById(R.id.tab_menus);
+        Button button = (Button) tabMenus.getChildAt(position);
+        if (button != null) {
+            mApplication.setThemeTextColor(this, button, R.attr.holo_blue);
+        }
     }
 
     @Override
@@ -597,7 +596,12 @@ public class MainActivity extends FragmentActivity {
                 }
                 break;
             case REQUEST_ACCOUNT_SETTING:
-                changeAccount();
+                if (resultCode == RESULT_OK) {
+                    AccessToken accessToken = (AccessToken) data.getSerializableExtra("accessToken");
+                    if (accessToken != null) {
+                        mApplication.switchAccessToken(accessToken);
+                    }
+                }
                 break;
             case REQUEST_SETTINGS:
                 if (resultCode == RESULT_OK) {
@@ -607,16 +611,6 @@ public class MainActivity extends FragmentActivity {
             default:
                 break;
         }
-    }
-
-    private void changeAccount() {
-        if (mApplication.getStreamingMode()) {
-            mApplication.restartStreaming();
-        } else {
-            EventBus.getDefault().post(new AccountChangePreEvent());
-            EventBus.getDefault().post(new AccountChangePostEvent());
-        }
-        setupTab();
     }
 
     private void bindTabListener(TextView textView, final int position) {
@@ -699,49 +693,6 @@ public class MainActivity extends FragmentActivity {
 
         if (mApplication.getQuickMode()) {
             showQuickPanel();
-        }
-    }
-
-    /**
-     * 新しいツイートが来たアピ
-     */
-    public void onNewTimeline(Boolean autoScroll) {
-        onNewStatus(TAB_ID_TIMELINE, autoScroll);
-    }
-
-    /**
-     * 新しいリプが来たアピ
-     */
-    public void onNewInteractions(Boolean autoScroll) {
-        onNewStatus(TAB_ID_INTERACTIONS, autoScroll);
-    }
-
-    /**
-     * 新しいDMが来たアピ
-     */
-    public void onNewDirectMessage(Boolean autoScroll) {
-        onNewStatus(TAB_ID_DIRECT_MESSAGE, autoScroll);
-    }
-
-    /**
-     * 新しいツイートが来たアピ
-     */
-    public void onNewListStatus(long listId, Boolean autoScroll) {
-        onNewStatus(listId, autoScroll);
-    }
-
-    public void onNewStatus(long tabId, Boolean autoScroll) {
-        int position = mMainPagerAdapter.findPositionById(tabId);
-        if (mViewPager.getCurrentItem() == position && autoScroll) {
-            return;
-        }
-        if (position < 0) {
-            return;
-        }
-        LinearLayout tabMenus = (LinearLayout) findViewById(R.id.tab_menus);
-        Button button = (Button) tabMenus.getChildAt(position);
-        if (button != null) {
-            mApplication.setThemeTextColor(this, button, R.attr.holo_blue);
         }
     }
 
@@ -911,9 +862,7 @@ public class MainActivity extends FragmentActivity {
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            JustawayApplication application = JustawayApplication.getApplication();
-                            application.setAccessToken(accessToken);
-                            EventBus.getDefault().post(new AccountChangeEvent());
+                            JustawayApplication.getApplication().switchAccessToken(accessToken);
                             dismiss();
                         }
                     }

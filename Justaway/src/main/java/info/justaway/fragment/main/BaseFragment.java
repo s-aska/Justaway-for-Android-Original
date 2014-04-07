@@ -11,8 +11,7 @@ import de.greenrobot.event.EventBus;
 import info.justaway.MainActivity;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
-import info.justaway.event.AccountChangePostEvent;
-import info.justaway.event.AccountChangePreEvent;
+import info.justaway.event.action.AccountChangeEvent;
 import info.justaway.event.model.CreateStatusEvent;
 import info.justaway.event.model.DestroyStatusEvent;
 import info.justaway.event.action.StatusActionEvent;
@@ -120,13 +119,9 @@ public abstract class BaseFragment extends Fragment implements
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public void onEventMainThread(AccountChangePreEvent event) {
+    public void onEventMainThread(AccountChangeEvent event) {
         mAdapter.clear();
         mAdapter.notifyDataSetChanged();
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    public void onEventMainThread(AccountChangePostEvent event) {
         reload();
     }
 

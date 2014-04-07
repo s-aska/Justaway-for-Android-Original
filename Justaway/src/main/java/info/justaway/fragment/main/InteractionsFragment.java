@@ -9,10 +9,11 @@ import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
+import de.greenrobot.event.EventBus;
 import info.justaway.JustawayApplication;
-import info.justaway.MainActivity;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
+import info.justaway.event.NewRecordEvent;
 import info.justaway.event.model.CreateStatusEvent;
 import info.justaway.model.Row;
 import twitter4j.Paging;
@@ -163,15 +164,11 @@ public class InteractionsFragment extends BaseFragment {
                 adapter.insert(row, 0);
 
                 // 少しでもスクロールさせている時は画面を動かさない様にスクロー位置を復元する
-                MainActivity activity = (MainActivity) getActivity();
-                if (activity == null) {
-                    return;
-                }
                 if (position != 0 || y != 0) {
                     listView.setSelectionFromTop(position + 1, y);
-                    activity.onNewInteractions(false);
+                    EventBus.getDefault().post(new NewRecordEvent(-2L, false));
                 } else {
-                    activity.onNewInteractions(true);
+                    EventBus.getDefault().post(new NewRecordEvent(-2L, true));
                 }
             }
         });
