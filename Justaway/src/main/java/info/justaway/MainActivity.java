@@ -611,9 +611,12 @@ public class MainActivity extends FragmentActivity {
             case REQUEST_ACCOUNT_SETTING:
                 if (resultCode == RESULT_OK) {
                     mSwitchAccessToken = (AccessToken) data.getSerializableExtra("accessToken");
-//                    if (accessToken != null) {
-//                        mApplication.switchAccessToken(accessToken);
-//                    }
+                }
+                if (mAccessTokenAdapter != null) {
+                    mAccessTokenAdapter.clear();
+                    for (AccessToken accessToken : mApplication.getAccessTokens()) {
+                        mAccessTokenAdapter.add(accessToken);
+                    }
                 }
                 break;
             case REQUEST_SETTINGS:
@@ -908,6 +911,12 @@ public class MainActivity extends FragmentActivity {
         public void add(AccessToken accessToken) {
             super.add(accessToken);
             mAccessTokenList.add(accessToken);
+        }
+
+        @Override
+        public void clear() {
+            super.clear();
+            mAccessTokenList.clear();
         }
 
         @Override
