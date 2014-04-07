@@ -31,8 +31,7 @@ import java.util.HashMap;
 import de.greenrobot.event.EventBus;
 import info.justaway.adapter.MyUserStreamAdapter;
 import info.justaway.display.FadeInRoundedBitmapDisplayer;
-import info.justaway.event.AccountChangePostEvent;
-import info.justaway.event.AccountChangePreEvent;
+import info.justaway.event.action.AccountChangeEvent;
 import info.justaway.event.connection.CleanupEvent;
 import info.justaway.event.action.EditorEvent;
 import info.justaway.event.connection.ConnectEvent;
@@ -448,15 +447,20 @@ public class JustawayApplication extends Application {
      * ストリーミングモードの記憶
      */
     private static final String STREAMING_MODE = "streamingMode";
+    private Boolean mStreamingMode;
 
     public void setStreamingMode(Boolean streamingMode) {
         SharedPreferences preferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
         Editor editor = preferences.edit();
         editor.putBoolean(STREAMING_MODE, streamingMode);
         editor.commit();
+        mStreamingMode = streamingMode;
     }
 
     public Boolean getStreamingMode() {
+        if (mStreamingMode != null) {
+            return mStreamingMode;
+        }
         SharedPreferences preferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
         return preferences.getBoolean(STREAMING_MODE, true);
     }
@@ -747,6 +751,8 @@ public class JustawayApplication extends Application {
     public void startStreaming() {
         if (mTwitterStream != null) {
             if (!mTwitterStreamConnected) {
+                mUserStreamAdapter.start();
+                mTwitterStream.setOAuthAccessToken(getAccessToken());
                 mTwitterStream.user();
             }
             return;
@@ -758,38 +764,12 @@ public class JustawayApplication extends Application {
         mTwitterStream.user();
     }
 
-    public void restartStreaming() {
-        if (!getStreamingMode()) {
-            return;
-        }
-        if (mTwitterStream != null) {
-            mUserStreamAdapter.stop();
-            EventBus.getDefault().post(new AccountChangePreEvent());
-            new AsyncTask<Void, Void, Void>() {
-                @Override
-                protected Void doInBackground(Void... params) {
-                    mTwitterStream.cleanUp();
-                    mTwitterStream.shutdown();
-                    mTwitterStream.setOAuthAccessToken(getAccessToken());
-                    mTwitterStream.user();
-                    return null;
-                }
-
-                @Override
-                protected void onPostExecute(Void status) {
-                    mUserStreamAdapter.start();
-                    EventBus.getDefault().post(new AccountChangePostEvent());
-                }
-            }.execute();
-        } else {
-            startStreaming();
-        }
-    }
-
     public void stopStreaming() {
         if (mTwitterStream == null) {
             return;
         }
+        mStreamingMode = false;
+        mUserStreamAdapter.stop();
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
@@ -836,7 +816,14 @@ public class JustawayApplication extends Application {
         Editor editor = preferences.edit();
         editor.putString(TOKENS, exportJson);
         editor.commit();
+    }
 
+    public void switchAccessToken(AccessToken accessToken) {
+        setAccessToken(accessToken);
+        if (getStreamingMode()) {
+            stopStreaming();
+        }
+        EventBus.getDefault().post(new AccountChangeEvent());
     }
 
     private LongSparseArray<Boolean> mIsFavMap = new LongSparseArray<Boolean>();
