@@ -280,6 +280,22 @@ public class JustawayApplication extends Application {
         }.execute();
     }
 
+    @SuppressWarnings("unchecked")
+    public void addUserIconMap(User user) {
+        final SharedPreferences preferences = getSharedPreferences(PREF_NAME_USER_ICON_MAP, Context.MODE_PRIVATE);
+        final Gson gson = new Gson();
+        String json = preferences.getString(PREF_KEY_USER_ICON_MAP, null);
+        if (json != null) {
+            mUserIconMap = gson.fromJson(json, mUserIconMap.getClass());
+        }
+        mUserIconMap.put(String.valueOf(user.getId()), user.getBiggerProfileImageURL());
+        String exportJson = gson.toJson(mUserIconMap);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.clear();
+        editor.putString(PREF_KEY_USER_ICON_MAP, exportJson);
+        editor.commit();
+    }
+
     /*
      * 終了時
      * 
@@ -821,6 +837,7 @@ public class JustawayApplication extends Application {
     public void switchAccessToken(AccessToken accessToken) {
         setAccessToken(accessToken);
         if (getStreamingMode()) {
+            showToast(R.string.toast_destroy_streaming);
             stopStreaming();
         }
         EventBus.getDefault().post(new AccountChangeEvent());
