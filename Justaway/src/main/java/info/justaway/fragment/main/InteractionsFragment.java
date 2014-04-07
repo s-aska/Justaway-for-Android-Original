@@ -31,6 +31,10 @@ public class InteractionsFragment extends BaseFragment {
     private long mMaxId = 0L;
     private ProgressBar mFooter;
 
+    public long getTabId() {
+        return -2L;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = super.onCreateView(inflater, container, savedInstanceState);
@@ -65,13 +69,18 @@ public class InteractionsFragment extends BaseFragment {
     @Override
     public void reload() {
         mReload = true;
+        clear();
+        getPullToRefreshLayout().setRefreshing(true);
+        new MentionsTimelineTask().execute();
+    }
+
+    @Override
+    public void clear() {
         mMaxId = 0L;
         TwitterAdapter adapter = getListAdapter();
         if (adapter != null) {
             adapter.clear();
         }
-        getPullToRefreshLayout().setRefreshing(true);
-        new MentionsTimelineTask().execute();
     }
 
     @Override
@@ -166,9 +175,9 @@ public class InteractionsFragment extends BaseFragment {
                 // 少しでもスクロールさせている時は画面を動かさない様にスクロー位置を復元する
                 if (position != 0 || y != 0) {
                     listView.setSelectionFromTop(position + 1, y);
-                    EventBus.getDefault().post(new NewRecordEvent(-2L, false));
+                    EventBus.getDefault().post(new NewRecordEvent(getTabId(), false));
                 } else {
-                    EventBus.getDefault().post(new NewRecordEvent(-2L, true));
+                    EventBus.getDefault().post(new NewRecordEvent(getTabId(), true));
                 }
             }
         });

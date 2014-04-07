@@ -44,6 +44,7 @@ import info.justaway.adapter.MainPagerAdapter;
 import info.justaway.event.AlertDialogEvent;
 import info.justaway.event.NewRecordEvent;
 import info.justaway.event.action.AccountChangeEvent;
+import info.justaway.event.action.AccountChangePostEvent;
 import info.justaway.event.action.SeenTopEvent;
 import info.justaway.event.connection.CleanupEvent;
 import info.justaway.event.action.EditorEvent;
@@ -443,6 +444,8 @@ public class MainActivity extends FragmentActivity {
             mAccessTokenAdapter.notifyDataSetChanged();
         }
         setupTab();
+        mViewPager.setCurrentItem(0);
+        EventBus.getDefault().post(new AccountChangePostEvent(mMainPagerAdapter.getItemId(mViewPager.getCurrentItem())));
     }
 
     public void onEventMainThread(NewRecordEvent event) {

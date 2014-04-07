@@ -32,6 +32,10 @@ public class DirectMessagesFragment extends BaseFragment {
     private long mSentDirectMessagesMaxId = 0L;
     private ProgressBar mFooter;
 
+    public long getTabId() {
+        return -3L;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = super.onCreateView(inflater, container, savedInstanceState);
@@ -66,14 +70,19 @@ public class DirectMessagesFragment extends BaseFragment {
     @Override
     public void reload() {
         mReload = true;
+        clear();
+        getPullToRefreshLayout().setRefreshing(true);
+        new DirectMessagesTask().execute();
+    }
+
+    @Override
+    public void clear() {
         mDirectMessagesMaxId = 0L;
         mSentDirectMessagesMaxId = 0L;
         TwitterAdapter adapter = getListAdapter();
         if (adapter != null) {
             adapter.clear();
         }
-        getPullToRefreshLayout().setRefreshing(true);
-        new DirectMessagesTask().execute();
     }
 
     @Override
@@ -127,11 +136,11 @@ public class DirectMessagesFragment extends BaseFragment {
                 if (position != 0 || y != 0) {
                     listView.setSelectionFromTop(position + 1, y);
                     if (doAppeal) {
-                        EventBus.getDefault().post(new NewRecordEvent(-3L, false));
+                        EventBus.getDefault().post(new NewRecordEvent(getTabId(), false));
                     }
                 } else {
                     if (doAppeal) {
-                        EventBus.getDefault().post(new NewRecordEvent(-3L, true));
+                        EventBus.getDefault().post(new NewRecordEvent(getTabId(), true));
                     }
                 }
             }
