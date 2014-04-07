@@ -85,6 +85,7 @@ public class MainActivity extends FragmentActivity {
     private ActionBarDrawerToggle mDrawerToggle;
     private Activity mActivity;
     private AccessTokenAdapter mAccessTokenAdapter;
+    private AccessToken mSwitchAccessToken;
 
     public void setInReplyToStatus(Status inReplyToStatus) {
         this.mInReplyToStatus = inReplyToStatus;
@@ -255,6 +256,7 @@ public class MainActivity extends FragmentActivity {
         });
 
         final int defaultTextColor = JustawayApplication.getApplication().getThemeTextColor(this, R.attr.menu_text_color);
+        final int disabledTextColor = JustawayApplication.getApplication().getThemeTextColor(this, R.attr.menu_text_color_disabled);
         ((EditText) findViewById(R.id.quick_tweet_edit)).addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
@@ -268,6 +270,8 @@ public class MainActivity extends FragmentActivity {
                 // 140文字をオーバーした時は文字数を赤色に
                 if (length < 0) {
                     textColor = Color.RED;
+                } else if (length == 140) {
+                    textColor = disabledTextColor;
                 } else {
                     textColor = defaultTextColor;
                 }
@@ -364,6 +368,15 @@ public class MainActivity extends FragmentActivity {
     protected void onResume() {
         super.onResume();
         EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        if (mSwitchAccessToken != null) {
+            mApplication.switchAccessToken(mSwitchAccessToken);
+            mSwitchAccessToken = null;
+        }
     }
 
     @Override
@@ -612,9 +625,12 @@ public class MainActivity extends FragmentActivity {
                 break;
             case REQUEST_ACCOUNT_SETTING:
                 if (resultCode == RESULT_OK) {
-                    AccessToken accessToken = (AccessToken) data.getSerializableExtra("accessToken");
-                    if (accessToken != null) {
-                        mApplication.switchAccessToken(accessToken);
+                    mSwitchAccessToken = (AccessToken) data.getSerializableExtra("accessToken");
+                }
+                if (mAccessTokenAdapter != null) {
+                    mAccessTokenAdapter.clear();
+                    for (AccessToken accessToken : mApplication.getAccessTokens()) {
+                        mAccessTokenAdapter.add(accessToken);
                     }
                 }
                 break;
@@ -907,6 +923,12 @@ public class MainActivity extends FragmentActivity {
         public void add(AccessToken accessToken) {
             super.add(accessToken);
             mAccessTokenList.add(accessToken);
+        }
+
+        @Override
+        public void clear() {
+            super.clear();
+            mAccessTokenList.clear();
         }
 
         @Override
