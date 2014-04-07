@@ -5,7 +5,7 @@ import android.os.AsyncTask;
 import de.greenrobot.event.EventBus;
 import info.justaway.JustawayApplication;
 import info.justaway.R;
-import info.justaway.event.DestroyUserListEvent;
+import info.justaway.event.model.DestroyUserListEvent;
 import twitter4j.UserList;
 
 public class DestroyUserListSubscriptionTask extends AsyncTask<Void, Void, Boolean> {

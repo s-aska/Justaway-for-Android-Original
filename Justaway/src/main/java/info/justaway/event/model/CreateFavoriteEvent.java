@@ -1,4 +1,4 @@
-package info.justaway.event;
+package info.justaway.event.model;
 
 import info.justaway.model.Row;
 

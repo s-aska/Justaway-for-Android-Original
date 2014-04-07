@@ -30,12 +30,11 @@ import java.util.regex.Pattern;
 import de.greenrobot.event.EventBus;
 import info.justaway.BuildConfig;
 import info.justaway.JustawayApplication;
-import info.justaway.MainActivity;
 import info.justaway.ProfileActivity;
 import info.justaway.R;
 import info.justaway.ScaleImageActivity;
 import info.justaway.event.AlertDialogEvent;
-import info.justaway.event.GoToTopEvent;
+import info.justaway.event.action.SeenTopEvent;
 import info.justaway.model.Row;
 import twitter4j.DirectMessage;
 import twitter4j.MediaEntity;
@@ -84,7 +83,6 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     private LayoutInflater mInflater;
     private int mLayout;
     private int mColorBlue = 0;
-    private Boolean isMain;
     private static final int LIMIT = 100;
     private int mLimit = LIMIT;
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy/MM'/'dd' 'HH':'mm':'ss",
@@ -102,7 +100,6 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         this.mContext = context;
         this.mLayout = textViewResourceId;
         this.mApplication = JustawayApplication.getApplication();
-        this.isMain = mContext instanceof MainActivity;
     }
 
     public void extensionAdd(Row row) {
@@ -276,8 +273,8 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             }
         }
 
-        if (isMain && position == 0) {
-            EventBus.getDefault().post(new GoToTopEvent());
+        if (position == 0) {
+            EventBus.getDefault().post(new SeenTopEvent());
         }
 
         return view;

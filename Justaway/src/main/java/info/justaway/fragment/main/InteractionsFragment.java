@@ -13,7 +13,7 @@ import info.justaway.JustawayApplication;
 import info.justaway.MainActivity;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
-import info.justaway.event.CreateStatusEvent;
+import info.justaway.event.model.CreateStatusEvent;
 import info.justaway.model.Row;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
@@ -198,6 +198,9 @@ public class InteractionsFragment extends BaseFragment {
         protected void onPostExecute(ResponseList<twitter4j.Status> statuses) {
             mFooter.setVisibility(View.GONE);
             if (statuses == null || statuses.size() == 0) {
+                mReload = false;
+                getPullToRefreshLayout().setRefreshComplete();
+                getListView().setVisibility(View.VISIBLE);
                 return;
             }
             TwitterAdapter adapter = getListAdapter();
@@ -211,16 +214,16 @@ public class InteractionsFragment extends BaseFragment {
                 }
                 mReload = false;
                 getPullToRefreshLayout().setRefreshComplete();
-                return;
-            }
-            for (twitter4j.Status status : statuses) {
-                if (mMaxId == 0L || mMaxId > status.getId()) {
-                    mMaxId = status.getId();
+            } else {
+                for (twitter4j.Status status : statuses) {
+                    if (mMaxId == 0L || mMaxId > status.getId()) {
+                        mMaxId = status.getId();
+                    }
+                    adapter.extensionAdd(Row.newStatus(status));
                 }
-                adapter.extensionAdd(Row.newStatus(status));
+                mAutoLoader = true;
+                getListView().setVisibility(View.VISIBLE);
             }
-            mAutoLoader = true;
-            getListView().setVisibility(View.VISIBLE);
         }
     }
 }

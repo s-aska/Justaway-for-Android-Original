@@ -5,7 +5,7 @@ import android.os.AsyncTask;
 import de.greenrobot.event.EventBus;
 import info.justaway.JustawayApplication;
 import info.justaway.R;
-import info.justaway.event.StatusActionEvent;
+import info.justaway.event.action.StatusActionEvent;
 import twitter4j.TwitterException;
 
 public class FavoriteTask extends AsyncTask<Void, Void, TwitterException> {

@@ -5,7 +5,7 @@ import android.os.AsyncTask;
 import de.greenrobot.event.EventBus;
 import info.justaway.JustawayApplication;
 import info.justaway.R;
-import info.justaway.event.DestroyStatusEvent;
+import info.justaway.event.model.DestroyStatusEvent;
 
 public class DestroyStatusTask extends AsyncTask<Long, Void, Boolean> {
 

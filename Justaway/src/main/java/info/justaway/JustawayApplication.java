@@ -9,7 +9,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.StrictMode;
@@ -30,15 +29,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import de.greenrobot.event.EventBus;
-import info.justaway.adapter.JustawayUserStreamAdapter;
+import info.justaway.adapter.MyUserStreamAdapter;
 import info.justaway.display.FadeInRoundedBitmapDisplayer;
 import info.justaway.event.AccountChangePostEvent;
 import info.justaway.event.AccountChangePreEvent;
-import info.justaway.event.EditorEvent;
-import info.justaway.event.UserStreamingOnCleanupEvent;
-import info.justaway.event.UserStreamingOnConnectEvent;
-import info.justaway.event.UserStreamingOnDisconnectEvent;
-import info.justaway.listener.JustawayConnectionLifeCycleListener;
+import info.justaway.event.connection.CleanupEvent;
+import info.justaway.event.action.EditorEvent;
+import info.justaway.event.connection.ConnectEvent;
+import info.justaway.event.connection.DisconnectEvent;
+import info.justaway.listener.MyConnectionLifeCycleListener;
 import info.justaway.model.Row;
 import info.justaway.settings.MuteSettings;
 import info.justaway.task.FavoriteTask;
@@ -743,6 +742,7 @@ public class JustawayApplication extends Application {
 
     private TwitterStream mTwitterStream;
     private boolean mTwitterStreamConnected;
+    private MyUserStreamAdapter mUserStreamAdapter;
 
     public boolean getTwitterStreamConnected() {
         return mTwitterStreamConnected;
@@ -753,8 +753,9 @@ public class JustawayApplication extends Application {
             return;
         }
         mTwitterStream = getTwitterStream();
-        mTwitterStream.addListener(new JustawayUserStreamAdapter());
-        mTwitterStream.addConnectionLifeCycleListener(new JustawayConnectionLifeCycleListener());
+        mUserStreamAdapter = new MyUserStreamAdapter();
+        mTwitterStream.addListener(mUserStreamAdapter);
+        mTwitterStream.addConnectionLifeCycleListener(new MyConnectionLifeCycleListener());
         mTwitterStream.user();
     }
 
@@ -763,6 +764,8 @@ public class JustawayApplication extends Application {
             return;
         }
         if (mTwitterStream != null) {
+            mUserStreamAdapter.stop();
+            EventBus.getDefault().post(new AccountChangePreEvent());
             new AsyncTask<Void, Void, Void>() {
                 @Override
                 protected Void doInBackground(Void... params) {
@@ -775,6 +778,7 @@ public class JustawayApplication extends Application {
 
                 @Override
                 protected void onPostExecute(Void status) {
+                    mUserStreamAdapter.start();
                     EventBus.getDefault().post(new AccountChangePostEvent());
                 }
             }.execute();
@@ -803,17 +807,17 @@ public class JustawayApplication extends Application {
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public void onEventMainThread(UserStreamingOnConnectEvent event) {
+    public void onEventMainThread(ConnectEvent event) {
         mTwitterStreamConnected = true;
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public void onEventMainThread(UserStreamingOnDisconnectEvent event) {
+    public void onEventMainThread(DisconnectEvent event) {
         mTwitterStreamConnected = false;
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public void onEventMainThread(UserStreamingOnCleanupEvent event) {
+    public void onEventMainThread(CleanupEvent event) {
         mTwitterStreamConnected = false;
     }
 

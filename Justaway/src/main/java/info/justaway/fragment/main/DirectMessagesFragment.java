@@ -16,8 +16,7 @@ import info.justaway.JustawayApplication;
 import info.justaway.MainActivity;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
-import info.justaway.event.CreateStatusEvent;
-import info.justaway.event.DestroyDirectMessageEvent;
+import info.justaway.event.model.DestroyDirectMessageEvent;
 import info.justaway.model.Row;
 import twitter4j.DirectMessage;
 import twitter4j.Paging;
@@ -216,6 +215,9 @@ public class DirectMessagesFragment extends BaseFragment {
         protected void onPostExecute(ResponseList<DirectMessage> statuses) {
             mFooter.setVisibility(View.GONE);
             if (statuses == null || statuses.size() == 0) {
+                mReload = false;
+                getPullToRefreshLayout().setRefreshComplete();
+                getListView().setVisibility(View.VISIBLE);
                 return;
             }
             TwitterAdapter adapter = getListAdapter();
@@ -226,13 +228,13 @@ public class DirectMessagesFragment extends BaseFragment {
                 }
                 mReload = false;
                 getPullToRefreshLayout().setRefreshComplete();
-                return;
+            } else {
+                for (DirectMessage status : statuses) {
+                    adapter.extensionAdd(Row.newDirectMessage(status));
+                }
+                mAutoLoader = true;
+                getListView().setVisibility(View.VISIBLE);
             }
-            for (DirectMessage status : statuses) {
-                adapter.extensionAdd(Row.newDirectMessage(status));
-            }
-            mAutoLoader = true;
-            getListView().setVisibility(View.VISIBLE);
         }
     }
 }

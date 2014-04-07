@@ -37,6 +37,7 @@
     <string name="confirm_unfollow">フォローを解除しますか？</string>
     <string name="confirm_update_profile_image">プロフィール画像を変更しますか？</string>
     <string name="confirm_theme_apply_finish">テーマを適応するにはJustawayを一度終了する必要があります\n終了しますか？</string>
+    <string name="confirm_switch_account">ストリーミング接続中にアカウントを頻繁に切り替えると規制されます。ﾟ(ﾟ∩´﹏`∩ﾟ)ﾟ。\n稲妻のアイコンでストリーミングを切っておくと安全です。</string>
     <string name="context_menu_create_favorite">ふぁぼ</string>
     <string name="context_menu_destroy_direct_message">ツイ消し(DM)</string>
     <string name="context_menu_destroy_favorite">ふぁぼを解除</string>
