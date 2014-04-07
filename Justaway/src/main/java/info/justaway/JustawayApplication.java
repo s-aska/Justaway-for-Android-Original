@@ -744,12 +744,11 @@ public class JustawayApplication extends Application {
     private boolean mTwitterStreamConnected;
     private MyUserStreamAdapter mUserStreamAdapter;
 
-    public boolean getTwitterStreamConnected() {
-        return mTwitterStreamConnected;
-    }
-
     public void startStreaming() {
         if (mTwitterStream != null) {
+            if (!mTwitterStreamConnected) {
+                mTwitterStream.user();
+            }
             return;
         }
         mTwitterStream = getTwitterStream();
