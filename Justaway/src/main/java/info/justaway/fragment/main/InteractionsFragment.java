@@ -14,6 +14,7 @@ import info.justaway.JustawayApplication;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.event.NewRecordEvent;
+import info.justaway.event.model.CreateFavoriteEvent;
 import info.justaway.event.model.CreateStatusEvent;
 import info.justaway.model.Row;
 import twitter4j.Paging;
@@ -141,6 +142,10 @@ public class InteractionsFragment extends BaseFragment {
     }
 
     public void onEventMainThread(CreateStatusEvent event) {
+        add(event.getRow());
+    }
+
+    public void onEventMainThread(CreateFavoriteEvent event) {
         add(event.getRow());
     }
 
