@@ -384,9 +384,6 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (isFinishing()) {
-            mApplication.stopStreaming();
-        }
     }
 
     @SuppressWarnings("UnusedDeclaration")
