@@ -37,13 +37,13 @@ import info.justaway.event.connection.CleanupEvent;
 import info.justaway.event.action.EditorEvent;
 import info.justaway.event.connection.ConnectEvent;
 import info.justaway.event.connection.DisconnectEvent;
-import info.justaway.listener.MyConnectionLifeCycleListener;
 import info.justaway.model.Row;
 import info.justaway.settings.MuteSettings;
 import info.justaway.task.FavoriteTask;
 import info.justaway.task.RetweetTask;
 import info.justaway.task.UnFavoriteTask;
 import info.justaway.task.UnRetweetTask;
+import twitter4j.ConnectionLifeCycleListener;
 import twitter4j.DirectMessage;
 import twitter4j.ResponseList;
 import twitter4j.Status;
@@ -765,6 +765,10 @@ public class JustawayApplication extends Application {
     private boolean mTwitterStreamConnected;
     private MyUserStreamAdapter mUserStreamAdapter;
 
+    public boolean getTwitterStreamConnected() {
+        return mTwitterStreamConnected;
+    }
+
     public void startStreaming() {
         if (mTwitterStream != null) {
             if (!mTwitterStreamConnected) {
@@ -802,19 +806,16 @@ public class JustawayApplication extends Application {
         }.execute();
     }
 
-    @SuppressWarnings("UnusedDeclaration")
-    public void onEventMainThread(ConnectEvent event) {
-        mTwitterStreamConnected = true;
+    public void pauseStreaming() {
+        if (mUserStreamAdapter != null) {
+            mUserStreamAdapter.pause();
+        }
     }
 
-    @SuppressWarnings("UnusedDeclaration")
-    public void onEventMainThread(DisconnectEvent event) {
-        mTwitterStreamConnected = false;
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    public void onEventMainThread(CleanupEvent event) {
-        mTwitterStreamConnected = false;
+    public void resumeStreaming() {
+        if (mUserStreamAdapter != null) {
+            mUserStreamAdapter.resume();
+        }
     }
 
     public void removeAccessToken(int position) {
@@ -1075,5 +1076,25 @@ public class JustawayApplication extends Application {
             }
         }
         return false;
+    }
+
+    public class MyConnectionLifeCycleListener implements ConnectionLifeCycleListener {
+        @Override
+        public void onConnect() {
+            mTwitterStreamConnected = true;
+            EventBus.getDefault().post(new ConnectEvent());
+        }
+
+        @Override
+        public void onDisconnect() {
+            mTwitterStreamConnected = false;
+            EventBus.getDefault().post(new DisconnectEvent());
+        }
+
+        @Override
+        public void onCleanUp() {
+            mTwitterStreamConnected = false;
+            EventBus.getDefault().post(new CleanupEvent());
+        }
     }
 }

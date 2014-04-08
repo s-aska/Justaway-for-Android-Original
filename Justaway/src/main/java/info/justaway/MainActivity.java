@@ -1,5 +1,6 @@
 package info.justaway;
 
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -176,6 +177,7 @@ public class MainActivity extends FragmentActivity {
         }
 
         LayoutInflater inflater = getLayoutInflater();
+        @SuppressLint("InflateParams")
         View footer = inflater.inflate(R.layout.drawer_menu, null, false);
         assert footer != null;
         footer.setOnClickListener(new View.OnClickListener() {
@@ -224,7 +226,6 @@ public class MainActivity extends FragmentActivity {
         Typeface fontello = JustawayApplication.getFontello();
         Button tweet = (Button) findViewById(R.id.action_tweet);
         final Button send = (Button) findViewById(R.id.send);
-//        findViewById(R.id.action_timeline).setSelected(true);
         tweet.setTypeface(fontello);
         send.setTypeface(fontello);
         tweet.setOnClickListener(new View.OnClickListener() {
@@ -373,10 +374,21 @@ public class MainActivity extends FragmentActivity {
             mApplication.switchAccessToken(mSwitchAccessToken);
             mSwitchAccessToken = null;
         }
+        mApplication.resumeStreaming();
+        if (mApplication.getTwitterStreamConnected()) {
+            mApplication.setThemeTextColor(this, mSignalButton, R.attr.holo_green);
+        } else {
+            if (mApplication.getStreamingMode()) {
+                mApplication.setThemeTextColor(this, mSignalButton, R.attr.holo_red);
+            } else {
+                mSignalButton.setTextColor(Color.WHITE);
+            }
+        }
     }
 
     @Override
     protected void onPause() {
+        mApplication.pauseStreaming();
         EventBus.getDefault().unregister(this);
         super.onPause();
     }
