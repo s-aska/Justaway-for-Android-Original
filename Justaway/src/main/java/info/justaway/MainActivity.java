@@ -374,7 +374,7 @@ public class MainActivity extends FragmentActivity {
             mApplication.switchAccessToken(mSwitchAccessToken);
             mSwitchAccessToken = null;
         }
-        mApplication.resumeStreaming();
+//        mApplication.resumeStreaming();
         if (mApplication.getTwitterStreamConnected()) {
             mApplication.setThemeTextColor(this, mSignalButton, R.attr.holo_green);
         } else {
@@ -388,7 +388,7 @@ public class MainActivity extends FragmentActivity {
 
     @Override
     protected void onPause() {
-        mApplication.pauseStreaming();
+//        mApplication.pauseStreaming();
         EventBus.getDefault().unregister(this);
         super.onPause();
     }
@@ -777,6 +777,10 @@ public class MainActivity extends FragmentActivity {
             Intent intent = new Intent(this, ProfileActivity.class);
             intent.putExtra("userId", mApplication.getUserId());
             startActivity(intent);
+        } else if (itemId == R.id.notification) {
+            Intent intent = new Intent();
+            intent.setClass(getApplicationContext(), NotificationService.class);
+            startService(intent);
         } else if (itemId == R.id.tab_settings) {
             Intent intent = new Intent(this, TabSettingsActivity.class);
             startActivityForResult(intent, REQUEST_TAB_SETTINGS);

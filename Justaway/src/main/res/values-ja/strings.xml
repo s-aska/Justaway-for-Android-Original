@@ -105,6 +105,7 @@
     <string name="menu_add_interactions_tab">リプ・通知を追加</string>
     <string name="menu_add_direct_messages_tab">DMを追加</string>
     <string name="menu_user_list_tab">ユーザーリストを選択</string>
+    <string name="menu_notification">通知</string>
     <string name="official_website">http://justaway.info/</string>
     <string name="profile_pointer">●　○</string>
     <string name="profile_pointer_right">○　●</string>
