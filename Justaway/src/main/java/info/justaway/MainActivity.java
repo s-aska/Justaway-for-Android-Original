@@ -374,7 +374,7 @@ public class MainActivity extends FragmentActivity {
             mApplication.switchAccessToken(mSwitchAccessToken);
             mSwitchAccessToken = null;
         }
-//        mApplication.resumeStreaming();
+        mApplication.resumeStreaming();
         if (mApplication.getTwitterStreamConnected()) {
             mApplication.setThemeTextColor(this, mSignalButton, R.attr.holo_green);
         } else {
@@ -388,7 +388,7 @@ public class MainActivity extends FragmentActivity {
 
     @Override
     protected void onPause() {
-//        mApplication.pauseStreaming();
+        mApplication.pauseStreaming();
         EventBus.getDefault().unregister(this);
         super.onPause();
     }

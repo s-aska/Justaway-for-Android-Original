@@ -5,12 +5,18 @@ import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
+
 import de.greenrobot.event.EventBus;
-import info.justaway.event.model.CreateStatusEvent;
+import info.justaway.event.model.NotificationEvent;
+import info.justaway.model.Row;
+import twitter4j.Status;
 
 public class NotificationService extends Service {
     public NotificationService() {
@@ -79,13 +85,45 @@ public class NotificationService extends Service {
         super.onDestroy();
     }
 
-    public void onEvent(final CreateStatusEvent event) {
-        Log.i("Justaway", "[onEvent] CreateStatusEvent");
+    public void onEvent(NotificationEvent event) {
+        Log.i("Justaway", "[onEvent] NotificationEvent");
+
+        JustawayApplication application = JustawayApplication.getApplication();
+        long userId = application.getUserId();
+
+        Row row = event.getRow();
+        Status status = row.getStatus();
+        Status retweet = status.getRetweetedStatus();
+
+        String url;
+        String title;
+        String text;
+        if (row.isFavorite()) {
+            url = row.getSource().getBiggerProfileImageURL();
+            title = row.getSource().getScreenName();
+            text = "お気に入りに登録されました: ".concat(status.getText());
+        } else if (status.getUser().getId() == userId) {
+            url = status.getUser().getBiggerProfileImageURL();
+            title = status.getUser().getScreenName();
+            text = status.getText();
+        } else if (retweet != null && retweet.getUser().getId() == userId) {
+            url = status.getUser().getBiggerProfileImageURL();
+            title = status.getUser().getScreenName();
+            text = "リツイートされました: ".concat(retweet.getText());
+        } else {
+            return;
+        }
+
+        Bitmap icon = ImageLoader.getInstance().loadImageSync(url,
+                new ImageSize(
+                        android.R.dimen.notification_large_icon_width,
+                        android.R.dimen.notification_large_icon_height));
 
         Notification notification = new NotificationCompat.Builder(this)
-                .setContentTitle(event.getRow().getStatus().getUser().getScreenName())
-                .setContentText(event.getRow().getStatus().getText())
+                .setContentTitle(title)
+                .setContentText(text)
                 .setSmallIcon(R.drawable.ic_launcher)
+                .setLargeIcon(icon)
                 .build();
 
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
