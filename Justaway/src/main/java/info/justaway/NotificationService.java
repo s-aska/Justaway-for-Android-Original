@@ -102,7 +102,7 @@ public class NotificationService extends Service {
             url = row.getSource().getBiggerProfileImageURL();
             title = row.getSource().getScreenName();
             text = "お気に入りに登録されました: ".concat(status.getText());
-        } else if (status.getUser().getId() == userId) {
+        } else if (status.getInReplyToUserId() == userId) {
             url = status.getUser().getBiggerProfileImageURL();
             title = status.getUser().getScreenName();
             text = status.getText();
