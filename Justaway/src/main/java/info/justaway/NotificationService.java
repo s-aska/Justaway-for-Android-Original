@@ -33,6 +33,7 @@ public class NotificationService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i("Justaway", "[onStartCommand]");
 
+        /*
         Notification notification = new NotificationCompat.Builder(this)
                 .setContentTitle("Justaway")
                 .setContentText("通知チェッカー")
@@ -40,6 +41,7 @@ public class NotificationService extends Service {
                 .build();
 
         startForeground(1, notification);
+        */
 
         return START_STICKY;
     }
