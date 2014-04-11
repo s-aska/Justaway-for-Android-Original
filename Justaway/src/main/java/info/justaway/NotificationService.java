@@ -5,13 +5,13 @@ import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.assist.ImageSize;
 
 import de.greenrobot.event.EventBus;
 import info.justaway.event.model.NotificationEvent;
@@ -36,11 +36,8 @@ public class NotificationService extends Service {
         Notification notification = new NotificationCompat.Builder(this)
                 .setContentTitle("Justaway")
                 .setContentText("通知チェッカー")
-                .setSmallIcon(R.drawable.ic_launcher)
+                .setSmallIcon(R.drawable.ic_notification_star)
                 .build();
-
-        NotificationManager manager = (NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-        manager.notify(1, notification);
 
         startForeground(1, notification);
 
@@ -85,6 +82,7 @@ public class NotificationService extends Service {
         super.onDestroy();
     }
 
+    @SuppressWarnings("UnusedDeclaration")
     public void onEvent(NotificationEvent event) {
         Log.i("Justaway", "[onEvent] NotificationEvent");
 
@@ -98,32 +96,45 @@ public class NotificationService extends Service {
         String url;
         String title;
         String text;
+        String ticker;
+        int smallIcon;
         if (row.isFavorite()) {
-            url = row.getSource().getBiggerProfileImageURL();
+            url = row.getSource().getOriginalProfileImageURL();
             title = row.getSource().getScreenName();
-            text = "お気に入りに登録されました: ".concat(status.getText());
+            text = getString(R.string.notification_favorite) + status.getText();
+            ticker = title + getString(R.string.notification_favorite_ticker) + status.getText();
+            smallIcon = R.drawable.ic_notification_star;
         } else if (status.getInReplyToUserId() == userId) {
-            url = status.getUser().getBiggerProfileImageURL();
+            url = status.getUser().getOriginalProfileImageURL();
             title = status.getUser().getScreenName();
             text = status.getText();
+            ticker = text;
+            smallIcon = R.drawable.ic_notification_at;
         } else if (retweet != null && retweet.getUser().getId() == userId) {
-            url = status.getUser().getBiggerProfileImageURL();
+            url = status.getUser().getOriginalProfileImageURL();
             title = status.getUser().getScreenName();
-            text = "リツイートされました: ".concat(retweet.getText());
+            text = getString(R.string.notification_retweet) + status.getText();
+            ticker = title + getString(R.string.notification_retweet_ticker) + status.getText();
+            smallIcon = R.drawable.ic_notification_rt;
         } else {
             return;
         }
 
-        Bitmap icon = ImageLoader.getInstance().loadImageSync(url,
-                new ImageSize(
-                        android.R.dimen.notification_large_icon_width,
-                        android.R.dimen.notification_large_icon_height));
+        Resources resources = application.getResources();
+        int width = (int) resources.getDimension(android.R.dimen.notification_large_icon_width);
+        int height = (int) resources.getDimension(android.R.dimen.notification_large_icon_height);
+
+        Bitmap icon = ImageLoader.getInstance().loadImageSync(url);
+        icon = Bitmap.createScaledBitmap(icon, width, height, false);
 
         Notification notification = new NotificationCompat.Builder(this)
+                .setDefaults(Notification.DEFAULT_VIBRATE | Notification.DEFAULT_SOUND)
                 .setContentTitle(title)
                 .setContentText(text)
-                .setSmallIcon(R.drawable.ic_launcher)
+                .setSmallIcon(smallIcon)
                 .setLargeIcon(icon)
+                .setTicker(ticker)
+                .setWhen(System.currentTimeMillis())
                 .build();
 
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
