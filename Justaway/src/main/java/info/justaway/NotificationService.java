@@ -10,7 +10,6 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -25,52 +24,42 @@ public class NotificationService extends Service {
 
     @Override
     public void onCreate() {
-        Log.i("Justaway", "[onCreate]");
         super.onCreate();
         EventBus.getDefault().register(this);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.i("Justaway", "[onStartCommand]");
-
         return START_STICKY;
     }
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.i("Justaway", "[onBind]");
-        // TODO: Return the communication channel to the service.
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
     @Override
     public boolean onUnbind(Intent intent) {
-        Log.i("Justaway", "[onUnbind]");
         return super.onUnbind(intent);
     }
 
     @Override
     public void onRebind(Intent intent) {
-        Log.i("Justaway", "[onRebind]");
         super.onRebind(intent);
     }
 
     @Override
     public void onTrimMemory(int level) {
-        Log.i("Justaway", "[onTrimMemory]");
         super.onTrimMemory(level);
     }
 
     @Override
     public void onLowMemory() {
-        Log.i("Justaway", "[onLowMemory]");
         super.onLowMemory();
     }
 
     @Override
     public void onDestroy() {
-        Log.i("Justaway", "[onDestroy]");
         EventBus.getDefault().unregister(this);
         super.onDestroy();
     }
@@ -128,21 +117,25 @@ public class NotificationService extends Service {
                 .setSmallIcon(smallIcon)
                 .setLargeIcon(icon)
                 .setTicker(ticker)
+                .setAutoCancel(true)
                 .setWhen(System.currentTimeMillis());
 
         if (status.getInReplyToUserId() == userId) {
             Intent statusIntent = new Intent(this, StatusActivity.class);
             statusIntent.putExtra("status", status);
+            statusIntent.putExtra("notification", true);
             builder.addAction(R.drawable.ic_notification_twitter,
                     getString(R.string.menu_open),
                     PendingIntent.getActivity(this, 0, statusIntent, PendingIntent.FLAG_UPDATE_CURRENT));
             Intent replyIntent = new Intent(this, PostActivity.class);
             replyIntent.putExtra("inReplyToStatus", status);
+            replyIntent.putExtra("notification", true);
             builder.addAction(R.drawable.ic_notification_at,
                     getString(R.string.context_menu_reply),
                     PendingIntent.getActivity(this, 0, replyIntent, PendingIntent.FLAG_UPDATE_CURRENT));
             Intent favoriteIntent = new Intent(this, FavoriteActivity.class);
             favoriteIntent.putExtra("statusId", status.getId());
+            favoriteIntent.putExtra("notification", true);
             builder.addAction(R.drawable.ic_notification_star,
                     getString(R.string.context_menu_create_favorite),
                     PendingIntent.getActivity(this, 0, favoriteIntent, PendingIntent.FLAG_UPDATE_CURRENT));

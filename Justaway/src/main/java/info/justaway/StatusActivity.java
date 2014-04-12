@@ -1,6 +1,8 @@
 package info.justaway;
 
+import android.app.NotificationManager;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -40,6 +42,10 @@ public class StatusActivity extends FragmentActivity {
 
         // インテント経由での起動をサポート
         Intent intent = getIntent();
+        if (intent.getBooleanExtra("notification", false)) {
+            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            manager.cancelAll();
+        }
         long statusId;
         if (Intent.ACTION_VIEW.equals(intent.getAction())) {
             Uri uri = intent.getData();
