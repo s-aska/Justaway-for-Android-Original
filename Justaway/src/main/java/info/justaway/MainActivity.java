@@ -49,7 +49,6 @@ import info.justaway.event.action.AccountChangePostEvent;
 import info.justaway.event.action.SeenTopEvent;
 import info.justaway.event.connection.CleanupEvent;
 import info.justaway.event.action.EditorEvent;
-import info.justaway.event.model.UnFavoriteEvent;
 import info.justaway.event.connection.ConnectEvent;
 import info.justaway.event.connection.DisconnectEvent;
 import info.justaway.fragment.main.BaseFragment;
@@ -440,11 +439,6 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
-    public void onEventMainThread(UnFavoriteEvent event) {
-        JustawayApplication.showToast(event.getUser().getScreenName() + " unfav "
-                + event.getStatus().getText());
-    }
-
     @SuppressWarnings("UnusedDeclaration")
     public void onEventMainThread(ConnectEvent event) {
         mApplication.setThemeTextColor(this, mSignalButton, R.attr.holo_green);
@@ -614,6 +608,7 @@ public class MainActivity extends FragmentActivity {
         }
 
         mApplication.resetDisplaySettings();
+        mApplication.resetNotification();
 
         // フォントサイズの変更や他のアクティビティでのfav/RTを反映
         mMainPagerAdapter.notifyDataSetChanged();

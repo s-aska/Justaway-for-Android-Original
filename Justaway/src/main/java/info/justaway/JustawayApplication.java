@@ -783,6 +783,7 @@ public class JustawayApplication extends Application {
         mTwitterStream.addListener(mUserStreamAdapter);
         mTwitterStream.addConnectionLifeCycleListener(new MyConnectionLifeCycleListener());
         mTwitterStream.user();
+        resetNotification();
     }
 
     public void stopStreaming() {
@@ -816,6 +817,36 @@ public class JustawayApplication extends Application {
         if (mUserStreamAdapter != null) {
             mUserStreamAdapter.resume();
         }
+    }
+
+    private boolean mNotificationServiceStarted;
+    public void resetNotification() {
+        SharedPreferences preferences = getSharedPreferences(PREF_NAME_SETTINGS, Context.MODE_PRIVATE);
+        if (preferences.getBoolean("notification_on", true)) {
+            startNotification();
+        } else {
+            stopNotification();
+        }
+    }
+
+    public void startNotification() {
+        if (mNotificationServiceStarted) {
+            return;
+        }
+        Intent intent = new Intent();
+        intent.setClass(this, NotificationService.class);
+        startService(intent);
+        mNotificationServiceStarted = true;
+    }
+
+    public void stopNotification() {
+        if (!mNotificationServiceStarted) {
+            return;
+        }
+        Intent intent = new Intent();
+        intent.setClass(this, NotificationService.class);
+        stopService(intent);
+        mNotificationServiceStarted = false;
     }
 
     public void removeAccessToken(int position) {

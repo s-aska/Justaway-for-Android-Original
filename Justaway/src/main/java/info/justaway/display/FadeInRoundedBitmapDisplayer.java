@@ -22,10 +22,10 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.Shader;
-import android.widget.ImageView;
 
 import com.nostra13.universalimageloader.core.assist.LoadedFrom;
 import com.nostra13.universalimageloader.core.display.BitmapDisplayer;
+import com.nostra13.universalimageloader.core.imageaware.ImageAware;
 
 public class FadeInRoundedBitmapDisplayer implements BitmapDisplayer {
 
@@ -36,15 +36,14 @@ public class FadeInRoundedBitmapDisplayer implements BitmapDisplayer {
     }
 
     @Override
-    public Bitmap display(Bitmap bitmap, ImageView imageView, LoadedFrom loadedFrom) {
+    public void display(Bitmap bitmap, ImageAware imageAware, LoadedFrom loadedFrom) {
         Bitmap roundedBitmap;
         try {
             roundedBitmap = transform(bitmap, mRoundPixels);
         } catch (OutOfMemoryError e) {
             roundedBitmap = bitmap;
         }
-        imageView.setImageBitmap(roundedBitmap);
-        return roundedBitmap;
+        imageAware.setImageBitmap(roundedBitmap);
     }
 
     private static Bitmap transform(Bitmap source, int radius) {
