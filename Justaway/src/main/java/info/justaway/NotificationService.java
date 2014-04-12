@@ -119,7 +119,7 @@ public class NotificationService extends Service {
         icon = Bitmap.createScaledBitmap(icon, width, height, true);
 
         Intent mainIntent = new Intent(this, MainActivity.class);
-        PendingIntent mainPendingIntent = PendingIntent.getActivity(this, 0, mainIntent, 0);
+        PendingIntent mainPendingIntent = PendingIntent.getActivity(this, 0, mainIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
                 .setDefaults(Notification.DEFAULT_VIBRATE | Notification.DEFAULT_SOUND)
                 .setContentTitle(title)
