@@ -98,7 +98,7 @@
     <string name="menu_create_user_list_subscription">リストを購読</string>
     <string name="menu_destroy_user_list_subscription">リストの購読を解除</string>
     <string name="menu_feedback">フィードバック</string>
-    <string name="menu_notification">通知</string>
+    <string name="menu_open">開く</string>
     <string name="menu_open_favstar">Favstarで開く</string>
     <string name="menu_open_twilog">Twilogで開く</string>
     <string name="menu_open_twitter">Twitterで開く</string>
