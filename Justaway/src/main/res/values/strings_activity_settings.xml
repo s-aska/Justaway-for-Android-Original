@@ -65,4 +65,7 @@
         <item>black</item>
         <item>white</item>
     </string-array>
+
+    <string name="pref_title_notification_on">Notification</string>
+    <string name="pref_description_notification_on">Reply / Favorited / Retweeted.\nIt will work when streaming is enabled.</string>
 </resources>

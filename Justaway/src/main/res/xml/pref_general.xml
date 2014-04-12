@@ -24,6 +24,15 @@
         android:negativeButtonText="@null"
         android:positiveButtonText="@null"/>
 
+    <ListPreference
+        android:key="long_tap"
+        android:title="@string/pref_title_log_tap"
+        android:defaultValue="nothing"
+        android:entries="@array/pref_long_tap_titles"
+        android:entryValues="@array/pref_log_tap_values"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"/>
+
     <PreferenceScreen
         android:key="mute"
         android:title="@string/pref_title_mute"
@@ -44,13 +53,10 @@
             android:targetClass="info.justaway.PerformanceActivity"/>
     </PreferenceScreen>
 
-    <ListPreference
-        android:key="long_tap"
-        android:title="@string/pref_title_log_tap"
-        android:defaultValue="nothing"
-        android:entries="@array/pref_long_tap_titles"
-        android:entryValues="@array/pref_log_tap_values"
-        android:negativeButtonText="@null"
-        android:positiveButtonText="@null"/>
+    <CheckBoxPreference
+        android:key="notification_on"
+        android:title="@string/pref_title_notification_on"
+        android:summary="@string/pref_description_notification_on"
+        android:defaultValue="true"/>
 
 </PreferenceScreen>

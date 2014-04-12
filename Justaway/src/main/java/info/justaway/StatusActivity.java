@@ -78,6 +78,17 @@ public class StatusActivity extends FragmentActivity {
             mTwitter = JustawayApplication.getApplication().getTwitter();
             showProgressDialog(getString(R.string.progress_loading));
             new LoadTask().execute(statusId);
+        } else {
+            Status status = (Status) intent.getSerializableExtra("status");
+            if (status != null) {
+                mAdapter.add(Row.newStatus(status));
+                long inReplyToStatusId = status.getInReplyToStatusId();
+                if (inReplyToStatusId > 0) {
+                    mTwitter = JustawayApplication.getApplication().getTwitter();
+                    showProgressDialog(getString(R.string.progress_loading));
+                    new LoadTask().execute(inReplyToStatusId);
+                }
+            }
         }
     }
 
