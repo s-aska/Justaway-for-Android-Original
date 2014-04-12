@@ -146,6 +146,11 @@
         <activity
             android:name=".CreateUserListActivity"
             android:label="@string/title_create_user_list"/>
+        <activity
+            android:name=".FavoriteActivity"
+            android:label="@string/title_main"
+            android:taskAffinity=".favorite"
+            android:excludeFromRecents="true"/>
     </application>
 
 </manifest>

@@ -140,8 +140,6 @@ public class MyUserStreamAdapter extends UserStreamAdapter {
                 } else {
                     EventBus.getDefault().post(new CreateFavoriteEvent(mRow));
                 }
-                JustawayApplication.showToast(mRow.getSource().getScreenName() + " fav "
-                        + mRow.getStatus().getText());
             }
         }.execute(row);
     }

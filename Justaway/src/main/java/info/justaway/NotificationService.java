@@ -2,6 +2,7 @@ package info.justaway;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -32,6 +33,7 @@ public class NotificationService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i("Justaway", "[onStartCommand]");
+
         return START_STICKY;
     }
 
@@ -116,17 +118,37 @@ public class NotificationService extends Service {
         Bitmap icon = ImageLoader.getInstance().loadImageSync(url);
         icon = Bitmap.createScaledBitmap(icon, width, height, false);
 
-        Notification notification = new NotificationCompat.Builder(this)
+        Intent mainIntent = new Intent(this, MainActivity.class);
+        PendingIntent mainPendingIntent = PendingIntent.getActivity(this, 0, mainIntent, 0);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
                 .setDefaults(Notification.DEFAULT_VIBRATE | Notification.DEFAULT_SOUND)
                 .setContentTitle(title)
                 .setContentText(text)
+                .setContentIntent(mainPendingIntent)
                 .setSmallIcon(smallIcon)
                 .setLargeIcon(icon)
                 .setTicker(ticker)
-                .setWhen(System.currentTimeMillis())
-                .build();
+                .setWhen(System.currentTimeMillis());
+
+        if (status.getInReplyToUserId() == userId) {
+            Intent statusIntent = new Intent(this, StatusActivity.class);
+            statusIntent.putExtra("status", status);
+            builder.addAction(R.drawable.ic_notification_twitter,
+                    getString(R.string.menu_open),
+                    PendingIntent.getActivity(this, 0, statusIntent, PendingIntent.FLAG_UPDATE_CURRENT));
+            Intent replyIntent = new Intent(this, PostActivity.class);
+            replyIntent.putExtra("inReplyToStatus", status);
+            builder.addAction(R.drawable.ic_notification_at,
+                    getString(R.string.context_menu_reply),
+                    PendingIntent.getActivity(this, 0, replyIntent, PendingIntent.FLAG_UPDATE_CURRENT));
+            Intent favoriteIntent = new Intent(this, FavoriteActivity.class);
+            favoriteIntent.putExtra("statusId", status.getId());
+            builder.addAction(R.drawable.ic_notification_star,
+                    getString(R.string.context_menu_create_favorite),
+                    PendingIntent.getActivity(this, 0, favoriteIntent, PendingIntent.FLAG_UPDATE_CURRENT));
+        }
 
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        manager.notify(1, notification);
+        manager.notify(1, builder.build());
     }
 }
