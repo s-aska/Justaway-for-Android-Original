@@ -116,7 +116,7 @@ public class NotificationService extends Service {
         int height = (int) resources.getDimension(android.R.dimen.notification_large_icon_height) / 3 * 2;
 
         Bitmap icon = ImageLoader.getInstance().loadImageSync(url);
-        icon = Bitmap.createScaledBitmap(icon, width, height, false);
+        icon = Bitmap.createScaledBitmap(icon, width, height, true);
 
         Intent mainIntent = new Intent(this, MainActivity.class);
         PendingIntent mainPendingIntent = PendingIntent.getActivity(this, 0, mainIntent, 0);
