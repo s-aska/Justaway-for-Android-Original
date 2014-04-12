@@ -4,6 +4,7 @@ package info.justaway;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.NotificationManager;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -175,6 +176,10 @@ public class PostActivity extends FragmentActivity {
         }
 
         Intent intent = getIntent();
+        if (intent.getBooleanExtra("notification", false)) {
+            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            manager.cancelAll();
+        }
         mWidgetMode = intent.getBooleanExtra("widget", false);
         if (mWidgetMode) {
             mTitle.setText(getString(R.string.widget_title_post_mode));
