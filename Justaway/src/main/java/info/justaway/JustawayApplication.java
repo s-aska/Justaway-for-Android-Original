@@ -783,6 +783,9 @@ public class JustawayApplication extends Application {
         mTwitterStream.addListener(mUserStreamAdapter);
         mTwitterStream.addConnectionLifeCycleListener(new MyConnectionLifeCycleListener());
         mTwitterStream.user();
+        Intent intent = new Intent();
+        intent.setClass(this, NotificationService.class);
+        startService(intent);
     }
 
     public void stopStreaming() {

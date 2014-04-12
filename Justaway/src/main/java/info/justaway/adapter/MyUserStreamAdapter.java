@@ -80,7 +80,11 @@ public class MyUserStreamAdapter extends UserStreamAdapter {
         if (JustawayApplication.isMute(row)) {
             return;
         }
-        EventBus.getDefault().post(new NotificationEvent(row));
+        long userId = JustawayApplication.getApplication().getUserId();
+        Status retweet = status.getRetweetedStatus();
+        if (status.getInReplyToUserId() == userId || (retweet != null && retweet.getUser().getId() == userId)) {
+            EventBus.getDefault().post(new NotificationEvent(row));
+        }
         if (mPause) {
             mCreateStatusEvents.add(new CreateStatusEvent(row));
         } else {

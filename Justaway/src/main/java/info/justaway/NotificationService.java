@@ -32,17 +32,6 @@ public class NotificationService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i("Justaway", "[onStartCommand]");
-
-        /*
-        Notification notification = new NotificationCompat.Builder(this)
-                .setContentTitle("Justaway")
-                .setContentText("通知チェッカー")
-                .setSmallIcon(R.drawable.ic_notification_star)
-                .build();
-
-        startForeground(1, notification);
-        */
-
         return START_STICKY;
     }
 
@@ -86,8 +75,6 @@ public class NotificationService extends Service {
 
     @SuppressWarnings("UnusedDeclaration")
     public void onEvent(NotificationEvent event) {
-        Log.i("Justaway", "[onEvent] NotificationEvent");
-
         JustawayApplication application = JustawayApplication.getApplication();
         long userId = application.getUserId();
 
@@ -101,19 +88,19 @@ public class NotificationService extends Service {
         String ticker;
         int smallIcon;
         if (row.isFavorite()) {
-            url = row.getSource().getOriginalProfileImageURL();
+            url = row.getSource().getBiggerProfileImageURL();
             title = row.getSource().getScreenName();
             text = getString(R.string.notification_favorite) + status.getText();
             ticker = title + getString(R.string.notification_favorite_ticker) + status.getText();
             smallIcon = R.drawable.ic_notification_star;
         } else if (status.getInReplyToUserId() == userId) {
-            url = status.getUser().getOriginalProfileImageURL();
+            url = status.getUser().getBiggerProfileImageURL();
             title = status.getUser().getScreenName();
             text = status.getText();
             ticker = text;
             smallIcon = R.drawable.ic_notification_at;
         } else if (retweet != null && retweet.getUser().getId() == userId) {
-            url = status.getUser().getOriginalProfileImageURL();
+            url = status.getUser().getBiggerProfileImageURL();
             title = status.getUser().getScreenName();
             text = getString(R.string.notification_retweet) + status.getText();
             ticker = title + getString(R.string.notification_retweet_ticker) + status.getText();
@@ -123,8 +110,8 @@ public class NotificationService extends Service {
         }
 
         Resources resources = application.getResources();
-        int width = (int) resources.getDimension(android.R.dimen.notification_large_icon_width);
-        int height = (int) resources.getDimension(android.R.dimen.notification_large_icon_height);
+        int width = (int) resources.getDimension(android.R.dimen.notification_large_icon_width) / 3 * 2;
+        int height = (int) resources.getDimension(android.R.dimen.notification_large_icon_height) / 3 * 2;
 
         Bitmap icon = ImageLoader.getInstance().loadImageSync(url);
         icon = Bitmap.createScaledBitmap(icon, width, height, false);
@@ -140,6 +127,6 @@ public class NotificationService extends Service {
                 .build();
 
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        manager.notify(2, notification);
+        manager.notify(1, notification);
     }
 }
