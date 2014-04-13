@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="info.justaway"
-          android:versionCode="29"
-          android:versionName="1.0.28">
+          android:versionCode="30"
+          android:versionName="1.0.29">
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -29,10 +29,11 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/post_widget"/>
         </receiver>
-
+        <service android:name=".NotificationService" android:exported="false" />
         <activity
             android:name="info.justaway.MainActivity"
-            android:label="@string/app_name">
+            android:label="@string/app_name"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -146,6 +147,14 @@
         <activity
             android:name=".CreateUserListActivity"
             android:label="@string/title_create_user_list"/>
+        <activity
+            android:name=".FavoriteActivity"
+            android:label="@string/title_main"
+            android:taskAffinity=".favorite"
+            android:excludeFromRecents="true"/>
+        <activity
+            android:name=".UserSearchActivity"
+            android:label="@string/title_user_search"/>
     </application>
 
 </manifest>

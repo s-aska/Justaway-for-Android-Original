@@ -29,27 +29,31 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.greenrobot.event.EventBus;
 import info.justaway.adapter.MainPagerAdapter;
+import info.justaway.adapter.UserSearchAdapter;
 import info.justaway.event.AlertDialogEvent;
 import info.justaway.event.NewRecordEvent;
 import info.justaway.event.action.AccountChangeEvent;
 import info.justaway.event.action.AccountChangePostEvent;
+import info.justaway.event.action.EditorEvent;
 import info.justaway.event.action.SeenTopEvent;
 import info.justaway.event.connection.CleanupEvent;
-import info.justaway.event.action.EditorEvent;
-import info.justaway.event.model.UnFavoriteEvent;
 import info.justaway.event.connection.ConnectEvent;
 import info.justaway.event.connection.DisconnectEvent;
 import info.justaway.fragment.main.BaseFragment;
@@ -61,6 +65,7 @@ import info.justaway.task.DestroyDirectMessageTask;
 import info.justaway.task.SendDirectMessageTask;
 import info.justaway.task.UpdateStatusTask;
 import info.justaway.util.TwitterUtil;
+import info.justaway.widget.AutoCompleteEditText;
 import twitter4j.Status;
 import twitter4j.StatusUpdate;
 import twitter4j.TwitterException;
@@ -68,12 +73,6 @@ import twitter4j.auth.AccessToken;
 
 public class MainActivity extends FragmentActivity {
 
-    private JustawayApplication mApplication;
-    private MainPagerAdapter mMainPagerAdapter;
-    private ViewPager mViewPager;
-    private ProgressDialog mProgressDialog;
-    private TextView mTitle;
-    private TextView mSignalButton;
     private static final int REQUEST_ACCOUNT_SETTING = 200;
     private static final int REQUEST_SETTINGS = 300;
     private static final int REQUEST_TAB_SETTINGS = 400;
@@ -81,7 +80,17 @@ public class MainActivity extends FragmentActivity {
     private static final long TAB_ID_TIMELINE = -1L;
     private static final long TAB_ID_INTERACTIONS = -2L;
     private static final long TAB_ID_DIRECT_MESSAGE = -3L;
-
+    private static final Pattern USERLIST_PATTERN = Pattern.compile("^(@[a-zA-Z0-9_]+)/(.*)$");
+    private JustawayApplication mApplication;
+    private MainPagerAdapter mMainPagerAdapter;
+    private ViewPager mViewPager;
+    private ProgressDialog mProgressDialog;
+    private TextView mTitle;
+    private TextView mSubTitle;
+    private TextView mSignalButton;
+    private LinearLayout mNormalLayout;
+    private FrameLayout mSearchLayout;
+    private AutoCompleteEditText mSearchText;
     private Status mInReplyToStatus;
     private ActionBarDrawerToggle mDrawerToggle;
     private Activity mActivity;
@@ -98,7 +107,14 @@ public class MainActivity extends FragmentActivity {
     @Override
     public void setTitle(CharSequence title) {
         if (mTitle != null) {
-            mTitle.setText(title);
+            Matcher matcher = USERLIST_PATTERN.matcher(title);
+            if (matcher.find()) {
+                mTitle.setText(matcher.group(2));
+                mSubTitle.setText(matcher.group(1));
+            } else {
+                mTitle.setText(title);
+                mSubTitle.setText("@" + mApplication.getScreenName());
+            }
         }
     }
 
@@ -133,6 +149,83 @@ public class MainActivity extends FragmentActivity {
                     actionBar.setCustomView(R.layout.action_bar_main);
                     ViewGroup group = (ViewGroup) actionBar.getCustomView();
                     mTitle = (TextView) group.findViewById(R.id.title);
+                    mSubTitle = (TextView) group.findViewById(R.id.sub_title);
+
+                    final UserSearchAdapter adapter = new UserSearchAdapter(this, R.layout.row_auto_complete);
+                    mNormalLayout = (LinearLayout) group.findViewById(R.id.normal_layout);
+                    mSearchLayout = (FrameLayout) group.findViewById(R.id.search_layout);
+                    mSearchText = (AutoCompleteEditText) findViewById(R.id.search_text);
+                    mSearchText.setThreshold(0);
+                    mSearchText.setAdapter(adapter);
+                    mSearchText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                            if (mSearchText.getText() == null) {
+                                return;
+                            }
+                            Intent intent = null;
+                            String searchWord = mSearchText.getText().toString();
+                            mSearchText.clearFocus();
+                            if (adapter.isSavedMode()) {
+                                intent = new Intent(mActivity, SearchActivity.class);
+                                intent.putExtra("query", searchWord);
+                                startActivity(intent);
+                                return;
+                            }
+                            switch (i) {
+                                case 0:
+                                    intent = new Intent(mActivity, SearchActivity.class);
+                                    intent.putExtra("query", searchWord);
+                                    break;
+                                case 1:
+                                    intent = new Intent(mActivity, UserSearchActivity.class);
+                                    intent.putExtra("query", searchWord);
+                                    break;
+                                case 2:
+                                    intent = new Intent(mActivity, ProfileActivity.class);
+                                    intent.putExtra("screenName", searchWord);
+                                    break;
+                            }
+                            startActivity(intent);
+                        }
+                    });
+
+                    TextView searchButton = (TextView) group.findViewById(R.id.search);
+                    searchButton.setTypeface(JustawayApplication.getFontello());
+                    searchButton.setOnClickListener(
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    mDrawerToggle.setDrawerIndicatorEnabled(false);
+                                    mNormalLayout.setVisibility(View.GONE);
+                                    mSearchLayout.setVisibility(View.VISIBLE);
+                                    mSearchText.showDropDown();
+                                    mSearchText.setText("");
+                                    mSearchText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                                        public void onFocusChange(View v, boolean hasFocus) {
+                                            if (hasFocus) {
+                                                ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
+                                                        .showSoftInput(v, InputMethodManager.SHOW_FORCED);
+                                            } else {
+                                                ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
+                                                        .hideSoftInputFromInputMethod(v.getWindowToken(), 0);
+                                            }
+                                        }
+                                    });
+                                    mSearchText.requestFocus();
+                                }
+                            }
+                    );
+
+                    TextView cancelButton = (TextView) group.findViewById(R.id.cancel);
+                    cancelButton.setTypeface(JustawayApplication.getFontello());
+                    cancelButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            cancelSearch();
+                        }
+                    });
+
                     mSignalButton = (TextView) group.findViewById(R.id.signal);
                     mSignalButton.setTypeface(JustawayApplication.getFontello());
                     mSignalButton.setOnClickListener(
@@ -150,7 +243,7 @@ public class MainActivity extends FragmentActivity {
         }
 
         setContentView(R.layout.activity_main);
-        int drawer = mApplication.getThemeName().equals("black") ? R.drawable.ic_dark_drawer :R.drawable.ic_dark_drawer;
+        int drawer = mApplication.getThemeName().equals("black") ? R.drawable.ic_dark_drawer : R.drawable.ic_dark_drawer;
 
         // DrawerLayout
         final DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -426,7 +519,7 @@ public class MainActivity extends FragmentActivity {
             mApplication.showKeyboard(editStatus);
         } else {
             Intent intent = new Intent(this, PostActivity.class);
-            intent.putExtra("status",  event.getText());
+            intent.putExtra("status", event.getText());
             if (event.getSelectionStart() != null) {
                 intent.putExtra("selection", event.getSelectionStart());
             }
@@ -438,11 +531,6 @@ public class MainActivity extends FragmentActivity {
             }
             startActivity(intent);
         }
-    }
-
-    public void onEventMainThread(UnFavoriteEvent event) {
-        JustawayApplication.showToast(event.getUser().getScreenName() + " unfav "
-                + event.getStatus().getText());
     }
 
     @SuppressWarnings("UnusedDeclaration")
@@ -614,6 +702,7 @@ public class MainActivity extends FragmentActivity {
         }
 
         mApplication.resetDisplaySettings();
+        mApplication.resetNotification();
 
         // フォントサイズの変更や他のアクティビティでのfav/RTを反映
         mMainPagerAdapter.notifyDataSetChanged();
@@ -803,8 +892,29 @@ public class MainActivity extends FragmentActivity {
             startActivity(intent);
         } else if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
+        } else if (itemId == android.R.id.home) {
+            cancelSearch();
         }
         return true;
+    }
+
+    private void cancelSearch() {
+        mSearchText.setText("");
+        mSearchText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    return;
+                }
+                ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
+                        .hideSoftInputFromWindow(v.getWindowToken(), 0);
+                mSearchLayout.setVisibility(View.GONE);
+                mNormalLayout.setVisibility(View.VISIBLE);
+                mDrawerToggle.setDrawerIndicatorEnabled(true);
+                mSearchText.setOnFocusChangeListener(null);
+            }
+        });
+        mSearchText.requestFocus();
+        mSearchText.clearFocus();
     }
 
     private void showProgressDialog(String message) {

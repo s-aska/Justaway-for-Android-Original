@@ -6,21 +6,79 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="0dip"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:textSize="20dp"
-        android:textColor="?attr/text_color"
-        tools:text="Home"
-        tools:ignore="SpUsage"/>
+    <LinearLayout
+        android:id="@+id/normal_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <Button
-        android:id="@+id/signal"
-        android:layout_width="58dip"
-        android:layout_height="wrap_content"
-        android:background="@drawable/action_bar_stateful"
-        android:text="@string/fontello_flash"
-        tools:paddingBottom="0dip"/>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="18dp"
+                android:textSize="16dp"
+                android:textColor="?attr/text_color"
+                tools:text="Home"
+                tools:ignore="SpUsage"/>
+
+            <TextView
+                android:id="@+id/sub_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12dp"
+                android:textColor="?attr/text_color"
+                tools:text="\@justawayfactory"
+                tools:ignore="SpUsage"/>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/search"
+            android:minWidth="0dip"
+            android:layout_width="48dip"
+            android:layout_height="wrap_content"
+            android:background="@drawable/action_bar_stateful"
+            android:text="@string/fontello_search"
+            android:textColor="?attr/menu_action_bar"
+            tools:paddingBottom="0dip"/>
+
+        <Button
+            android:id="@+id/signal"
+            android:minWidth="0dip"
+            android:layout_width="48dip"
+            android:layout_height="wrap_content"
+            android:background="@drawable/action_bar_stateful"
+            android:text="@string/fontello_flash"
+            tools:paddingBottom="0dip"/>
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/search_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <info.justaway.widget.AutoCompleteEditText
+            android:id="@+id/search_text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="@string/hint_search"
+            android:singleLine="true"/>
+
+        <Button
+            android:id="@+id/cancel"
+            android:minWidth="0dip"
+            android:layout_width="48dip"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:background="@drawable/action_bar_stateful"
+            android:text="@string/fontello_cancel"
+            android:textColor="?attr/menu_action_bar"/>
+    </FrameLayout>
+
 </LinearLayout>
