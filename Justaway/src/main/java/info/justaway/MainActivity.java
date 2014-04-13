@@ -39,6 +39,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import de.greenrobot.event.EventBus;
 import info.justaway.adapter.MainPagerAdapter;
@@ -72,6 +74,7 @@ public class MainActivity extends FragmentActivity {
     private ViewPager mViewPager;
     private ProgressDialog mProgressDialog;
     private TextView mTitle;
+    private TextView mSubTitle;
     private TextView mSignalButton;
     private static final int REQUEST_ACCOUNT_SETTING = 200;
     private static final int REQUEST_SETTINGS = 300;
@@ -80,6 +83,7 @@ public class MainActivity extends FragmentActivity {
     private static final long TAB_ID_TIMELINE = -1L;
     private static final long TAB_ID_INTERACTIONS = -2L;
     private static final long TAB_ID_DIRECT_MESSAGE = -3L;
+    private static final Pattern USERLIST_PATTERN = Pattern.compile("^(@[a-zA-Z0-9_]+)/(.*)$");
 
     private Status mInReplyToStatus;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -97,7 +101,14 @@ public class MainActivity extends FragmentActivity {
     @Override
     public void setTitle(CharSequence title) {
         if (mTitle != null) {
-            mTitle.setText(title);
+            Matcher matcher = USERLIST_PATTERN.matcher(title);
+            if (matcher.find()) {
+                mTitle.setText(matcher.group(2));
+                mSubTitle.setText(matcher.group(1));
+            } else {
+                mTitle.setText(title);
+                mSubTitle.setText("@" + mApplication.getScreenName());
+            }
         }
     }
 
@@ -132,6 +143,7 @@ public class MainActivity extends FragmentActivity {
                     actionBar.setCustomView(R.layout.action_bar_main);
                     ViewGroup group = (ViewGroup) actionBar.getCustomView();
                     mTitle = (TextView) group.findViewById(R.id.title);
+                    mSubTitle = (TextView) group.findViewById(R.id.sub_title);
                     mSignalButton = (TextView) group.findViewById(R.id.signal);
                     mSignalButton.setTypeface(JustawayApplication.getFontello());
                     mSignalButton.setOnClickListener(

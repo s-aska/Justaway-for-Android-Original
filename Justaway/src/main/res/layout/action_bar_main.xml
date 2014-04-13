@@ -6,15 +6,31 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/title"
-        android:layout_width="0dip"
+    <LinearLayout
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:textSize="20dp"
-        android:textColor="?attr/text_color"
-        tools:text="Home"
-        tools:ignore="SpUsage"/>
+        android:layout_gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="18dp"
+            android:textSize="16dp"
+            android:textColor="?attr/text_color"
+            tools:text="Home"
+            tools:ignore="SpUsage"/>
+
+        <TextView
+            android:id="@+id/sub_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12dp"
+            android:textColor="?attr/text_color"
+            tools:text="\@justawayfactory"
+            tools:ignore="SpUsage"/>
+    </LinearLayout>
 
     <Button
         android:id="@+id/signal"
