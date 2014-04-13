@@ -63,11 +63,11 @@
         android:layout_height="match_parent"
         android:visibility="gone">
 
-        <AutoCompleteTextView
+        <info.justaway.widget.AutoCompleteEditText
             android:id="@+id/search_text"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:hint="Twitterで検索"
+            android:hint="@string/hint_search"
             android:singleLine="true"/>
 
         <Button

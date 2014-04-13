@@ -212,5 +212,6 @@
     <string name="label_search_tweet">" User Search"</string>
     <string name="label_display_profile">"'s Profile"</string>
     <string name="title_user_search">User Search</string>
+    <string name="hint_search">Search</string>
 
 </resources>

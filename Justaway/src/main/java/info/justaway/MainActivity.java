@@ -32,7 +32,6 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -66,6 +65,7 @@ import info.justaway.task.DestroyDirectMessageTask;
 import info.justaway.task.SendDirectMessageTask;
 import info.justaway.task.UpdateStatusTask;
 import info.justaway.util.TwitterUtil;
+import info.justaway.widget.AutoCompleteEditText;
 import twitter4j.Status;
 import twitter4j.StatusUpdate;
 import twitter4j.TwitterException;
@@ -90,7 +90,7 @@ public class MainActivity extends FragmentActivity {
     private TextView mSignalButton;
     private LinearLayout mNormalLayout;
     private FrameLayout mSearchLayout;
-    private AutoCompleteTextView mSearchText;
+    private AutoCompleteEditText mSearchText;
     private Status mInReplyToStatus;
     private ActionBarDrawerToggle mDrawerToggle;
     private Activity mActivity;
@@ -151,10 +151,12 @@ public class MainActivity extends FragmentActivity {
                     mTitle = (TextView) group.findViewById(R.id.title);
                     mSubTitle = (TextView) group.findViewById(R.id.sub_title);
 
+                    final UserSearchAdapter adapter = new UserSearchAdapter(this, R.layout.row_auto_complete);
                     mNormalLayout = (LinearLayout) group.findViewById(R.id.normal_layout);
                     mSearchLayout = (FrameLayout) group.findViewById(R.id.search_layout);
-                    mSearchText = (AutoCompleteTextView) findViewById(R.id.search_text);
-                    mSearchText.setAdapter(new UserSearchAdapter(this, R.layout.row_auto_complete));
+                    mSearchText = (AutoCompleteEditText) findViewById(R.id.search_text);
+                    mSearchText.setThreshold(0);
+                    mSearchText.setAdapter(adapter);
                     mSearchText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -163,6 +165,13 @@ public class MainActivity extends FragmentActivity {
                             }
                             Intent intent = null;
                             String searchWord = mSearchText.getText().toString();
+                            mSearchText.clearFocus();
+                            if (adapter.isSavedMode()) {
+                                intent = new Intent(mActivity, SearchActivity.class);
+                                intent.putExtra("query", searchWord);
+                                startActivity(intent);
+                                return;
+                            }
                             switch (i) {
                                 case 0:
                                     intent = new Intent(mActivity, SearchActivity.class);
@@ -190,15 +199,17 @@ public class MainActivity extends FragmentActivity {
                                     mDrawerToggle.setDrawerIndicatorEnabled(false);
                                     mNormalLayout.setVisibility(View.GONE);
                                     mSearchLayout.setVisibility(View.VISIBLE);
+                                    mSearchText.showDropDown();
                                     mSearchText.setText("");
                                     mSearchText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                                         public void onFocusChange(View v, boolean hasFocus) {
-                                            if (!hasFocus) {
-                                                return;
+                                            if (hasFocus) {
+                                                ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
+                                                        .showSoftInput(v, InputMethodManager.SHOW_FORCED);
+                                            } else {
+                                                ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
+                                                        .hideSoftInputFromInputMethod(v.getWindowToken(), 0);
                                             }
-                                            ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
-                                                    .showSoftInput(v, InputMethodManager.SHOW_FORCED);
-                                            mSearchText.setOnFocusChangeListener(null);
                                         }
                                     });
                                     mSearchText.requestFocus();
