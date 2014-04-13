@@ -164,7 +164,7 @@ public class MainActivity extends FragmentActivity {
                                     intent.putExtra("query", searchWord);
                                     break;
                                 case 1:
-                                    intent = new Intent(mActivity, SearchActivity.class);
+                                    intent = new Intent(mActivity, UserSearchActivity.class);
                                     intent.putExtra("query", searchWord);
                                     break;
                                 case 2:
