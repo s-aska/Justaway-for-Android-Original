@@ -31,7 +31,6 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -64,6 +63,7 @@ import info.justaway.task.DestroyDirectMessageTask;
 import info.justaway.task.SendDirectMessageTask;
 import info.justaway.task.UpdateStatusTask;
 import info.justaway.util.TwitterUtil;
+import info.justaway.widget.AutoCompleteEditText;
 import twitter4j.Status;
 import twitter4j.StatusUpdate;
 import twitter4j.TwitterException;
@@ -87,7 +87,7 @@ public class MainActivity extends FragmentActivity {
     private TextView mSubTitle;
     private TextView mSignalButton;
     private LinearLayout mNormalLayout;
-    private AutoCompleteTextView mSearchText;
+    private AutoCompleteEditText mSearchText;
     private Status mInReplyToStatus;
     private ActionBarDrawerToggle mDrawerToggle;
     private Activity mActivity;
@@ -149,7 +149,8 @@ public class MainActivity extends FragmentActivity {
                     mSubTitle = (TextView) group.findViewById(R.id.sub_title);
 
                     mNormalLayout = (LinearLayout) group.findViewById(R.id.normal_layout);
-                    mSearchText = (AutoCompleteTextView) findViewById(R.id.search_text);
+                    mSearchText = (AutoCompleteEditText) findViewById(R.id.search_text);
+                    mSearchText.setThreshold(0);
                     mSearchText.setAdapter(new UserSearchAdapter(this, R.layout.row_auto_complete));
                     mSearchText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
@@ -186,6 +187,7 @@ public class MainActivity extends FragmentActivity {
                                     mNormalLayout.setVisibility(View.GONE);
                                     mSearchText.setVisibility(View.VISIBLE);
                                     mDrawerToggle.setDrawerIndicatorEnabled(false);
+                                    mSearchText.showDropDown();
                                 }
                             }
                     );

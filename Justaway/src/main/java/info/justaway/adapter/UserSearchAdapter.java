@@ -15,7 +15,7 @@ import info.justaway.R;
 
 public class UserSearchAdapter extends ArrayAdapter<String> implements Filterable {
 
-    private ArrayList<String> mStrings;
+    private ArrayList<String> mStrings = new ArrayList<String>();
     private String mSearchWord;
     private LayoutInflater mInflater;
     private int mLayout;
