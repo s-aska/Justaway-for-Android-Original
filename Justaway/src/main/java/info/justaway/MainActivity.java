@@ -29,6 +29,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -183,9 +184,21 @@ public class MainActivity extends FragmentActivity {
                             new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
+                                    mDrawerToggle.setDrawerIndicatorEnabled(false);
                                     mNormalLayout.setVisibility(View.GONE);
                                     mSearchText.setVisibility(View.VISIBLE);
-                                    mDrawerToggle.setDrawerIndicatorEnabled(false);
+                                    mSearchText.setText("");
+                                    mSearchText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                                        public void onFocusChange(View v, boolean hasFocus) {
+                                            if (!hasFocus) {
+                                                return;
+                                            }
+                                            ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
+                                                    .showSoftInput(v, InputMethodManager.SHOW_FORCED);
+                                            mSearchText.setOnFocusChangeListener(null);
+                                        }
+                                    });
+                                    mSearchText.requestFocus();
                                 }
                             }
                     );
@@ -857,11 +870,22 @@ public class MainActivity extends FragmentActivity {
         } else if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         } else if (itemId == android.R.id.home) {
-            mApplication.hideKeyboard(mSearchText);
             mSearchText.setText("");
-            mSearchText.setVisibility(View.GONE);
-            mNormalLayout.setVisibility(View.VISIBLE);
-            mDrawerToggle.setDrawerIndicatorEnabled(true);
+            mSearchText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                public void onFocusChange(View v, boolean hasFocus) {
+                    if (hasFocus) {
+                        return;
+                    }
+                    ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
+                            .hideSoftInputFromWindow(v.getWindowToken(), 0);
+                    mSearchText.setVisibility(View.GONE);
+                    mNormalLayout.setVisibility(View.VISIBLE);
+                    mDrawerToggle.setDrawerIndicatorEnabled(true);
+                    mSearchText.setOnFocusChangeListener(null);
+                }
+            });
+            mSearchText.requestFocus();
+            mSearchText.clearFocus();
         }
         return true;
     }
