@@ -1,6 +1,7 @@
 package info.justaway.adapter;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,23 +12,32 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import info.justaway.JustawayApplication;
 import info.justaway.R;
+import twitter4j.ResponseList;
+import twitter4j.SavedSearch;
 
 public class UserSearchAdapter extends ArrayAdapter<String> implements Filterable {
 
-    private ArrayList<String> mStrings;
+    private ArrayList<String> mStrings = new ArrayList<String>();
+    private ArrayList<String> mSavedSearches = new ArrayList<String>();
     private String mSearchWord;
     private LayoutInflater mInflater;
     private int mLayout;
     private Context mContext;
+    private boolean mSavedMode = false;
 
     public UserSearchAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId);
         this.mContext = context;
         this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.mLayout = textViewResourceId;
+        new SavedSearchesTask().execute();
     }
 
+    public boolean isSavedMode() {
+        return mSavedMode;
+    }
     @Override
     public String getItem(int position) {
         return mStrings.get(position);
@@ -49,9 +59,8 @@ public class UserSearchAdapter extends ArrayAdapter<String> implements Filterabl
         }
 
         assert view != null;
-        final String str = mStrings.get(position);
 
-        ((TextView) view.findViewById(R.id.word)).setText(str);
+        ((TextView) view.findViewById(R.id.word)).setText(getItem(position));
 
         return view;
     }
@@ -62,16 +71,18 @@ public class UserSearchAdapter extends ArrayAdapter<String> implements Filterabl
             @Override
             protected FilterResults performFiltering(CharSequence constraint) {
                 FilterResults filterResults = new FilterResults();
-                if (constraint != null) {
-                    mStrings = new ArrayList<String>();
+                mSavedMode = constraint == null || constraint.length() == 0;
+                if (mSavedMode) {
+                    mStrings = mSavedSearches;
+                } else {
                     mSearchWord = constraint.toString();
+                    mStrings = new ArrayList<String>();
                     mStrings.add(mSearchWord + mContext.getString(R.string.label_search_tweet));
                     mStrings.add(mSearchWord + mContext.getString(R.string.label_search_user));
                     mStrings.add("@" + mSearchWord + mContext.getString(R.string.label_display_profile));
-
-                    filterResults.values = mStrings;
-                    filterResults.count = mStrings.size();
                 }
+                filterResults.values = mStrings;
+                filterResults.count = mStrings.size();
                 return filterResults;
             }
 
@@ -87,9 +98,35 @@ public class UserSearchAdapter extends ArrayAdapter<String> implements Filterabl
             @Override
             public String convertResultToString(Object resultValue) {
                 //ここでフィルタリングした値を選択したときに返す値を実装
-                return mSearchWord;
+                if (mSavedMode) {
+                    return (String) resultValue;
+                } else {
+                    return mSearchWord;
+                }
             }
         };
         return filter;
+    }
+
+    public class SavedSearchesTask extends AsyncTask<Void, Void, ResponseList<SavedSearch>> {
+        @Override
+        protected ResponseList<SavedSearch> doInBackground(Void... params) {
+            try {
+                return JustawayApplication.getApplication().getTwitter().getSavedSearches();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(ResponseList<SavedSearch> savedSearches) {
+            if (savedSearches == null) {
+                return;
+            }
+            for (SavedSearch savedSearch : savedSearches) {
+                mSavedSearches.add(0, savedSearch.getQuery());
+            }
+        }
     }
 }
