@@ -1,7 +1,6 @@
 package info.justaway;
 
 import android.app.ActionBar;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
@@ -23,7 +22,8 @@ import twitter4j.User;
 
 public class UserSearchActivity extends FragmentActivity {
 
-    private EditText mSearchWords;
+    private EditText mSearchText;
+    private String mSearchWord;
     private int mPage = 1;
     private UserAdapter mAdapter;
     private ListView mListView;
@@ -46,7 +46,7 @@ public class UserSearchActivity extends FragmentActivity {
         Typeface fontello = JustawayApplication.getFontello();
         search.setTypeface(fontello);
 
-        mSearchWords = (EditText) findViewById(R.id.searchWords);
+        mSearchText = (EditText) findViewById(R.id.search_text);
         mProgressBar = (ProgressBar) findViewById(R.id.guruguru);
         mListView = (ListView) findViewById(R.id.list_view);
         mListView.setVisibility(View.GONE);
@@ -62,7 +62,7 @@ public class UserSearchActivity extends FragmentActivity {
             }
         });
 
-        mSearchWords.setOnKeyListener(new View.OnKeyListener() {
+        mSearchText.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
                 //EnterKeyが押されたかを判定
@@ -78,10 +78,10 @@ public class UserSearchActivity extends FragmentActivity {
         Intent intent = getIntent();
         String query = intent.getStringExtra("query");
         if (query != null) {
-            mSearchWords.setText(query);
+            mSearchText.setText(query);
             search.performClick();
         } else {
-            JustawayApplication.getApplication().showKeyboard(mSearchWords);
+            JustawayApplication.getApplication().showKeyboard(mSearchText);
         }
 
         mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
@@ -116,16 +116,18 @@ public class UserSearchActivity extends FragmentActivity {
         }
         mProgressBar.setVisibility(View.VISIBLE);
         mAutoLoading = false;
-        new UserSearchTask().execute(mSearchWords.getText().toString());
+        new UserSearchTask().execute(mSearchWord);
     }
 
     private void search() {
-        JustawayApplication.getApplication().hideKeyboard(mSearchWords);
-        if (mSearchWords.getText() == null) return;
+        JustawayApplication.getApplication().hideKeyboard(mSearchText);
+        if (mSearchText.getText() == null) return;
         mAdapter.clear();
+        mPage = 1;
         mListView.setVisibility(View.GONE);
         mProgressBar.setVisibility(View.VISIBLE);
-        new UserSearchTask().execute(mSearchWords.getText().toString());
+        mSearchWord = mSearchText.getText().toString();
+        new UserSearchTask().execute(mSearchWord);
     }
 
     private class UserSearchTask extends AsyncTask<String, Void, ResponseList<User>> {
@@ -133,7 +135,6 @@ public class UserSearchActivity extends FragmentActivity {
         protected ResponseList<User> doInBackground(String... params) {
             String query = params[0];
             try {
-                Log.d("justaway", "task");
                 return JustawayApplication.getApplication().getTwitter().searchUsers(query, mPage);
             } catch (Exception e) {
                 e.printStackTrace();
