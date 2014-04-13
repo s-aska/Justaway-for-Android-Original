@@ -31,6 +31,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -44,13 +45,14 @@ import java.util.regex.Pattern;
 
 import de.greenrobot.event.EventBus;
 import info.justaway.adapter.MainPagerAdapter;
+import info.justaway.adapter.UserSearchAdapter;
 import info.justaway.event.AlertDialogEvent;
 import info.justaway.event.NewRecordEvent;
 import info.justaway.event.action.AccountChangeEvent;
 import info.justaway.event.action.AccountChangePostEvent;
+import info.justaway.event.action.EditorEvent;
 import info.justaway.event.action.SeenTopEvent;
 import info.justaway.event.connection.CleanupEvent;
-import info.justaway.event.action.EditorEvent;
 import info.justaway.event.connection.ConnectEvent;
 import info.justaway.event.connection.DisconnectEvent;
 import info.justaway.fragment.main.BaseFragment;
@@ -69,13 +71,6 @@ import twitter4j.auth.AccessToken;
 
 public class MainActivity extends FragmentActivity {
 
-    private JustawayApplication mApplication;
-    private MainPagerAdapter mMainPagerAdapter;
-    private ViewPager mViewPager;
-    private ProgressDialog mProgressDialog;
-    private TextView mTitle;
-    private TextView mSubTitle;
-    private TextView mSignalButton;
     private static final int REQUEST_ACCOUNT_SETTING = 200;
     private static final int REQUEST_SETTINGS = 300;
     private static final int REQUEST_TAB_SETTINGS = 400;
@@ -84,7 +79,15 @@ public class MainActivity extends FragmentActivity {
     private static final long TAB_ID_INTERACTIONS = -2L;
     private static final long TAB_ID_DIRECT_MESSAGE = -3L;
     private static final Pattern USERLIST_PATTERN = Pattern.compile("^(@[a-zA-Z0-9_]+)/(.*)$");
-
+    private JustawayApplication mApplication;
+    private MainPagerAdapter mMainPagerAdapter;
+    private ViewPager mViewPager;
+    private ProgressDialog mProgressDialog;
+    private TextView mTitle;
+    private TextView mSubTitle;
+    private TextView mSignalButton;
+    private LinearLayout mNormalLayout;
+    private AutoCompleteTextView mSearchText;
     private Status mInReplyToStatus;
     private ActionBarDrawerToggle mDrawerToggle;
     private Activity mActivity;
@@ -144,6 +147,45 @@ public class MainActivity extends FragmentActivity {
                     ViewGroup group = (ViewGroup) actionBar.getCustomView();
                     mTitle = (TextView) group.findViewById(R.id.title);
                     mSubTitle = (TextView) group.findViewById(R.id.sub_title);
+
+                    TextView searchButton = (TextView) group.findViewById(R.id.search);
+                    mNormalLayout = (LinearLayout) group.findViewById(R.id.normal_layout);
+                    mSearchText = (AutoCompleteTextView) findViewById(R.id.search_text);
+                    UserSearchAdapter adapter = new UserSearchAdapter(this, R.layout.row_auto_complete);
+                    mSearchText.setAdapter(adapter);
+                    mSearchText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                            Intent intent = null;
+                            String searchWord = mSearchText.getText().toString();
+                            switch (i) {
+                                case 0:
+                                    intent = new Intent(mActivity, SearchActivity.class);
+                                    intent.putExtra("query", searchWord);
+                                    break;
+                                case 1:
+                                    intent = new Intent(mActivity, SearchActivity.class);
+                                    intent.putExtra("query", searchWord);
+                                    break;
+                                case 2:
+                                    intent = new Intent(mActivity, ProfileActivity.class);
+                                    intent.putExtra("screenName", searchWord);
+                                    break;
+                            }
+                            startActivity(intent);
+                        }
+                    });
+
+                    searchButton.setTypeface(JustawayApplication.getFontello());
+                    searchButton.setOnClickListener(
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    mNormalLayout.setVisibility(View.GONE);
+                                    mSearchText.setVisibility(View.VISIBLE);
+                                }
+                            }
+                    );
                     mSignalButton = (TextView) group.findViewById(R.id.signal);
                     mSignalButton.setTypeface(JustawayApplication.getFontello());
                     mSignalButton.setOnClickListener(
@@ -161,7 +203,7 @@ public class MainActivity extends FragmentActivity {
         }
 
         setContentView(R.layout.activity_main);
-        int drawer = mApplication.getThemeName().equals("black") ? R.drawable.ic_dark_drawer :R.drawable.ic_dark_drawer;
+        int drawer = mApplication.getThemeName().equals("black") ? R.drawable.ic_dark_drawer : R.drawable.ic_dark_drawer;
 
         // DrawerLayout
         final DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -437,7 +479,7 @@ public class MainActivity extends FragmentActivity {
             mApplication.showKeyboard(editStatus);
         } else {
             Intent intent = new Intent(this, PostActivity.class);
-            intent.putExtra("status",  event.getText());
+            intent.putExtra("status", event.getText());
             if (event.getSelectionStart() != null) {
                 intent.putExtra("selection", event.getSelectionStart());
             }

@@ -7,36 +7,59 @@
               android:layout_height="match_parent">
 
     <LinearLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_gravity="center"
-        android:orientation="vertical">
+        android:id="@+id/normal_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="wrap_content"
-            android:layout_height="18dp"
-            android:textSize="16dp"
-            android:textColor="?attr/text_color"
-            tools:text="Home"
-            tools:ignore="SpUsage"/>
-
-        <TextView
-            android:id="@+id/sub_title"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textSize="12dp"
-            android:textColor="?attr/text_color"
-            tools:text="\@justawayfactory"
-            tools:ignore="SpUsage"/>
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="18dp"
+                android:textSize="16dp"
+                android:textColor="?attr/text_color"
+                tools:text="Home"
+                tools:ignore="SpUsage"/>
+
+            <TextView
+                android:id="@+id/sub_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12dp"
+                android:textColor="?attr/text_color"
+                tools:text="\@justawayfactory"
+                tools:ignore="SpUsage"/>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/search"
+            android:layout_width="58dip"
+            android:layout_height="wrap_content"
+            android:background="@drawable/action_bar_stateful"
+            android:text="@string/fontello_search"
+            android:textColor="@color/menu_actionbar"
+            tools:paddingBottom="0dip"/>
+
+        <Button
+            android:id="@+id/signal"
+            android:layout_width="58dip"
+            android:layout_height="wrap_content"
+            android:background="@drawable/action_bar_stateful"
+            android:text="@string/fontello_flash"
+            tools:paddingBottom="0dip"/>
     </LinearLayout>
 
-    <Button
-        android:id="@+id/signal"
-        android:layout_width="58dip"
-        android:layout_height="wrap_content"
-        android:background="@drawable/action_bar_stateful"
-        android:text="@string/fontello_flash"
-        tools:paddingBottom="0dip"/>
+    <AutoCompleteTextView
+        android:id="@+id/search_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:hint="Twitterで検索"
+        android:singleLine="true"/>
 </LinearLayout>
