@@ -44,7 +44,7 @@
             android:layout_height="wrap_content"
             android:background="@drawable/action_bar_stateful"
             android:text="@string/fontello_search"
-            android:textColor="@color/menu_actionbar"
+            android:textColor="?attr/menu_action_bar"
             tools:paddingBottom="0dip"/>
 
         <Button
