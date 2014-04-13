@@ -149,10 +149,11 @@ public class MainActivity extends FragmentActivity {
                     mTitle = (TextView) group.findViewById(R.id.title);
                     mSubTitle = (TextView) group.findViewById(R.id.sub_title);
 
+                    final UserSearchAdapter adapter = new UserSearchAdapter(this, R.layout.row_auto_complete);
                     mNormalLayout = (LinearLayout) group.findViewById(R.id.normal_layout);
                     mSearchText = (AutoCompleteEditText) findViewById(R.id.search_text);
                     mSearchText.setThreshold(0);
-                    mSearchText.setAdapter(new UserSearchAdapter(this, R.layout.row_auto_complete));
+                    mSearchText.setAdapter(adapter);
                     mSearchText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -161,6 +162,13 @@ public class MainActivity extends FragmentActivity {
                             }
                             Intent intent = null;
                             String searchWord = mSearchText.getText().toString();
+                            mSearchText.clearFocus();
+                            if (adapter.isSavedMode()) {
+                                intent = new Intent(mActivity, SearchActivity.class);
+                                intent.putExtra("query", searchWord);
+                                startActivity(intent);
+                                return;
+                            }
                             switch (i) {
                                 case 0:
                                     intent = new Intent(mActivity, SearchActivity.class);
@@ -192,12 +200,13 @@ public class MainActivity extends FragmentActivity {
                                     mSearchText.setText("");
                                     mSearchText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                                         public void onFocusChange(View v, boolean hasFocus) {
-                                            if (!hasFocus) {
-                                                return;
+                                            if (hasFocus) {
+                                                ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
+                                                        .showSoftInput(v, InputMethodManager.SHOW_FORCED);
+                                            } else {
+                                                ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
+                                                        .hideSoftInputFromInputMethod(v.getWindowToken(), 0);
                                             }
-                                            ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
-                                                    .showSoftInput(v, InputMethodManager.SHOW_FORCED);
-                                            mSearchText.setOnFocusChangeListener(null);
                                         }
                                     });
                                     mSearchText.requestFocus();
