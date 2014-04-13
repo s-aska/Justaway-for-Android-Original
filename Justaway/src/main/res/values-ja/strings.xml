@@ -206,4 +206,9 @@
     <string name="toast_update_status_failure">残念~！もう一回！</string>
     <string name="twitter_callback_url">justaway://twitter</string>
     <string name="widget_title_post_mode">投稿モード</string>
+    <string name="label_search_tweet">" でツイート検索"</string>
+    <string name="label_search_user">" でユーザー検索"</string>
+    <string name="label_display_profile">" のプロフィールを表示"</string>
+    <string name="title_user_search">ユーザー検索</string>
+    <string name="hint_search">Twitterで検索</string>
 </resources>

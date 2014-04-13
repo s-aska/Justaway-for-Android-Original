@@ -46,6 +46,12 @@ public class UserAdapter extends ArrayAdapter<User> {
     }
 
     @Override
+    public void clear() {
+        super.clear();
+        mUsers.clear();
+    }
+
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
         // ビューを受け取る

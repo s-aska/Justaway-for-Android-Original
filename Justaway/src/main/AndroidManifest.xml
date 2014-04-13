@@ -152,6 +152,9 @@
             android:label="@string/title_main"
             android:taskAffinity=".favorite"
             android:excludeFromRecents="true"/>
+        <activity
+            android:name=".UserSearchActivity"
+            android:label="@string/title_user_search"/>
     </application>
 
 </manifest>
