@@ -57,7 +57,7 @@
             tools:paddingBottom="0dip"/>
     </LinearLayout>
 
-    <AutoCompleteTextView
+    <info.justaway.widget.AutoCompleteEditText
         android:id="@+id/search_text"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
