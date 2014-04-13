@@ -35,6 +35,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -88,6 +89,7 @@ public class MainActivity extends FragmentActivity {
     private TextView mSubTitle;
     private TextView mSignalButton;
     private LinearLayout mNormalLayout;
+    private FrameLayout mSearchLayout;
     private AutoCompleteTextView mSearchText;
     private Status mInReplyToStatus;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -150,6 +152,7 @@ public class MainActivity extends FragmentActivity {
                     mSubTitle = (TextView) group.findViewById(R.id.sub_title);
 
                     mNormalLayout = (LinearLayout) group.findViewById(R.id.normal_layout);
+                    mSearchLayout = (FrameLayout) group.findViewById(R.id.search_layout);
                     mSearchText = (AutoCompleteTextView) findViewById(R.id.search_text);
                     mSearchText.setAdapter(new UserSearchAdapter(this, R.layout.row_auto_complete));
                     mSearchText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -186,7 +189,7 @@ public class MainActivity extends FragmentActivity {
                                 public void onClick(View v) {
                                     mDrawerToggle.setDrawerIndicatorEnabled(false);
                                     mNormalLayout.setVisibility(View.GONE);
-                                    mSearchText.setVisibility(View.VISIBLE);
+                                    mSearchLayout.setVisibility(View.VISIBLE);
                                     mSearchText.setText("");
                                     mSearchText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                                         public void onFocusChange(View v, boolean hasFocus) {
@@ -202,6 +205,15 @@ public class MainActivity extends FragmentActivity {
                                 }
                             }
                     );
+
+                    TextView cancelButton = (TextView) group.findViewById(R.id.cancel);
+                    cancelButton.setTypeface(JustawayApplication.getFontello());
+                    cancelButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            cancelSearch();
+                        }
+                    });
 
                     mSignalButton = (TextView) group.findViewById(R.id.signal);
                     mSignalButton.setTypeface(JustawayApplication.getFontello());
@@ -870,24 +882,28 @@ public class MainActivity extends FragmentActivity {
         } else if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         } else if (itemId == android.R.id.home) {
-            mSearchText.setText("");
-            mSearchText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                public void onFocusChange(View v, boolean hasFocus) {
-                    if (hasFocus) {
-                        return;
-                    }
-                    ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
-                            .hideSoftInputFromWindow(v.getWindowToken(), 0);
-                    mSearchText.setVisibility(View.GONE);
-                    mNormalLayout.setVisibility(View.VISIBLE);
-                    mDrawerToggle.setDrawerIndicatorEnabled(true);
-                    mSearchText.setOnFocusChangeListener(null);
-                }
-            });
-            mSearchText.requestFocus();
-            mSearchText.clearFocus();
+            cancelSearch();
         }
         return true;
+    }
+
+    private void cancelSearch() {
+        mSearchText.setText("");
+        mSearchText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    return;
+                }
+                ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
+                        .hideSoftInputFromWindow(v.getWindowToken(), 0);
+                mSearchLayout.setVisibility(View.GONE);
+                mNormalLayout.setVisibility(View.VISIBLE);
+                mDrawerToggle.setDrawerIndicatorEnabled(true);
+                mSearchText.setOnFocusChangeListener(null);
+            }
+        });
+        mSearchText.requestFocus();
+        mSearchText.clearFocus();
     }
 
     private void showProgressDialog(String message) {
