@@ -148,14 +148,15 @@ public class MainActivity extends FragmentActivity {
                     mTitle = (TextView) group.findViewById(R.id.title);
                     mSubTitle = (TextView) group.findViewById(R.id.sub_title);
 
-                    TextView searchButton = (TextView) group.findViewById(R.id.search);
                     mNormalLayout = (LinearLayout) group.findViewById(R.id.normal_layout);
                     mSearchText = (AutoCompleteTextView) findViewById(R.id.search_text);
-                    UserSearchAdapter adapter = new UserSearchAdapter(this, R.layout.row_auto_complete);
-                    mSearchText.setAdapter(adapter);
+                    mSearchText.setAdapter(new UserSearchAdapter(this, R.layout.row_auto_complete));
                     mSearchText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                            if (mSearchText.getText() == null) {
+                                return;
+                            }
                             Intent intent = null;
                             String searchWord = mSearchText.getText().toString();
                             switch (i) {
@@ -176,6 +177,7 @@ public class MainActivity extends FragmentActivity {
                         }
                     });
 
+                    TextView searchButton = (TextView) group.findViewById(R.id.search);
                     searchButton.setTypeface(JustawayApplication.getFontello());
                     searchButton.setOnClickListener(
                             new View.OnClickListener() {
@@ -183,9 +185,11 @@ public class MainActivity extends FragmentActivity {
                                 public void onClick(View v) {
                                     mNormalLayout.setVisibility(View.GONE);
                                     mSearchText.setVisibility(View.VISIBLE);
+                                    mDrawerToggle.setDrawerIndicatorEnabled(false);
                                 }
                             }
                     );
+
                     mSignalButton = (TextView) group.findViewById(R.id.signal);
                     mSignalButton.setTypeface(JustawayApplication.getFontello());
                     mSignalButton.setOnClickListener(
@@ -852,6 +856,12 @@ public class MainActivity extends FragmentActivity {
             startActivity(intent);
         } else if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
+        } else if (itemId == android.R.id.home) {
+            mApplication.hideKeyboard(mSearchText);
+            mSearchText.setText("");
+            mSearchText.setVisibility(View.GONE);
+            mNormalLayout.setVisibility(View.VISIBLE);
+            mDrawerToggle.setDrawerIndicatorEnabled(true);
         }
         return true;
     }
