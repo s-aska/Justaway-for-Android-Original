@@ -11,6 +11,7 @@ import info.justaway.event.model.CreateFavoriteEvent;
 import info.justaway.event.model.CreateStatusEvent;
 import info.justaway.event.model.DestroyDirectMessageEvent;
 import info.justaway.event.model.DestroyStatusEvent;
+import info.justaway.event.model.NotificationEvent;
 import info.justaway.event.model.UnFavoriteEvent;
 import info.justaway.model.Row;
 import twitter4j.DirectMessage;
@@ -79,6 +80,11 @@ public class MyUserStreamAdapter extends UserStreamAdapter {
         if (JustawayApplication.isMute(row)) {
             return;
         }
+        long userId = JustawayApplication.getApplication().getUserId();
+        Status retweet = status.getRetweetedStatus();
+        if (status.getInReplyToUserId() == userId || (retweet != null && retweet.getUser().getId() == userId)) {
+            EventBus.getDefault().post(new NotificationEvent(row));
+        }
         if (mPause) {
             mCreateStatusEvents.add(new CreateStatusEvent(row));
         } else {
@@ -110,6 +116,7 @@ public class MyUserStreamAdapter extends UserStreamAdapter {
             return;
         }
         Row row = Row.newFavorite(source, target, status);
+        EventBus.getDefault().post(new NotificationEvent(row));
         new AsyncTask<Row, Void, twitter4j.Status>(){
             private Row mRow;
             @Override
@@ -133,8 +140,6 @@ public class MyUserStreamAdapter extends UserStreamAdapter {
                 } else {
                     EventBus.getDefault().post(new CreateFavoriteEvent(mRow));
                 }
-                JustawayApplication.showToast(mRow.getSource().getScreenName() + " fav "
-                        + mRow.getStatus().getText());
             }
         }.execute(row);
     }
@@ -166,6 +171,7 @@ public class MyUserStreamAdapter extends UserStreamAdapter {
         if (JustawayApplication.isMute(row)) {
             return;
         }
+        EventBus.getDefault().post(new NotificationEvent(row));
         if (mPause) {
             mCreateStatusEvents.add(new CreateStatusEvent(row));
         } else {
