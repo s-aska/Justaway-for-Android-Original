@@ -20,6 +20,7 @@
     <style name="BlackTheme" parent="BlackBaseTheme">
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
         <item name="android:windowBackground">@color/background</item>
+        <item name="menu_action_bar">#818285</item>
         <item name="menu_text_color">#ffffff</item>
         <item name="menu_text_color_disabled">#666666</item>
         <item name="menu_background">#2b2b2b</item>
@@ -38,6 +39,7 @@
         <item name="android:textColor">#323232</item><!-- TextViewとか -->
         <item name="android:textColorPrimary">#323232</item><!-- EditTextとか -->
         <item name="android:buttonStyle">@style/WhiteButton</item>
+        <item name="menu_action_bar">#979797</item>
         <item name="menu_text_color">#323232</item>
         <item name="menu_text_color_disabled">#b2b2b2</item>
         <item name="menu_background">#dcdcdc</item>
