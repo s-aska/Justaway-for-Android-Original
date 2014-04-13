@@ -70,6 +70,13 @@ public class SignInActivity extends Activity {
         }
     }
 
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        mRequestToken = (RequestToken) savedInstanceState.getSerializable(STATE_REQUEST_TOKEN);
+    }
+
     private void startOAuth() {
         JustawayApplication.showProgressDialog(this, getString(R.string.progress_process));
         new AsyncTask<Void, Void, RequestToken>() {
