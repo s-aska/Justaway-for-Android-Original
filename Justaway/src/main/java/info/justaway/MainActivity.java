@@ -131,6 +131,14 @@ public class MainActivity extends FragmentActivity {
         mApplication.setTheme(this);
         mActivity = this;
 
+        // アクセストークンがない場合に認証用のアクティビティを起動する
+        if (!mApplication.hasAccessToken()) {
+            Intent intent = new Intent(this, SignInActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
+
         // クイックモード時に起動と同時にキーボードが出現するのを抑止
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
@@ -300,14 +308,6 @@ public class MainActivity extends FragmentActivity {
 
         // クイックモード時に起動と同時に入力エリアにフォーカスするのを抑止
         findViewById(R.id.main).requestFocus();
-
-        // アクセストークンがない場合に認証用のアクティビティを起動する
-        if (!mApplication.hasAccessToken()) {
-            Intent intent = new Intent(this, SignInActivity.class);
-            startActivity(intent);
-            finish();
-            return;
-        }
 
         setup();
 
