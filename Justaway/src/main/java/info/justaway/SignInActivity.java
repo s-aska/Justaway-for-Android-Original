@@ -19,8 +19,6 @@ public class SignInActivity extends Activity {
 
     private static final String STATE_REQUEST_TOKEN = "request_token";
 
-    private String mCallbackURL;
-    private Twitter mTwitter;
     private RequestToken mRequestToken;
 
     @Override
@@ -29,19 +27,33 @@ public class SignInActivity extends Activity {
         JustawayApplication.getApplication().setTheme(this);
         setContentView(R.layout.activity_signin);
 
-        JustawayApplication application = JustawayApplication.getApplication();
-
-        mCallbackURL = getString(R.string.twitter_callback_url);
-        mTwitter = application.getTwitterInstance();
-
         Typeface fontello = JustawayApplication.getFontello();
         TextView button = (TextView) findViewById(R.id.action_start_oauth);
         button.setTypeface(fontello);
 
-        if (getIntent().getBooleanExtra("add_account", false)) {
+        Intent intent = getIntent();
+        if (intent.getBooleanExtra("add_account", false)) {
             button.setVisibility(View.GONE);
             findViewById(R.id.connect_with_twitter).setVisibility(View.GONE);
             startOAuth();
+            return;
+        }
+
+        // バックグランドプロセスが死んでいるとonNewIntentでなくonCreateからoauth_verifierが来る
+        if (savedInstanceState != null) {
+            mRequestToken = (RequestToken) savedInstanceState.get(STATE_REQUEST_TOKEN);
+            if (mRequestToken != null) {
+                if (intent.getData() != null) {
+                    String oauth_verifier = intent.getData().getQueryParameter("oauth_verifier");
+                    if (oauth_verifier != null && !oauth_verifier.isEmpty()) {
+                        button.setVisibility(View.GONE);
+                        findViewById(R.id.connect_with_twitter).setVisibility(View.GONE);
+                        JustawayApplication.showProgressDialog(this, getString(R.string.progress_process));
+                        new VerifyOAuthTask().execute(oauth_verifier);
+                        return;
+                    }
+                }
+            }
             return;
         }
 
@@ -51,14 +63,6 @@ public class SignInActivity extends Activity {
                 startOAuth();
             }
         });
-
-        if (savedInstanceState != null) {
-            mRequestToken = (RequestToken) savedInstanceState.get(STATE_REQUEST_TOKEN);
-            if (mRequestToken != null) {
-                button.setVisibility(View.GONE);
-                findViewById(R.id.connect_with_twitter).setVisibility(View.GONE);
-            }
-        }
     }
 
     @Override
@@ -79,11 +83,12 @@ public class SignInActivity extends Activity {
 
     private void startOAuth() {
         JustawayApplication.showProgressDialog(this, getString(R.string.progress_process));
-        new AsyncTask<Void, Void, RequestToken>() {
+        AsyncTask<Void, Void, RequestToken> task = new AsyncTask<Void, Void, RequestToken>() {
             @Override
             protected RequestToken doInBackground(Void... params) {
                 try {
-                    return mTwitter.getOAuthRequestToken(mCallbackURL);
+                    Twitter twitter = JustawayApplication.getApplication().getTwitterInstance();
+                    return twitter.getOAuthRequestToken(getString(R.string.twitter_callback_url));
                 } catch (TwitterException e) {
                     e.printStackTrace();
                     return null;
@@ -97,18 +102,19 @@ public class SignInActivity extends Activity {
                     JustawayApplication.showToast(R.string.toast_connection_failure);
                     return;
                 }
-                mRequestToken = token;
                 final String url = token.getAuthorizationURL();
                 if (url == null) {
                     JustawayApplication.showToast(R.string.toast_get_authorization_url_failure);
                     return;
                 }
+                mRequestToken = token;
                 findViewById(R.id.action_start_oauth).setVisibility(View.GONE);
                 findViewById(R.id.connect_with_twitter).setVisibility(View.GONE);
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                 startActivity(intent);
             }
-        }.execute();
+        };
+        task.execute();
     }
 
 //    @Override
@@ -128,7 +134,7 @@ public class SignInActivity extends Activity {
     @Override
     public void onNewIntent(Intent intent) {
         if (intent == null || intent.getData() == null
-                || !intent.getData().toString().startsWith(mCallbackURL)) {
+                || !intent.getData().toString().startsWith(getString(R.string.twitter_callback_url))) {
             return;
         }
         String oauth_verifier = intent.getData().getQueryParameter("oauth_verifier");
@@ -136,31 +142,7 @@ public class SignInActivity extends Activity {
             return;
         }
         JustawayApplication.showProgressDialog(this, getString(R.string.progress_process));
-        new AsyncTask<String, Void, User>() {
-            @Override
-            protected User doInBackground(String... params) {
-                String verifier = params[0];
-                try {
-                    AccessToken accessToken = mTwitter.getOAuthAccessToken(mRequestToken, verifier);
-                    JustawayApplication.getApplication().setAccessToken(accessToken);
-                    mTwitter.setOAuthAccessToken(accessToken);
-                    return mTwitter.verifyCredentials();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return null;
-                }
-            }
-
-            @Override
-            protected void onPostExecute(User user) {
-                JustawayApplication.dismissProgressDialog();
-                if (user != null) {
-                    JustawayApplication.getApplication().addUserIconMap(user);
-                    JustawayApplication.showToast(R.string.toast_sign_in_success);
-                    successOAuth();
-                }
-            }
-        }.execute(oauth_verifier);
+        new VerifyOAuthTask().execute(oauth_verifier);
     }
 
     private void successOAuth() {
@@ -168,5 +150,33 @@ public class SignInActivity extends Activity {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
+    }
+
+    private class VerifyOAuthTask extends AsyncTask<String, Void, User> {
+        @Override
+        protected User doInBackground(String... params) {
+            String verifier = params[0];
+            try {
+                JustawayApplication application = JustawayApplication.getApplication();
+                Twitter twitter = application.getTwitterInstance();
+                AccessToken accessToken = twitter.getOAuthAccessToken(mRequestToken, verifier);
+                application.setAccessToken(accessToken);
+                twitter.setOAuthAccessToken(accessToken);
+                return twitter.verifyCredentials();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(User user) {
+            JustawayApplication.dismissProgressDialog();
+            if (user != null) {
+                JustawayApplication.getApplication().addUserIconMap(user);
+                JustawayApplication.showToast(R.string.toast_sign_in_success);
+                successOAuth();
+            }
+        }
     }
 }
