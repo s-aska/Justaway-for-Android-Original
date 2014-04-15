@@ -107,8 +107,8 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             return;
         }
         super.add(row);
-        this.filter(row);
-        this.mStatuses.add(row);
+        mStatuses.add(row);
+        filter(row);
         mLimit++;
     }
 
@@ -117,10 +117,13 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         if (JustawayApplication.isMute(row)) {
             return;
         }
+        if (exists(row)) {
+            return;
+        }
         super.add(row);
-        this.filter(row);
-        this.mStatuses.add(row);
-        this.limitation();
+        mStatuses.add(row);
+        filter(row);
+        limitation();
     }
 
     @Override
@@ -128,16 +131,43 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         if (JustawayApplication.isMute(row)) {
             return;
         }
+        if (exists(row)) {
+            return;
+        }
         super.insert(row, index);
-        this.filter(row);
-        this.mStatuses.add(index, row);
-        this.limitation();
+        mStatuses.add(index, row);
+        filter(row);
+        limitation();
+    }
+
+    public boolean exists(Row row) {
+        if (row.isStatus()) {
+            for (Row status : mStatuses) {
+                if (status.isStatus() && status.getStatus().getId() == row.getStatus().getId()) {
+                    return true;
+                }
+            }
+        } else if (row.isDirectMessage()) {
+            for (Row status : mStatuses) {
+                if (status.isDirectMessage() && status.getMessage().getId() == row.getMessage().getId()) {
+                    return true;
+                }
+            }
+        } else if (row.isFavorite()) {
+            for (Row status : mStatuses) {
+                if (status.isFavorite() && status.getStatus().getId() == row.getStatus().getId() &&
+                        status.getSource().getId() == row.getSource().getId()) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Override
     public void remove(Row row) {
         super.remove(row);
-        this.mStatuses.remove(row);
+        mStatuses.remove(row);
     }
 
     private void filter(Row row) {
@@ -180,11 +210,11 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     }
 
     public void limitation() {
-        int size = this.mStatuses.size();
+        int size = mStatuses.size();
         if (size > mLimit) {
             int count = size - mLimit;
             for (int i = 0; i < count; i++) {
-                super.remove(this.mStatuses.remove(size - i - 1));
+                super.remove(mStatuses.remove(size - i - 1));
             }
         }
     }
@@ -192,7 +222,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     @Override
     public void clear() {
         super.clear();
-        this.mStatuses.clear();
+        mStatuses.clear();
         mLimit = LIMIT;
     }
 
