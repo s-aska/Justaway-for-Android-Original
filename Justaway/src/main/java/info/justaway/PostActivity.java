@@ -37,8 +37,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -51,6 +51,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnClick;
 import info.justaway.plugin.TwiccaPlugin;
 import info.justaway.settings.PostStockSettings;
 import info.justaway.task.SendDirectMessageTask;
@@ -70,22 +73,42 @@ public class PostActivity extends FragmentActivity {
     private static final int ERROR_CODE_DUPLICATE_STATUS = 187;
 
     private Activity mContext;
-    private EditText mEditText;
-    private TextView mTextView;
-    private Button mTweetButton;
-    private Button mImgButton;
     private Long mInReplyToStatusId;
     private File mImgPath;
     private Uri mImageUri;
     private AlertDialog mDraftDialog;
     private AlertDialog mHashtagDialog;
     private boolean mWidgetMode;
-    private Spinner mSpinner;
     private PostStockSettings mPostStockSettings;
     private TextView mTitle;
     private TextView mUndoButton;
     private ArrayList<String> mTextHistory = new ArrayList<String>();
     private List<ResolveInfo> mTwiccaPlugins;
+
+    @InjectView(R.id.in_reply_to_layout)
+    RelativeLayout mInReplyToLayout;
+    @InjectView(R.id.in_reply_to_user_icon)
+    ImageView mInReplyToUserIcon;
+    @InjectView(R.id.in_reply_to_status)
+    TextView mInReplyToStatus;
+    @InjectView(R.id.cancel)
+    TextView mCancel;
+    @InjectView(R.id.switch_account_spinner)
+    Spinner mSwitchAccountSpinner;
+    @InjectView(R.id.status_text)
+    EditText mStatusText;
+    @InjectView(R.id.suddenly_button)
+    Button mSuddenlyButton;
+    @InjectView(R.id.img_button)
+    Button mImgButton;
+    @InjectView(R.id.draft_button)
+    Button mDraftButton;
+    @InjectView(R.id.hashtag_button)
+    Button mHashtagButton;
+    @InjectView(R.id.count)
+    TextView mCount;
+    @InjectView(R.id.tweet_button)
+    Button mTweetButton;
 
     @SuppressWarnings("MagicConstant")
     @Override
@@ -93,6 +116,7 @@ public class PostActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         JustawayApplication.getApplication().setTheme(this);
         setContentView(R.layout.activity_post);
+        ButterKnife.inject(this);
         mContext = this;
 
         ActionBar actionBar = getActionBar();
@@ -113,16 +137,16 @@ public class PostActivity extends FragmentActivity {
                         @Override
                         public void onClick(View view) {
                             String text = mTextHistory.get(mTextHistory.size() - 1);
-                            if (mEditText.getText() != null && text.equals(mEditText.getText().toString())) {
+                            if (mStatusText.getText() != null && text.equals(mStatusText.getText().toString())) {
                                 mTextHistory.remove(mTextHistory.size() - 1);
                                 if (mTextHistory.size() > 0) {
                                     text = mTextHistory.get(mTextHistory.size() - 1);
                                 }
                             }
-                            mEditText.setText(text);
-                            mEditText.setSelection(mEditText.length());
+                            mStatusText.setText(text);
+                            mStatusText.setSelection(mStatusText.length());
                             mTextHistory.remove(mTextHistory.size() - 1);
-                            if (mTextHistory.size() > 0 && text.equals(mEditText.getText().toString())) {
+                            if (mTextHistory.size() > 0 && text.equals(mStatusText.getText().toString())) {
                                 mTextHistory.remove(mTextHistory.size() - 1);
                             }
                             mUndoButton.setEnabled(mTextHistory.size() > 0);
@@ -136,21 +160,13 @@ public class PostActivity extends FragmentActivity {
 
         Typeface fontello = JustawayApplication.getFontello();
 
-        mEditText = (EditText) findViewById(R.id.status);
-        mTextView = (TextView) findViewById(R.id.count);
-        mTweetButton = (Button) findViewById(R.id.tweet);
-        mImgButton = (Button) findViewById(R.id.img);
-        Button suddenlyButton = (Button) findViewById(R.id.suddenly);
-        Button draftButton = (Button) findViewById(R.id.draft);
-        Button hashtagButton = (Button) findViewById(R.id.hashtag);
-        TextView cancel = (TextView) findViewById(R.id.cancel);
 
-        mTweetButton.setTypeface(fontello);
         mImgButton.setTypeface(fontello);
-        suddenlyButton.setTypeface(fontello);
-        draftButton.setTypeface(fontello);
-        hashtagButton.setTypeface(fontello);
-        cancel.setTypeface(fontello);
+        mTweetButton.setTypeface(fontello);
+        mSuddenlyButton.setTypeface(fontello);
+        mDraftButton.setTypeface(fontello);
+        mHashtagButton.setTypeface(fontello);
+        mCancel.setTypeface(fontello);
 
         registerForContextMenu(mImgButton);
 
@@ -158,8 +174,7 @@ public class PostActivity extends FragmentActivity {
         AccessTokenAdapter adapter = new AccessTokenAdapter(this, R.layout.spinner_switch_account);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        mSpinner = (Spinner) findViewById(R.id.switchAccount);
-        mSpinner.setAdapter(adapter);
+        mSwitchAccountSpinner.setAdapter(adapter);
 
         ArrayList<AccessToken> accessTokens = JustawayApplication.getApplication().getAccessTokens();
 
@@ -169,7 +184,7 @@ public class PostActivity extends FragmentActivity {
                 adapter.add(accessToken);
 
                 if (JustawayApplication.getApplication().getUserId() == accessToken.getUserId()) {
-                    mSpinner.setSelection(i);
+                    mSwitchAccountSpinner.setSelection(i);
                 }
                 i++;
             }
@@ -193,16 +208,16 @@ public class PostActivity extends FragmentActivity {
 
         String status = intent.getStringExtra("status");
         if (status != null) {
-            mEditText.setText(status);
+            mStatusText.setText(status);
         }
 
         int selection_start = intent.getIntExtra("selection", 0);
         if (selection_start > 0) {
             int selection_stop = intent.getIntExtra("selection_stop", 0);
             if (selection_stop > 0) {
-                mEditText.setSelection(selection_start, selection_stop);
+                mStatusText.setSelection(selection_start, selection_stop);
             } else {
-                mEditText.setSelection(selection_start);
+                mStatusText.setSelection(selection_start);
             }
         }
 
@@ -213,15 +228,14 @@ public class PostActivity extends FragmentActivity {
             }
             mInReplyToStatusId = inReplyToStatus.getId();
             JustawayApplication.getApplication().displayRoundedImage(inReplyToStatus.getUser().getProfileImageURL(),
-                    ((ImageView) findViewById(R.id.in_reply_to_user_icon)));
+                    mInReplyToUserIcon);
 
-            TextView textView = (TextView) findViewById(R.id.in_reply_to_status);
-            textView.setText(inReplyToStatus.getText());
+            mInReplyToStatus.setText(inReplyToStatus.getText());
 
             // スクロール可能にするのに必要
-            textView.setMovementMethod(ScrollingMovementMethod.getInstance());
+            mInReplyToStatus.setMovementMethod(ScrollingMovementMethod.getInstance());
         } else {
-            findViewById(R.id.in_reply_to_layout).setVisibility(View.GONE);
+            mInReplyToLayout.setVisibility(View.GONE);
         }
 
         if (intent.getData() != null) {
@@ -242,7 +256,7 @@ public class PostActivity extends FragmentActivity {
             if (hashtags != null) {
                 text += " #" + hashtags;
             }
-            mEditText.setText(text);
+            mStatusText.setText(text);
         }
 
         if (Intent.ACTION_SEND.equals(intent.getAction())) {
@@ -258,221 +272,24 @@ public class PostActivity extends FragmentActivity {
                 if (pageUri != null) {
                     pageTitle += " " + pageUri;
                 }
-                mEditText.setText(pageTitle);
+                mStatusText.setText(pageTitle);
             }
         }
 
-        if (mEditText.getText() != null) {
-            updateCount(mEditText.getText().toString());
+        if (mStatusText.getText() != null) {
+            updateCount(mStatusText.getText().toString());
         }
 
         mPostStockSettings = new PostStockSettings();
         if (mPostStockSettings.getDrafts().isEmpty()) {
-            draftButton.setEnabled(false);
+            mDraftButton.setEnabled(false);
         }
         if (mPostStockSettings.getHashtags().isEmpty()) {
-            hashtagButton.setEnabled(false);
+            mHashtagButton.setEnabled(false);
         }
 
-        mTweetButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                JustawayApplication.showProgressDialog(mContext, getString(R.string.progress_sending));
-                String text = mEditText.getText().toString();
-
-                if (text.startsWith("D ")) {
-                    SendDirectMessageTask task = new SendDirectMessageTask((AccessToken) mSpinner.getSelectedItem()) {
-                        @Override
-                        protected void onPostExecute(TwitterException e) {
-                            JustawayApplication.dismissProgressDialog();
-                            if (e == null) {
-                                mEditText.setText("");
-                                if (!mWidgetMode) {
-                                    finish();
-                                }
-                            } else {
-                                JustawayApplication.showToast(R.string.toast_update_status_failure);
-                            }
-                        }
-                    };
-                    task.execute(text);
-                } else {
-                    StatusUpdate statusUpdate = new StatusUpdate(text);
-                    if (mInReplyToStatusId != null) {
-                        statusUpdate.setInReplyToStatusId(mInReplyToStatusId);
-                    }
-                    if (mImgPath != null) {
-                        statusUpdate.setMedia(mImgPath);
-                    }
-
-                    UpdateStatusTask task = new UpdateStatusTask((AccessToken) mSpinner.getSelectedItem()) {
-                        @Override
-                        protected void onPostExecute(TwitterException e) {
-                            JustawayApplication.dismissProgressDialog();
-                            if (e == null) {
-                                mEditText.setText("");
-                                if (!mWidgetMode) {
-                                    finish();
-                                } else {
-                                    mImgPath = null;
-                                    mTweetButton.setEnabled(false);
-                                    JustawayApplication.getApplication().setThemeTextColor(mContext, mImgButton, R.attr.menu_text_color);
-                                }
-                            } else if (e.getErrorCode() == ERROR_CODE_DUPLICATE_STATUS) {
-                                JustawayApplication.showToast(getString(R.string.toast_update_status_already));
-                            } else {
-                                JustawayApplication.showToast(R.string.toast_update_status_failure);
-                            }
-                        }
-                    };
-                    task.execute(statusUpdate);
-                }
-            }
-        });
-
-        suddenlyButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String text = mEditText.getText().toString();
-                int selectStart = mEditText.getSelectionStart();
-                int selectEnd = mEditText.getSelectionEnd();
-
-                // 突然の死対象のテキストを取得
-                String targetText;
-                if (selectStart != selectEnd) {
-                    targetText = text.substring(selectStart, selectEnd) + "\n";
-                } else {
-                    targetText = text + "\n";
-                }
-
-                String top = "";
-                String under = "";
-                Paint paint = new Paint();
-                float maxTextWidth = 0;
-
-                // 対象のテキストの最大文字列幅を取得
-                String[] lines = targetText.split("\\n");
-                for (String line : lines) {
-                    if (paint.measureText(line) > maxTextWidth) {
-                        maxTextWidth = paint.measureText(line);
-                    }
-                }
-
-                // 上と下を作る
-                int i;
-                for (i = 0; (maxTextWidth / 12) > i; i++) {
-                    top += "人";
-                }
-                for (i = 0; (maxTextWidth / 13) > i; i++) {
-                    under += "^Y";
-                }
-
-                String suddenly = "";
-                for (String line : lines) {
-                    float spaceWidth = maxTextWidth - paint.measureText(line);
-                    // maxとくらべて13以上差がある場合はスペースを挿入して調整する
-                    if (spaceWidth >= 12) {
-                        int spaceNumber = (int) spaceWidth / 12;
-                        for (i = 0; i < spaceNumber; i++) {
-                            line += "　";
-                        }
-                        if ((spaceWidth % 12) >= 6) {
-                            line += "　";
-                        }
-                    }
-                    suddenly = suddenly.concat("＞ " + line + " ＜\n");
-                }
-
-                if (selectStart != selectEnd) {
-                    mEditText.setText(text.substring(0, selectStart) + "＿" + top + "＿\n" + suddenly + "￣" + under + "￣" + text.substring(selectEnd));
-                } else {
-                    mEditText.setText("＿" + top + "＿\n" + suddenly + "￣" + under + "￣");
-                }
-            }
-        });
-
-        mImgButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                v.showContextMenu();
-            }
-        });
-
-        draftButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                View view = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.list, null);
-                assert view != null;
-                ListView listView = (ListView) view.findViewById(R.id.list);
-
-                // 下書きをViewに描写するアダプター
-                final DraftAdapter adapter = new DraftAdapter(mContext, R.layout.row_word);
-                listView.setAdapter(adapter);
-                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        String draft = adapter.getItem(i);
-                        mEditText.setText(draft);
-                        mDraftDialog.dismiss();
-                        adapter.remove(i);
-                        mPostStockSettings.removeDraft(draft);
-                    }
-                });
-
-                PostStockSettings postStockSettings = new PostStockSettings();
-
-                for (String draft : postStockSettings.getDrafts()) {
-                    adapter.add(draft);
-                }
-                mDraftDialog = new AlertDialog.Builder(mContext)
-                        .setTitle(R.string.dialog_title_draft)
-                        .setView(view)
-                        .show();
-            }
-        });
-
-        hashtagButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                View view = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.list, null);
-                assert view != null;
-                ListView listView = (ListView) view.findViewById(R.id.list);
-
-                // ハッシュタグをViewに描写するアダプター
-                final HashtagAdapter adapter = new HashtagAdapter(mContext, R.layout.row_word);
-                listView.setAdapter(adapter);
-                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        String hashtag = adapter.getItem(i);
-                        if (mEditText.getText() != null) {
-                            mEditText.setText(mEditText.getText().toString().concat(" ".concat(hashtag)));
-                            mHashtagDialog.dismiss();
-                        }
-                    }
-                });
-
-                PostStockSettings postStockSettings = new PostStockSettings();
-
-                for (String hashtag : postStockSettings.getHashtags()) {
-                    adapter.add(hashtag);
-                }
-                mHashtagDialog = new AlertDialog.Builder(mContext)
-                        .setTitle(R.string.dialog_title_hashtag)
-                        .setView(view)
-                        .show();
-            }
-        });
-
-        cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                findViewById(R.id.in_reply_to_layout).setVisibility(View.GONE);
-            }
-        });
         // 文字数をカウントしてボタンを制御する
-        mEditText.addTextChangedListener(new TextWatcher() {
+        mStatusText.addTextChangedListener(new TextWatcher() {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 updateCount(s.toString());
                 if (s.toString().startsWith("D ")) {
@@ -501,6 +318,192 @@ public class PostActivity extends FragmentActivity {
             }
         });
     }
+
+    @OnClick(R.id.cancel)
+    void closeInReplyToLayout() {
+        mInReplyToLayout.setVisibility(View.GONE);
+    }
+
+    @OnClick(R.id.hashtag_button)
+    void showHashtag() {
+        View view = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.list, null);
+        assert view != null;
+        ListView listView = (ListView) view.findViewById(R.id.list);
+
+        // ハッシュタグをViewに描写するアダプター
+        final HashtagAdapter adapter = new HashtagAdapter(mContext, R.layout.row_word);
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String hashtag = adapter.getItem(i);
+                if (mStatusText.getText() != null) {
+                    mStatusText.setText(mStatusText.getText().toString().concat(" ".concat(hashtag)));
+                    mHashtagDialog.dismiss();
+                }
+            }
+        });
+
+        PostStockSettings postStockSettings = new PostStockSettings();
+
+        for (String hashtag : postStockSettings.getHashtags()) {
+            adapter.add(hashtag);
+        }
+        mHashtagDialog = new AlertDialog.Builder(mContext)
+                .setTitle(R.string.dialog_title_hashtag)
+                .setView(view)
+                .show();
+    }
+
+    @OnClick(R.id.draft_button)
+    void showDraft() {
+        View view = ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.list, null);
+        assert view != null;
+        ListView listView = (ListView) view.findViewById(R.id.list);
+
+        // 下書きをViewに描写するアダプター
+        final DraftAdapter adapter = new DraftAdapter(mContext, R.layout.row_word);
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String draft = adapter.getItem(i);
+                mStatusText.setText(draft);
+                mDraftDialog.dismiss();
+                adapter.remove(i);
+                mPostStockSettings.removeDraft(draft);
+            }
+        });
+
+        PostStockSettings postStockSettings = new PostStockSettings();
+
+        for (String draft : postStockSettings.getDrafts()) {
+            adapter.add(draft);
+        }
+        mDraftDialog = new AlertDialog.Builder(mContext)
+                .setTitle(R.string.dialog_title_draft)
+                .setView(view)
+                .show();
+    }
+
+    @OnClick(R.id.suddenly_button)
+    void setSuddenly() {
+        String text = mStatusText.getText().toString();
+        int selectStart = mStatusText.getSelectionStart();
+        int selectEnd = mStatusText.getSelectionEnd();
+
+        // 突然の死対象のテキストを取得
+        String targetText;
+        if (selectStart != selectEnd) {
+            targetText = text.substring(selectStart, selectEnd) + "\n";
+        } else {
+            targetText = text + "\n";
+        }
+
+        String top = "";
+        String under = "";
+        Paint paint = new Paint();
+        float maxTextWidth = 0;
+
+        // 対象のテキストの最大文字列幅を取得
+        String[] lines = targetText.split("\\n");
+        for (String line : lines) {
+            if (paint.measureText(line) > maxTextWidth) {
+                maxTextWidth = paint.measureText(line);
+            }
+        }
+
+        // 上と下を作る
+        int i;
+        for (i = 0; (maxTextWidth / 12) > i; i++) {
+            top += "人";
+        }
+        for (i = 0; (maxTextWidth / 13) > i; i++) {
+            under += "^Y";
+        }
+
+        String suddenly = "";
+        for (String line : lines) {
+            float spaceWidth = maxTextWidth - paint.measureText(line);
+            // maxとくらべて13以上差がある場合はスペースを挿入して調整する
+            if (spaceWidth >= 12) {
+                int spaceNumber = (int) spaceWidth / 12;
+                for (i = 0; i < spaceNumber; i++) {
+                    line += "　";
+                }
+                if ((spaceWidth % 12) >= 6) {
+                    line += "　";
+                }
+            }
+            suddenly = suddenly.concat("＞ " + line + " ＜\n");
+        }
+
+        if (selectStart != selectEnd) {
+            mStatusText.setText(text.substring(0, selectStart) + "＿" + top + "＿\n" + suddenly + "￣" + under + "￣" + text.substring(selectEnd));
+        } else {
+            mStatusText.setText("＿" + top + "＿\n" + suddenly + "￣" + under + "￣");
+        }
+    }
+
+    @OnClick(R.id.img_button)
+    void setImage() {
+        mImgButton.showContextMenu();
+    }
+
+    @OnClick(R.id.tweet_button)
+    void tweet() {
+        JustawayApplication.showProgressDialog(mContext, getString(R.string.progress_sending));
+        String text = mStatusText.getText().toString();
+
+        if (text.startsWith("D ")) {
+            SendDirectMessageTask task = new SendDirectMessageTask((AccessToken) mSwitchAccountSpinner.getSelectedItem()) {
+                @Override
+                protected void onPostExecute(TwitterException e) {
+                    JustawayApplication.dismissProgressDialog();
+                    if (e == null) {
+                        mStatusText.setText("");
+                        if (!mWidgetMode) {
+                            finish();
+                        }
+                    } else {
+                        JustawayApplication.showToast(R.string.toast_update_status_failure);
+                    }
+                }
+            };
+            task.execute(text);
+        } else {
+            StatusUpdate statusUpdate = new StatusUpdate(text);
+            if (mInReplyToStatusId != null) {
+                statusUpdate.setInReplyToStatusId(mInReplyToStatusId);
+            }
+            if (mImgPath != null) {
+                statusUpdate.setMedia(mImgPath);
+            }
+
+            UpdateStatusTask task = new UpdateStatusTask((AccessToken) mSwitchAccountSpinner.getSelectedItem()) {
+                @Override
+                protected void onPostExecute(TwitterException e) {
+                    JustawayApplication.dismissProgressDialog();
+                    if (e == null) {
+                        mStatusText.setText("");
+                        if (!mWidgetMode) {
+                            finish();
+                        } else {
+                            mImgPath = null;
+                            mTweetButton.setEnabled(false);
+                            JustawayApplication.getApplication().setThemeTextColor(mContext, mImgButton, R.attr.menu_text_color);
+                        }
+                    } else if (e.getErrorCode() == ERROR_CODE_DUPLICATE_STATUS) {
+                        JustawayApplication.showToast(getString(R.string.toast_update_status_already));
+                    } else {
+                        JustawayApplication.showToast(R.string.toast_update_status_failure);
+                    }
+                }
+            };
+            task.execute(statusUpdate);
+        }
+    }
+
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -569,7 +572,7 @@ public class PostActivity extends FragmentActivity {
             } else if (requestCode == REQUEST_CAMERA) {
                 setImage(mImageUri);
             } else if (requestCode == REQUEST_TWICCA) {
-                mEditText.setText(data.getStringExtra(Intent.EXTRA_TEXT));
+                mStatusText.setText(data.getStringExtra(Intent.EXTRA_TEXT));
             }
         }
     }
@@ -622,8 +625,8 @@ public class PostActivity extends FragmentActivity {
         } else {
             textColor = JustawayApplication.getApplication().getThemeTextColor(mContext, R.attr.menu_text_color);
         }
-        mTextView.setTextColor(textColor);
-        mTextView.setText(String.valueOf(length));
+        mCount.setTextColor(textColor);
+        mCount.setText(String.valueOf(length));
 
         if (length < 0 || length == 140) {
             // 文字数が0文字または140文字以上の時はボタンを無効
@@ -640,7 +643,7 @@ public class PostActivity extends FragmentActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (mEditText.getText() != null && mEditText.getText().length() != 0) {
+            if (mStatusText.getText() != null && mStatusText.getText().length() != 0) {
                 new AlertDialog.Builder(PostActivity.this)
                         .setTitle(R.string.confirm_save_draft)
                         .setPositiveButton(
@@ -649,7 +652,7 @@ public class PostActivity extends FragmentActivity {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         // 下書きとして保存する
-                                        mPostStockSettings.addDraft(mEditText.getText().toString());
+                                        mPostStockSettings.addDraft(mStatusText.getText().toString());
 
                                         finish();
                                     }
@@ -703,9 +706,9 @@ public class PostActivity extends FragmentActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getGroupId() == OPTION_MENU_GROUP_TWICCA) {
             ResolveInfo resolveInfo = mTwiccaPlugins.get(item.getItemId());
-            if (resolveInfo.activityInfo != null && mEditText.getText() != null) {
+            if (resolveInfo.activityInfo != null && mStatusText.getText() != null) {
                 Intent intent = TwiccaPlugin.createIntentEditTweet(
-                        "", mEditText.getText().toString(), "", 0, resolveInfo.activityInfo.packageName,
+                        "", mStatusText.getText().toString(), "", 0, resolveInfo.activityInfo.packageName,
                         resolveInfo.activityInfo.name);
                 startActivityForResult(intent, REQUEST_TWICCA);
             }
@@ -716,7 +719,7 @@ public class PostActivity extends FragmentActivity {
                 finish();
                 break;
             case R.id.tweet_clear:
-                mEditText.setText("");
+                mStatusText.setText("");
                 break;
             case R.id.tweet_battery:
                 Intent batteryIntent = registerReceiver(null,
@@ -733,16 +736,16 @@ public class PostActivity extends FragmentActivity {
 
                 switch (status) {
                     case BatteryManager.BATTERY_STATUS_FULL:
-                        mEditText.setText(model + " のバッテリー残量：" + battery + "% (0゜・◡・♥​​)");
+                        mStatusText.setText(model + " のバッテリー残量：" + battery + "% (0゜・◡・♥​​)");
                         break;
                     case BatteryManager.BATTERY_STATUS_CHARGING:
-                        mEditText.setText(model + " のバッテリー残量：" + battery + "% 充電なう(・◡・♥​​)");
+                        mStatusText.setText(model + " のバッテリー残量：" + battery + "% 充電なう(・◡・♥​​)");
                         break;
                     default:
                         if (level <= 14) {
-                            mEditText.setText(model + " のバッテリー残量：" + battery + "% (◞‸◟)");
+                            mStatusText.setText(model + " のバッテリー残量：" + battery + "% (◞‸◟)");
                         } else {
-                            mEditText.setText(model + " のバッテリー残量：" + battery + "% (・◡・♥​​)");
+                            mStatusText.setText(model + " のバッテリー残量：" + battery + "% (・◡・♥​​)");
                         }
                         break;
                 }
