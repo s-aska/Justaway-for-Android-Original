@@ -126,19 +126,20 @@ public class NotificationService extends Service {
             statusIntent.putExtra("notification", true);
             builder.addAction(R.drawable.ic_notification_twitter,
                     getString(R.string.menu_open),
-                    PendingIntent.getActivity(this, 0, statusIntent, PendingIntent.FLAG_UPDATE_CURRENT));
+                    PendingIntent.getActivity(this, 1, statusIntent, PendingIntent.FLAG_UPDATE_CURRENT));
             Intent replyIntent = new Intent(this, PostActivity.class);
             replyIntent.putExtra("inReplyToStatus", status);
             replyIntent.putExtra("notification", true);
+            replyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             builder.addAction(R.drawable.ic_notification_at,
                     getString(R.string.context_menu_reply),
-                    PendingIntent.getActivity(this, 0, replyIntent, PendingIntent.FLAG_UPDATE_CURRENT));
+                    PendingIntent.getActivity(this, 1, replyIntent, PendingIntent.FLAG_CANCEL_CURRENT));
             Intent favoriteIntent = new Intent(this, FavoriteActivity.class);
             favoriteIntent.putExtra("statusId", status.getId());
             favoriteIntent.putExtra("notification", true);
             builder.addAction(R.drawable.ic_notification_star,
                     getString(R.string.context_menu_create_favorite),
-                    PendingIntent.getActivity(this, 0, favoriteIntent, PendingIntent.FLAG_UPDATE_CURRENT));
+                    PendingIntent.getActivity(this, 1, favoriteIntent, PendingIntent.FLAG_UPDATE_CURRENT));
         }
 
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
