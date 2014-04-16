@@ -1,15 +1,18 @@
 apply plugin: 'android'
+apply plugin: 'android-apt'
 
 dependencies {
     compile "com.android.support:support-v4:19.1.+"
     compile "com.google.code.gson:gson:2.2.4"
     compile "de.greenrobot:eventbus:2.2.0"
-    def t4jVersion = "4.0.1"
-    compile "org.twitter4j:twitter4j-core:${t4jVersion}"
-    compile "org.twitter4j:twitter4j-async:${t4jVersion}"
-    compile "org.twitter4j:twitter4j-media-support:${t4jVersion}"
-    compile "org.twitter4j:twitter4j-stream:${t4jVersion}"
+
+    compile "org.twitter4j:twitter4j-core:${twitter4jVersion}"
+    compile "org.twitter4j:twitter4j-async:${twitter4jVersion}"
+    compile "org.twitter4j:twitter4j-media-support:${twitter4jVersion}"
+    compile "org.twitter4j:twitter4j-stream:${twitter4jVersion}"
     compile "com.nostra13.universalimageloader:universal-image-loader:1.9.1"
+    compile "com.jakewharton:butterknife:${butterKnifeVersion}"
+    apt "com.jakewharton:butterknife:${butterKnifeVersion}"
 
     compile project(':plugins:ActionBar-PullToRefresh:library')
     compile fileTree(dir: 'libs', include: '*.jar')
