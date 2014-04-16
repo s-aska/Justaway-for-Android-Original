@@ -30,7 +30,7 @@ public class UserAdapter extends ArrayAdapter<User> {
         TextView mDisplayName;
         @InjectView(R.id.screen_name)
         TextView mScreenName;
-        @InjectView(R.id.fontello_lock)
+        @InjectView(R.id.lock)
         TextView mFontelloLock;
         @InjectView(R.id.description)
         TextView mDescription;
