@@ -60,14 +60,14 @@
         </RelativeLayout>
 
         <Spinner
-            android:id="@+id/switchAccount"
+            android:id="@+id/switch_account_spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="8dip"
             android:paddingBottom="12dip"/>
 
         <EditText
-            android:id="@+id/status"
+            android:id="@+id/status_text"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
@@ -86,7 +86,7 @@
                 android:gravity="left">
 
                 <Button
-                    android:id="@+id/suddenly"
+                    android:id="@+id/suddenly_button"
                     android:layout_width="58dip"
                     android:layout_height="wrap_content"
                     android:background="?attr/button_stateful"
@@ -94,7 +94,7 @@
                     android:textSize="22sp"/>
 
                 <Button
-                    android:id="@+id/img"
+                    android:id="@+id/img_button"
                     android:layout_width="58dip"
                     android:layout_height="wrap_content"
                     android:background="?attr/button_stateful"
@@ -102,7 +102,7 @@
                     android:textSize="22sp"/>
 
                 <Button
-                    android:id="@+id/draft"
+                    android:id="@+id/draft_button"
                     android:layout_width="58dip"
                     android:layout_height="wrap_content"
                     android:background="?attr/button_stateful"
@@ -110,7 +110,7 @@
                     android:textSize="22sp"/>
 
                 <Button
-                    android:id="@+id/hashtag"
+                    android:id="@+id/hashtag_button"
                     android:layout_width="58dip"
                     android:layout_height="wrap_content"
                     android:background="?attr/button_stateful"
@@ -132,7 +132,7 @@
                     android:text="@string/label_tweet_count"/>
 
                 <Button
-                    android:id="@+id/tweet"
+                    android:id="@+id/tweet_button"
                     android:layout_width="42dip"
                     android:layout_height="wrap_content"
                     android:paddingRight="8dip"
