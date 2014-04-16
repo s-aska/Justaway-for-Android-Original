@@ -1090,7 +1090,7 @@ public class JustawayApplication extends Application {
                             return;
                         }
                         InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                        inputMethodManager.showSoftInput(v, 0);
+                        inputMethodManager.showSoftInput(v, InputMethodManager.SHOW_FORCED);
                         v.setOnFocusChangeListener(listener);
                     }
                 });
