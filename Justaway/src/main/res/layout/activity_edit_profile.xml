@@ -21,7 +21,7 @@
                 android:paddingRight="6dip"/>
 
             <Button
-                android:id="@+id/update_profile_image"
+                android:id="@+id/update_profile_image_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
@@ -79,7 +79,7 @@
                 android:text="@string/label_web_site"/>
 
             <EditText
-                android:id="@+id/web_site"
+                android:id="@+id/url"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"/>
@@ -98,14 +98,14 @@
                 android:text="@string/label_bio"/>
 
             <EditText
-                android:id="@+id/bio"
+                android:id="@+id/description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"/>
         </LinearLayout>
 
         <Button
-            android:id="@+id/save"
+            android:id="@+id/save_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
