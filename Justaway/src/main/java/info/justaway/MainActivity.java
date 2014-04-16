@@ -173,7 +173,7 @@ public class MainActivity extends FragmentActivity {
                             }
                             Intent intent = null;
                             String searchWord = mSearchText.getText().toString();
-                            mSearchText.clearFocus();
+                            mApplication.hideKeyboard(mSearchText);
                             if (adapter.isSavedMode()) {
                                 intent = new Intent(mActivity, SearchActivity.class);
                                 intent.putExtra("query", searchWord);
@@ -209,18 +209,7 @@ public class MainActivity extends FragmentActivity {
                                     mSearchLayout.setVisibility(View.VISIBLE);
                                     mSearchText.showDropDown();
                                     mSearchText.setText("");
-                                    mSearchText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                                        public void onFocusChange(View v, boolean hasFocus) {
-                                            if (hasFocus) {
-                                                ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
-                                                        .showSoftInput(v, InputMethodManager.SHOW_FORCED);
-                                            } else {
-                                                ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
-                                                        .hideSoftInputFromInputMethod(v.getWindowToken(), 0);
-                                            }
-                                        }
-                                    });
-                                    mSearchText.requestFocus();
+                                    mApplication.showKeyboard(mSearchText);
                                 }
                             }
                     );
@@ -900,21 +889,10 @@ public class MainActivity extends FragmentActivity {
 
     private void cancelSearch() {
         mSearchText.setText("");
-        mSearchText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    return;
-                }
-                ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
-                        .hideSoftInputFromWindow(v.getWindowToken(), 0);
-                mSearchLayout.setVisibility(View.GONE);
-                mNormalLayout.setVisibility(View.VISIBLE);
-                mDrawerToggle.setDrawerIndicatorEnabled(true);
-                mSearchText.setOnFocusChangeListener(null);
-            }
-        });
-        mSearchText.requestFocus();
-        mSearchText.clearFocus();
+        mApplication.hideKeyboard(mSearchText);
+        mSearchLayout.setVisibility(View.GONE);
+        mNormalLayout.setVisibility(View.VISIBLE);
+        mDrawerToggle.setDrawerIndicatorEnabled(true);
     }
 
     private void showProgressDialog(String message) {

@@ -1077,8 +1077,24 @@ public class JustawayApplication extends Application {
         view.postDelayed(new Runnable() {
             @Override
             public void run() {
-                InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.showSoftInput(view, 0);
+                /**
+                 * 表示されてないEditViewを表示と同時にキーボード出したい場合
+                 * フォーカスが当たってないとキーボードは出てこないのリスナーを使う
+                 * 元々設定されているリスナーを引っ張りだし、キーボード出したら戻しておく（行儀良い）
+                 */
+                final View.OnFocusChangeListener listener = view.getOnFocusChangeListener();
+                view.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+                    @Override
+                    public void onFocusChange(View v, boolean has_focus) {
+                        if (!has_focus) {
+                            return;
+                        }
+                        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                        inputMethodManager.showSoftInput(v, 0);
+                        v.setOnFocusChangeListener(listener);
+                    }
+                });
+                view.requestFocus();
             }
         }, delay);
     }
@@ -1086,7 +1102,7 @@ public class JustawayApplication extends Application {
     @SuppressWarnings("unused")
     public void hideKeyboard(View view) {
         InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     public String getClientName(String source) {
