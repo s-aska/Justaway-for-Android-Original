@@ -1094,6 +1094,7 @@ public class JustawayApplication extends Application {
                         v.setOnFocusChangeListener(listener);
                     }
                 });
+                view.clearFocus();
                 view.requestFocus();
             }
         }, delay);
