@@ -504,7 +504,6 @@ public class MainActivity extends FragmentActivity {
                 }
             }
             setInReplyToStatus(event.getInReplyToStatus());
-            editStatus.requestFocus();
             mApplication.showKeyboard(editStatus);
         } else {
             Intent intent = new Intent(this, PostActivity.class);
