@@ -1,4 +1,4 @@
-package info.justaway.fragment.main;
+package info.justaway.fragment.main.tab;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -14,15 +14,18 @@ import info.justaway.JustawayApplication;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.event.NewRecordEvent;
+import info.justaway.event.model.CreateFavoriteEvent;
+import info.justaway.event.model.CreateStatusEvent;
 import info.justaway.model.Row;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
 import twitter4j.Status;
+import twitter4j.UserMentionEntity;
 
 /**
- * タイムライン、すべての始まり
+ * 将来「つながり」タブ予定のタブ、現在はリプしか表示されない
  */
-public class TimelineFragment extends BaseFragment {
+public class InteractionsFragment extends BaseFragment {
 
     private Boolean mAutoLoader = false;
     private Boolean mReload = false;
@@ -30,7 +33,7 @@ public class TimelineFragment extends BaseFragment {
     private ProgressBar mFooter;
 
     public long getTabId() {
-        return -1L;
+        return -2L;
     }
 
     @Override
@@ -53,14 +56,14 @@ public class TimelineFragment extends BaseFragment {
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                 // 最後までスクロールされたかどうかの判定
-                if (totalItemCount > 0 && totalItemCount == firstVisibleItem + visibleItemCount) {
+                if (totalItemCount == firstVisibleItem + visibleItemCount) {
                     additionalReading();
                 }
             }
         });
 
         if (mMaxId == 0L) {
-            new HomeTimelineTask().execute();
+            new MentionsTimelineTask().execute();
         }
     }
 
@@ -69,7 +72,7 @@ public class TimelineFragment extends BaseFragment {
         mReload = true;
         clear();
         getPullToRefreshLayout().setRefreshing(true);
-        new HomeTimelineTask().execute();
+        new MentionsTimelineTask().execute();
     }
 
     @Override
@@ -92,7 +95,58 @@ public class TimelineFragment extends BaseFragment {
         }
         mFooter.setVisibility(View.VISIBLE);
         mAutoLoader = false;
-        new HomeTimelineTask().execute();
+        new MentionsTimelineTask().execute();
+    }
+
+    private Boolean skip(Row row) {
+
+        if (row.isFavorite()) {
+            return false;
+        }
+
+        if (row.isStatus()) {
+
+            JustawayApplication application = JustawayApplication.getApplication();
+
+            Status status = row.getStatus();
+
+            long userId = application.getUserId();
+            Status retweet = status.getRetweetedStatus();
+            if (retweet != null) {
+
+                // retweeted for me
+                if (retweet.getUser().getId() == userId) {
+                    return false;
+                }
+            } else {
+
+                /**
+                 * 自分を@に含むRTが通知欄を破壊するのを防ぐ為、mentioned判定は非RT時のみ行う
+                 */
+
+                // mentioned for me
+                if (status.getInReplyToUserId() == userId) {
+                    return false;
+                }
+
+                // mentioned for me
+                UserMentionEntity[] mentions = status.getUserMentionEntities();
+                for (UserMentionEntity mention : mentions) {
+                    if (mention.getId() == userId) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    public void onEventMainThread(CreateStatusEvent event) {
+        add(event.getRow());
+    }
+
+    public void onEventMainThread(CreateFavoriteEvent event) {
+        add(event.getRow());
     }
 
     /**
@@ -104,10 +158,7 @@ public class TimelineFragment extends BaseFragment {
             return;
         }
 
-        JustawayApplication application = JustawayApplication.getApplication();
-
-        Status retweet = row.getStatus().getRetweetedStatus();
-        if (retweet != null && retweet.getUser().getId() == application.getUserId()) {
+        if (skip(row)) {
             return;
         }
 
@@ -137,7 +188,7 @@ public class TimelineFragment extends BaseFragment {
         });
     }
 
-    private class HomeTimelineTask extends AsyncTask<Void, Void, ResponseList<Status>> {
+    private class MentionsTimelineTask extends AsyncTask<Void, Void, ResponseList<Status>> {
         @Override
         protected ResponseList<twitter4j.Status> doInBackground(Void... params) {
             try {
@@ -147,7 +198,7 @@ public class TimelineFragment extends BaseFragment {
                     paging.setMaxId(mMaxId - 1);
                     paging.setCount(application.getPageCount());
                 }
-                return application.getTwitter().getHomeTimeline(paging);
+                return application.getTwitter().getMentionsTimeline(paging);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;

@@ -1,4 +1,4 @@
-package info.justaway.fragment.dialog;
+package info.justaway.fragment.main;
 
 import android.app.AlertDialog;
 import android.app.Dialog;

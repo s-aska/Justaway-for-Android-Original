@@ -1,4 +1,4 @@
-package info.justaway.adapter;
+package info.justaway.adapter.main;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -10,7 +10,7 @@ import android.support.v4.view.ViewPager;
 import java.util.ArrayList;
 
 import info.justaway.JustawayApplication;
-import info.justaway.fragment.main.BaseFragment;
+import info.justaway.fragment.main.tab.BaseFragment;
 import twitter4j.UserList;
 
 /**
