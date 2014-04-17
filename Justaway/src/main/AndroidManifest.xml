@@ -111,6 +111,14 @@
                     android:host="twitter.com"
                     android:pathPattern="/.*/status/.*"
                     android:scheme="https"/>
+                <data
+                    android:host="twitter.com"
+                    android:pathPattern="/.*/statuses/.*"
+                    android:scheme="http"/>
+                <data
+                    android:host="twitter.com"
+                    android:pathPattern="/.*/statuses/.*"
+                    android:scheme="https"/>
             </intent-filter>
         </activity>
         <activity
