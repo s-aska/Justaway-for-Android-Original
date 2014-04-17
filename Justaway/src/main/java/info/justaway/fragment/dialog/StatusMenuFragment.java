@@ -145,6 +145,7 @@ public class StatusMenuFragment extends DialogFragment {
                     public void run() {
                         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url.getExpandedURL()));
                         mActivity.startActivity(intent);
+                        dismiss();
                     }
                 }));
             }
@@ -381,6 +382,7 @@ public class StatusMenuFragment extends DialogFragment {
                 public void run() {
                     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url.getExpandedURL()));
                     mActivity.startActivity(intent);
+                    dismiss();
                 }
             }));
         }
@@ -395,6 +397,7 @@ public class StatusMenuFragment extends DialogFragment {
                 public void run() {
                     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url.getExpandedURL()));
                     mActivity.startActivity(intent);
+                    dismiss();
                 }
             }));
         }
