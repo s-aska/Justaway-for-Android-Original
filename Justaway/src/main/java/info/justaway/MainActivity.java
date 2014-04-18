@@ -265,8 +265,6 @@ public class MainActivity extends FragmentActivity {
         });
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-        setTitle(R.string.title_main);
-
         // クイックモード時に起動と同時に入力エリアにフォーカスするのを抑止
         findViewById(R.id.main).requestFocus();
 
@@ -788,6 +786,14 @@ public class MainActivity extends FragmentActivity {
                 }
             }
             mMainPagerAdapter.notifyDataSetChanged();
+
+            // 起動時やタブ設定後にちゃんとタイトルとボタンのフォーカスを合わせる
+            int currentPosition = mViewPager.getCurrentItem();
+            Button button = (Button) tabMenus.getChildAt(currentPosition);
+            if (button != null) {
+                button.setSelected(true);
+            }
+            setTitle(mMainPagerAdapter.getPageTitle(currentPosition));
         }
     }
 
