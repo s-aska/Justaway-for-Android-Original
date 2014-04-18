@@ -128,6 +128,9 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             return;
         }
         super.add(row);
+        if (exists(row)) {
+            return;
+        }
         mStatuses.add(row);
         filter(row);
         mLimit++;
@@ -162,23 +165,16 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     }
 
     public boolean exists(Row row) {
+        // 先頭の3つくらい見れば十分
+        int max = 3;
         if (row.isStatus()) {
             for (Row status : mStatuses) {
                 if (status.isStatus() && status.getStatus().getId() == row.getStatus().getId()) {
                     return true;
                 }
-            }
-        } else if (row.isDirectMessage()) {
-            for (Row status : mStatuses) {
-                if (status.isDirectMessage() && status.getMessage().getId() == row.getMessage().getId()) {
-                    return true;
-                }
-            }
-        } else if (row.isFavorite()) {
-            for (Row status : mStatuses) {
-                if (status.isFavorite() && status.getStatus().getId() == row.getStatus().getId() &&
-                        status.getSource().getId() == row.getSource().getId()) {
-                    return true;
+                max--;
+                if (max < 1) {
+                    break;
                 }
             }
         }
