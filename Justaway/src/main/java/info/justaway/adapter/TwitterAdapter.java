@@ -208,13 +208,16 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         }
     }
 
-    public void removeStatus(long statusId) {
+    public int removeStatus(long statusId) {
+        int position = 0;
         for (Row row : mStatuses) {
             if (!row.isDirectMessage() && row.getStatus().getId() == statusId) {
                 remove(row);
-                break;
+                return position;
             }
+            position++;
         }
+        return -1;
     }
 
     public void removeDirectMessage(long directMessageId) {

@@ -133,7 +133,7 @@ public class TimelineFragment extends BaseFragment {
             listView.setSelectionFromTop(position + mRows.size(), y);
             mRows.clear();
 
-            boolean autoScroll = position == 0 && y == 0;
+            boolean autoScroll = position == 0 && y == 0 && mRows.size() < 5;
             EventBus.getDefault().post(new NewRecordEvent(getTabId(), autoScroll));
 
             // 少しでもスクロールさせている時は画面を動かさない様にスクロー位置を復元する
