@@ -138,7 +138,7 @@ public class TimelineFragment extends BaseFragment {
 
             // 少しでもスクロールさせている時は画面を動かさない様にスクロー位置を復元する
             if (autoScroll) {
-                listView.smoothScrollToPositionFromTop(0, 0, 250);
+                listView.setSelection(0);
             }
         }
     };
