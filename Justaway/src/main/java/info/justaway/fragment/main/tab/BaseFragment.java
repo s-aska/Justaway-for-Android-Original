@@ -111,7 +111,15 @@ public abstract class BaseFragment extends Fragment implements
     }
 
     public void onEventMainThread(DestroyStatusEvent event) {
-        mAdapter.removeStatus(event.getStatusId());
+        int removePosition = mAdapter.removeStatus(event.getStatusId());
+        if (removePosition >= 0) {
+            int visiblePosition = mListView.getFirstVisiblePosition();
+            if (visiblePosition > removePosition) {
+                View view = mListView.getChildAt(0);
+                int y = view != null ? view.getTop() : 0;
+                mListView.setSelectionFromTop(visiblePosition - 1, y);
+            }
+        }
     }
 
     public void onEventMainThread(CreateStatusEvent event) {
