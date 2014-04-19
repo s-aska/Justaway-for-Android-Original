@@ -140,7 +140,7 @@ public abstract class BaseFragment extends Fragment implements
             getActivity().finish();
             return;
         }
-        listView.smoothScrollToPositionFromTop(0, 0, 0);
+        listView.setSelection(0);
     }
 
     public Boolean isTop() {
