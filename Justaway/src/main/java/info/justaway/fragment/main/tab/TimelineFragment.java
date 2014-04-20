@@ -1,14 +1,15 @@
-package info.justaway.fragment.main;
+package info.justaway.fragment.main.tab;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.util.LongSparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+
+import java.util.ArrayList;
 
 import de.greenrobot.event.EventBus;
 import info.justaway.JustawayApplication;
@@ -19,20 +20,20 @@ import info.justaway.model.Row;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
 import twitter4j.Status;
-import twitter4j.Twitter;
-import twitter4j.User;
 
-public class UserListFragment extends BaseFragment {
+/**
+ * タイムライン、すべての始まり
+ */
+public class TimelineFragment extends BaseFragment {
 
     private Boolean mAutoLoader = false;
     private Boolean mReload = false;
+    private Boolean mBusy = false;
     private long mMaxId = 0L;
     private ProgressBar mFooter;
-    private long mUserListId;
-    private LongSparseArray<Boolean> mMembers = new LongSparseArray<Boolean>();
 
     public long getTabId() {
-        return mUserListId;
+        return -1L;
     }
 
     @Override
@@ -45,25 +46,34 @@ public class UserListFragment extends BaseFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mUserListId = getArguments().getLong("userListId");
         ListView listView = getListView();
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {
 
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
+                switch (scrollState) {
+                    case AbsListView.OnScrollListener.SCROLL_STATE_IDLE:
+                        mBusy = false;
+                        render();
+                        break;
+                    case AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL:
+                    case AbsListView.OnScrollListener.SCROLL_STATE_FLING:
+                        mBusy = true;
+                        break;
+                }
             }
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                 // 最後までスクロールされたかどうかの判定
-                if (totalItemCount == firstVisibleItem + visibleItemCount) {
+                if (totalItemCount > 0 && totalItemCount == firstVisibleItem + visibleItemCount) {
                     additionalReading();
                 }
             }
         });
 
         if (mMaxId == 0L) {
-            new UserListStatusesTask().execute();
+            new HomeTimelineTask().execute();
         }
     }
 
@@ -72,7 +82,7 @@ public class UserListFragment extends BaseFragment {
         mReload = true;
         clear();
         getPullToRefreshLayout().setRefreshing(true);
-        new UserListStatusesTask().execute();
+        new HomeTimelineTask().execute();
     }
 
     @Override
@@ -95,62 +105,76 @@ public class UserListFragment extends BaseFragment {
         }
         mFooter.setVisibility(View.VISIBLE);
         mAutoLoader = false;
-        new UserListStatusesTask().execute();
+        new HomeTimelineTask().execute();
     }
 
-    @Override
+    private ArrayList<Row> mRows = new ArrayList<Row>();
+    private Runnable mRender = new Runnable() {
+        @Override
+        public void run() {
+            if (mBusy) {
+                return;
+            }
+            ListView listView = getListView();
+
+            // 表示している要素の位置
+            int position = listView.getFirstVisiblePosition();
+
+            // 縦スクロール位置
+            View view = listView.getChildAt(0);
+            int y = view != null ? view.getTop() : 0;
+
+            // 要素を上に追加（ addだと下に追加されてしまう ）
+            TwitterAdapter adapter = (TwitterAdapter) listView.getAdapter();
+            for (Row row : mRows) {
+                adapter.insert(row, 0);
+            }
+
+            boolean autoScroll = position == 0 && y == 0 && mRows.size() < 5;
+            listView.setSelectionFromTop(position + mRows.size(), y);
+            mRows.clear();
+
+            EventBus.getDefault().post(new NewRecordEvent(getTabId(), autoScroll));
+
+            // 少しでもスクロールさせている時は画面を動かさない様にスクロー位置を復元する
+            if (autoScroll) {
+                listView.setSelection(0);
+            }
+        }
+    };
+
+    /**
+     * ページ最上部だと自動的に読み込まれ、スクロールしていると動かないという美しい挙動
+     */
     public void add(final Row row) {
-        final ListView listView = getListView();
+        Status retweet = row.getStatus().getRetweetedStatus();
+        if (retweet != null && retweet.getUser().getId() == JustawayApplication.getApplication().getUserId()) {
+            return;
+        }
+        mRows.add(row);
+        render();
+    }
+
+    private void render() {
+        ListView listView = getListView();
         if (listView == null) {
             return;
         }
-
-        if (mMembers.get(row.getStatus().getUser().getId()) == null) {
-            return;
-        }
-        listView.post(new Runnable() {
-            @Override
-            public void run() {
-
-                // 表示している要素の位置
-                int position = listView.getFirstVisiblePosition();
-
-                // 縦スクロール位置
-                View view = listView.getChildAt(0);
-                int y = view != null ? view.getTop() : 0;
-
-                // 要素を上に追加（ addだと下に追加されてしまう ）
-                TwitterAdapter adapter = (TwitterAdapter) listView.getAdapter();
-                adapter.insert(row, 0);
-
-                // 少しでもスクロールさせている時は画面を動かさない様にスクロー位置を復元する
-                if (position != 0 || y != 0) {
-                    listView.setSelectionFromTop(position + 1, y);
-                    EventBus.getDefault().post(new NewRecordEvent(mUserListId, false));
-                } else {
-                    EventBus.getDefault().post(new NewRecordEvent(mUserListId, true));
-                }
-            }
-        });
+        listView.removeCallbacks(mRender);
+        listView.postDelayed(mRender, 500);
     }
 
-    private class UserListStatusesTask extends AsyncTask<Void, Void, ResponseList<Status>> {
+    private class HomeTimelineTask extends AsyncTask<Void, Void, ResponseList<Status>> {
         @Override
         protected ResponseList<twitter4j.Status> doInBackground(Void... params) {
             try {
                 JustawayApplication application = JustawayApplication.getApplication();
-                Twitter twitter = application.getTwitter();
                 Paging paging = new Paging();
                 if (mMaxId > 0) {
                     paging.setMaxId(mMaxId - 1);
                     paging.setCount(application.getPageCount());
-                } else {
-                    ResponseList<User> members = twitter.getUserListMembers(mUserListId, 0);
-                    for (User user : members) {
-                        mMembers.append(user.getId(), true);
-                    }
                 }
-                return twitter.getUserListStatuses(mUserListId, paging);
+                return application.getTwitter().getHomeTimeline(paging);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -182,10 +206,6 @@ public class UserListFragment extends BaseFragment {
                     if (mMaxId == 0L || mMaxId > status.getId()) {
                         mMaxId = status.getId();
                     }
-
-                    // 最初のツイートに登場ユーザーをStreaming APIからの取り込み対象にすることでAPI節約!!!
-                    mMembers.append(status.getUser().getId(), true);
-
                     adapter.extensionAdd(Row.newStatus(status));
                 }
                 mAutoLoader = true;

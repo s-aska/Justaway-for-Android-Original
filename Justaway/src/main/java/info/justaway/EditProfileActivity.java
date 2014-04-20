@@ -1,7 +1,6 @@
 package info.justaway;
 
 import android.app.ActionBar;
-import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
@@ -13,12 +12,14 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 
 import java.io.File;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnClick;
 import info.justaway.fragment.profile.UpdateProfileImageFragment;
 import info.justaway.task.VerifyCredentialsLoader;
 import twitter4j.User;
@@ -27,53 +28,48 @@ public class EditProfileActivity extends FragmentActivity implements LoaderManag
 
     private static final int REQ_PICK_PROFILE_IMAGE = 1;
 
-    private EditText mName;
-    private EditText mLocation;
-    private EditText mUrl;
-    private EditText mDescription;
-    private ImageView mIcon;
+    @InjectView(R.id.icon)
+    ImageView mIcon;
+    @InjectView(R.id.name)
+    EditText mName;
+    @InjectView(R.id.location)
+    EditText mLocation;
+    @InjectView(R.id.url)
+    EditText mUrl;
+    @InjectView(R.id.description)
+    EditText mDescription;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         JustawayApplication.getApplication().setTheme(this);
         setContentView(R.layout.activity_edit_profile);
+        ButterKnife.inject(this);
 
-        final Activity activity = this;
         ActionBar actionBar = getActionBar();
         if (actionBar != null) {
             actionBar.setHomeButtonEnabled(true);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        mName = ((EditText) findViewById(R.id.name));
-        mLocation = ((EditText) findViewById(R.id.location));
-        mUrl = ((EditText) findViewById(R.id.web_site));
-        mDescription = ((EditText) findViewById(R.id.bio));
-        mIcon = ((ImageView) findViewById(R.id.icon));
-
-        findViewById(R.id.update_profile_image).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_PICK);
-                intent.setType("image/*");
-                startActivityForResult(intent, REQ_PICK_PROFILE_IMAGE);
-            }
-        });
-
-        findViewById(R.id.save).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                JustawayApplication.showProgressDialog(activity, getString(R.string.progress_process));
-                new UpdateProfileTask().execute();
-            }
-        });
-
         /**
          * onCreateLoader => onLoadFinished と繋がる
          */
         getSupportLoaderManager().initLoader(0, null, this);
 
+    }
+
+    @OnClick(R.id.update_profile_image_button)
+    void updateProfileImage() {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        startActivityForResult(intent, REQ_PICK_PROFILE_IMAGE);
+    }
+
+    @OnClick(R.id.save_button)
+    void saveProfile() {
+        JustawayApplication.showProgressDialog(this, getString(R.string.progress_process));
+        new UpdateProfileTask().execute();
     }
 
     @Override

@@ -12,7 +12,7 @@
               tools:layout_height="wrap_content">
 
     <LinearLayout
-        android:id="@+id/action"
+        android:id="@+id/action_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="2dip"
@@ -101,7 +101,7 @@
                             tools:text="@justawayfactory"/>
 
                         <TextView
-                            android:id="@+id/fontello_lock"
+                            android:id="@+id/lock"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="4dip"
@@ -132,7 +132,7 @@
                 tools:text="Hello World."/>
 
             <LinearLayout
-                android:id="@+id/images"
+                android:id="@+id/images_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="4dip"
@@ -140,7 +140,7 @@
                 android:orientation="vertical"/>
 
             <TableLayout
-                android:id="@+id/menu_and_via"
+                android:id="@+id/menu_and_via_container"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:stretchColumns="5">
@@ -242,7 +242,7 @@
             </TableLayout>
 
             <LinearLayout
-                android:id="@+id/retweet"
+                android:id="@+id/retweet_container"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="2dip"

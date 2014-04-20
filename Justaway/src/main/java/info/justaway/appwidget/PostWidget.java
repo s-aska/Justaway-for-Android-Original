@@ -22,7 +22,8 @@ public class PostWidget extends AppWidgetProvider {
         Intent intent = new Intent(context, PostActivity.class);
         intent.putExtra("widget", true);
         // PendingIntentの取得
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
         RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_main);
         // インテントによるアクティビティ起動
         remoteViews.setOnClickPendingIntent(R.id.icon, pendingIntent);

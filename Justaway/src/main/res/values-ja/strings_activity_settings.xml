@@ -2,7 +2,6 @@
     <string name="title_activity_settings">設定</string>
 
     <string name="pref_title_keep_screen_on">スリープしない</string>
-    <string name="pref_description_keep_screen_on">ホーム画面でスリープしなくなります</string>
 
     <string name="pref_title_font_size">フォントサイズ</string>
     <string-array name="pref_font_size_titles">
@@ -32,11 +31,11 @@
         <item>20</item>
     </string-array>
 
+    <string name="pref_title_notification">通知設定</string>
+
     <string name="pref_title_mute">ミュート設定</string>
-    <string name="pref_description_mute">ユーザー / via / キーワード を指定できます</string>
 
     <string name="pref_title_performance">パフォーマンス設定</string>
-    <string name="pref_description_performance">アイコンの角丸や画質、読み込み件数を指定できます</string>
 
     <string name="pref_title_log_tap">ロングタップアクション</string>
     <string-array name="pref_long_tap_titles">
@@ -65,7 +64,4 @@
         <item>black</item>
         <item>white</item>
     </string-array>
-
-    <string name="pref_title_notification_on">通知</string>
-    <string name="pref_description_notification_on">リプ・ふぁぼ・RTを通知します。\nストリーミングが有効な時のみ機能します。（稲妻のアイコンが緑）</string>
 </resources>

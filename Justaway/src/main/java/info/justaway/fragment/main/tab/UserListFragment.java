@@ -1,7 +1,8 @@
-package info.justaway.fragment.main;
+package info.justaway.fragment.main.tab;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.util.LongSparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,31 +10,29 @@ import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
-import java.util.Collections;
-import java.util.Comparator;
-
 import de.greenrobot.event.EventBus;
 import info.justaway.JustawayApplication;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.event.NewRecordEvent;
-import info.justaway.event.model.DestroyDirectMessageEvent;
 import info.justaway.model.Row;
-import twitter4j.DirectMessage;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
+import twitter4j.Status;
 import twitter4j.Twitter;
+import twitter4j.User;
 
-public class DirectMessagesFragment extends BaseFragment {
+public class UserListFragment extends BaseFragment {
 
     private Boolean mAutoLoader = false;
     private Boolean mReload = false;
-    private long mDirectMessagesMaxId = 0L;
-    private long mSentDirectMessagesMaxId = 0L;
+    private long mMaxId = 0L;
     private ProgressBar mFooter;
+    private long mUserListId;
+    private LongSparseArray<Boolean> mMembers = new LongSparseArray<Boolean>();
 
     public long getTabId() {
-        return -3L;
+        return mUserListId;
     }
 
     @Override
@@ -46,6 +45,7 @@ public class DirectMessagesFragment extends BaseFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        mUserListId = getArguments().getLong("userListId");
         ListView listView = getListView();
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {
 
@@ -62,8 +62,8 @@ public class DirectMessagesFragment extends BaseFragment {
             }
         });
 
-        if (mDirectMessagesMaxId == 0L && mSentDirectMessagesMaxId == 0L) {
-            new DirectMessagesTask().execute();
+        if (mMaxId == 0L) {
+            new UserListStatusesTask().execute();
         }
     }
 
@@ -72,13 +72,12 @@ public class DirectMessagesFragment extends BaseFragment {
         mReload = true;
         clear();
         getPullToRefreshLayout().setRefreshing(true);
-        new DirectMessagesTask().execute();
+        new UserListStatusesTask().execute();
     }
 
     @Override
     public void clear() {
-        mDirectMessagesMaxId = 0L;
-        mSentDirectMessagesMaxId = 0L;
+        mMaxId = 0L;
         TwitterAdapter adapter = getListAdapter();
         if (adapter != null) {
             adapter.clear();
@@ -96,26 +95,19 @@ public class DirectMessagesFragment extends BaseFragment {
         }
         mFooter.setVisibility(View.VISIBLE);
         mAutoLoader = false;
-        new DirectMessagesTask().execute();
+        new UserListStatusesTask().execute();
     }
 
-    public void onEventMainThread(DestroyDirectMessageEvent event) {
-        remove(event.getStatusId());
-    }
-
-    /**
-     * ページ最上部だと自動的に読み込まれ、スクロールしていると動かないという美しい挙動
-     */
+    @Override
     public void add(final Row row) {
         final ListView listView = getListView();
         if (listView == null) {
             return;
         }
 
-        if (!row.isDirectMessage()) {
+        if (mMembers.get(row.getStatus().getUser().getId()) == null) {
             return;
         }
-
         listView.post(new Runnable() {
             @Override
             public void run() {
@@ -132,85 +124,33 @@ public class DirectMessagesFragment extends BaseFragment {
                 adapter.insert(row, 0);
 
                 // 少しでもスクロールさせている時は画面を動かさない様にスクロー位置を復元する
-                boolean doAppeal = row.getMessage().getSenderId() != JustawayApplication.getApplication().getUserId();
                 if (position != 0 || y != 0) {
                     listView.setSelectionFromTop(position + 1, y);
-                    if (doAppeal) {
-                        EventBus.getDefault().post(new NewRecordEvent(getTabId(), false));
-                    }
+                    EventBus.getDefault().post(new NewRecordEvent(mUserListId, false));
                 } else {
-                    if (doAppeal) {
-                        EventBus.getDefault().post(new NewRecordEvent(getTabId(), true));
-                    }
+                    EventBus.getDefault().post(new NewRecordEvent(mUserListId, true));
                 }
             }
         });
     }
 
-    public void remove(final long directMessageId) {
-        ListView listView = getListView();
-        if (listView == null) {
-            return;
-        }
-
-        final TwitterAdapter adapter = (TwitterAdapter) listView.getAdapter();
-        listView.post(new Runnable() {
-            @Override
-            public void run() {
-                adapter.removeDirectMessage(directMessageId);
-            }
-        });
-    }
-
-    private class DirectMessagesTask extends AsyncTask<Void, Void, ResponseList<DirectMessage>> {
+    private class UserListStatusesTask extends AsyncTask<Void, Void, ResponseList<Status>> {
         @Override
-        protected ResponseList<DirectMessage> doInBackground(Void... params) {
+        protected ResponseList<twitter4j.Status> doInBackground(Void... params) {
             try {
                 JustawayApplication application = JustawayApplication.getApplication();
                 Twitter twitter = application.getTwitter();
-
-                // 受信したDM
-                Paging directMessagesPaging = new Paging();
-                if (mDirectMessagesMaxId > 0) {
-                    directMessagesPaging.setMaxId(mDirectMessagesMaxId - 1);
-                    directMessagesPaging.setCount(application.getPageCount() / 2);
+                Paging paging = new Paging();
+                if (mMaxId > 0) {
+                    paging.setMaxId(mMaxId - 1);
+                    paging.setCount(application.getPageCount());
                 } else {
-                    directMessagesPaging.setCount(10);
-                }
-                ResponseList<DirectMessage> directMessages = twitter.getDirectMessages(directMessagesPaging);
-                for (DirectMessage directMessage : directMessages) {
-                    if (mDirectMessagesMaxId == 0L || mDirectMessagesMaxId > directMessage.getId()) {
-                        mDirectMessagesMaxId = directMessage.getId();
+                    ResponseList<User> members = twitter.getUserListMembers(mUserListId, 0);
+                    for (User user : members) {
+                        mMembers.append(user.getId(), true);
                     }
                 }
-
-                // 送信したDM
-                Paging sentDirectMessagesPaging = new Paging();
-                if (mSentDirectMessagesMaxId > 0) {
-                    sentDirectMessagesPaging.setMaxId(mSentDirectMessagesMaxId - 1);
-                    sentDirectMessagesPaging.setCount(application.getPageCount() / 2);
-                } else {
-                    sentDirectMessagesPaging.setCount(10);
-                }
-                ResponseList<DirectMessage> sentDirectMessages = twitter.getSentDirectMessages(sentDirectMessagesPaging);
-                for (DirectMessage directMessage : sentDirectMessages) {
-                    if (mSentDirectMessagesMaxId == 0L || mSentDirectMessagesMaxId > directMessage.getId()) {
-                        mSentDirectMessagesMaxId = directMessage.getId();
-                    }
-                }
-
-                directMessages.addAll(sentDirectMessages);
-
-                // 日付でソート
-                Collections.sort(directMessages, new Comparator<DirectMessage>() {
-
-                    @Override
-                    public int compare(DirectMessage arg0, DirectMessage arg1) {
-                        return arg1.getCreatedAt().compareTo(
-                                arg0.getCreatedAt());
-                    }
-                });
-                return directMessages;
+                return twitter.getUserListStatuses(mUserListId, paging);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -218,7 +158,7 @@ public class DirectMessagesFragment extends BaseFragment {
         }
 
         @Override
-        protected void onPostExecute(ResponseList<DirectMessage> statuses) {
+        protected void onPostExecute(ResponseList<twitter4j.Status> statuses) {
             mFooter.setVisibility(View.GONE);
             if (statuses == null || statuses.size() == 0) {
                 mReload = false;
@@ -229,14 +169,24 @@ public class DirectMessagesFragment extends BaseFragment {
             TwitterAdapter adapter = getListAdapter();
             if (mReload) {
                 adapter.clear();
-                for (DirectMessage status : statuses) {
-                    adapter.add(Row.newDirectMessage(status));
+                for (twitter4j.Status status : statuses) {
+                    if (mMaxId == 0L || mMaxId > status.getId()) {
+                        mMaxId = status.getId();
+                    }
+                    adapter.add(Row.newStatus(status));
                 }
                 mReload = false;
                 getPullToRefreshLayout().setRefreshComplete();
             } else {
-                for (DirectMessage status : statuses) {
-                    adapter.extensionAdd(Row.newDirectMessage(status));
+                for (twitter4j.Status status : statuses) {
+                    if (mMaxId == 0L || mMaxId > status.getId()) {
+                        mMaxId = status.getId();
+                    }
+
+                    // 最初のツイートに登場ユーザーをStreaming APIからの取り込み対象にすることでAPI節約!!!
+                    mMembers.append(status.getUser().getId(), true);
+
+                    adapter.extensionAdd(Row.newStatus(status));
                 }
                 mAutoLoader = true;
                 getListView().setVisibility(View.VISIBLE);

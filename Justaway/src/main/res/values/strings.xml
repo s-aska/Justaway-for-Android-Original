@@ -213,5 +213,6 @@
     <string name="label_display_profile">"'s Profile"</string>
     <string name="title_user_search">User Search</string>
     <string name="hint_search">Search</string>
+    <string name="title_notification">Notification Settings</string>
 
 </resources>
