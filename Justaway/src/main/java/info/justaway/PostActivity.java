@@ -72,19 +72,6 @@ public class PostActivity extends FragmentActivity {
     private static final int OPTION_MENU_GROUP_TWICCA = 1;
     private static final int ERROR_CODE_DUPLICATE_STATUS = 187;
 
-    private Activity mContext;
-    private Long mInReplyToStatusId;
-    private File mImgPath;
-    private Uri mImageUri;
-    private AlertDialog mDraftDialog;
-    private AlertDialog mHashtagDialog;
-    private boolean mWidgetMode;
-    private PostStockSettings mPostStockSettings;
-    private TextView mTitle;
-    private TextView mUndoButton;
-    private ArrayList<String> mTextHistory = new ArrayList<String>();
-    private List<ResolveInfo> mTwiccaPlugins;
-
     @InjectView(R.id.in_reply_to_layout)
     RelativeLayout mInReplyToLayout;
     @InjectView(R.id.in_reply_to_user_icon)
@@ -109,6 +96,18 @@ public class PostActivity extends FragmentActivity {
     TextView mCount;
     @InjectView(R.id.tweet_button)
     Button mTweetButton;
+    private Activity mContext;
+    private Long mInReplyToStatusId;
+    private File mImgPath;
+    private Uri mImageUri;
+    private AlertDialog mDraftDialog;
+    private AlertDialog mHashtagDialog;
+    private boolean mWidgetMode;
+    private PostStockSettings mPostStockSettings;
+    private TextView mTitle;
+    private TextView mUndoButton;
+    private ArrayList<String> mTextHistory = new ArrayList<String>();
+    private List<ResolveInfo> mTwiccaPlugins;
 
     @SuppressWarnings("MagicConstant")
     @Override
@@ -159,8 +158,6 @@ public class PostActivity extends FragmentActivity {
         JustawayApplication.getApplication().warmUpUserIconMap();
 
         Typeface fontello = JustawayApplication.getFontello();
-
-
         mImgButton.setTypeface(fontello);
         mTweetButton.setTypeface(fontello);
         mSuddenlyButton.setTypeface(fontello);
@@ -173,9 +170,7 @@ public class PostActivity extends FragmentActivity {
         // アカウント切り替え
         AccessTokenAdapter adapter = new AccessTokenAdapter(this, R.layout.spinner_switch_account);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
         mSwitchAccountSpinner.setAdapter(adapter);
-
         ArrayList<AccessToken> accessTokens = JustawayApplication.getApplication().getAccessTokens();
 
         if (accessTokens != null) {
@@ -259,6 +254,7 @@ public class PostActivity extends FragmentActivity {
             mStatusText.setText(text);
         }
 
+        // ブラウザから来たとき
         if (Intent.ACTION_SEND.equals(intent.getAction())) {
             if (intent.getParcelableExtra(Intent.EXTRA_STREAM) != null) {
                 Uri imgUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
@@ -276,10 +272,12 @@ public class PostActivity extends FragmentActivity {
             }
         }
 
+        // 文字をカウントする
         if (mStatusText.getText() != null) {
             updateCount(mStatusText.getText().toString());
         }
 
+        // 下書きとハッシュタグがあるかチェック
         mPostStockSettings = new PostStockSettings();
         if (mPostStockSettings.getDrafts().isEmpty()) {
             mDraftButton.setEnabled(false);
@@ -376,7 +374,6 @@ public class PostActivity extends FragmentActivity {
         });
 
         PostStockSettings postStockSettings = new PostStockSettings();
-
         for (String draft : postStockSettings.getDrafts()) {
             adapter.add(draft);
         }
@@ -566,14 +563,19 @@ public class PostActivity extends FragmentActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            if (requestCode == REQUEST_GALLERY) {
+        if (resultCode != RESULT_OK) {
+            return;
+        }
+        switch (requestCode) {
+            case REQUEST_GALLERY:
                 setImage(data.getData());
-            } else if (requestCode == REQUEST_CAMERA) {
+                break;
+            case REQUEST_CAMERA:
                 setImage(mImageUri);
-            } else if (requestCode == REQUEST_TWICCA) {
+                break;
+            case REQUEST_TWICCA:
                 mStatusText.setText(data.getStringExtra(Intent.EXTRA_TEXT));
-            }
+                break;
         }
     }
 
