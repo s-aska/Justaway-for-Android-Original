@@ -2,7 +2,6 @@
     <string name="title_activity_settings">Settings</string>
 
     <string name="pref_title_keep_screen_on">Keep screen</string>
-    <string name="pref_description_keep_screen_on">Do not Sleep.</string>
 
     <string name="pref_title_font_size">Font size</string>
     <string-array name="pref_font_size_titles">
@@ -32,11 +31,11 @@
         <item>20</item>
     </string-array>
 
+    <string name="pref_title_notification">Notification Settings</string>
+
     <string name="pref_title_mute">Mute Settings</string>
-    <string name="pref_description_mute">User / Via / Keyword</string>
 
     <string name="pref_title_performance">Performance Settings</string>
-    <string name="pref_description_performance" tools:ignore="TypographyEllipsis">Icon size ...etc</string>
 
     <string name="pref_title_log_tap">Long tap menu</string>
     <string-array name="pref_long_tap_titles">
@@ -65,7 +64,4 @@
         <item>black</item>
         <item>white</item>
     </string-array>
-
-    <string name="pref_title_notification_on">Notification</string>
-    <string name="pref_description_notification_on">Reply / Favorited / Retweeted.\nIt will work when streaming is enabled.</string>
 </resources>

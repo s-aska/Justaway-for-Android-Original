@@ -3,7 +3,6 @@
     <CheckBoxPreference
         android:key="keep_screen_on"
         android:title="@string/pref_title_keep_screen_on"
-        android:summary="@string/pref_description_keep_screen_on"
         android:defaultValue="true"/>
 
     <ListPreference
@@ -35,8 +34,16 @@
 
     <PreferenceScreen
         android:key="mute"
-        android:title="@string/pref_title_mute"
-        android:summary="@string/pref_description_mute">
+        android:title="@string/pref_title_notification">
+        <intent
+            android:action="android.intent.action.MAIN"
+            android:targetPackage="info.justaway"
+            android:targetClass="info.justaway.NotificationSettingsActivity"/>
+    </PreferenceScreen>
+
+    <PreferenceScreen
+        android:key="mute"
+        android:title="@string/pref_title_mute">
         <intent
             android:action="android.intent.action.MAIN"
             android:targetPackage="info.justaway"
@@ -45,18 +52,11 @@
 
     <PreferenceScreen
         android:key="performance"
-        android:title="@string/pref_title_performance"
-        android:summary="@string/pref_description_performance">
+        android:title="@string/pref_title_performance">
         <intent
             android:action="android.intent.action.MAIN"
             android:targetPackage="info.justaway"
             android:targetClass="info.justaway.PerformanceActivity"/>
     </PreferenceScreen>
-
-    <CheckBoxPreference
-        android:key="notification_on"
-        android:title="@string/pref_title_notification_on"
-        android:summary="@string/pref_description_notification_on"
-        android:defaultValue="true"/>
 
 </PreferenceScreen>
