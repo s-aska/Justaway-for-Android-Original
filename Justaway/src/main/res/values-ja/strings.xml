@@ -211,4 +211,5 @@
     <string name="label_display_profile">" のプロフィールを表示"</string>
     <string name="title_user_search">ユーザー検索</string>
     <string name="hint_search">Twitterで検索</string>
+    <string name="title_notification">通知設定</string>
 </resources>

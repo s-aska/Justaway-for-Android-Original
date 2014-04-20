@@ -37,6 +37,9 @@ project.ext {
     // see http://tools.android.com/tech-docs/new-build-system/tips#TOC-Improving-Build-Server-performance.
     // CIサーバなどでは -PdisablePreDex をつける。 preDexが省略されてビルドが速くなる
     preDexLibs = !project.hasProperty('disablePreDex')
+
+    twitter4jVersion = "4.0.1"
+    butterKnifeVersion = '4.0.1'
 }
 
 task wrapper(type: Wrapper) {

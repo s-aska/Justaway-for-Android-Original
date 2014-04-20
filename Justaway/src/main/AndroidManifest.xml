@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="info.justaway"
-          android:versionCode="30"
-          android:versionName="1.0.29">
+          android:versionCode="31"
+          android:versionName="1.0.30">
 
     <uses-sdk
         android:minSdkVersion="14"
@@ -111,6 +111,14 @@
                     android:host="twitter.com"
                     android:pathPattern="/.*/status/.*"
                     android:scheme="https"/>
+                <data
+                    android:host="twitter.com"
+                    android:pathPattern="/.*/statuses/.*"
+                    android:scheme="http"/>
+                <data
+                    android:host="twitter.com"
+                    android:pathPattern="/.*/statuses/.*"
+                    android:scheme="https"/>
             </intent-filter>
         </activity>
         <activity
@@ -135,6 +143,9 @@
         <activity
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"/>
+        <activity
+            android:name=".NotificationSettingsActivity"
+            android:label="@string/title_notification"/>
         <activity
             android:name=".MuteActivity"
             android:label="@string/title_mute"/>

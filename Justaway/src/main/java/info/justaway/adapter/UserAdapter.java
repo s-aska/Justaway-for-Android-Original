@@ -12,6 +12,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import info.justaway.JustawayApplication;
 import info.justaway.ProfileActivity;
 import info.justaway.R;
@@ -21,10 +23,21 @@ import twitter4j.User;
 public class UserAdapter extends ArrayAdapter<User> {
 
     static class ViewHolder {
-        TextView screen_name;
-        TextView display_name;
-        TextView description;
-        TextView fontello_lock;
+
+        @InjectView(R.id.icon)
+        ImageView mIcon;
+        @InjectView(R.id.display_name)
+        TextView mDisplayName;
+        @InjectView(R.id.screen_name)
+        TextView mScreenName;
+        @InjectView(R.id.lock)
+        TextView mFontelloLock;
+        @InjectView(R.id.description)
+        TextView mDescription;
+
+        public ViewHolder(View view) {
+            ButterKnife.inject(this, view);
+        }
     }
 
     private ArrayList<User> mUsers = new ArrayList<User>();
@@ -63,11 +76,7 @@ public class UserAdapter extends ArrayAdapter<User> {
             if (view == null) {
                 return null;
             }
-            holder = new ViewHolder();
-            holder.screen_name = ((TextView) view.findViewById(R.id.screen_name));
-            holder.display_name = ((TextView) view.findViewById(R.id.display_name));
-            holder.description = ((TextView) view.findViewById(R.id.description));
-            holder.fontello_lock = ((TextView) view.findViewById(R.id.fontello_lock));
+            holder = new ViewHolder(view);
             view.setTag(holder);
         } else {
             holder = (ViewHolder) view.getTag();
@@ -75,12 +84,11 @@ public class UserAdapter extends ArrayAdapter<User> {
 
         final User user = mUsers.get(position);
 
-        ImageView icon = (ImageView) view.findViewById(R.id.icon);
         String iconUrl = user.getBiggerProfileImageURL();
-        JustawayApplication.getApplication().displayRoundedImage(iconUrl, icon);
+        JustawayApplication.getApplication().displayRoundedImage(iconUrl, holder.mIcon);
 
-        holder.display_name.setText(user.getName());
-        holder.screen_name.setText("@" + user.getScreenName());
+        holder.mDisplayName.setText(user.getName());
+        holder.mScreenName.setText("@" + user.getScreenName());
 
         String descriptionString = user.getDescription();
         if (descriptionString != null && descriptionString.length() > 0) {
@@ -89,18 +97,18 @@ public class UserAdapter extends ArrayAdapter<User> {
                 descriptionString = descriptionString.replaceAll(descriptionUrl.getURL(),
                         descriptionUrl.getExpandedURL());
             }
-            holder.description.setText(descriptionString);
-            holder.description.setVisibility(View.VISIBLE);
+            holder.mDescription.setText(descriptionString);
+            holder.mDescription.setVisibility(View.VISIBLE);
         } else {
-            holder.description.setVisibility(View.GONE);
+            holder.mDescription.setVisibility(View.GONE);
         }
 
         Typeface fontello = JustawayApplication.getFontello();
         if (user.isProtected()) {
-            holder.fontello_lock.setTypeface(fontello);
-            holder.fontello_lock.setVisibility(View.VISIBLE);
+            holder.mFontelloLock.setTypeface(fontello);
+            holder.mFontelloLock.setVisibility(View.VISIBLE);
         } else {
-            holder.fontello_lock.setVisibility(View.INVISIBLE);
+            holder.mFontelloLock.setVisibility(View.INVISIBLE);
         }
 
         view.setOnClickListener(new View.OnClickListener() {

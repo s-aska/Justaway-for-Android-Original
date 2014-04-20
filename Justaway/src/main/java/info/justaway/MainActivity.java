@@ -3,11 +3,7 @@ package info.justaway;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -29,13 +25,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -45,8 +38,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import de.greenrobot.event.EventBus;
-import info.justaway.adapter.MainPagerAdapter;
+import info.justaway.adapter.main.MainPagerAdapter;
 import info.justaway.adapter.UserSearchAdapter;
+import info.justaway.adapter.main.AccessTokenAdapter;
 import info.justaway.event.AlertDialogEvent;
 import info.justaway.event.NewRecordEvent;
 import info.justaway.event.action.AccountChangeEvent;
@@ -56,11 +50,12 @@ import info.justaway.event.action.SeenTopEvent;
 import info.justaway.event.connection.CleanupEvent;
 import info.justaway.event.connection.ConnectEvent;
 import info.justaway.event.connection.DisconnectEvent;
-import info.justaway.fragment.main.BaseFragment;
-import info.justaway.fragment.main.DirectMessagesFragment;
-import info.justaway.fragment.main.InteractionsFragment;
-import info.justaway.fragment.main.TimelineFragment;
-import info.justaway.fragment.main.UserListFragment;
+import info.justaway.fragment.main.StreamingSwitchDialogFragment;
+import info.justaway.fragment.main.tab.BaseFragment;
+import info.justaway.fragment.main.tab.DirectMessagesFragment;
+import info.justaway.fragment.main.tab.InteractionsFragment;
+import info.justaway.fragment.main.tab.TimelineFragment;
+import info.justaway.fragment.main.tab.UserListFragment;
 import info.justaway.task.DestroyDirectMessageTask;
 import info.justaway.task.SendDirectMessageTask;
 import info.justaway.task.UpdateStatusTask;
@@ -80,7 +75,7 @@ public class MainActivity extends FragmentActivity {
     private static final long TAB_ID_TIMELINE = -1L;
     private static final long TAB_ID_INTERACTIONS = -2L;
     private static final long TAB_ID_DIRECT_MESSAGE = -3L;
-    private static final Pattern USERLIST_PATTERN = Pattern.compile("^(@[a-zA-Z0-9_]+)/(.*)$");
+    private static final Pattern USER_LIST_PATTERN = Pattern.compile("^(@[a-zA-Z0-9_]+)/(.*)$");
     private JustawayApplication mApplication;
     private MainPagerAdapter mMainPagerAdapter;
     private ViewPager mViewPager;
@@ -96,32 +91,6 @@ public class MainActivity extends FragmentActivity {
     private Activity mActivity;
     private AccessTokenAdapter mAccessTokenAdapter;
     private AccessToken mSwitchAccessToken;
-
-    public void setInReplyToStatus(Status inReplyToStatus) {
-        this.mInReplyToStatus = inReplyToStatus;
-    }
-
-    /**
-     * ActionBarでCustomView使ってるので自分で再実装
-     */
-    @Override
-    public void setTitle(CharSequence title) {
-        if (mTitle != null) {
-            Matcher matcher = USERLIST_PATTERN.matcher(title);
-            if (matcher.find()) {
-                mTitle.setText(matcher.group(2));
-                mSubTitle.setText(matcher.group(1));
-            } else {
-                mTitle.setText(title);
-                mSubTitle.setText("@" + mApplication.getScreenName());
-            }
-        }
-    }
-
-    @Override
-    public void setTitle(int titleId) {
-        setTitle(getString(titleId));
-    }
 
     @SuppressWarnings("MagicConstant")
     @Override
@@ -173,7 +142,7 @@ public class MainActivity extends FragmentActivity {
                             }
                             Intent intent = null;
                             String searchWord = mSearchText.getText().toString();
-                            mSearchText.clearFocus();
+                            mApplication.hideKeyboard(mSearchText);
                             if (adapter.isSavedMode()) {
                                 intent = new Intent(mActivity, SearchActivity.class);
                                 intent.putExtra("query", searchWord);
@@ -209,18 +178,7 @@ public class MainActivity extends FragmentActivity {
                                     mSearchLayout.setVisibility(View.VISIBLE);
                                     mSearchText.showDropDown();
                                     mSearchText.setText("");
-                                    mSearchText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                                        public void onFocusChange(View v, boolean hasFocus) {
-                                            if (hasFocus) {
-                                                ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
-                                                        .showSoftInput(v, InputMethodManager.SHOW_FORCED);
-                                            } else {
-                                                ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
-                                                        .hideSoftInputFromInputMethod(v.getWindowToken(), 0);
-                                            }
-                                        }
-                                    });
-                                    mSearchText.requestFocus();
+                                    mApplication.showKeyboard(mSearchText);
                                 }
                             }
                     );
@@ -269,7 +227,10 @@ public class MainActivity extends FragmentActivity {
 
         // アカウント切り替え
         ListView drawerList = (ListView) findViewById(R.id.account_list);
-        mAccessTokenAdapter = new AccessTokenAdapter(this, R.layout.row_switch_account);
+        mAccessTokenAdapter = new AccessTokenAdapter(this,
+                R.layout.row_switch_account,
+                mApplication.getThemeTextColor(mActivity, R.attr.holo_blue),
+                mApplication.getThemeTextColor(mActivity, R.attr.text_color));
         ArrayList<AccessToken> accessTokens = mApplication.getAccessTokens();
         if (accessTokens != null) {
             for (AccessToken accessToken : accessTokens) {
@@ -303,8 +264,6 @@ public class MainActivity extends FragmentActivity {
             }
         });
         mDrawerLayout.setDrawerListener(mDrawerToggle);
-
-        setTitle(R.string.title_main);
 
         // クイックモード時に起動と同時に入力エリアにフォーカスするのを抑止
         findViewById(R.id.main).requestFocus();
@@ -454,6 +413,58 @@ public class MainActivity extends FragmentActivity {
         mDrawerToggle.syncState();
     }
 
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        // 前回バグで強制終了した場合はダイアログ表示、Yesでレポート送信
+        MyUncaughtExceptionHandler.showBugReportDialogIfExist(this);
+
+        // スリープさせない指定
+        if (JustawayApplication.getApplication().getKeepScreenOn()) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        } else {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
+
+        mApplication.resetDisplaySettings();
+        mApplication.resetNotification();
+
+        // フォントサイズの変更や他のアクティビティでのfav/RTを反映
+        mMainPagerAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case REQUEST_TAB_SETTINGS:
+                if (resultCode == RESULT_OK) {
+                    setupTab();
+                }
+                break;
+            case REQUEST_ACCOUNT_SETTING:
+                if (resultCode == RESULT_OK) {
+                    mSwitchAccessToken = (AccessToken) data.getSerializableExtra("accessToken");
+                }
+                if (mAccessTokenAdapter != null) {
+                    mAccessTokenAdapter.clear();
+                    for (AccessToken accessToken : mApplication.getAccessTokens()) {
+                        mAccessTokenAdapter.add(accessToken);
+                    }
+                }
+                break;
+            case REQUEST_SETTINGS:
+                if (resultCode == RESULT_OK) {
+                    mApplication.resetDisplaySettings();
+                    finish();
+                }
+            default:
+                break;
+        }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -491,6 +502,112 @@ public class MainActivity extends FragmentActivity {
         super.onDestroy();
     }
 
+    /**
+     * 弄らないとアプリをバックボタンで閉じる度にタイムラインが初期化されてしまう（アクティビティがfinishされる）
+     * moveTaskToBackはホームボタンを押した時と同じ動き
+     */
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            EditText editText = (EditText) findViewById(R.id.quick_tweet_edit);
+            if (editText != null && editText.getText() != null && editText.getText().length() > 0) {
+                editText.setText("");
+                setInReplyToStatus(null);
+                return false;
+            }
+            finish();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+        if (itemId == R.id.profile) {
+            /**
+             * screenNameは変更可能なのでuserIdを使う
+             */
+            Intent intent = new Intent(this, ProfileActivity.class);
+            intent.putExtra("userId", mApplication.getUserId());
+            startActivity(intent);
+        } else if (itemId == R.id.tab_settings) {
+            Intent intent = new Intent(this, TabSettingsActivity.class);
+            startActivityForResult(intent, REQUEST_TAB_SETTINGS);
+        } else if (itemId == R.id.search) {
+            Intent intent = new Intent(this, SearchActivity.class);
+            startActivity(intent);
+        } else if (itemId == R.id.settings) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivityForResult(intent, REQUEST_SETTINGS);
+        } else if (itemId == R.id.official_website) {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.official_website)));
+            startActivity(intent);
+        } else if (itemId == R.id.feedback) {
+            View singleLineTweet = findViewById(R.id.quick_tweet_layout);
+            if (singleLineTweet != null && singleLineTweet.getVisibility() == View.VISIBLE) {
+                EditText editStatus = (EditText) findViewById(R.id.quick_tweet_edit);
+                editStatus.setText(" #justaway");
+                editStatus.requestFocus();
+                mApplication.showKeyboard(editStatus);
+                return true;
+            }
+            Intent intent = new Intent(this, PostActivity.class);
+            intent.putExtra("status", " #justaway");
+            startActivity(intent);
+        } else if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        } else if (itemId == android.R.id.home) {
+            cancelSearch();
+        }
+        return true;
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putInt("signalButtonColor", mSignalButton.getCurrentTextColor());
+
+        LinearLayout tab_menus = (LinearLayout) findViewById(R.id.tab_menus);
+        int count = tab_menus.getChildCount();
+        final int tabColors[] = new int[count];
+        for (int i = 0; i < count; i++) {
+            Button button = (Button) tab_menus.getChildAt(i);
+            if (button == null) {
+                continue;
+            }
+            tabColors[i] = button.getCurrentTextColor();
+        }
+
+        outState.putIntArray("tabColors", tabColors);
+    }
+
+    @SuppressWarnings("NullableProblems")
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        mSignalButton.setTextColor(savedInstanceState.getInt("signalButtonColor"));
+
+        final int[] tabColors = savedInstanceState.getIntArray("tabColors");
+        assert tabColors != null;
+        LinearLayout tab_menus = (LinearLayout) findViewById(R.id.tab_menus);
+        int count = Math.min(tab_menus.getChildCount(), tabColors.length);
+        for (int i = 0; i < count; i++) {
+            Button button = (Button) tab_menus.getChildAt(i);
+            if (button == null) {
+                continue;
+            }
+            button.setTextColor(tabColors[i]);
+        }
+    }
+
     @SuppressWarnings("UnusedDeclaration")
     public void onEventMainThread(AlertDialogEvent event) {
         event.getDialogFragment().show(getSupportFragmentManager(), "dialog");
@@ -515,7 +632,6 @@ public class MainActivity extends FragmentActivity {
                 }
             }
             setInReplyToStatus(event.getInReplyToStatus());
-            editStatus.requestFocus();
             mApplication.showKeyboard(editStatus);
         } else {
             Intent intent = new Intent(this, PostActivity.class);
@@ -581,44 +697,30 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-
-        outState.putInt("signalButtonColor", mSignalButton.getCurrentTextColor());
-
-        LinearLayout tab_menus = (LinearLayout) findViewById(R.id.tab_menus);
-        int count = tab_menus.getChildCount();
-        final int tabColors[] = new int[count];
-        for (int i = 0; i < count; i++) {
-            Button button = (Button) tab_menus.getChildAt(i);
-            if (button == null) {
-                continue;
-            }
-            tabColors[i] = button.getCurrentTextColor();
-        }
-
-        outState.putIntArray("tabColors", tabColors);
+    public void setInReplyToStatus(Status inReplyToStatus) {
+        this.mInReplyToStatus = inReplyToStatus;
     }
 
-    @SuppressWarnings("NullableProblems")
+    /**
+     * ActionBarでCustomView使ってるので自分で再実装
+     */
     @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-
-        mSignalButton.setTextColor(savedInstanceState.getInt("signalButtonColor"));
-
-        final int[] tabColors = savedInstanceState.getIntArray("tabColors");
-        assert tabColors != null;
-        LinearLayout tab_menus = (LinearLayout) findViewById(R.id.tab_menus);
-        int count = Math.min(tab_menus.getChildCount(), tabColors.length);
-        for (int i = 0; i < count; i++) {
-            Button button = (Button) tab_menus.getChildAt(i);
-            if (button == null) {
-                continue;
+    public void setTitle(CharSequence title) {
+        if (mTitle != null) {
+            Matcher matcher = USER_LIST_PATTERN.matcher(title);
+            if (matcher.find()) {
+                mTitle.setText(matcher.group(2));
+                mSubTitle.setText(matcher.group(1));
+            } else {
+                mTitle.setText(title);
+                mSubTitle.setText("@" + mApplication.getScreenName());
             }
-            button.setTextColor(tabColors[i]);
         }
+    }
+
+    @Override
+    public void setTitle(int titleId) {
+        setTitle(getString(titleId));
     }
 
     public void showQuickPanel() {
@@ -684,57 +786,14 @@ public class MainActivity extends FragmentActivity {
                 }
             }
             mMainPagerAdapter.notifyDataSetChanged();
-        }
-    }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        // 前回バグで強制終了した場合はダイアログ表示、Yesでレポート送信
-        MyUncaughtExceptionHandler.showBugReportDialogIfExist(this);
-
-        // スリープさせない指定
-        if (JustawayApplication.getApplication().getKeepScreenOn()) {
-            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        } else {
-            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        }
-
-        mApplication.resetDisplaySettings();
-        mApplication.resetNotification();
-
-        // フォントサイズの変更や他のアクティビティでのfav/RTを反映
-        mMainPagerAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case REQUEST_TAB_SETTINGS:
-                if (resultCode == RESULT_OK) {
-                    setupTab();
-                }
-                break;
-            case REQUEST_ACCOUNT_SETTING:
-                if (resultCode == RESULT_OK) {
-                    mSwitchAccessToken = (AccessToken) data.getSerializableExtra("accessToken");
-                }
-                if (mAccessTokenAdapter != null) {
-                    mAccessTokenAdapter.clear();
-                    for (AccessToken accessToken : mApplication.getAccessTokens()) {
-                        mAccessTokenAdapter.add(accessToken);
-                    }
-                }
-                break;
-            case REQUEST_SETTINGS:
-                if (resultCode == RESULT_OK) {
-                    mApplication.resetDisplaySettings();
-                    finish();
-                }
-            default:
-                break;
+            // 起動時やタブ設定後にちゃんとタイトルとボタンのフォーカスを合わせる
+            int currentPosition = mViewPager.getCurrentItem();
+            Button button = (Button) tabMenus.getChildAt(currentPosition);
+            if (button != null) {
+                button.setSelected(true);
+            }
+            setTitle(mMainPagerAdapter.getPageTitle(currentPosition));
         }
     }
 
@@ -832,89 +891,12 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
-    /**
-     * 弄らないとアプリをバックボタンで閉じる度にタイムラインが初期化されてしまう（アクティビティがfinishされる）
-     * moveTaskToBackはホームボタンを押した時と同じ動き
-     */
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            EditText editText = (EditText) findViewById(R.id.quick_tweet_edit);
-            if (editText != null && editText.getText() != null && editText.getText().length() > 0) {
-                editText.setText("");
-                setInReplyToStatus(null);
-                return false;
-            }
-            finish();
-        }
-        return false;
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int itemId = item.getItemId();
-        if (itemId == R.id.profile) {
-            /**
-             * screenNameは変更可能なのでuserIdを使う
-             */
-            Intent intent = new Intent(this, ProfileActivity.class);
-            intent.putExtra("userId", mApplication.getUserId());
-            startActivity(intent);
-        } else if (itemId == R.id.tab_settings) {
-            Intent intent = new Intent(this, TabSettingsActivity.class);
-            startActivityForResult(intent, REQUEST_TAB_SETTINGS);
-        } else if (itemId == R.id.search) {
-            Intent intent = new Intent(this, SearchActivity.class);
-            startActivity(intent);
-        } else if (itemId == R.id.settings) {
-            Intent intent = new Intent(this, SettingsActivity.class);
-            startActivityForResult(intent, REQUEST_SETTINGS);
-        } else if (itemId == R.id.official_website) {
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.official_website)));
-            startActivity(intent);
-        } else if (itemId == R.id.feedback) {
-            View singleLineTweet = findViewById(R.id.quick_tweet_layout);
-            if (singleLineTweet != null && singleLineTweet.getVisibility() == View.VISIBLE) {
-                EditText editStatus = (EditText) findViewById(R.id.quick_tweet_edit);
-                editStatus.setText(" #justaway");
-                editStatus.requestFocus();
-                mApplication.showKeyboard(editStatus);
-                return true;
-            }
-            Intent intent = new Intent(this, PostActivity.class);
-            intent.putExtra("status", " #justaway");
-            startActivity(intent);
-        } else if (mDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        } else if (itemId == android.R.id.home) {
-            cancelSearch();
-        }
-        return true;
-    }
-
     private void cancelSearch() {
         mSearchText.setText("");
-        mSearchText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    return;
-                }
-                ((InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE))
-                        .hideSoftInputFromWindow(v.getWindowToken(), 0);
-                mSearchLayout.setVisibility(View.GONE);
-                mNormalLayout.setVisibility(View.VISIBLE);
-                mDrawerToggle.setDrawerIndicatorEnabled(true);
-                mSearchText.setOnFocusChangeListener(null);
-            }
-        });
-        mSearchText.requestFocus();
-        mSearchText.clearFocus();
+        mApplication.hideKeyboard(mSearchText);
+        mSearchLayout.setVisibility(View.GONE);
+        mNormalLayout.setVisibility(View.VISIBLE);
+        mDrawerToggle.setDrawerIndicatorEnabled(true);
     }
 
     private void showProgressDialog(String message) {
@@ -935,101 +917,6 @@ public class MainActivity extends FragmentActivity {
                 .findFragmentById(TAB_ID_DIRECT_MESSAGE);
         if (fragment != null) {
             fragment.remove(id);
-        }
-    }
-
-    public static final class StreamingSwitchDialogFragment extends DialogFragment {
-
-        private static StreamingSwitchDialogFragment newInstance(boolean turnOn) {
-            final Bundle args = new Bundle(1);
-            args.putBoolean("turnOn", turnOn);
-
-            final StreamingSwitchDialogFragment f = new StreamingSwitchDialogFragment();
-            f.setArguments(args);
-            return f;
-        }
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            final boolean turnOn = getArguments().getBoolean("turnOn");
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle(turnOn ? R.string.confirm_create_streaming : R.string.confirm_destroy_streaming);
-            builder.setPositiveButton(getString(R.string.button_ok),
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            JustawayApplication.getApplication().setStreamingMode(turnOn);
-                            if (turnOn) {
-                                JustawayApplication.getApplication().startStreaming();
-                                JustawayApplication.showToast(R.string.toast_create_streaming);
-                            } else {
-                                JustawayApplication.getApplication().stopStreaming();
-                                JustawayApplication.showToast(R.string.toast_destroy_streaming);
-                            }
-                            dismiss();
-                        }
-                    }
-            );
-            builder.setNegativeButton(getString(R.string.button_cancel),
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dismiss();
-                        }
-                    }
-            );
-            return builder.create();
-        }
-    }
-
-    public class AccessTokenAdapter extends ArrayAdapter<AccessToken> {
-
-        private ArrayList<AccessToken> mAccessTokenList = new ArrayList<AccessToken>();
-        private LayoutInflater mInflater;
-        private int mLayout;
-
-        public AccessTokenAdapter(Context context, int textViewResourceId) {
-            super(context, textViewResourceId);
-            this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            this.mLayout = textViewResourceId;
-        }
-
-        @Override
-        public void add(AccessToken accessToken) {
-            super.add(accessToken);
-            mAccessTokenList.add(accessToken);
-        }
-
-        @Override
-        public void clear() {
-            super.clear();
-            mAccessTokenList.clear();
-        }
-
-        @Override
-        public View getView(final int position, View convertView, ViewGroup parent) {
-            // ビューを受け取る
-            View view = convertView;
-            if (view == null) {
-                // 受け取ったビューがnullなら新しくビューを生成
-                view = mInflater.inflate(this.mLayout, null);
-            }
-
-            AccessToken accessToken = mAccessTokenList.get(position);
-
-            assert view != null;
-            ImageView icon = (ImageView) view.findViewById(R.id.icon);
-            JustawayApplication.getApplication().displayUserIcon(accessToken.getUserId(), icon);
-            ((TextView) view.findViewById(R.id.screen_name)).setText(accessToken.getScreenName());
-
-            if (JustawayApplication.getApplication().getUserId() == accessToken.getUserId()) {
-                ((TextView) view.findViewById(R.id.screen_name)).setTextColor(JustawayApplication.getApplication().getThemeTextColor(mActivity, R.attr.holo_blue));
-            } else {
-                ((TextView) view.findViewById(R.id.screen_name)).setTextColor(JustawayApplication.getApplication().getThemeTextColor(mActivity, R.attr.text_color));
-            }
-
-            return view;
         }
     }
 }
