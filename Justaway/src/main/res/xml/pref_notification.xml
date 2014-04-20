@@ -1,0 +1,33 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <CheckBoxPreference
+        android:key="notification_on"
+        android:title="@string/pref_title_notification_on"
+        android:summary="@string/pref_description_notification_on"
+        android:defaultValue="true"/>
+
+    <CheckBoxPreference
+        android:key="notification_reply_on"
+        android:title="@string/pref_title_notification_reply_on"
+        android:defaultValue="true"/>
+
+    <CheckBoxPreference
+        android:key="notification_favorite_on"
+        android:title="@string/pref_title_notification_favorite_on"
+        android:defaultValue="true"/>
+
+    <CheckBoxPreference
+        android:key="notification_retweet_on"
+        android:title="@string/pref_title_notification_retweet_on"
+        android:defaultValue="true"/>
+
+    <CheckBoxPreference
+        android:key="notification_vibrate_on"
+        android:title="@string/pref_title_notification_vibrate_on"
+        android:defaultValue="true"/>
+
+    <CheckBoxPreference
+        android:key="notification_sound_on"
+        android:title="@string/pref_title_notification_sound_on"
+        android:defaultValue="true"/>
+</PreferenceScreen>

@@ -144,6 +144,9 @@
             android:name=".SettingsActivity"
             android:label="@string/title_activity_settings"/>
         <activity
+            android:name=".NotificationSettingsActivity"
+            android:label="@string/title_notification"/>
+        <activity
             android:name=".MuteActivity"
             android:label="@string/title_mute"/>
         <activity
