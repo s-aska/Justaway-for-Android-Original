@@ -123,7 +123,7 @@ public class DirectMessagesFragment extends BaseFragment {
                 }
                 ResponseList<DirectMessage> directMessages = twitter.getDirectMessages(directMessagesPaging);
                 for (DirectMessage directMessage : directMessages) {
-                    if (mDirectMessagesMaxId == 0L || mDirectMessagesMaxId > directMessage.getId()) {
+                    if (mDirectMessagesMaxId <= 0L || mDirectMessagesMaxId > directMessage.getId()) {
                         mDirectMessagesMaxId = directMessage.getId();
                     }
                 }
@@ -138,7 +138,7 @@ public class DirectMessagesFragment extends BaseFragment {
                 }
                 ResponseList<DirectMessage> sentDirectMessages = twitter.getSentDirectMessages(sentDirectMessagesPaging);
                 for (DirectMessage directMessage : sentDirectMessages) {
-                    if (mSentDirectMessagesMaxId == 0L || mSentDirectMessagesMaxId > directMessage.getId()) {
+                    if (mSentDirectMessagesMaxId <= 0L || mSentDirectMessagesMaxId > directMessage.getId()) {
                         mSentDirectMessagesMaxId = directMessage.getId();
                     }
                 }
