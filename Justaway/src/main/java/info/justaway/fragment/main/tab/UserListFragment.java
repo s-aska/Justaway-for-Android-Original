@@ -6,15 +6,11 @@ import android.support.v4.util.LongSparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 
-import de.greenrobot.event.EventBus;
 import info.justaway.JustawayApplication;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
-import info.justaway.event.NewRecordEvent;
 import info.justaway.model.Row;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
@@ -46,23 +42,8 @@ public class UserListFragment extends BaseFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mUserListId = getArguments().getLong("userListId");
-        ListView listView = getListView();
-        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
-
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
-            }
-
-            @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                // 最後までスクロールされたかどうかの判定
-                if (totalItemCount == firstVisibleItem + visibleItemCount) {
-                    additionalReading();
-                }
-            }
-        });
-
         if (mMaxId == 0L) {
+            mMaxId = -1L;
             new UserListStatusesTask().execute();
         }
     }
@@ -89,7 +70,8 @@ public class UserListFragment extends BaseFragment {
         reload();
     }
 
-    private void additionalReading() {
+    @Override
+    protected void additionalReading() {
         if (!mAutoLoader || mReload) {
             return;
         }
@@ -99,39 +81,8 @@ public class UserListFragment extends BaseFragment {
     }
 
     @Override
-    public void add(final Row row) {
-        final ListView listView = getListView();
-        if (listView == null) {
-            return;
-        }
-
-        if (mMembers.get(row.getStatus().getUser().getId()) == null) {
-            return;
-        }
-        listView.post(new Runnable() {
-            @Override
-            public void run() {
-
-                // 表示している要素の位置
-                int position = listView.getFirstVisiblePosition();
-
-                // 縦スクロール位置
-                View view = listView.getChildAt(0);
-                int y = view != null ? view.getTop() : 0;
-
-                // 要素を上に追加（ addだと下に追加されてしまう ）
-                TwitterAdapter adapter = (TwitterAdapter) listView.getAdapter();
-                adapter.insert(row, 0);
-
-                // 少しでもスクロールさせている時は画面を動かさない様にスクロー位置を復元する
-                if (position != 0 || y != 0) {
-                    listView.setSelectionFromTop(position + 1, y);
-                    EventBus.getDefault().post(new NewRecordEvent(mUserListId, false));
-                } else {
-                    EventBus.getDefault().post(new NewRecordEvent(mUserListId, true));
-                }
-            }
-        });
+    protected boolean skip(Row row) {
+        return mMembers.get(row.getStatus().getUser().getId()) == null;
     }
 
     private class UserListStatusesTask extends AsyncTask<Void, Void, ResponseList<Status>> {

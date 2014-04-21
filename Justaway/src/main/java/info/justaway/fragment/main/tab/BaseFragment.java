@@ -5,12 +5,16 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ListView;
+
+import java.util.ArrayList;
 
 import de.greenrobot.event.EventBus;
 import info.justaway.MainActivity;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
+import info.justaway.event.NewRecordEvent;
 import info.justaway.event.action.AccountChangePostEvent;
 import info.justaway.event.model.CreateStatusEvent;
 import info.justaway.event.model.DestroyStatusEvent;
@@ -22,15 +26,13 @@ import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
 import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout;
 import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
 
-/**
- * タブのベースクラス
- */
-public abstract class BaseFragment extends Fragment implements
-        OnRefreshListener {
+public abstract class BaseFragment extends Fragment implements OnRefreshListener {
 
     private TwitterAdapter mAdapter;
     private ListView mListView;
     private PullToRefreshLayout mPullToRefreshLayout;
+    private Boolean mBusy = false;
+    private ArrayList<Row> mStackRows = new ArrayList<Row>();
 
     public ListView getListView() {
         return mListView;
@@ -91,6 +93,31 @@ public abstract class BaseFragment extends Fragment implements
         mListView.setOnItemClickListener(new StatusClickListener(activity));
 
         mListView.setOnItemLongClickListener(new StatusLongClickListener(mAdapter, activity));
+
+        mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                switch (scrollState) {
+                    case AbsListView.OnScrollListener.SCROLL_STATE_IDLE:
+                        mBusy = false;
+                        render();
+                        break;
+                    case AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL:
+                    case AbsListView.OnScrollListener.SCROLL_STATE_FLING:
+                        mBusy = true;
+                        break;
+                }
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                // 最後までスクロールされたかどうかの判定
+                if (totalItemCount > 0 && totalItemCount == firstVisibleItem + visibleItemCount) {
+                    additionalReading();
+                }
+            }
+        });
     }
 
     @Override
@@ -134,28 +161,89 @@ public abstract class BaseFragment extends Fragment implements
         }
     }
 
-    public void goToTop() {
-        ListView listView = getListView();
-        if (listView == null) {
+    public boolean goToTop() {
+        if (mListView == null) {
             getActivity().finish();
-            return;
+            return false;
         }
-        listView.setSelection(0);
+        mListView.setSelection(0);
+        if (mStackRows.size() > 0) {
+            render();
+            return false;
+        } else {
+            return true;
+        }
     }
 
     public Boolean isTop() {
-        ListView listView = getListView();
-        return listView != null && listView.getFirstVisiblePosition() == 0;
+        return mListView != null && mListView.getFirstVisiblePosition() == 0;
+    }
+
+    private Runnable mRender = new Runnable() {
+        @Override
+        public void run() {
+            if (mBusy) {
+                return;
+            }
+            if (mListView == null || mAdapter == null) {
+                return;
+            }
+
+            // 表示している要素の位置
+            int position = mListView.getFirstVisiblePosition();
+
+            // 縦スクロール位置
+            View view = mListView.getChildAt(0);
+            int y = view != null ? view.getTop() : 0;
+
+            // 要素を上に追加（ addだと下に追加されてしまう ）
+            int count = mStackRows.size();
+            for (Row row : mStackRows) {
+                mAdapter.insert(row, 0);
+            }
+            mStackRows.clear();
+
+            boolean autoScroll = position == 0 && y == 0 && count < 5;
+
+            if (count > 0) {
+                EventBus.getDefault().post(new NewRecordEvent(getTabId(), autoScroll));
+            }
+
+            if (autoScroll) {
+                mListView.setSelection(0);
+            } else {
+                // 少しでもスクロールさせている時は画面を動かさない様にスクロー位置を復元する
+                mListView.setSelectionFromTop(position + count, y);
+            }
+        }
+    };
+
+    private void render() {
+        if (mListView == null) {
+            return;
+        }
+        mListView.removeCallbacks(mRender);
+        mListView.postDelayed(mRender, 250);
+    }
+
+    public void add(Row row) {
+        if (skip(row)) {
+            return;
+        }
+        mStackRows.add(row);
+        render();
     }
 
     /**
      * UserStreamでonStatusを受信した時の挙動
      */
-    public abstract void add(Row row);
+    protected abstract boolean skip(Row row);
 
     public abstract void reload();
 
     public abstract void clear();
 
     public abstract long getTabId();
+
+    protected abstract void additionalReading();
 }
