@@ -92,6 +92,7 @@ public class MainActivity extends FragmentActivity {
     private Activity mActivity;
     private AccessTokenAdapter mAccessTokenAdapter;
     private AccessToken mSwitchAccessToken;
+    private boolean mFirstBoot = true;
 
     @SuppressWarnings("MagicConstant")
     @Override
@@ -455,6 +456,7 @@ public class MainActivity extends FragmentActivity {
                     mApplication.resetDisplaySettings();
                     finish();
                 }
+                break;
             default:
                 break;
         }
@@ -469,6 +471,11 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onPostResume() {
         super.onPostResume();
+
+        if (mFirstBoot) {
+            mFirstBoot = false;
+            return;
+        }
 
         mApplication.resetDisplaySettings();
         mApplication.resetNotification();
@@ -695,15 +702,17 @@ public class MainActivity extends FragmentActivity {
 
     public void onEventMainThread(NewRecordEvent event) {
         int position = mMainPagerAdapter.findPositionById(event.getTabId());
-        if (mViewPager.getCurrentItem() == position && event.getAutoScroll()) {
-            return;
-        }
         if (position < 0) {
             return;
         }
         LinearLayout tabMenus = (LinearLayout) findViewById(R.id.tab_menus);
         Button button = (Button) tabMenus.getChildAt(position);
-        if (button != null) {
+        if (button == null) {
+            return;
+        }
+        if (mViewPager.getCurrentItem() == position && event.getAutoScroll()) {
+            mApplication.setThemeTextColor(this, button, R.attr.menu_text_color);
+        } else  {
             mApplication.setThemeTextColor(this, button, R.attr.holo_blue);
         }
     }
@@ -823,7 +832,9 @@ public class MainActivity extends FragmentActivity {
                         showTopView();
                     }
                 } else {
-                    f.goToTop();
+                    if (f.goToTop()) {
+                        showTopView();
+                    }
                 }
             }
         });
