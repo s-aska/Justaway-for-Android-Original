@@ -36,7 +36,6 @@ import info.justaway.ProfileActivity;
 import info.justaway.R;
 import info.justaway.ScaleImageActivity;
 import info.justaway.event.AlertDialogEvent;
-import info.justaway.event.action.SeenTopEvent;
 import info.justaway.model.Row;
 import twitter4j.DirectMessage;
 import twitter4j.MediaEntity;
@@ -127,10 +126,10 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         if (JustawayApplication.isMute(row)) {
             return;
         }
-        super.add(row);
         if (exists(row)) {
             return;
         }
+        super.add(row);
         mStatuses.add(row);
         filter(row);
         mLimit++;
@@ -276,9 +275,6 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         }
 
         // 表示すべきデータの取得
-        if (position >= mStatuses.size()) {
-            return null;
-        }
         Row row = mStatuses.get(position);
 
         if (row.isDirectMessage()) {
@@ -301,10 +297,6 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             } else {
                 renderStatus(holder, retweet, status, null);
             }
-        }
-
-        if (position == 0) {
-            EventBus.getDefault().post(new SeenTopEvent());
         }
 
         return view;
