@@ -121,7 +121,7 @@ public class UserListFragment extends BaseFragment {
             if (mReload) {
                 adapter.clear();
                 for (twitter4j.Status status : statuses) {
-                    if (mMaxId == 0L || mMaxId > status.getId()) {
+                    if (mMaxId <= 0L || mMaxId > status.getId()) {
                         mMaxId = status.getId();
                     }
                     adapter.add(Row.newStatus(status));
@@ -130,7 +130,7 @@ public class UserListFragment extends BaseFragment {
                 getPullToRefreshLayout().setRefreshComplete();
             } else {
                 for (twitter4j.Status status : statuses) {
-                    if (mMaxId == 0L || mMaxId > status.getId()) {
+                    if (mMaxId <= 0L || mMaxId > status.getId()) {
                         mMaxId = status.getId();
                     }
 

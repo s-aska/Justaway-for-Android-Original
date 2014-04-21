@@ -16,6 +16,7 @@ import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.event.NewRecordEvent;
 import info.justaway.event.action.AccountChangePostEvent;
+import info.justaway.event.action.SeenTopEvent;
 import info.justaway.event.model.CreateStatusEvent;
 import info.justaway.event.model.DestroyStatusEvent;
 import info.justaway.event.action.StatusActionEvent;
@@ -101,7 +102,11 @@ public abstract class BaseFragment extends Fragment implements OnRefreshListener
                 switch (scrollState) {
                     case AbsListView.OnScrollListener.SCROLL_STATE_IDLE:
                         mBusy = false;
-                        render();
+                        if (mStackRows.size() > 0) {
+                            render();
+                        } else if (isTop()) {
+                            EventBus.getDefault().post(new SeenTopEvent());
+                        }
                         break;
                     case AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL:
                     case AbsListView.OnScrollListener.SCROLL_STATE_FLING:
