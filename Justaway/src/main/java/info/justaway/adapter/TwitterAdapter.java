@@ -276,6 +276,9 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         }
 
         // 表示すべきデータの取得
+        if (position >= mStatuses.size()) {
+            return null;
+        }
         Row row = mStatuses.get(position);
 
         if (row.isDirectMessage()) {

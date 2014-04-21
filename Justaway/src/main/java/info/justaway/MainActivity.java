@@ -428,17 +428,6 @@ public class MainActivity extends FragmentActivity {
         } else {
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         }
-
-        mApplication.resetDisplaySettings();
-        mApplication.resetNotification();
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                // フォントサイズの変更や他のアクティビティでのfav/RTを反映
-                mMainPagerAdapter.notifyDataSetChanged();
-            }
-        }, 1000);
     }
 
     @Override
@@ -480,6 +469,22 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onPostResume() {
         super.onPostResume();
+
+        mApplication.resetDisplaySettings();
+        mApplication.resetNotification();
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // フォントサイズの変更や他のアクティビティでのfav/RTを反映
+                try {
+                    mMainPagerAdapter.notifyDataSetChanged();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }, 1000);
+
         if (mSwitchAccessToken != null) {
             mApplication.switchAccessToken(mSwitchAccessToken);
             mSwitchAccessToken = null;
