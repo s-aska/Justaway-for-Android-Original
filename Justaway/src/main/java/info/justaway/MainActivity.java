@@ -455,6 +455,7 @@ public class MainActivity extends FragmentActivity {
                 if (resultCode == RESULT_OK) {
                     mApplication.resetDisplaySettings();
                     finish();
+                    startActivity(new Intent(this, this.getClass()));
                 }
                 break;
             default:
