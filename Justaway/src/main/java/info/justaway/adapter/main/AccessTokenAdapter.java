@@ -42,6 +42,13 @@ public class AccessTokenAdapter extends ArrayAdapter<AccessToken> {
         mLayout = textViewResourceId;
         mHighlightColor = highlightColor;
         mDefaultColor = defaultColor;
+
+        ArrayList<AccessToken> accessTokens = JustawayApplication.getApplication().getAccessTokens();
+        if (accessTokens != null) {
+            for (AccessToken accessToken : accessTokens) {
+                add(accessToken);
+            }
+        }
     }
 
     @Override

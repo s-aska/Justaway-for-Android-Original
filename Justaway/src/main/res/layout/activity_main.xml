@@ -51,7 +51,7 @@
                 android:text="@string/label_tweet_count"/>
 
             <Button
-                android:id="@+id/send"
+                android:id="@+id/send_button"
                 android:layout_width="42dip"
                 android:layout_height="wrap_content"
                 android:background="?attr/button_stateful"
@@ -120,7 +120,7 @@
                 </HorizontalScrollView>
 
                 <Button
-                    android:id="@+id/action_tweet"
+                    android:id="@+id/post_button"
                     android:layout_width="58dip"
                     android:layout_height="wrap_content"
                     android:background="?attr/button_stateful"
