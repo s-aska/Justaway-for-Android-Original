@@ -3,7 +3,6 @@ package info.justaway;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -71,7 +70,7 @@ import twitter4j.TwitterException;
 import twitter4j.auth.AccessToken;
 
 @SuppressLint("InflateParams")
-@SuppressWarnings("UnusedDeclaration,MagicConstant")
+@SuppressWarnings("MagicConstant")
 public class MainActivity extends FragmentActivity {
 
     private static final int REQUEST_ACCOUNT_SETTING = 200;
@@ -85,7 +84,6 @@ public class MainActivity extends FragmentActivity {
     private JustawayApplication mApplication;
     private MainPagerAdapter mMainPagerAdapter;
     private ViewPager mViewPager;
-    private ProgressDialog mProgressDialog;
     private Status mInReplyToStatus;
     private ActionBarDrawerToggle mDrawerToggle;
     private Activity mActivity;
@@ -665,17 +663,6 @@ public class MainActivity extends FragmentActivity {
         mDrawerToggle.setDrawerIndicatorEnabled(true);
     }
 
-    private void showProgressDialog(String message) {
-        mProgressDialog = new ProgressDialog(this);
-        mProgressDialog.setMessage(message);
-        mProgressDialog.show();
-    }
-
-    private void dismissProgressDialog() {
-        if (mProgressDialog != null)
-            mProgressDialog.dismiss();
-    }
-
     public void doDestroyDirectMessage(Long id) {
         new DestroyDirectMessageTask().execute(id);
         // 自分宛のDMを消してもStreaming APIで拾えないで自力で消す
@@ -700,13 +687,13 @@ public class MainActivity extends FragmentActivity {
     void send() {
         String msg = mQuickTweetEdit.getText() != null ? mQuickTweetEdit.getText().toString() : null;
         if (msg != null && msg.length() > 0) {
-            showProgressDialog(getString(R.string.progress_sending));
+            JustawayApplication.showProgressDialog(this, getString(R.string.progress_sending));
 
             if (msg.startsWith("D ")) {
                 SendDirectMessageTask task = new SendDirectMessageTask(null) {
                     @Override
                     protected void onPostExecute(TwitterException e) {
-                        dismissProgressDialog();
+                        JustawayApplication.dismissProgressDialog();
                         if (e == null) {
                             mQuickTweetEdit.setText("");
                         } else {
@@ -725,7 +712,7 @@ public class MainActivity extends FragmentActivity {
                 UpdateStatusTask task = new UpdateStatusTask(null) {
                     @Override
                     protected void onPostExecute(TwitterException e) {
-                        dismissProgressDialog();
+                        JustawayApplication.dismissProgressDialog();
                         if (e == null) {
                             mQuickTweetEdit.setText("");
                         } else if (e.getErrorCode() == ERROR_CODE_DUPLICATE_STATUS) {
@@ -868,9 +855,12 @@ public class MainActivity extends FragmentActivity {
         event.getDialogFragment().show(getSupportFragmentManager(), "dialog");
     }
 
+
+
     /**
      * タイムラインなど一番上まで見たという合図
      */
+    @SuppressWarnings("UnusedDeclaration")
     public void onEventMainThread(SeenTopEvent event) {
         showTopView();
     }
@@ -910,6 +900,7 @@ public class MainActivity extends FragmentActivity {
     /**
      * ストリーミングAPI接続
      */
+    @SuppressWarnings("UnusedDeclaration")
     public void onEventMainThread(ConnectEvent event) {
         mApplication.setThemeTextColor(this, mActionBarHolder.streamingButton, R.attr.holo_green);
     }
@@ -917,6 +908,7 @@ public class MainActivity extends FragmentActivity {
     /**
      * ストリーミングAPI切断
      */
+    @SuppressWarnings("UnusedDeclaration")
     public void onEventMainThread(DisconnectEvent event) {
         if (mApplication.getStreamingMode()) {
             mApplication.setThemeTextColor(this, mActionBarHolder.streamingButton, R.attr.holo_red);
@@ -928,6 +920,7 @@ public class MainActivity extends FragmentActivity {
     /**
      * ストリーミングAPI接続解除
      */
+    @SuppressWarnings("UnusedDeclaration")
     public void onEventMainThread(CleanupEvent event) {
         if (mApplication.getStreamingMode()) {
             mApplication.setThemeTextColor(this, mActionBarHolder.streamingButton, R.attr.holo_orange);
@@ -939,6 +932,7 @@ public class MainActivity extends FragmentActivity {
     /**
      * アカウント変更
      */
+    @SuppressWarnings("UnusedDeclaration")
     public void onEventMainThread(AccountChangeEvent event) {
         if (mAccessTokenAdapter != null) {
             mAccessTokenAdapter.notifyDataSetChanged();
