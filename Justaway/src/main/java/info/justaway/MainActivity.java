@@ -98,11 +98,13 @@ public class MainActivity extends FragmentActivity {
     private ActionBarHolder mActionBarHolder;
 
     @InjectView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
+    @InjectView(R.id.quick_tweet_layout) LinearLayout mQuickTweetLayout;
+    @InjectView(R.id.tab_menus) LinearLayout mTabMenus;
     @InjectView(R.id.main) LinearLayout mContainer;
     @InjectView(R.id.account_list) ListView mDrawerList;
     @InjectView(R.id.send_button) TextView mSendButton;
     @InjectView(R.id.post_button) Button mPostButton;
-    @InjectView(R.id.quick_tweet_edit) TextView mQuickTweetEdit;
+    @InjectView(R.id.quick_tweet_edit) EditText mQuickTweetEdit;
 
     /**
      * ButterKnife for ActionBar
@@ -163,10 +165,6 @@ public class MainActivity extends FragmentActivity {
             return;
         }
 
-        /**
-         * 起動と同時にキーボードが出現するのを抑止、クイックモード時に起きる
-         */
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         /**
          * ビューで使う変数の初期化処理
@@ -212,7 +210,12 @@ public class MainActivity extends FragmentActivity {
         mPostButton.setTypeface(fontello);
         mSendButton.setTypeface(fontello);
 
-        mContainer.requestFocus(); // 起動と同時にキーボードが出現するのを抑止、クイックモード時に起きる
+        /**
+         * 起動と同時にキーボードが出現するのを抑止、クイックモード時に起きる
+         */
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
+        mContainer.requestFocus();
 
         /**
          * ナビゲーションドロワーの初期化処理
@@ -468,21 +471,19 @@ public class MainActivity extends FragmentActivity {
     }
 
     public void showQuickPanel() {
-        findViewById(R.id.quick_tweet_layout).setVisibility(View.VISIBLE);
-        EditText editStatus = (EditText) findViewById(R.id.quick_tweet_edit);
-        editStatus.setFocusable(true);
-        editStatus.setFocusableInTouchMode(true);
-        editStatus.setEnabled(true);
+        mQuickTweetLayout.setVisibility(View.VISIBLE);
+        mQuickTweetEdit.setFocusable(true);
+        mQuickTweetEdit.setFocusableInTouchMode(true);
+        mQuickTweetEdit.setEnabled(true);
         mApplication.setQuickMod(true);
     }
 
     public void hideQuickPanel() {
-        EditText editStatus = (EditText) findViewById(R.id.quick_tweet_edit);
-        editStatus.setFocusable(false);
-        editStatus.setFocusableInTouchMode(false);
-        editStatus.setEnabled(false);
-        editStatus.clearFocus();
-        findViewById(R.id.quick_tweet_layout).setVisibility(View.GONE);
+        mQuickTweetEdit.setFocusable(false);
+        mQuickTweetEdit.setFocusableInTouchMode(false);
+        mQuickTweetEdit.setEnabled(false);
+        mQuickTweetEdit.clearFocus();
+        mQuickTweetLayout.setVisibility(View.GONE);
         mInReplyToStatus = null;
         mApplication.setQuickMod(false);
     }
@@ -498,16 +499,15 @@ public class MainActivity extends FragmentActivity {
                 theme.resolveAttribute(R.attr.button_stateful, outValueBackground, true);
                 theme.resolveAttribute(R.attr.menu_text_color, outValueTextColor, true);
             }
-            LinearLayout tabMenus = (LinearLayout) findViewById(R.id.tab_menus);
-            tabMenus.removeAllViews();
+            mTabMenus.removeAllViews();
             mMainPagerAdapter.clearTab();
+
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                    (int) (60 * getResources().getDisplayMetrics().density + 0.5f),
+                    LinearLayout.LayoutParams.WRAP_CONTENT);
+
             int position = 0;
-            float density = getResources().getDisplayMetrics().density;
-            int width = (int) (60 * density + 0.5f);
-            LinearLayout.LayoutParams layoutParams =
-                    new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.WRAP_CONTENT);
             for (JustawayApplication.Tab tab : tabs) {
-                // 標準のタブを動的に生成する時に実装する
                 Button button = new Button(this);
                 button.setTypeface(fontello);
                 button.setLayoutParams(layoutParams);
@@ -516,7 +516,7 @@ public class MainActivity extends FragmentActivity {
                 button.setTextColor(outValueTextColor.data);
                 button.setBackgroundResource(outValueBackground.resourceId);
                 bindTabListener(button, position++);
-                tabMenus.addView(button);
+                mTabMenus.addView(button);
                 if (tab.id == TAB_ID_TIMELINE) {
                     mMainPagerAdapter.addTab(TimelineFragment.class, null, tab.getName(), tab.id);
                 } else if (tab.id == TAB_ID_INTERACTIONS) {
@@ -531,9 +531,11 @@ public class MainActivity extends FragmentActivity {
             }
             mMainPagerAdapter.notifyDataSetChanged();
 
-            // 起動時やタブ設定後にちゃんとタイトルとボタンのフォーカスを合わせる
+            /**
+             * 起動時やタブ設定後にちゃんとタイトルとボタンのフォーカスを合わせる
+             */
             int currentPosition = mViewPager.getCurrentItem();
-            Button button = (Button) tabMenus.getChildAt(currentPosition);
+            Button button = (Button) mTabMenus.getChildAt(currentPosition);
             if (button != null) {
                 button.setSelected(true);
             }
@@ -706,8 +708,7 @@ public class MainActivity extends FragmentActivity {
                     protected void onPostExecute(TwitterException e) {
                         dismissProgressDialog();
                         if (e == null) {
-                            EditText status = (EditText) findViewById(R.id.quick_tweet_edit);
-                            status.setText("");
+                            mQuickTweetEdit.setText("");
                         } else {
                             JustawayApplication.showToast(R.string.toast_update_status_failure);
                         }
@@ -726,8 +727,7 @@ public class MainActivity extends FragmentActivity {
                     protected void onPostExecute(TwitterException e) {
                         dismissProgressDialog();
                         if (e == null) {
-                            EditText status = (EditText) findViewById(R.id.quick_tweet_edit);
-                            status.setText("");
+                            mQuickTweetEdit.setText("");
                         } else if (e.getErrorCode() == ERROR_CODE_DUPLICATE_STATUS) {
                             JustawayApplication.showToast(getString(R.string.toast_update_status_already));
                         } else {
@@ -743,7 +743,7 @@ public class MainActivity extends FragmentActivity {
     @OnClick(R.id.post_button)
     void openPost() {
         Intent intent = new Intent(this, PostActivity.class);
-        if (findViewById(R.id.quick_tweet_layout).getVisibility() == View.VISIBLE) {
+        if (mQuickTweetLayout.getVisibility() == View.VISIBLE) {
             EditText status = (EditText) findViewById(R.id.quick_tweet_edit);
             if (status == null) {
                 return;
@@ -764,7 +764,7 @@ public class MainActivity extends FragmentActivity {
 
     @OnLongClick(R.id.post_button)
     boolean toggleQuickTweet() {
-        if (findViewById(R.id.quick_tweet_layout).getVisibility() == View.VISIBLE) {
+        if (mQuickTweetLayout.getVisibility() == View.VISIBLE) {
             hideQuickPanel();
         } else {
             showQuickPanel();
@@ -861,28 +861,36 @@ public class MainActivity extends FragmentActivity {
         };
     }
 
+    /**
+     * ダイアログ表示要求
+     */
     public void onEventMainThread(AlertDialogEvent event) {
         event.getDialogFragment().show(getSupportFragmentManager(), "dialog");
     }
 
+    /**
+     * タイムラインなど一番上まで見たという合図
+     */
     public void onEventMainThread(SeenTopEvent event) {
         showTopView();
     }
 
+    /**
+     * リプや引用などのツイート要求、クイックモードでない場合はPostActivityへ
+     */
     public void onEventMainThread(EditorEvent event) {
         View singleLineTweet = findViewById(R.id.quick_tweet_layout);
         if (singleLineTweet != null && singleLineTweet.getVisibility() == View.VISIBLE) {
-            EditText editStatus = (EditText) findViewById(R.id.quick_tweet_edit);
-            editStatus.setText(event.getText());
+            mQuickTweetEdit.setText(event.getText());
             if (event.getSelectionStart() != null) {
                 if (event.getSelectionStop() != null) {
-                    editStatus.setSelection(event.getSelectionStart(), event.getSelectionStop());
+                    mQuickTweetEdit.setSelection(event.getSelectionStart(), event.getSelectionStop());
                 } else {
-                    editStatus.setSelection(event.getSelectionStart());
+                    mQuickTweetEdit.setSelection(event.getSelectionStart());
                 }
             }
             mInReplyToStatus = event.getInReplyToStatus();
-            mApplication.showKeyboard(editStatus);
+            mApplication.showKeyboard(mQuickTweetEdit);
         } else {
             Intent intent = new Intent(this, PostActivity.class);
             intent.putExtra("status", event.getText());
@@ -899,10 +907,16 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
+    /**
+     * ストリーミングAPI接続
+     */
     public void onEventMainThread(ConnectEvent event) {
         mApplication.setThemeTextColor(this, mActionBarHolder.streamingButton, R.attr.holo_green);
     }
 
+    /**
+     * ストリーミングAPI切断
+     */
     public void onEventMainThread(DisconnectEvent event) {
         if (mApplication.getStreamingMode()) {
             mApplication.setThemeTextColor(this, mActionBarHolder.streamingButton, R.attr.holo_red);
@@ -911,6 +925,9 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
+    /**
+     * ストリーミングAPI接続解除
+     */
     public void onEventMainThread(CleanupEvent event) {
         if (mApplication.getStreamingMode()) {
             mApplication.setThemeTextColor(this, mActionBarHolder.streamingButton, R.attr.holo_orange);
@@ -919,6 +936,9 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
+    /**
+     * アカウント変更
+     */
     public void onEventMainThread(AccountChangeEvent event) {
         if (mAccessTokenAdapter != null) {
             mAccessTokenAdapter.notifyDataSetChanged();
@@ -928,13 +948,16 @@ public class MainActivity extends FragmentActivity {
         EventBus.getDefault().post(new AccountChangePostEvent(mMainPagerAdapter.getItemId(mViewPager.getCurrentItem())));
     }
 
+    /**
+     * ストリーミングで新しいツイートを受信
+     * オートスクロールじゃない場合は対応するタブを青くする
+     */
     public void onEventMainThread(NewRecordEvent event) {
         int position = mMainPagerAdapter.findPositionById(event.getTabId());
         if (position < 0) {
             return;
         }
-        LinearLayout tabMenus = (LinearLayout) findViewById(R.id.tab_menus);
-        Button button = (Button) tabMenus.getChildAt(position);
+        Button button = (Button) mTabMenus.getChildAt(position);
         if (button == null) {
             return;
         }
