@@ -37,8 +37,10 @@ import info.justaway.event.connection.CleanupEvent;
 import info.justaway.event.action.EditorEvent;
 import info.justaway.event.connection.ConnectEvent;
 import info.justaway.event.connection.DisconnectEvent;
+import info.justaway.fragment.main.tab.DirectMessagesFragment;
 import info.justaway.model.Row;
 import info.justaway.settings.MuteSettings;
+import info.justaway.task.DestroyDirectMessageTask;
 import info.justaway.task.FavoriteTask;
 import info.justaway.task.RetweetTask;
 import info.justaway.task.UnFavoriteTask;
@@ -1053,6 +1055,10 @@ public class JustawayApplication extends Application {
             intent.putExtra("selection", text.length());
             context.startActivity(intent);
         }
+    }
+
+    public void doDestroyDirectMessage(long id) {
+        new DestroyDirectMessageTask().execute(id);
     }
 
     public void doQuote(Status status, Context context) {

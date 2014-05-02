@@ -3,11 +3,13 @@ package info.justaway.util;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import info.justaway.JustawayApplication;
+import twitter4j.Status;
+import twitter4j.UserMentionEntity;
 
 public class TwitterUtil {
 
-    private static final Pattern URL_PATTERN = Pattern.compile("(http://|https://)[\\w\\.\\-/:\\#\\?\\=\\&\\;\\%\\~\\+]+");
-
+    private static final Pattern URL_PATTERN = Pattern.compile("(http://|https://)[\\w\\.\\-/:#\\?=&;%~\\+]+");
 
     /**
      * ツイートの文字数を数えます
@@ -25,5 +27,19 @@ public class TwitterUtil {
         }
 
         return 140 - length;
+    }
+
+    public static boolean isMentionForMe(Status status) {
+        long userId = JustawayApplication.getApplication().getUserId();
+        if (status.getInReplyToUserId() == userId) {
+            return true;
+        }
+        UserMentionEntity[] mentions = status.getUserMentionEntities();
+        for (UserMentionEntity mention : mentions) {
+            if (mention.getId() == userId) {
+                return true;
+            }
+        }
+        return false;
     }
 }

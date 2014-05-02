@@ -2,26 +2,29 @@ package info.justaway.task;
 
 import android.os.AsyncTask;
 
+import de.greenrobot.event.EventBus;
 import info.justaway.JustawayApplication;
 import info.justaway.R;
+import info.justaway.event.model.DestroyDirectMessageEvent;
+import twitter4j.DirectMessage;
 
-public class DestroyDirectMessageTask extends AsyncTask<Long, Void, Boolean> {
+public class DestroyDirectMessageTask extends AsyncTask<Long, Void, DirectMessage> {
 
     @Override
-    protected Boolean doInBackground(Long... params) {
+    protected DirectMessage doInBackground(Long... params) {
         try {
-            JustawayApplication.getApplication().getTwitter().destroyDirectMessage(params[0]);
-            return true;
+            return JustawayApplication.getApplication().getTwitter().destroyDirectMessage(params[0]);
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
+            return null;
         }
     }
 
     @Override
-    protected void onPostExecute(Boolean success) {
-        if (success) {
+    protected void onPostExecute(DirectMessage directMessage) {
+        if (directMessage != null) {
             JustawayApplication.showToast(R.string.toast_destroy_direct_message_success);
+            EventBus.getDefault().post(new DestroyDirectMessageEvent(directMessage.getId()));
         } else {
             JustawayApplication.showToast(R.string.toast_destroy_direct_message_failure);
         }

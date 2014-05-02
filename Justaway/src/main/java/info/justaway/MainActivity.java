@@ -116,17 +116,24 @@ public class MainActivity extends FragmentActivity {
         @InjectView(R.id.action_bar_search_button) TextView searchButton;
         @InjectView(R.id.action_bar_search_cancel) TextView cancelButton;
         @InjectView(R.id.action_bar_streaming_button) TextView streamingButton;
-        @OnClick(R.id.action_bar_search_button) void actionBarSearchButton() {
+
+        @OnClick(R.id.action_bar_search_button)
+        void actionBarSearchButton() {
             startSearch();
         }
-        @OnClick(R.id.action_bar_search_cancel) void actionBarCancelButton() {
+
+        @OnClick(R.id.action_bar_search_cancel)
+        void actionBarCancelButton() {
             cancelSearch();
         }
-        @OnClick(R.id.action_bar_streaming_button) void actionBarToggleStreaming() {
+
+        @OnClick(R.id.action_bar_streaming_button)
+        void actionBarToggleStreaming() {
             final boolean turnOn = !mApplication.getStreamingMode();
             DialogFragment dialog = StreamingSwitchDialogFragment.newInstance(turnOn);
             dialog.show(getSupportFragmentManager(), "dialog");
         }
+
         public ActionBarHolder(View view) {
             ButterKnife.inject(this, view);
         }
@@ -141,6 +148,7 @@ public class MainActivity extends FragmentActivity {
             Intent intent = new Intent(MainActivity.this, AccountSettingActivity.class);
             startActivityForResult(intent, REQUEST_ACCOUNT_SETTING);
         }
+
         public DrawerHolder(View view) {
             ButterKnife.inject(this, view);
         }
@@ -663,16 +671,6 @@ public class MainActivity extends FragmentActivity {
         mDrawerToggle.setDrawerIndicatorEnabled(true);
     }
 
-    public void doDestroyDirectMessage(Long id) {
-        new DestroyDirectMessageTask().execute(id);
-        // 自分宛のDMを消してもStreaming APIで拾えないで自力で消す
-        DirectMessagesFragment fragment = (DirectMessagesFragment) mMainPagerAdapter
-                .findFragmentById(TAB_ID_DIRECT_MESSAGE);
-        if (fragment != null) {
-            fragment.remove(id);
-        }
-    }
-
     @OnItemClick(R.id.account_list)
     void selectAccount(int position) {
         AccessToken accessToken = mAccessTokenAdapter.getItem(position);
@@ -854,8 +852,6 @@ public class MainActivity extends FragmentActivity {
     public void onEventMainThread(AlertDialogEvent event) {
         event.getDialogFragment().show(getSupportFragmentManager(), "dialog");
     }
-
-
 
     /**
      * タイムラインなど一番上まで見たという合図
