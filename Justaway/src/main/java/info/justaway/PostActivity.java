@@ -153,10 +153,10 @@ public class PostActivity extends FragmentActivity {
         registerForContextMenu(mImgButton);
 
         // アカウント切り替え
+        ArrayList<AccessToken> accessTokens = JustawayApplication.getApplication().getAccessTokens();
         AccessTokenAdapter adapter = new AccessTokenAdapter(this, R.layout.spinner_switch_account);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mSwitchAccountSpinner.setAdapter(adapter);
-        ArrayList<AccessToken> accessTokens = JustawayApplication.getApplication().getAccessTokens();
 
         if (accessTokens != null) {
             int i = 0;
@@ -353,7 +353,7 @@ public class PostActivity extends FragmentActivity {
                 String draft = adapter.getItem(i);
                 mStatusText.setText(draft);
                 mDraftDialog.dismiss();
-                adapter.remove(i);
+                adapter.remove(draft);
                 mPostStockSettings.removeDraft(draft);
             }
         });
@@ -743,7 +743,6 @@ public class PostActivity extends FragmentActivity {
 
     public class AccessTokenAdapter extends ArrayAdapter<AccessToken> {
 
-        private ArrayList<AccessToken> mAccessTokenList = new ArrayList<AccessToken>();
         private LayoutInflater mInflater;
         private int mLayout;
 
@@ -756,7 +755,6 @@ public class PostActivity extends FragmentActivity {
         @Override
         public void add(AccessToken accessToken) {
             super.add(accessToken);
-            mAccessTokenList.add(accessToken);
         }
 
         @Override
@@ -768,7 +766,7 @@ public class PostActivity extends FragmentActivity {
                 view = mInflater.inflate(this.mLayout, null);
             }
 
-            AccessToken accessToken = mAccessTokenList.get(position);
+            AccessToken accessToken = getItem(position);
 
             assert view != null;
             view.setPadding(16, 0, 0, 0);
@@ -788,7 +786,7 @@ public class PostActivity extends FragmentActivity {
                 view = mInflater.inflate(this.mLayout, null);
             }
 
-            AccessToken accessToken = mAccessTokenList.get(position);
+            AccessToken accessToken = getItem(position);
 
             assert view != null;
             ImageView icon = (ImageView) view.findViewById(R.id.icon);
@@ -802,7 +800,6 @@ public class PostActivity extends FragmentActivity {
 
     public class DraftAdapter extends ArrayAdapter<String> {
 
-        private ArrayList<String> mDraftLists = new ArrayList<String>();
         private LayoutInflater mInflater;
         private int mLayout;
 
@@ -815,11 +812,11 @@ public class PostActivity extends FragmentActivity {
         @Override
         public void add(String draft) {
             super.add(draft);
-            mDraftLists.add(draft);
         }
 
-        public void remove(int position) {
-            super.remove(mDraftLists.remove(position));
+        @Override
+        public void remove(String draft) {
+            super.remove(draft);
         }
 
         @Override
@@ -832,7 +829,7 @@ public class PostActivity extends FragmentActivity {
                 view = mInflater.inflate(this.mLayout, null);
             }
 
-            final String draft = mDraftLists.get(position);
+            final String draft = getItem(position);
 
             assert view != null;
             ((TextView) view.findViewById(R.id.word)).setText(draft);
@@ -841,7 +838,7 @@ public class PostActivity extends FragmentActivity {
             view.findViewById(R.id.trash).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    remove(position);
+                    remove(draft);
                     mPostStockSettings.removeDraft(draft);
                 }
             });
@@ -851,7 +848,6 @@ public class PostActivity extends FragmentActivity {
 
     public class HashtagAdapter extends ArrayAdapter<String> {
 
-        private ArrayList<String> mHashtagLists = new ArrayList<String>();
         private LayoutInflater mInflater;
         private int mLayout;
 
@@ -864,11 +860,11 @@ public class PostActivity extends FragmentActivity {
         @Override
         public void add(String hashtag) {
             super.add(hashtag);
-            mHashtagLists.add(hashtag);
         }
 
-        public void remove(int position) {
-            super.remove(mHashtagLists.remove(position));
+        @Override
+        public void remove(String hashtag) {
+            super.remove(hashtag);
         }
 
         @Override
@@ -881,7 +877,7 @@ public class PostActivity extends FragmentActivity {
                 view = mInflater.inflate(this.mLayout, null);
             }
 
-            final String hashtag = mHashtagLists.get(position);
+            final String hashtag = getItem(position);
 
             assert view != null;
             ((TextView) view.findViewById(R.id.word)).setText(hashtag);
@@ -890,7 +886,7 @@ public class PostActivity extends FragmentActivity {
             view.findViewById(R.id.trash).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    remove(position);
+                    remove(hashtag);
                     mPostStockSettings.removeHashtag(hashtag);
                 }
             });
