@@ -10,7 +10,7 @@
     <string name="button_destroy">破棄</string>
     <string name="button_destroy_block">ブロック解除</string>
     <string name="button_destroy_retweet">取り消す</string>
-    <string name="button_edit_profile">プロフィールを編集する</string>
+    <string name="button_edit_profile">プロフィール編集</string>
     <string name="button_follow">フォローする</string>
     <string name="button_no">いいえ</string>
     <string name="button_ok">OK</string>
