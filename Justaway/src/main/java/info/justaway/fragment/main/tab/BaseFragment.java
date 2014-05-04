@@ -70,6 +70,10 @@ public abstract class BaseFragment extends Fragment implements OnRefreshListener
                 .listener(this)
                 .setup(mPullToRefreshLayout);
 
+        mListView.setOnItemClickListener(new StatusClickListener(getActivity()));
+        mListView.setOnItemLongClickListener(new StatusLongClickListener(mAdapter, getActivity()));
+        mListView.setOnScrollListener(mOnScrollListener);
+
         mFooter.setVisibility(View.GONE);
 
         return v;
@@ -89,12 +93,11 @@ public abstract class BaseFragment extends Fragment implements OnRefreshListener
         if (mAdapter == null) {
             // Status(ツイート)をViewに描写するアダプター
             mAdapter = new TwitterAdapter(activity, R.layout.row_tweet);
-            mListView.setAdapter(mAdapter);
-            mListView.setOnItemClickListener(new StatusClickListener(activity));
-            mListView.setOnItemLongClickListener(new StatusLongClickListener(mAdapter, activity));
-            mListView.setOnScrollListener(mOnScrollListener);
+            mListView.setVisibility(View.GONE);
             taskExecute();
         }
+
+        mListView.setAdapter(mAdapter);
     }
 
     @Override
