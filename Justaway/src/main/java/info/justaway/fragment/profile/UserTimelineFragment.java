@@ -14,7 +14,7 @@ import de.greenrobot.event.EventBus;
 import info.justaway.JustawayApplication;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
-import info.justaway.event.model.DestroyStatusEvent;
+import info.justaway.event.model.StreamingDestroyStatusEvent;
 import info.justaway.event.action.StatusActionEvent;
 import info.justaway.listener.StatusClickListener;
 import info.justaway.listener.StatusLongClickListener;
@@ -110,7 +110,7 @@ public class UserTimelineFragment extends Fragment implements OnRefreshListener 
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public void onEventMainThread(DestroyStatusEvent event) {
+    public void onEventMainThread(StreamingDestroyStatusEvent event) {
         mAdapter.removeStatus(event.getStatusId());
     }
 

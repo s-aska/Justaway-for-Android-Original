@@ -2,10 +2,10 @@ package info.justaway.event.model;
 
 import info.justaway.model.Row;
 
-public class CreateFavoriteEvent {
+public class StreamingCreateStatusEvent {
     private final Row row;
 
-    public CreateFavoriteEvent(Row row) {
+    public StreamingCreateStatusEvent(Row row) {
         this.row = row;
     }
 

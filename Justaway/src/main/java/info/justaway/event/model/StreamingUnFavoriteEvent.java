@@ -3,12 +3,12 @@ package info.justaway.event.model;
 import twitter4j.Status;
 import twitter4j.User;
 
-public class UnFavoriteEvent {
+public class StreamingUnFavoriteEvent {
 
     private final User mUser;
     private final Status mStatus;
 
-    public UnFavoriteEvent(final User user, final Status status) {
+    public StreamingUnFavoriteEvent(final User user, final Status status) {
         mUser = user;
         mStatus = status;
     }

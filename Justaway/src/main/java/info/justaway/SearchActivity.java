@@ -28,7 +28,7 @@ import java.util.List;
 import de.greenrobot.event.EventBus;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.event.AlertDialogEvent;
-import info.justaway.event.model.DestroyStatusEvent;
+import info.justaway.event.model.StreamingDestroyStatusEvent;
 import info.justaway.event.action.StatusActionEvent;
 import info.justaway.listener.StatusClickListener;
 import info.justaway.listener.StatusLongClickListener;
@@ -168,7 +168,7 @@ public class SearchActivity extends FragmentActivity {
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public void onEventMainThread(DestroyStatusEvent event) {
+    public void onEventMainThread(StreamingDestroyStatusEvent event) {
         mAdapter.removeStatus(event.getStatusId());
     }
 

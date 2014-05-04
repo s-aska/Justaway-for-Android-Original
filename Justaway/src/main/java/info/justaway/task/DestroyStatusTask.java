@@ -5,7 +5,7 @@ import android.os.AsyncTask;
 import de.greenrobot.event.EventBus;
 import info.justaway.JustawayApplication;
 import info.justaway.R;
-import info.justaway.event.model.DestroyStatusEvent;
+import info.justaway.event.model.StreamingDestroyStatusEvent;
 
 public class DestroyStatusTask extends AsyncTask<Long, Void, Boolean> {
 
@@ -30,7 +30,7 @@ public class DestroyStatusTask extends AsyncTask<Long, Void, Boolean> {
     protected void onPostExecute(Boolean success) {
         if (success) {
             JustawayApplication.showToast(R.string.toast_destroy_status_success);
-            EventBus.getDefault().post(new DestroyStatusEvent(mStatusId));
+            EventBus.getDefault().post(new StreamingDestroyStatusEvent(mStatusId));
         } else {
             JustawayApplication.showToast(R.string.toast_destroy_status_failure);
         }

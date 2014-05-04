@@ -27,7 +27,7 @@ public class TimelineFragment extends BaseFragment {
      * @return trueは表示しない、falseは表示する
      */
     @Override
-    protected boolean skip(Row row) {
+    protected boolean isSkip(Row row) {
         Status retweet = row.getStatus().getRetweetedStatus();
         return retweet != null && retweet.getUser().getId() == JustawayApplication.getApplication().getUserId();
     }

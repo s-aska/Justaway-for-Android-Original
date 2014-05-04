@@ -4,7 +4,7 @@ import android.os.AsyncTask;
 import android.view.View;
 
 import info.justaway.JustawayApplication;
-import info.justaway.event.model.CreateFavoriteEvent;
+import info.justaway.event.model.StreamingCreateFavoriteEvent;
 import info.justaway.model.Row;
 import info.justaway.util.TwitterUtil;
 import twitter4j.Paging;
@@ -30,7 +30,7 @@ public class InteractionsFragment extends BaseFragment {
      * @return trueは表示しない、falseは表示する
      */
     @Override
-    protected boolean skip(Row row) {
+    protected boolean isSkip(Row row) {
         if (row.isFavorite()) {
             return false;
         }
@@ -114,7 +114,7 @@ public class InteractionsFragment extends BaseFragment {
      * ストリーミングAPIからふぁぼを受け取った時のイベント
      * @param event ふぁぼイベント
      */
-    public void onEventMainThread(CreateFavoriteEvent event) {
-        add(event.getRow());
+    public void onEventMainThread(StreamingCreateFavoriteEvent event) {
+        addStack(event.getRow());
     }
 }

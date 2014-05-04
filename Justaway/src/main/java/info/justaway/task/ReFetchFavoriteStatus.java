@@ -4,7 +4,7 @@ import android.os.AsyncTask;
 
 import de.greenrobot.event.EventBus;
 import info.justaway.JustawayApplication;
-import info.justaway.event.model.CreateFavoriteEvent;
+import info.justaway.event.model.StreamingCreateFavoriteEvent;
 import info.justaway.model.Row;
 
 public class ReFetchFavoriteStatus extends AsyncTask<Row, Void, twitter4j.Status> {
@@ -31,7 +31,7 @@ public class ReFetchFavoriteStatus extends AsyncTask<Row, Void, twitter4j.Status
     protected void onPostExecute(twitter4j.Status status) {
         if (status != null) {
             mRow.setStatus(status);
-            EventBus.getDefault().post(new CreateFavoriteEvent(mRow));
+            EventBus.getDefault().post(new StreamingCreateFavoriteEvent(mRow));
             JustawayApplication.showToast(mRow.getSource().getScreenName() + " fav "
                     + mRow.getStatus().getText());
         }

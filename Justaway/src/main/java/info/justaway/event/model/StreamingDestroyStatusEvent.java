@@ -1,10 +1,10 @@
 package info.justaway.event.model;
 
-public class DestroyStatusEvent {
+public class StreamingDestroyStatusEvent {
 
     private final Long mStatusId;
 
-    public DestroyStatusEvent(final Long statusId) {
+    public StreamingDestroyStatusEvent(final Long statusId) {
         mStatusId = statusId;
     }
 

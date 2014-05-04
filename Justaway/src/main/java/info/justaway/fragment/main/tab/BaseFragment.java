@@ -11,16 +11,17 @@ import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import de.greenrobot.event.EventBus;
-import info.justaway.MainActivity;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.event.NewRecordEvent;
-import info.justaway.event.action.AccountChangePostEvent;
-import info.justaway.event.action.SeenTopEvent;
-import info.justaway.event.model.CreateStatusEvent;
-import info.justaway.event.model.DestroyStatusEvent;
+import info.justaway.event.action.GoToTopEvent;
+import info.justaway.event.action.PostAccountChangeEvent;
 import info.justaway.event.action.StatusActionEvent;
+import info.justaway.event.model.StreamingCreateStatusEvent;
+import info.justaway.event.model.StreamingDestroyStatusEvent;
 import info.justaway.listener.StatusClickListener;
 import info.justaway.listener.StatusLongClickListener;
 import info.justaway.model.Row;
@@ -31,19 +32,17 @@ import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
 public abstract class BaseFragment extends Fragment implements OnRefreshListener {
 
     protected TwitterAdapter mAdapter;
-    protected ListView mListView;
-    protected ProgressBar mFooter;
-    protected PullToRefreshLayout mPullToRefreshLayout;
-
     protected Boolean mAutoLoader = false;
     protected Boolean mReloading = false;
     private Boolean mScrolling = false;
-
     protected long mMaxId = 0L; // 読み込んだ最新のツイートID
     protected long mDirectMessagesMaxId = 0L; // 読み込んだ最新の受信メッセージID
     protected long mSentDirectMessagesMaxId = 0L; // 読み込んだ最新の送信メッセージID
-
     private ArrayList<Row> mStackRows = new ArrayList<Row>();
+
+    @InjectView(R.id.list_view) protected ListView mListView;
+    @InjectView(R.id.guruguru) protected ProgressBar mFooter;
+    @InjectView(R.id.ptr_layout) protected PullToRefreshLayout mPullToRefreshLayout;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -57,10 +56,7 @@ public abstract class BaseFragment extends Fragment implements OnRefreshListener
         if (v == null) {
             return null;
         }
-
-        mListView = (ListView) v.findViewById(R.id.list_view);
-        mFooter = (ProgressBar) v.findViewById(R.id.guruguru);
-        mPullToRefreshLayout = (PullToRefreshLayout) v.findViewById(R.id.ptr_layout);
+        ButterKnife.inject(this, v);
 
         /**
          * PullToRefreshの初期化処理
@@ -74,16 +70,12 @@ public abstract class BaseFragment extends Fragment implements OnRefreshListener
         mListView.setOnItemLongClickListener(new StatusLongClickListener(mAdapter, getActivity()));
         mListView.setOnScrollListener(mOnScrollListener);
 
-        mFooter.setVisibility(View.GONE);
-
         return v;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        MainActivity activity = (MainActivity) getActivity();
 
         /**
          * mMainPagerAdapter.notifyDataSetChanged() された時に
@@ -92,8 +84,9 @@ public abstract class BaseFragment extends Fragment implements OnRefreshListener
          */
         if (mAdapter == null) {
             // Status(ツイート)をViewに描写するアダプター
-            mAdapter = new TwitterAdapter(activity, R.layout.row_tweet);
+            mAdapter = new TwitterAdapter(getActivity(), R.layout.row_tweet);
             mListView.setVisibility(View.GONE);
+            mFooter.setVisibility(View.GONE);
             taskExecute();
         }
 
@@ -147,7 +140,7 @@ public abstract class BaseFragment extends Fragment implements OnRefreshListener
         }
         mListView.setSelection(0);
         if (mStackRows.size() > 0) {
-            render();
+            showStack();
             return false;
         } else {
             return true;
@@ -207,7 +200,7 @@ public abstract class BaseFragment extends Fragment implements OnRefreshListener
      * 250ms以内に同じリクエストが来た場合は、更に250ms待つ。
      * 表示を連続で行うと処理が重くなる為この制御を入れている。
      */
-    private void render() {
+    private void showStack() {
         if (mListView == null) {
             return;
         }
@@ -221,12 +214,12 @@ public abstract class BaseFragment extends Fragment implements OnRefreshListener
      * 2. すぐ表示すると流速が早い時にガクガクするので溜めておく
      * @param row ツイート情報
      */
-    public void add(Row row) {
-        if (skip(row)) {
+    public void addStack(Row row) {
+        if (isSkip(row)) {
             return;
         }
         mStackRows.add(row);
-        render();
+        showStack();
     }
 
     /**
@@ -242,9 +235,9 @@ public abstract class BaseFragment extends Fragment implements OnRefreshListener
                 case AbsListView.OnScrollListener.SCROLL_STATE_IDLE:
                     mScrolling = false;
                     if (mStackRows.size() > 0) {
-                        render();
+                        showStack();
                     } else if (isTop()) {
-                        EventBus.getDefault().post(new SeenTopEvent());
+                        EventBus.getDefault().post(new GoToTopEvent());
                     }
                     break;
                 case AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL:
@@ -266,7 +259,7 @@ public abstract class BaseFragment extends Fragment implements OnRefreshListener
     /**
      * そのツイート（またはメッセージ）を表示するかどうかのチェック
      */
-    protected abstract boolean skip(Row row);
+    protected abstract boolean isSkip(Row row);
 
     /**
      * タブ固有のID、ユーザーリストではリストのIDを、その他はマイナスの固定値を返す
@@ -293,7 +286,7 @@ public abstract class BaseFragment extends Fragment implements OnRefreshListener
      * ストリーミングAPIからツイ消しイベントを受信
      * @param event ツイート
      */
-    public void onEventMainThread(DestroyStatusEvent event) {
+    public void onEventMainThread(StreamingDestroyStatusEvent event) {
         int removePosition = mAdapter.removeStatus(event.getStatusId());
         if (removePosition >= 0) {
             int visiblePosition = mListView.getFirstVisiblePosition();
@@ -309,15 +302,15 @@ public abstract class BaseFragment extends Fragment implements OnRefreshListener
      * ストリーミングAPIからツイートイベントを受信
      * @param event ツイート
      */
-    public void onEventMainThread(CreateStatusEvent event) {
-        add(event.getRow());
+    public void onEventMainThread(StreamingCreateStatusEvent event) {
+        addStack(event.getRow());
     }
 
     /**
      * アカウント変更通知を受け、表示中のタブはリロード、表示されていたいタブはクリアを行う
      * @param event アプリが表示しているタブのID
      */
-    public void onEventMainThread(AccountChangePostEvent event) {
+    public void onEventMainThread(PostAccountChangeEvent event) {
         if (event.getTabId() == getTabId()) {
             reload();
         } else {

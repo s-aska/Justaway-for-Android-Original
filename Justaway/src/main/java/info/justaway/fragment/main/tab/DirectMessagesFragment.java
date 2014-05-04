@@ -29,7 +29,7 @@ public class DirectMessagesFragment extends BaseFragment {
      * @return trueは表示しない、falseは表示する
      */
     @Override
-    protected boolean skip(Row row) {
+    protected boolean isSkip(Row row) {
         return !row.isDirectMessage();
     }
 

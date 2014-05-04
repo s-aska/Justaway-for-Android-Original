@@ -47,19 +47,16 @@ import info.justaway.adapter.main.MainPagerAdapter;
 import info.justaway.event.AlertDialogEvent;
 import info.justaway.event.NewRecordEvent;
 import info.justaway.event.action.AccountChangeEvent;
-import info.justaway.event.action.AccountChangePostEvent;
-import info.justaway.event.action.EditorEvent;
-import info.justaway.event.action.SeenTopEvent;
-import info.justaway.event.connection.CleanupEvent;
-import info.justaway.event.connection.ConnectEvent;
-import info.justaway.event.connection.DisconnectEvent;
+import info.justaway.event.action.GoToTopEvent;
+import info.justaway.event.action.OpenEditorEvent;
+import info.justaway.event.action.PostAccountChangeEvent;
+import info.justaway.event.connection.StreamingConnectionEvent;
 import info.justaway.fragment.main.StreamingSwitchDialogFragment;
 import info.justaway.fragment.main.tab.BaseFragment;
 import info.justaway.fragment.main.tab.DirectMessagesFragment;
 import info.justaway.fragment.main.tab.InteractionsFragment;
 import info.justaway.fragment.main.tab.TimelineFragment;
 import info.justaway.fragment.main.tab.UserListFragment;
-import info.justaway.task.DestroyDirectMessageTask;
 import info.justaway.task.SendDirectMessageTask;
 import info.justaway.task.UpdateStatusTask;
 import info.justaway.util.TwitterUtil;
@@ -408,7 +405,7 @@ public class MainActivity extends FragmentActivity {
                 startActivity(intent);
                 break;
             case R.id.feedback:
-                EventBus.getDefault().post(new EditorEvent(" #justaway", null, null, null));
+                EventBus.getDefault().post(new OpenEditorEvent(" #justaway", null, null, null));
                 break;
         }
         return true;
@@ -857,14 +854,14 @@ public class MainActivity extends FragmentActivity {
      * タイムラインなど一番上まで見たという合図
      */
     @SuppressWarnings("UnusedDeclaration")
-    public void onEventMainThread(SeenTopEvent event) {
+    public void onEventMainThread(GoToTopEvent event) {
         showTopView();
     }
 
     /**
      * リプや引用などのツイート要求、クイックモードでない場合はPostActivityへ
      */
-    public void onEventMainThread(EditorEvent event) {
+    public void onEventMainThread(OpenEditorEvent event) {
         View singleLineTweet = findViewById(R.id.quick_tweet_layout);
         if (singleLineTweet != null && singleLineTweet.getVisibility() == View.VISIBLE) {
             mQuickTweetEdit.setText(event.getText());
@@ -896,30 +893,19 @@ public class MainActivity extends FragmentActivity {
     /**
      * ストリーミングAPI接続
      */
-    @SuppressWarnings("UnusedDeclaration")
-    public void onEventMainThread(ConnectEvent event) {
-        mApplication.setThemeTextColor(this, mActionBarHolder.streamingButton, R.attr.holo_green);
-    }
-
-    /**
-     * ストリーミングAPI切断
-     */
-    @SuppressWarnings("UnusedDeclaration")
-    public void onEventMainThread(DisconnectEvent event) {
+    public void onEventMainThread(StreamingConnectionEvent event) {
         if (mApplication.getStreamingMode()) {
-            mApplication.setThemeTextColor(this, mActionBarHolder.streamingButton, R.attr.holo_red);
-        } else {
-            mActionBarHolder.streamingButton.setTextColor(Color.WHITE);
-        }
-    }
-
-    /**
-     * ストリーミングAPI接続解除
-     */
-    @SuppressWarnings("UnusedDeclaration")
-    public void onEventMainThread(CleanupEvent event) {
-        if (mApplication.getStreamingMode()) {
-            mApplication.setThemeTextColor(this, mActionBarHolder.streamingButton, R.attr.holo_orange);
+            switch (event.getStatus()) {
+                case STREAMING_CONNECT:
+                    mApplication.setThemeTextColor(this, mActionBarHolder.streamingButton, R.attr.holo_green);
+                    break;
+                case STREAMING_CLEANUP:
+                    mApplication.setThemeTextColor(this, mActionBarHolder.streamingButton, R.attr.holo_orange);
+                    break;
+                case STREAMING_DISCONNECT:
+                    mApplication.setThemeTextColor(this, mActionBarHolder.streamingButton, R.attr.holo_red);
+                    break;
+            }
         } else {
             mActionBarHolder.streamingButton.setTextColor(Color.WHITE);
         }
@@ -935,7 +921,7 @@ public class MainActivity extends FragmentActivity {
         }
         setupTab();
         mViewPager.setCurrentItem(0);
-        EventBus.getDefault().post(new AccountChangePostEvent(mMainPagerAdapter.getItemId(mViewPager.getCurrentItem())));
+        EventBus.getDefault().post(new PostAccountChangeEvent(mMainPagerAdapter.getItemId(mViewPager.getCurrentItem())));
     }
 
     /**

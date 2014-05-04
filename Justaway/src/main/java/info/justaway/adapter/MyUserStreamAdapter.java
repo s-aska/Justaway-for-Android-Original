@@ -7,12 +7,12 @@ import java.util.ArrayList;
 
 import de.greenrobot.event.EventBus;
 import info.justaway.JustawayApplication;
-import info.justaway.event.model.CreateFavoriteEvent;
-import info.justaway.event.model.CreateStatusEvent;
+import info.justaway.event.model.StreamingCreateFavoriteEvent;
+import info.justaway.event.model.StreamingCreateStatusEvent;
 import info.justaway.event.model.DestroyDirectMessageEvent;
-import info.justaway.event.model.DestroyStatusEvent;
+import info.justaway.event.model.StreamingDestroyStatusEvent;
 import info.justaway.event.model.NotificationEvent;
-import info.justaway.event.model.UnFavoriteEvent;
+import info.justaway.event.model.StreamingUnFavoriteEvent;
 import info.justaway.model.Row;
 import twitter4j.DirectMessage;
 import twitter4j.Status;
@@ -24,10 +24,10 @@ public class MyUserStreamAdapter extends UserStreamAdapter {
 
     private boolean mStopped;
     private boolean mPause;
-    private ArrayList<CreateStatusEvent> mCreateStatusEvents = new ArrayList<CreateStatusEvent>();
-    private ArrayList<DestroyStatusEvent> mDestroyStatusEvents = new ArrayList<DestroyStatusEvent>();
-    private ArrayList<CreateFavoriteEvent> mCreateFavoriteEvents = new ArrayList<CreateFavoriteEvent>();
-    private ArrayList<UnFavoriteEvent> mUnFavoriteEvents = new ArrayList<UnFavoriteEvent>();
+    private ArrayList<StreamingCreateStatusEvent> mStreamingCreateStatusEvents = new ArrayList<StreamingCreateStatusEvent>();
+    private ArrayList<StreamingDestroyStatusEvent> mStreamingDestroyStatusEvents = new ArrayList<StreamingDestroyStatusEvent>();
+    private ArrayList<StreamingCreateFavoriteEvent> mStreamingCreateFavoriteEvents = new ArrayList<StreamingCreateFavoriteEvent>();
+    private ArrayList<StreamingUnFavoriteEvent> mStreamingUnFavoriteEvents = new ArrayList<StreamingUnFavoriteEvent>();
     private ArrayList<DestroyDirectMessageEvent> mDestroyDirectMessageEvents = new ArrayList<DestroyDirectMessageEvent>();
 
     public void stop() {
@@ -47,25 +47,25 @@ public class MyUserStreamAdapter extends UserStreamAdapter {
         new Handler().post(new Runnable() {
             @Override
             public void run() {
-                for (CreateStatusEvent event : mCreateStatusEvents) {
+                for (StreamingCreateStatusEvent event : mStreamingCreateStatusEvents) {
                     EventBus.getDefault().post(event);
                 }
-                for (DestroyStatusEvent event : mDestroyStatusEvents) {
+                for (StreamingDestroyStatusEvent event : mStreamingDestroyStatusEvents) {
                     EventBus.getDefault().post(event);
                 }
-                for (CreateFavoriteEvent event : mCreateFavoriteEvents) {
+                for (StreamingCreateFavoriteEvent event : mStreamingCreateFavoriteEvents) {
                     EventBus.getDefault().post(event);
                 }
-                for (UnFavoriteEvent event : mUnFavoriteEvents) {
+                for (StreamingUnFavoriteEvent event : mStreamingUnFavoriteEvents) {
                     EventBus.getDefault().post(event);
                 }
                 for (DestroyDirectMessageEvent event : mDestroyDirectMessageEvents) {
                     EventBus.getDefault().post(event);
                 }
-                mCreateStatusEvents.clear();
-                mDestroyStatusEvents.clear();
-                mCreateFavoriteEvents.clear();
-                mUnFavoriteEvents.clear();
+                mStreamingCreateStatusEvents.clear();
+                mStreamingDestroyStatusEvents.clear();
+                mStreamingCreateFavoriteEvents.clear();
+                mStreamingUnFavoriteEvents.clear();
                 mDestroyDirectMessageEvents.clear();
             }
         });
@@ -86,9 +86,9 @@ public class MyUserStreamAdapter extends UserStreamAdapter {
             EventBus.getDefault().post(new NotificationEvent(row));
         }
         if (mPause) {
-            mCreateStatusEvents.add(new CreateStatusEvent(row));
+            mStreamingCreateStatusEvents.add(new StreamingCreateStatusEvent(row));
         } else {
-            EventBus.getDefault().post(new CreateStatusEvent(row));
+            EventBus.getDefault().post(new StreamingCreateStatusEvent(row));
         }
     }
 
@@ -98,9 +98,9 @@ public class MyUserStreamAdapter extends UserStreamAdapter {
             return;
         }
         if (mPause) {
-            mDestroyStatusEvents.add(new DestroyStatusEvent(statusDeletionNotice.getStatusId()));
+            mStreamingDestroyStatusEvents.add(new StreamingDestroyStatusEvent(statusDeletionNotice.getStatusId()));
         } else {
-            EventBus.getDefault().post(new DestroyStatusEvent(statusDeletionNotice.getStatusId()));
+            EventBus.getDefault().post(new StreamingDestroyStatusEvent(statusDeletionNotice.getStatusId()));
         }
     }
 
@@ -136,9 +136,9 @@ public class MyUserStreamAdapter extends UserStreamAdapter {
                     mRow.setStatus(status);
                 }
                 if (mPause) {
-                    mCreateFavoriteEvents.add(new CreateFavoriteEvent(mRow));
+                    mStreamingCreateFavoriteEvents.add(new StreamingCreateFavoriteEvent(mRow));
                 } else {
-                    EventBus.getDefault().post(new CreateFavoriteEvent(mRow));
+                    EventBus.getDefault().post(new StreamingCreateFavoriteEvent(mRow));
                 }
             }
         }.execute(row);
@@ -156,9 +156,9 @@ public class MyUserStreamAdapter extends UserStreamAdapter {
             return;
         }
         if (mPause) {
-            mUnFavoriteEvents.add(new UnFavoriteEvent(arg0, arg2));
+            mStreamingUnFavoriteEvents.add(new StreamingUnFavoriteEvent(arg0, arg2));
         } else {
-            EventBus.getDefault().post(new UnFavoriteEvent(arg0, arg2));
+            EventBus.getDefault().post(new StreamingUnFavoriteEvent(arg0, arg2));
         }
     }
 
@@ -173,9 +173,9 @@ public class MyUserStreamAdapter extends UserStreamAdapter {
         }
         EventBus.getDefault().post(new NotificationEvent(row));
         if (mPause) {
-            mCreateStatusEvents.add(new CreateStatusEvent(row));
+            mStreamingCreateStatusEvents.add(new StreamingCreateStatusEvent(row));
         } else {
-            EventBus.getDefault().post(new CreateStatusEvent(row));
+            EventBus.getDefault().post(new StreamingCreateStatusEvent(row));
         }
     }
 

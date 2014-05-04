@@ -33,11 +33,8 @@ import de.greenrobot.event.EventBus;
 import info.justaway.adapter.MyUserStreamAdapter;
 import info.justaway.display.FadeInRoundedBitmapDisplayer;
 import info.justaway.event.action.AccountChangeEvent;
-import info.justaway.event.connection.CleanupEvent;
-import info.justaway.event.action.EditorEvent;
-import info.justaway.event.connection.ConnectEvent;
-import info.justaway.event.connection.DisconnectEvent;
-import info.justaway.fragment.main.tab.DirectMessagesFragment;
+import info.justaway.event.action.OpenEditorEvent;
+import info.justaway.event.connection.StreamingConnectionEvent;
 import info.justaway.model.Row;
 import info.justaway.settings.MuteSettings;
 import info.justaway.task.DestroyDirectMessageTask;
@@ -48,7 +45,6 @@ import info.justaway.task.UnRetweetTask;
 import twitter4j.ConnectionLifeCycleListener;
 import twitter4j.DirectMessage;
 import twitter4j.ResponseList;
-import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
@@ -910,11 +906,11 @@ public class JustawayApplication extends Application {
         mIsFavMap.remove(id);
     }
 
-    public Boolean isFav(Status status) {
+    public Boolean isFav(twitter4j.Status status) {
         if (mIsFavMap.get(status.getId(), false)) {
             return true;
         }
-        Status retweet = status.getRetweetedStatus();
+        twitter4j.Status retweet = status.getRetweetedStatus();
         return retweet != null && (mIsFavMap.get(retweet.getId(), false));
     }
 
@@ -926,12 +922,12 @@ public class JustawayApplication extends Application {
         }
     }
 
-    public Long getRtId(Status status) {
+    public Long getRtId(twitter4j.Status status) {
         Long id = mRtIdMap.get(status.getId());
         if (id != null) {
             return id;
         }
-        Status retweet = status.getRetweetedStatus();
+        twitter4j.Status retweet = status.getRetweetedStatus();
         if (retweet != null) {
             return mRtIdMap.get(retweet.getId());
         }
@@ -950,11 +946,11 @@ public class JustawayApplication extends Application {
         new RetweetTask(statusId).execute();
     }
 
-    public void doDestroyRetweet(Status status) {
+    public void doDestroyRetweet(twitter4j.Status status) {
 
         if (status.getUser().getId() == getUserId()) {
             // 自分がRTしたStatus
-            Status retweet = status.getRetweetedStatus();
+            twitter4j.Status retweet = status.getRetweetedStatus();
             if (retweet != null) {
                 new UnRetweetTask(retweet.getId(), status.getId()).execute();
             }
@@ -970,7 +966,7 @@ public class JustawayApplication extends Application {
                 // そのStatusそのものをRTしている
                 retweetedStatusId = status.getId();
             } else {
-                Status retweet = status.getRetweetedStatus();
+                twitter4j.Status retweet = status.getRetweetedStatus();
                 if (retweet != null) {
                     statusId = mRtIdMap.get(retweet.getId());
                     if (statusId != null && statusId > 0) {
@@ -989,7 +985,7 @@ public class JustawayApplication extends Application {
         }
     }
 
-    public void doReply(Status status, Context context) {
+    public void doReply(twitter4j.Status status, Context context) {
         UserMentionEntity[] mentions = status.getUserMentionEntities();
         String text;
         if (status.getUser().getId() == getUserId() && mentions.length == 1) {
@@ -998,7 +994,7 @@ public class JustawayApplication extends Application {
             text = "@" + status.getUser().getScreenName() + " ";
         }
         if (context instanceof MainActivity) {
-            EventBus.getDefault().post(new EditorEvent(text, status, text.length(), null));
+            EventBus.getDefault().post(new OpenEditorEvent(text, status, text.length(), null));
         } else {
             Intent intent = new Intent(context, PostActivity.class);
             intent.putExtra("status", text);
@@ -1008,7 +1004,7 @@ public class JustawayApplication extends Application {
         }
     }
 
-    public void doReplyAll(Status status, Context context) {
+    public void doReplyAll(twitter4j.Status status, Context context) {
         UserMentionEntity[] mentions = status.getUserMentionEntities();
         String text = "";
         int selection_start = 0;
@@ -1029,7 +1025,7 @@ public class JustawayApplication extends Application {
             }
         }
         if (context instanceof MainActivity) {
-            EventBus.getDefault().post(new EditorEvent(text, status, selection_start, text.length()));
+            EventBus.getDefault().post(new OpenEditorEvent(text, status, selection_start, text.length()));
         } else {
             Intent intent = new Intent(context, PostActivity.class);
             intent.putExtra("status", text);
@@ -1048,7 +1044,7 @@ public class JustawayApplication extends Application {
             text = "D " + directMessage.getSender().getScreenName() + " ";
         }
         if (context instanceof MainActivity) {
-            EventBus.getDefault().post(new EditorEvent(text, null, text.length(), null));
+            EventBus.getDefault().post(new OpenEditorEvent(text, null, text.length(), null));
         } else {
             Intent intent = new Intent(context, PostActivity.class);
             intent.putExtra("status", text);
@@ -1061,12 +1057,12 @@ public class JustawayApplication extends Application {
         new DestroyDirectMessageTask().execute(id);
     }
 
-    public void doQuote(Status status, Context context) {
+    public void doQuote(twitter4j.Status status, Context context) {
         String text = " https://twitter.com/"
                 + status.getUser().getScreenName()
                 + "/status/" + String.valueOf(status.getId());
         if (context instanceof MainActivity) {
-            EventBus.getDefault().post(new EditorEvent(text, status, null, null));
+            EventBus.getDefault().post(new OpenEditorEvent(text, status, null, null));
         } else {
             Intent intent = new Intent(context, PostActivity.class);
             intent.putExtra("status", text);
@@ -1121,7 +1117,7 @@ public class JustawayApplication extends Application {
         }
     }
 
-    public boolean isMentionForMe(Status status) {
+    public boolean isMentionForMe(twitter4j.Status status) {
         long userId = getUserId();
         UserMentionEntity[] mentions = status.getUserMentionEntities();
         for (UserMentionEntity mention : mentions) {
@@ -1136,19 +1132,19 @@ public class JustawayApplication extends Application {
         @Override
         public void onConnect() {
             mTwitterStreamConnected = true;
-            EventBus.getDefault().post(new ConnectEvent());
+            EventBus.getDefault().post(StreamingConnectionEvent.onConnect());
         }
 
         @Override
         public void onDisconnect() {
             mTwitterStreamConnected = false;
-            EventBus.getDefault().post(new DisconnectEvent());
+            EventBus.getDefault().post(StreamingConnectionEvent.onDisconnect());
         }
 
         @Override
         public void onCleanUp() {
             mTwitterStreamConnected = false;
-            EventBus.getDefault().post(new CleanupEvent());
+            EventBus.getDefault().post(StreamingConnectionEvent.onCleanUp());
         }
     }
 }

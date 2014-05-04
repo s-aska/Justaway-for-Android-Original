@@ -35,7 +35,7 @@ public class UserListFragment extends BaseFragment {
     }
 
     @Override
-    protected boolean skip(Row row) {
+    protected boolean isSkip(Row row) {
         return mMembers.get(row.getStatus().getUser().getId()) == null;
     }
 
