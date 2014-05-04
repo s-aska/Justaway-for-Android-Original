@@ -5,7 +5,7 @@ import android.os.AsyncTask;
 import de.greenrobot.event.EventBus;
 import info.justaway.JustawayApplication;
 import info.justaway.R;
-import info.justaway.event.model.DestroyDirectMessageEvent;
+import info.justaway.event.model.StreamingDestroyMessageEvent;
 import twitter4j.DirectMessage;
 
 public class DestroyDirectMessageTask extends AsyncTask<Long, Void, DirectMessage> {
@@ -24,7 +24,7 @@ public class DestroyDirectMessageTask extends AsyncTask<Long, Void, DirectMessag
     protected void onPostExecute(DirectMessage directMessage) {
         if (directMessage != null) {
             JustawayApplication.showToast(R.string.toast_destroy_direct_message_success);
-            EventBus.getDefault().post(new DestroyDirectMessageEvent(directMessage.getId()));
+            EventBus.getDefault().post(new StreamingDestroyMessageEvent(directMessage.getId()));
         } else {
             JustawayApplication.showToast(R.string.toast_destroy_direct_message_failure);
         }
