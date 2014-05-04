@@ -18,7 +18,9 @@ public class JustawayButton extends Button {
 
     public JustawayButton(Context context, AttributeSet attrs) {
         super(context, attrs);
-        init(context);
+        if (!isInEditMode()) {
+            init(context);
+        }
     }
 
     public JustawayButton(Context context, AttributeSet attrs, int defStyle) {
