@@ -72,30 +72,6 @@ public class PostActivity extends FragmentActivity {
     private static final int OPTION_MENU_GROUP_TWICCA = 1;
     private static final int ERROR_CODE_DUPLICATE_STATUS = 187;
 
-    @InjectView(R.id.in_reply_to_layout)
-    RelativeLayout mInReplyToLayout;
-    @InjectView(R.id.in_reply_to_user_icon)
-    ImageView mInReplyToUserIcon;
-    @InjectView(R.id.in_reply_to_status)
-    TextView mInReplyToStatus;
-    @InjectView(R.id.cancel)
-    TextView mCancel;
-    @InjectView(R.id.switch_account_spinner)
-    Spinner mSwitchAccountSpinner;
-    @InjectView(R.id.status_text)
-    EditText mStatusText;
-    @InjectView(R.id.suddenly_button)
-    Button mSuddenlyButton;
-    @InjectView(R.id.img_button)
-    Button mImgButton;
-    @InjectView(R.id.draft_button)
-    Button mDraftButton;
-    @InjectView(R.id.hashtag_button)
-    Button mHashtagButton;
-    @InjectView(R.id.count)
-    TextView mCount;
-    @InjectView(R.id.tweet_button)
-    Button mTweetButton;
     private Activity mContext;
     private Long mInReplyToStatusId;
     private File mImgPath;
@@ -108,6 +84,20 @@ public class PostActivity extends FragmentActivity {
     private TextView mUndoButton;
     private ArrayList<String> mTextHistory = new ArrayList<String>();
     private List<ResolveInfo> mTwiccaPlugins;
+
+    @InjectView(R.id.in_reply_to_cancel) TextView mCancel;
+    @InjectView(R.id.in_reply_to_user_icon) ImageView mInReplyToUserIcon;
+    @InjectView(R.id.in_reply_to_status) TextView mInReplyToStatus;
+    @InjectView(R.id.in_reply_to_layout) RelativeLayout mInReplyToLayout;
+    @InjectView(R.id.switch_account_spinner) Spinner mSwitchAccountSpinner;
+    @InjectView(R.id.status_text) EditText mStatusText;
+    @InjectView(R.id.suddenly_button) Button mSuddenlyButton;
+    @InjectView(R.id.tweet_button) Button mTweetButton;
+    @InjectView(R.id.img_button) Button mImgButton;
+    @InjectView(R.id.draft_button) Button mDraftButton;
+    @InjectView(R.id.hashtag_button) Button mHashtagButton;
+    @InjectView(R.id.count) TextView mCount;
+
 
     @SuppressWarnings("MagicConstant")
     @Override
@@ -158,11 +148,6 @@ public class PostActivity extends FragmentActivity {
         JustawayApplication.getApplication().warmUpUserIconMap();
 
         Typeface fontello = JustawayApplication.getFontello();
-        mImgButton.setTypeface(fontello);
-        mTweetButton.setTypeface(fontello);
-        mSuddenlyButton.setTypeface(fontello);
-        mDraftButton.setTypeface(fontello);
-        mHashtagButton.setTypeface(fontello);
         mCancel.setTypeface(fontello);
 
         registerForContextMenu(mImgButton);
@@ -317,7 +302,7 @@ public class PostActivity extends FragmentActivity {
         });
     }
 
-    @OnClick(R.id.cancel)
+    @OnClick(R.id.in_reply_to_cancel)
     void closeInReplyToLayout() {
         mInReplyToLayout.setVisibility(View.GONE);
     }
