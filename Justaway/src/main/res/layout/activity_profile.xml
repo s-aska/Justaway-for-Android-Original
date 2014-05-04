@@ -19,7 +19,7 @@
             <ImageView
                 android:id="@+id/banner"
                 android:layout_width="match_parent"
-                android:layout_height="180dip"
+                android:layout_height="180dp"
                 android:adjustViewBounds="true"
                 android:contentDescription="@string/description_icon"
                 android:scaleType="fitXY"/>
@@ -27,11 +27,11 @@
             <android.support.v4.view.ViewPager
                 android:id="@+id/pager"
                 android:layout_width="match_parent"
-                android:layout_height="180dip"/>
+                android:layout_height="180dp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="20dip"
+                android:layout_height="20dp"
                 android:layout_gravity="bottom">
 
                 <TextView
@@ -48,8 +48,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="8dip"
-            android:paddingBottom="8dip"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
             android:background="?attr/menu_background"
             android:orientation="horizontal">
 
@@ -66,7 +66,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:textSize="12dp"
-                    android:paddingBottom="2dip"
+                    android:paddingBottom="2dp"
                     tools:text="1234567"
                     tools:ignore="SpUsage"/>
 
@@ -93,7 +93,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:textSize="12dp"
-                    android:paddingBottom="2dip"
+                    android:paddingBottom="2dp"
                     tools:text="1234567"
                     tools:ignore="SpUsage"/>
 
@@ -120,7 +120,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:textSize="12dp"
-                    android:paddingBottom="2dip"
+                    android:paddingBottom="2dp"
                     tools:text="1234567"
                     tools:ignore="SpUsage"/>
 
@@ -147,7 +147,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:textSize="12dp"
-                    android:paddingBottom="2dip"
+                    android:paddingBottom="2dp"
                     tools:text="1234567"
                     tools:ignore="SpUsage"/>
 
@@ -174,7 +174,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:textSize="12dp"
-                    android:paddingBottom="2dip"
+                    android:paddingBottom="2dp"
                     tools:text="1234567"
                     tools:ignore="SpUsage"/>
 
@@ -190,7 +190,7 @@
 
             <LinearLayout
                 android:id="@+id/collapse"
-                android:layout_width="36dip"
+                android:layout_width="36dp"
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:orientation="vertical">

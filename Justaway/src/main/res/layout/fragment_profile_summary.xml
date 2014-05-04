@@ -56,8 +56,8 @@
                     android:shadowRadius="10.0"
                     android:textColor="@android:color/white"
                     android:textSize="20sp"
-                    android:layout_marginTop="3dip"
-                    android:layout_marginLeft="6dip"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginLeft="6dp"
                     android:text="@string/fontello_lock"
                     tools:text="鍵"/>
             </LinearLayout>
@@ -92,12 +92,12 @@
         <Button
             android:id="@+id/follow"
             android:layout_width="wrap_content"
-            android:layout_height="36dip"
+            android:layout_height="36dp"
             android:layout_gravity="right|bottom"
             android:textColor="?attr/holo_blue"
             android:background="?attr/button_stateful"
-            android:paddingLeft="16dip"
-            android:paddingRight="16dip"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
             android:textSize="14sp"
             tools:text="@string/button_unfollow"/>
 </FrameLayout>

@@ -24,8 +24,8 @@
 
             <ImageView
                 android:id="@+id/in_reply_to_user_icon"
-                android:layout_width="18dip"
-                android:layout_height="18dip"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
                 android:layout_marginRight="8dp"
                 android:contentDescription="@string/description_icon"
                 tools:src="@drawable/ic_launcher"/>
@@ -65,8 +65,8 @@
             android:id="@+id/switch_account_spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dip"
-            android:paddingBottom="12dip"/>
+            android:layout_marginLeft="8dp"
+            android:paddingBottom="12dp"/>
 
         <EditText
             android:id="@+id/status_text"
@@ -90,25 +90,25 @@
 
                 <info.justaway.widget.JustawayButton
                     android:id="@+id/suddenly_button"
-                    android:layout_width="58dip"
+                    android:layout_width="58dp"
                     android:layout_height="wrap_content"
                     android:text="@string/fontello_uni"/>
 
                 <info.justaway.widget.JustawayButton
                     android:id="@+id/img_button"
-                    android:layout_width="58dip"
+                    android:layout_width="58dp"
                     android:layout_height="wrap_content"
                     android:text="@string/fontello_picture"/>
 
                 <info.justaway.widget.JustawayButton
                     android:id="@+id/draft_button"
-                    android:layout_width="58dip"
+                    android:layout_width="58dp"
                     android:layout_height="wrap_content"
                     android:text="@string/fontello_archive"/>
 
                 <info.justaway.widget.JustawayButton
                     android:id="@+id/hashtag_button"
-                    android:layout_width="58dip"
+                    android:layout_width="58dp"
                     android:layout_height="wrap_content"
                     android:text="@string/fontello_tag"/>
             </LinearLayout>
@@ -122,15 +122,15 @@
                     android:id="@+id/count"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_marginRight="8dip"
+                    android:layout_marginRight="8dp"
                     android:gravity="center"
                     android:text="@string/label_tweet_count"/>
 
                 <info.justaway.widget.JustawayButton
                     android:id="@+id/tweet_button"
-                    android:layout_width="42dip"
+                    android:layout_width="42dp"
                     android:layout_height="wrap_content"
-                    android:paddingRight="8dip"
+                    android:paddingRight="8dp"
                     android:text="@string/fontello_paper"/>
             </LinearLayout>
         </LinearLayout>

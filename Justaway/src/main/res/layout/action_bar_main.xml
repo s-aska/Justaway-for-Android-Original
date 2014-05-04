@@ -41,25 +41,25 @@
 
         <info.justaway.widget.JustawayButton
             android:id="@+id/action_bar_search_button"
-            android:minWidth="0dip"
-            android:layout_width="48dip"
+            android:minWidth="0dp"
+            android:layout_width="48dp"
             android:layout_height="wrap_content"
             android:background="@drawable/action_bar_stateful"
             android:text="@string/fontello_search"
             android:textColor="?attr/menu_action_bar"
             android:textSize="18sp"
-            tools:paddingBottom="0dip"
+            tools:paddingBottom="0dp"
             tools:textColor="@android:color/white"/>
 
         <info.justaway.widget.JustawayButton
             android:id="@+id/action_bar_streaming_button"
-            android:minWidth="0dip"
-            android:layout_width="48dip"
+            android:minWidth="0dp"
+            android:layout_width="48dp"
             android:layout_height="wrap_content"
             android:background="@drawable/action_bar_stateful"
             android:text="@string/fontello_flash"
             android:textSize="18sp"
-            tools:paddingBottom="0dip"
+            tools:paddingBottom="0dp"
             tools:textColor="@android:color/white"/>
     </LinearLayout>
 
@@ -78,8 +78,8 @@
 
         <info.justaway.widget.JustawayButton
             android:id="@+id/action_bar_search_cancel"
-            android:minWidth="0dip"
-            android:layout_width="48dip"
+            android:minWidth="0dp"
+            android:layout_width="48dp"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
             android:background="@drawable/action_bar_stateful"

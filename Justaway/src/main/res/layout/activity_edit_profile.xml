@@ -3,7 +3,7 @@
               android:layout_height="match_parent"
               android:orientation="vertical"
               android:background="?attr/background"
-              android:padding="6dip">
+              android:padding="6dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -16,9 +16,9 @@
 
             <ImageView
                 android:id="@+id/icon"
-                android:layout_width="96dip"
-                android:layout_height="96dip"
-                android:paddingRight="6dip"/>
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:paddingRight="6dp"/>
 
             <Button
                 android:id="@+id/update_profile_image_button"
@@ -35,7 +35,7 @@
 
             <TextView
                 android:id="@+id/name_label"
-                android:layout_width="64dip"
+                android:layout_width="64dp"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="@string/label_name"/>
@@ -54,7 +54,7 @@
 
             <TextView
                 android:id="@+id/location_label"
-                android:layout_width="64dip"
+                android:layout_width="64dp"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="@string/label_location"/>
@@ -73,7 +73,7 @@
 
             <TextView
                 android:id="@+id/web_site_label"
-                android:layout_width="64dip"
+                android:layout_width="64dp"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="@string/label_web_site"/>
@@ -92,7 +92,7 @@
 
             <TextView
                 android:id="@+id/bio_label"
-                android:layout_width="64dip"
+                android:layout_width="64dp"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="@string/label_bio"/>
