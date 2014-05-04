@@ -32,13 +32,10 @@ public class JustawayButton extends Button {
 
         // テーマによってボタンの色を変える
         TypedValue outValueBackground = new TypedValue();
-        TypedValue outValueTextColor = new TypedValue();
         Resources.Theme theme = context.getTheme();
         if (theme != null) {
             theme.resolveAttribute(R.attr.button_stateful, outValueBackground, true);
-            theme.resolveAttribute(R.attr.menu_text_color, outValueTextColor, true);
         }
-        setTextColor(outValueTextColor.data);
         setBackgroundResource(outValueBackground.resourceId);
     }
 }
