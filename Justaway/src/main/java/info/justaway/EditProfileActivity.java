@@ -59,7 +59,7 @@ public class EditProfileActivity extends FragmentActivity implements LoaderManag
 
     }
 
-    @OnClick(R.id.update_profile_image_button)
+    @OnClick(R.id.icon)
     void updateProfileImage() {
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
