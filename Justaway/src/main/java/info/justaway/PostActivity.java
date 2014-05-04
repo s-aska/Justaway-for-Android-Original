@@ -148,11 +148,6 @@ public class PostActivity extends FragmentActivity {
         JustawayApplication.getApplication().warmUpUserIconMap();
 
         Typeface fontello = JustawayApplication.getFontello();
-        mImgButton.setTypeface(fontello);
-        mTweetButton.setTypeface(fontello);
-        mSuddenlyButton.setTypeface(fontello);
-        mDraftButton.setTypeface(fontello);
-        mHashtagButton.setTypeface(fontello);
         mCancel.setTypeface(fontello);
 
         registerForContextMenu(mImgButton);

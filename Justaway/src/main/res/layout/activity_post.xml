@@ -48,12 +48,11 @@
                 tools:text="New Version."/>
 
             <TextView
-                android:id="@+id/cancel"
+                android:id="@+id/in_reply_to_cancel"
                 android:layout_width="22dp"
                 android:layout_height="22dp"
                 android:layout_alignBaseline="@id/in_reply_to_user_icon"
                 android:layout_alignParentRight="true"
-                android:background="?attr/button_stateful"
                 android:text="@string/fontello_cancel"
                 android:textSize="18sp"/>
 
@@ -85,37 +84,29 @@
                 android:layout_gravity="left"
                 android:gravity="left">
 
-                <Button
+                <info.justaway.widget.JustawayButton
                     android:id="@+id/suddenly_button"
                     android:layout_width="58dip"
                     android:layout_height="wrap_content"
-                    android:background="?attr/button_stateful"
-                    android:text="@string/fontello_uni"
-                    android:textSize="22sp"/>
+                    android:text="@string/fontello_uni"/>
 
-                <Button
+                <info.justaway.widget.JustawayButton
                     android:id="@+id/img_button"
                     android:layout_width="58dip"
                     android:layout_height="wrap_content"
-                    android:background="?attr/button_stateful"
-                    android:text="@string/fontello_picture"
-                    android:textSize="22sp"/>
+                    android:text="@string/fontello_picture"/>
 
-                <Button
+                <info.justaway.widget.JustawayButton
                     android:id="@+id/draft_button"
                     android:layout_width="58dip"
                     android:layout_height="wrap_content"
-                    android:background="?attr/button_stateful"
-                    android:text="@string/fontello_archive"
-                    android:textSize="22sp"/>
+                    android:text="@string/fontello_archive"/>
 
-                <Button
+                <info.justaway.widget.JustawayButton
                     android:id="@+id/hashtag_button"
                     android:layout_width="58dip"
                     android:layout_height="wrap_content"
-                    android:background="?attr/button_stateful"
-                    android:text="@string/fontello_tag"
-                    android:textSize="22sp"/>
+                    android:text="@string/fontello_tag"/>
             </LinearLayout>
 
             <LinearLayout
@@ -131,14 +122,12 @@
                     android:gravity="center"
                     android:text="@string/label_tweet_count"/>
 
-                <Button
+                <info.justaway.widget.JustawayButton
                     android:id="@+id/tweet_button"
                     android:layout_width="42dip"
                     android:layout_height="wrap_content"
                     android:paddingRight="8dip"
-                    android:background="?attr/button_stateful"
-                    android:text="@string/fontello_paper"
-                    android:textSize="22sp"/>
+                    android:text="@string/fontello_paper"/>
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
