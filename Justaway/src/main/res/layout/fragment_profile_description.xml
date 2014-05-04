@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:paddingLeft="12dip"
@@ -21,6 +22,7 @@
         android:shadowRadius="10.0"
         android:textColor="@android:color/white"
         android:textSize="12sp"
+        tools:text="ジャスタウェイ職人"
         android:autoLink="web"/>
 
     <TextView
@@ -34,6 +36,7 @@
         android:shadowDy="5.0"
         android:shadowRadius="10.0"
         android:textColor="@android:color/white"
+        tools:text="江戸"
         android:textSize="12sp"
         android:autoLink="web"/>
 
@@ -49,6 +52,7 @@
         android:shadowRadius="10.0"
         android:textColor="@android:color/white"
         android:textSize="12sp"
+        tools:text="http://justaway.info"
         android:autoLink="web"/>
 
     <TextView
@@ -61,5 +65,6 @@
         android:shadowDy="5.0"
         android:shadowRadius="10.0"
         android:textColor="@android:color/white"
+        tools:text="Twitter開始日：2009年08月31日"
         android:textSize="12sp"/>
 </LinearLayout>
