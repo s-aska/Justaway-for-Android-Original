@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import info.justaway.JustawayApplication;
-import info.justaway.event.model.DestroyDirectMessageEvent;
+import info.justaway.event.model.StreamingDestroyMessageEvent;
 import info.justaway.model.Row;
 import twitter4j.DirectMessage;
 import twitter4j.Paging;
@@ -123,7 +123,7 @@ public class DirectMessagesFragment extends BaseFragment {
      * DM削除通知
      * @param event DMのID
      */
-    public void onEventMainThread(DestroyDirectMessageEvent event) {
+    public void onEventMainThread(StreamingDestroyMessageEvent event) {
         mAdapter.removeDirectMessage(event.getStatusId());
     }
 }

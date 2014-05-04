@@ -9,7 +9,7 @@ import de.greenrobot.event.EventBus;
 import info.justaway.JustawayApplication;
 import info.justaway.event.model.StreamingCreateFavoriteEvent;
 import info.justaway.event.model.StreamingCreateStatusEvent;
-import info.justaway.event.model.DestroyDirectMessageEvent;
+import info.justaway.event.model.StreamingDestroyMessageEvent;
 import info.justaway.event.model.StreamingDestroyStatusEvent;
 import info.justaway.event.model.NotificationEvent;
 import info.justaway.event.model.StreamingUnFavoriteEvent;
@@ -28,7 +28,7 @@ public class MyUserStreamAdapter extends UserStreamAdapter {
     private ArrayList<StreamingDestroyStatusEvent> mStreamingDestroyStatusEvents = new ArrayList<StreamingDestroyStatusEvent>();
     private ArrayList<StreamingCreateFavoriteEvent> mStreamingCreateFavoriteEvents = new ArrayList<StreamingCreateFavoriteEvent>();
     private ArrayList<StreamingUnFavoriteEvent> mStreamingUnFavoriteEvents = new ArrayList<StreamingUnFavoriteEvent>();
-    private ArrayList<DestroyDirectMessageEvent> mDestroyDirectMessageEvents = new ArrayList<DestroyDirectMessageEvent>();
+    private ArrayList<StreamingDestroyMessageEvent> mStreamingDestroyMessageEvents = new ArrayList<StreamingDestroyMessageEvent>();
 
     public void stop() {
         mStopped = true;
@@ -59,14 +59,14 @@ public class MyUserStreamAdapter extends UserStreamAdapter {
                 for (StreamingUnFavoriteEvent event : mStreamingUnFavoriteEvents) {
                     EventBus.getDefault().post(event);
                 }
-                for (DestroyDirectMessageEvent event : mDestroyDirectMessageEvents) {
+                for (StreamingDestroyMessageEvent event : mStreamingDestroyMessageEvents) {
                     EventBus.getDefault().post(event);
                 }
                 mStreamingCreateStatusEvents.clear();
                 mStreamingDestroyStatusEvents.clear();
                 mStreamingCreateFavoriteEvents.clear();
                 mStreamingUnFavoriteEvents.clear();
-                mDestroyDirectMessageEvents.clear();
+                mStreamingDestroyMessageEvents.clear();
             }
         });
     }
@@ -185,9 +185,9 @@ public class MyUserStreamAdapter extends UserStreamAdapter {
             return;
         }
         if (mPause) {
-            mDestroyDirectMessageEvents.add(new DestroyDirectMessageEvent(directMessageId));
+            mStreamingDestroyMessageEvents.add(new StreamingDestroyMessageEvent(directMessageId));
         } else {
-            EventBus.getDefault().post(new DestroyDirectMessageEvent(directMessageId));
+            EventBus.getDefault().post(new StreamingDestroyMessageEvent(directMessageId));
         }
     }
 }
