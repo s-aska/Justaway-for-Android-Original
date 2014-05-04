@@ -32,7 +32,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="gone"
-            android:background="?attr/menu_background">
+            android:background="?attr/menu_background"
+            tools:background="@android:color/background_dark">
 
             <info.justaway.widget.ClearEditText
                 android:id="@+id/quick_tweet_edit"
@@ -48,7 +49,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="8dip"
                 android:textColor="?attr/menu_text_color_disabled"
-                android:text="@string/label_tweet_count"/>
+                android:text="@string/label_tweet_count"
+                tools:textColor="@android:color/white"/>
 
             <info.justaway.widget.JustawayButton
                 android:id="@+id/send_button"
@@ -65,7 +67,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="invisible"
-            android:background="?attr/menu_background">
+            android:background="?attr/menu_background"
+            tools:background="@android:color/background_dark">
 
             <!-- TableRow 無いと2段になる(◞‸◟) -->
             <TableRow tools:ignore="UselessParent">
@@ -83,7 +86,8 @@
                         android:layout_gravity="left"
                         android:gravity="left"
                         android:orientation="horizontal"
-                        android:background="?attr/menu_background">
+                        android:background="?attr/menu_background"
+                        tools:background="@android:color/background_dark">
 
                         <info.justaway.widget.JustawayButton
                             android:id="@+id/action_timeline"
@@ -91,7 +95,7 @@
                             android:layout_height="wrap_content"
                             android:text="@string/fontello_home"
                             android:textColor="?attr/menu_text_color"
-                            tools:ignore="ButtonStyle"/>
+                            tools:textColor="@android:color/white"/>
 
                         <info.justaway.widget.JustawayButton
                             android:id="@+id/action_interactions"
@@ -99,7 +103,7 @@
                             android:layout_height="wrap_content"
                             android:text="@string/fontello_at"
                             android:textColor="?attr/menu_text_color"
-                            tools:ignore="ButtonStyle"/>
+                            tools:textColor="@android:color/white"/>
 
                         <info.justaway.widget.JustawayButton
                             android:id="@+id/action_direct_message"
@@ -107,17 +111,19 @@
                             android:layout_height="wrap_content"
                             android:text="@string/fontello_mail"
                             android:textColor="?attr/menu_text_color"
-                            tools:ignore="ButtonStyle"/>
+                            tools:textColor="@android:color/white"/>
                     </LinearLayout>
                 </HorizontalScrollView>
 
-                <Button
+                <info.justaway.widget.JustawayButton
                     android:id="@+id/post_button"
                     android:layout_width="58dip"
                     android:layout_height="wrap_content"
                     android:background="?attr/button_stateful"
                     android:textColor="?attr/menu_text_color"
-                    android:text="@string/fontello_edit"/>
+                    android:text="@string/fontello_edit"
+                    tools:textColor="@android:color/white"
+                    tools:background="@android:color/background_dark"/>
             </TableRow>
         </TableLayout>
 
@@ -129,7 +135,8 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:background="?attr/background"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        tools:background="@android:color/background_dark">
 
         <ListView
             android:id="@+id/account_list"

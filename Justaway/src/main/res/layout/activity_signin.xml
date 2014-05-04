@@ -10,13 +10,12 @@
               android:orientation="vertical"
               tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/action_start_oauth"
+    <info.justaway.widget.JustawayButton
+        android:id="@+id/start_oauth_button"
         android:layout_width="128dip"
         android:layout_height="128dip"
         android:textSize="64sp"
-        android:text="@string/fontello_twitter"
-        tools:text="■"/>
+        android:text="@string/fontello_twitter"/>
 
     <TextView
         android:id="@+id/connect_with_twitter"
