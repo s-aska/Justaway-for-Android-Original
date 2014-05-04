@@ -41,41 +41,41 @@ public class ScaleImageView extends ImageView implements OnTouchListener {
     @SuppressWarnings("unused")
     public ScaleImageView(Context context, AttributeSet attr) {
         super(context, attr);
-        this.mContext = context;
+        mContext = context;
         initialize();
     }
 
     public void setActivity(Activity activity) {
-        this.mActivity = activity;
+        mActivity = activity;
     }
 
     public ScaleImageView(Context context) {
         super(context);
-        this.mContext = context;
+        mContext = context;
         initialize();
     }
 
     @Override
     public void setImageBitmap(Bitmap bm) {
         super.setImageBitmap(bm);
-        this.initialize();
+        initialize();
     }
 
     @Override
     public void setImageDrawable(Drawable drawable) {
         super.setImageDrawable(drawable);
-        this.initialize();
+        initialize();
     }
 
     @Override
     public void setImageResource(int resId) {
         super.setImageResource(resId);
-        this.initialize();
+        initialize();
     }
 
     private void initialize() {
-        this.setScaleType(ScaleType.MATRIX);
-        this.mMatrix = new Matrix();
+        setScaleType(ScaleType.MATRIX);
+        mMatrix = new Matrix();
         Drawable d = getDrawable();
         if (d != null) {
             mIntrinsicWidth = d.getIntrinsicWidth();
