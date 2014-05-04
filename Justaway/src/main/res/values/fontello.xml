@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="fontello_star"></string>
-    <string name="fontello_reply"></string>
-    <string name="fontello_retweet"></string>
-    <string name="fontello_at"></string>
-    <string name="fontello_location"></string>
-    <string name="fontello_sdd"></string>
-    <string name="fontello_home"></string>
-    <string name="fontello_mail"></string>
-    <string name="fontello_list"></string>
-    <string name="fontello_edit"></string>
+    <string name="fontello_star">★</string>
+    <string name="fontello_reply">返</string>
+    <string name="fontello_retweet">輪</string>
+    <string name="fontello_at">"@"</string>
+    <string name="fontello_location">所</string>
+    <string name="fontello_sdd">鎖</string>
+    <string name="fontello_home">家</string>
+    <string name="fontello_mail">文</string>
+    <string name="fontello_list">欄</string>
+    <string name="fontello_edit">書</string>
     <string name="fontello_uni">✹</string>
     <!-- https://twitter.com/JMNCR/status/398810317645283328 -->
-    <string name="fontello_picture"></string>
-    <string name="fontello_paper"></string>
-    <string name="fontello_lock"></string>
-    <string name="fontello_twitter"></string>
-    <string name="fontello_search"></string>
-    <string name="fontello_tag"></string>
-    <string name="fontello_archive"></string>
-    <string name="fontello_trash"></string>
-    <string name="fontello_up"></string>
-    <string name="fontello_down"></string>
-    <string name="fontello_flash"></string>
-    <string name="fontello_undo"></string>
-    <string name="fontello_menu"></string>
-    <string name="fontello_cancel"></string>
+    <string name="fontello_picture">画</string>
+    <string name="fontello_paper">投</string>
+    <string name="fontello_lock">鍵</string>
+    <string name="fontello_twitter">鳥</string>
+    <string name="fontello_search">探</string>
+    <string name="fontello_tag">札</string>
+    <string name="fontello_archive">箱</string>
+    <string name="fontello_trash">消</string>
+    <string name="fontello_up">上</string>
+    <string name="fontello_down">下</string>
+    <string name="fontello_flash">雷</string>
+    <string name="fontello_undo">戻</string>
+    <string name="fontello_menu">三</string>
+    <string name="fontello_cancel">☓</string>
 
 </resources>
