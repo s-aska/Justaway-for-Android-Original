@@ -847,16 +847,28 @@ public class JustawayApplication extends Application {
         mNotificationServiceStarted = false;
     }
 
-    public void removeAccessToken(int position) {
+    public void removeAccessToken(AccessToken removeAccessToken) {
         SharedPreferences preferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         String json = preferences.getString(TOKENS, null);
         Gson gson = new Gson();
 
         AccountSettings accountSettings = gson.fromJson(json, AccountSettings.class);
-        accountSettings.accessTokens.remove(position);
-        if (accountSettings.index > position) {
-            accountSettings.index--;
+        AccessToken currentAccessToken = accountSettings.accessTokens.get(accountSettings.index);
+
+        /**
+         * 現在設定されているAccessTokenより先に削除すべきAccessTokenがある場合indexをデクリメントする
+         * これをしないと位置がずれる
+         */
+        for (AccessToken accessToken : accountSettings.accessTokens) {
+            if (accessToken.getUserId() == removeAccessToken.getUserId()) {
+                accountSettings.index--;
+                break;
+            }
+            if (accessToken.getUserId() == currentAccessToken.getUserId()) {
+                break;
+            }
         }
+        accountSettings.accessTokens.remove(removeAccessToken);
 
         String exportJson = gson.toJson(accountSettings);
 

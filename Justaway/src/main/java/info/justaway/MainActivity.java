@@ -657,6 +657,9 @@ public class MainActivity extends FragmentActivity {
 
     @OnItemClick(R.id.account_list)
     void selectAccount(int position) {
+        if (mAccessTokenAdapter.getCount() <= position) {
+            return;
+        }
         AccessToken accessToken = mAccessTokenAdapter.getItem(position);
         if (mApplication.getUserId() != accessToken.getUserId()) {
             mApplication.switchAccessToken(accessToken);
