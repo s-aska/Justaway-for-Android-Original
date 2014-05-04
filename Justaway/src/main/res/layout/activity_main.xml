@@ -33,6 +33,7 @@
             android:layout_height="wrap_content"
             android:visibility="gone"
             android:background="?attr/menu_background"
+            tools:visibility="visible"
             tools:background="@android:color/background_dark">
 
             <info.justaway.widget.ClearEditText
@@ -68,6 +69,7 @@
             android:layout_height="wrap_content"
             android:visibility="invisible"
             android:background="?attr/menu_background"
+            tools:visibility="visible"
             tools:background="@android:color/background_dark">
 
             <!-- TableRow 無いと2段になる(◞‸◟) -->
