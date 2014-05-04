@@ -50,15 +50,13 @@
                 android:textColor="?attr/menu_text_color_disabled"
                 android:text="@string/label_tweet_count"/>
 
-            <Button
+            <info.justaway.widget.JustawayButton
                 android:id="@+id/send_button"
                 android:layout_width="42dip"
                 android:layout_height="wrap_content"
-                android:background="?attr/button_stateful"
                 android:layout_marginRight="8dip"
                 android:text="@string/fontello_paper"
-                android:enabled="false"
-                android:textSize="22sp"/>
+                android:enabled="false"/>
 
         </LinearLayout>
 
@@ -87,34 +85,28 @@
                         android:orientation="horizontal"
                         android:background="?attr/menu_background">
 
-                        <Button
+                        <info.justaway.widget.JustawayButton
                             android:id="@+id/action_timeline"
                             android:layout_width="58dip"
                             android:layout_height="wrap_content"
-                            android:background="?attr/button_stateful"
                             android:text="@string/fontello_home"
                             android:textColor="?attr/menu_text_color"
-                            android:textSize="22sp"
                             tools:ignore="ButtonStyle"/>
 
-                        <Button
+                        <info.justaway.widget.JustawayButton
                             android:id="@+id/action_interactions"
                             android:layout_width="58dip"
                             android:layout_height="wrap_content"
-                            android:background="?attr/button_stateful"
                             android:text="@string/fontello_at"
                             android:textColor="?attr/menu_text_color"
-                            android:textSize="22sp"
                             tools:ignore="ButtonStyle"/>
 
-                        <Button
+                        <info.justaway.widget.JustawayButton
                             android:id="@+id/action_direct_message"
                             android:layout_width="58dip"
                             android:layout_height="wrap_content"
-                            android:background="?attr/button_stateful"
                             android:text="@string/fontello_mail"
                             android:textColor="?attr/menu_text_color"
-                            android:textSize="22sp"
                             tools:ignore="ButtonStyle"/>
                     </LinearLayout>
                 </HorizontalScrollView>

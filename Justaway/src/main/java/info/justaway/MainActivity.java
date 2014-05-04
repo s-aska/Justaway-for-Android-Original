@@ -6,7 +6,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -61,6 +60,7 @@ import info.justaway.task.SendDirectMessageTask;
 import info.justaway.task.UpdateStatusTask;
 import info.justaway.util.TwitterUtil;
 import info.justaway.widget.AutoCompleteEditText;
+import info.justaway.widget.JustawayButton;
 import twitter4j.Status;
 import twitter4j.StatusUpdate;
 import twitter4j.TwitterException;
@@ -172,7 +172,6 @@ public class MainActivity extends FragmentActivity {
         /**
          * ビューで使う変数の初期化処理
          */
-        Typeface fontello = JustawayApplication.getFontello();
         mDefaultTextColor = mApplication.getThemeTextColor(this, R.attr.menu_text_color);
         mDisabledTextColor = mApplication.getThemeTextColor(this, R.attr.menu_text_color_disabled);
 
@@ -195,9 +194,6 @@ public class MainActivity extends FragmentActivity {
                     mUserSearchAdapter = new UserSearchAdapter(this, R.layout.row_auto_complete);
                     mActionBarHolder.searchText.setThreshold(0);
                     mActionBarHolder.searchText.setAdapter(mUserSearchAdapter);
-                    mActionBarHolder.searchButton.setTypeface(fontello);
-                    mActionBarHolder.cancelButton.setTypeface(fontello);
-                    mActionBarHolder.streamingButton.setTypeface(fontello);
                     mActionBarHolder.searchText.setOnItemClickListener(getActionBarAutoCompleteOnClickListener());
                 }
             }
@@ -209,9 +205,6 @@ public class MainActivity extends FragmentActivity {
         setContentView(R.layout.activity_main);
 
         ButterKnife.inject(this);
-
-        mPostButton.setTypeface(fontello);
-        mSendButton.setTypeface(fontello);
 
         /**
          * 起動と同時にキーボードが出現するのを抑止、クイックモード時に起きる
@@ -494,12 +487,9 @@ public class MainActivity extends FragmentActivity {
     public void setupTab() {
         ArrayList<JustawayApplication.Tab> tabs = mApplication.loadTabs();
         if (tabs.size() > 0) {
-            Typeface fontello = JustawayApplication.getFontello();
-            TypedValue outValueBackground = new TypedValue();
             TypedValue outValueTextColor = new TypedValue();
             Resources.Theme theme = getTheme();
             if (theme != null) {
-                theme.resolveAttribute(R.attr.button_stateful, outValueBackground, true);
                 theme.resolveAttribute(R.attr.menu_text_color, outValueTextColor, true);
             }
             mTabMenus.removeAllViews();
@@ -511,13 +501,10 @@ public class MainActivity extends FragmentActivity {
 
             int position = 0;
             for (JustawayApplication.Tab tab : tabs) {
-                Button button = new Button(this);
-                button.setTypeface(fontello);
+                Button button = new JustawayButton(this);
                 button.setLayoutParams(layoutParams);
-                button.setTextSize(22);
                 button.setText(tab.getIcon());
                 button.setTextColor(outValueTextColor.data);
-                button.setBackgroundResource(outValueBackground.resourceId);
                 bindTabListener(button, position++);
                 mTabMenus.addView(button);
                 if (tab.id == TAB_ID_TIMELINE) {
