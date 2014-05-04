@@ -4,14 +4,14 @@
               android:layout_height="?android:attr/listPreferredItemHeight"
               android:baselineAligned="false"
               android:orientation="horizontal"
-              android:paddingTop="8dip"
-              android:paddingBottom="8dip"
+              android:paddingTop="8dp"
+              android:paddingBottom="8dp"
               android:paddingLeft="8dp"
               android:paddingRight="8dp">
 
     <TextView
         android:id="@+id/word"
-        android:layout_width="0dip"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:layout_gravity="center"

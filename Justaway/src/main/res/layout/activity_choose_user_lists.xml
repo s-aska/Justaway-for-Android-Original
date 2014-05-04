@@ -8,7 +8,7 @@
     <ListView
         android:id="@+id/list"
         android:layout_width="match_parent"
-        android:layout_height="0dip"
+        android:layout_height="0dp"
         android:layout_weight="1"
         android:background="?attr/background">
     </ListView>
@@ -20,7 +20,7 @@
 
         <TextView
             android:id="@+id/button_cancel"
-            android:layout_width="0dip"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:padding="14dp"
@@ -31,7 +31,7 @@
 
         <TextView
             android:id="@+id/button_save"
-            android:layout_width="0dip"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginLeft="1dp"
