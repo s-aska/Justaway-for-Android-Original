@@ -86,7 +86,6 @@ public abstract class BaseFragment extends Fragment implements OnRefreshListener
             // Status(ツイート)をViewに描写するアダプター
             mAdapter = new TwitterAdapter(getActivity(), R.layout.row_tweet);
             mListView.setVisibility(View.GONE);
-            mFooter.setVisibility(View.GONE);
             taskExecute();
         }
 
