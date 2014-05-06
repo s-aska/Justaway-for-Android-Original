@@ -69,6 +69,7 @@ public abstract class BaseFragment extends Fragment implements OnRefreshListener
         mListView.setOnItemClickListener(new StatusClickListener(getActivity()));
         mListView.setOnItemLongClickListener(new StatusLongClickListener(mAdapter, getActivity()));
         mListView.setOnScrollListener(mOnScrollListener);
+        mFooter.setVisibility(View.GONE);
 
         return v;
     }

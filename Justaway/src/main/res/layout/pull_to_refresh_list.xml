@@ -21,7 +21,6 @@
             android:id="@+id/guruguru"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:visibility="gone"/>
+            android:gravity="center"/>
     </LinearLayout>
 </uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout>
