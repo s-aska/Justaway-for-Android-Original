@@ -88,6 +88,8 @@ public class DirectMessagesFragment extends BaseFragment {
                     }
                 });
                 return directMessages;
+            } catch (OutOfMemoryError e) {
+                return null;
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
