@@ -39,7 +39,7 @@
                 tools:ignore="SpUsage"/>
         </LinearLayout>
 
-        <info.justaway.widget.JustawayButton
+        <info.justaway.widget.FontelloButton
             android:id="@+id/action_bar_search_button"
             android:minWidth="0dp"
             android:layout_width="48dp"
@@ -51,7 +51,7 @@
             tools:paddingBottom="0dp"
             tools:textColor="@android:color/white"/>
 
-        <info.justaway.widget.JustawayButton
+        <info.justaway.widget.FontelloButton
             android:id="@+id/action_bar_streaming_button"
             android:minWidth="0dp"
             android:layout_width="48dp"
@@ -76,7 +76,7 @@
             android:hint="@string/hint_search"
             android:singleLine="true"/>
 
-        <info.justaway.widget.JustawayButton
+        <info.justaway.widget.FontelloButton
             android:id="@+id/action_bar_search_cancel"
             android:minWidth="0dp"
             android:layout_width="48dp"

@@ -11,7 +11,7 @@ import android.widget.TextView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
-import info.justaway.widget.JustawayButton;
+import info.justaway.widget.FontelloButton;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.User;
@@ -23,7 +23,7 @@ public class SignInActivity extends Activity {
     private static final String STATE_REQUEST_TOKEN = "request_token";
     private RequestToken mRequestToken;
 
-    @InjectView(R.id.start_oauth_button) JustawayButton mStartOauthButton;
+    @InjectView(R.id.start_oauth_button) FontelloButton mStartOauthButton;
     @InjectView(R.id.connect_with_twitter) TextView mConnectWithTwitter;
 
     @Override

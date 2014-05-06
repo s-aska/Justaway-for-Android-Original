@@ -16,7 +16,7 @@ import butterknife.InjectView;
 import info.justaway.JustawayApplication;
 import info.justaway.R;
 import info.justaway.listener.OnTrashListener;
-import info.justaway.widget.JustawayButton;
+import info.justaway.widget.FontelloButton;
 import twitter4j.auth.AccessToken;
 
 public class AccessTokenAdapter extends ArrayAdapter<AccessToken> {
@@ -31,7 +31,7 @@ public class AccessTokenAdapter extends ArrayAdapter<AccessToken> {
     class ViewHolder {
         @InjectView(R.id.icon) ImageView mIcon;
         @InjectView(R.id.screen_name) TextView mScreenName;
-        @InjectView(R.id.trash) JustawayButton mTrash;
+        @InjectView(R.id.trash) FontelloButton mTrash;
 
         ViewHolder(View view) {
             ButterKnife.inject(this, view);
