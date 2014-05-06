@@ -37,6 +37,7 @@ import info.justaway.R;
 import info.justaway.ScaleImageActivity;
 import info.justaway.event.AlertDialogEvent;
 import info.justaway.model.Row;
+import info.justaway.util.TwitterUtil;
 import twitter4j.DirectMessage;
 import twitter4j.MediaEntity;
 import twitter4j.Status;
@@ -445,7 +446,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         holder.mDatetimeRelative.setText(getRelativeTime(status.getCreatedAt()));
         holder.mDatetime.setText(getAbsoluteTime(status.getCreatedAt()));
 
-        String via = mApplication.getClientName(status.getSource());
+        String via = TwitterUtil.getClientName(status.getSource());
         holder.mVia.setText("via " + via);
         holder.mVia.setVisibility(View.VISIBLE);
 
@@ -503,7 +504,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         } else {
 
             // 自分へのリプ
-            if (mApplication.isMentionForMe(status)) {
+            if (TwitterUtil.isMentionForMe(status)) {
                 holder.mActionIcon.setText(R.string.fontello_at);
                 holder.mActionIcon.setTextColor(mContext.getResources().getColor(R.color.holo_red_light));
                 holder.mActionByDisplayName.setText(status.getUser().getName());

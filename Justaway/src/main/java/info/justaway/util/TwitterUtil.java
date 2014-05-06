@@ -29,6 +29,15 @@ public class TwitterUtil {
         return 140 - length;
     }
 
+    public static String getClientName(String source) {
+        String[] tokens = source.split("[<>]");
+        if (tokens.length > 1) {
+            return tokens[2];
+        } else {
+            return tokens[0];
+        }
+    }
+
     public static boolean isMentionForMe(Status status) {
         long userId = JustawayApplication.getApplication().getUserId();
         if (status.getInReplyToUserId() == userId) {

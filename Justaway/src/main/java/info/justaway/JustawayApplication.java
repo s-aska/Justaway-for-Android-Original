@@ -351,15 +351,19 @@ public class JustawayApplication extends Application {
 
     public static void dismissProgressDialog() {
         if (mProgressDialog != null)
-            mProgressDialog.dismiss();
+            try {
+                mProgressDialog.dismiss();
+            } finally {
+                mProgressDialog = null;
+            }
     }
 
     /**
      * タブ管理
      */
-    public static final TabManager mTabManager = new TabManager();
+    public static final TabManager sTabManager = new TabManager();
     public TabManager getTabManager() {
-        return mTabManager;
+        return sTabManager;
     }
 
     /**
@@ -1039,26 +1043,6 @@ public class JustawayApplication extends Application {
     public void hideKeyboard(View view) {
         InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
-    }
-
-    public String getClientName(String source) {
-        String[] tokens = source.split("[<>]");
-        if (tokens.length > 1) {
-            return tokens[2];
-        } else {
-            return tokens[0];
-        }
-    }
-
-    public boolean isMentionForMe(twitter4j.Status status) {
-        long userId = getUserId();
-        UserMentionEntity[] mentions = status.getUserMentionEntities();
-        for (UserMentionEntity mention : mentions) {
-            if (mention.getId() == userId) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public class MyConnectionLifeCycleListener implements ConnectionLifeCycleListener {
