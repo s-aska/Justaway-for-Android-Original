@@ -25,7 +25,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="64dp"
-        android:layout_below="@id/icon"/>
+        android:layout_below="@id/icon"
+        tools:ignore="TextFields"/>
 
     <TextView
         android:layout_width="64dp"
@@ -39,7 +40,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="64dp"
-        android:layout_below="@id/name"/>
+        android:layout_below="@id/name"
+        tools:ignore="TextFields"/>
 
     <TextView
         android:layout_width="64dp"
@@ -53,7 +55,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="64dp"
-        android:layout_below="@id/location"/>
+        android:layout_below="@id/location"
+        tools:ignore="TextFields"/>
 
     <TextView
         android:layout_width="64dp"
@@ -67,7 +70,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="64dp"
-        android:layout_below="@id/url"/>
+        android:layout_below="@id/url"
+        tools:ignore="TextFields"/>
 
     <TextView
         android:layout_width="64dp"
