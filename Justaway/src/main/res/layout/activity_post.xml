@@ -92,25 +92,37 @@
                     android:id="@+id/suddenly_button"
                     android:layout_width="58dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/fontello_uni"/>
+                    tools:background="@android:color/background_dark"
+                    android:background="?attr/button_stateful"
+                    android:text="@string/fontello_uni"
+                    android:textSize="22sp"/>
 
                 <info.justaway.widget.JustawayButton
                     android:id="@+id/img_button"
                     android:layout_width="58dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/fontello_picture"/>
+                    tools:background="@android:color/background_dark"
+                    android:background="?attr/button_stateful"
+                    android:text="@string/fontello_picture"
+                    android:textSize="22sp"/>
 
                 <info.justaway.widget.JustawayButton
                     android:id="@+id/draft_button"
                     android:layout_width="58dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/fontello_archive"/>
+                    tools:background="@android:color/background_dark"
+                    android:background="?attr/button_stateful"
+                    android:text="@string/fontello_archive"
+                    android:textSize="22sp"/>
 
                 <info.justaway.widget.JustawayButton
                     android:id="@+id/hashtag_button"
                     android:layout_width="58dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/fontello_tag"/>
+                    tools:background="@android:color/background_dark"
+                    android:background="?attr/button_stateful"
+                    android:text="@string/fontello_tag"
+                    android:textSize="22sp"/>
             </LinearLayout>
 
             <LinearLayout
@@ -130,8 +142,10 @@
                     android:id="@+id/tweet_button"
                     android:layout_width="42dp"
                     android:layout_height="wrap_content"
-                    android:paddingRight="8dp"
-                    android:text="@string/fontello_paper"/>
+                    tools:background="@android:color/background_dark"
+                    android:background="?attr/button_stateful"
+                    android:text="@string/fontello_paper"
+                    android:textSize="22sp"/>
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
