@@ -34,6 +34,7 @@ import info.justaway.display.FadeInRoundedBitmapDisplayer;
 import info.justaway.event.action.AccountChangeEvent;
 import info.justaway.event.action.OpenEditorEvent;
 import info.justaway.event.connection.StreamingConnectionEvent;
+import info.justaway.model.AccessTokenManager;
 import info.justaway.model.Row;
 import info.justaway.model.TabManager;
 import info.justaway.settings.MuteSettings;
@@ -70,6 +71,7 @@ public class JustawayApplication extends Application {
     private static Typeface sFontello;
     private ResponseList<UserList> mUserLists;
     private static ProgressDialog mProgressDialog;
+    private static AccessTokenManager sAccessTokenManager;
 
     public ResponseList<UserList> getUserLists() {
         return mUserLists;
@@ -132,6 +134,10 @@ public class JustawayApplication extends Application {
                 .displayer(new FadeInRoundedBitmapDisplayer(5))
                 .build();
 
+        sAccessTokenManager = new AccessTokenManager();
+
+        sMuteSettings = new MuteSettings();
+
         sFontello = Typeface.createFromAsset(getAssets(), "fontello.ttf");
 
         // 例外発生時の処理を指定（スタックトレースを保存）
@@ -140,10 +146,6 @@ public class JustawayApplication extends Application {
         }
 
         resetDisplaySettings();
-
-        getAccessToken();
-
-        sMuteSettings = new MuteSettings();
 
         warmUpUserIconMap();
     }
@@ -180,6 +182,10 @@ public class JustawayApplication extends Application {
         } else {
             return false;
         }
+    }
+
+    public AccessTokenManager getAccessTokenManager() {
+        return sAccessTokenManager;
     }
 
     /**
@@ -229,7 +235,7 @@ public class JustawayApplication extends Application {
 
     @SuppressWarnings("unchecked")
     public void warmUpUserIconMap() {
-        ArrayList<AccessToken> accessTokens = getAccessTokens();
+        ArrayList<AccessToken> accessTokens = sAccessTokenManager.getAccessTokens();
         if (accessTokens == null || accessTokens.size() == 0) {
             return;
         }
@@ -509,23 +515,52 @@ public class JustawayApplication extends Application {
     /**
      * Twitterインスタンス管理
      */
-    private static final String TOKENS = "tokens";
-    private static final String PREF_NAME = "twitter_access_token";
-    private AccessToken mAccessToken;
     private Twitter mTwitter;
 
+    public void switchAccessToken(final AccessToken accessToken) {
+        sAccessTokenManager.setAccessToken(accessToken);
+        if (getStreamingMode()) {
+            showToast(R.string.toast_destroy_streaming);
+            mUserStreamAdapter.stop();
+            new AsyncTask<Void, Void, Void>() {
+                @Override
+                protected Void doInBackground(Void... params) {
+                    mTwitterStream.cleanUp();
+                    mTwitterStream.shutdown();
+                    return null;
+                }
+
+                @Override
+                protected void onPostExecute(Void status) {
+                    mTwitterStream.setOAuthAccessToken(accessToken);
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            showToast(R.string.toast_create_streaming);
+                            mUserStreamAdapter.start();
+                            mTwitterStream.user();
+                        }
+                    }, 5000);
+                }
+            }.execute();
+        }
+        EventBus.getDefault().post(new AccountChangeEvent());
+    }
+
     public long getUserId() {
-        if (mAccessToken == null) {
+        AccessToken accessToken = sAccessTokenManager.getAccessToken();
+        if (accessToken == null) {
             return -1L;
         }
-        return mAccessToken.getUserId();
+        return accessToken.getUserId();
     }
 
     public String getScreenName() {
-        if (mAccessToken == null) {
+        AccessToken accessToken = sAccessTokenManager.getAccessToken();
+        if (accessToken == null) {
             return "";
         }
-        return mAccessToken.getScreenName();
+        return accessToken.getScreenName();
     }
 
     private String getConsumerKey() {
@@ -534,102 +569,6 @@ public class JustawayApplication extends Application {
 
     private String getConsumerSecret() {
         return getString(R.string.twitter_consumer_secret);
-    }
-
-    /**
-     * Twitterアクセストークン有無
-     *
-     * @return Twitterアクセストークン有無
-     */
-    public Boolean hasAccessToken() {
-        return getAccessToken() != null;
-    }
-
-    public ArrayList<AccessToken> getAccessTokens() {
-        SharedPreferences preferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        String json = preferences.getString(TOKENS, null);
-        if (json == null) {
-            return null;
-        }
-
-        Gson gson = new Gson();
-        JustawayApplication.AccountSettings accountSettings = gson.fromJson(json, JustawayApplication.AccountSettings.class);
-        return accountSettings.accessTokens;
-    }
-
-    /**
-     * Twitterアクセストークン取得
-     *
-     * @return Twitterアクセストークン
-     */
-    public AccessToken getAccessToken() {
-        // キャッシュしておく
-        if (mAccessToken != null) {
-            return mAccessToken;
-        }
-
-        SharedPreferences preferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        String json = preferences.getString(TOKENS, null);
-        if (json == null) {
-            return null;
-        }
-
-        Gson gson = new Gson();
-        AccountSettings accountSettings = gson.fromJson(json, AccountSettings.class);
-        mAccessToken = accountSettings.accessTokens.get(accountSettings.index);
-        return mAccessToken;
-    }
-
-    /**
-     * Twitterアクセストークン保存
-     *
-     * @param accessToken Twitterアクセストークン
-     */
-    public void setAccessToken(AccessToken accessToken) {
-
-        mAccessToken = accessToken;
-
-        getTwitter().setOAuthAccessToken(mAccessToken);
-
-        SharedPreferences preferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        String json = preferences.getString(TOKENS, null);
-        Gson gson = new Gson();
-
-        AccountSettings accountSettings;
-        if (json != null) {
-            accountSettings = gson.fromJson(json, AccountSettings.class);
-
-            boolean existUser = false;
-            int i = 0;
-            for (AccessToken sharedAccessToken : accountSettings.accessTokens) {
-                if (accessToken.getUserId() == sharedAccessToken.getUserId()) {
-                    accountSettings.accessTokens.set(i, accessToken);
-                    accountSettings.index = i;
-                    existUser = true;
-                }
-                i++;
-            }
-
-            if (!existUser) {
-                accountSettings.index = accountSettings.accessTokens.size();
-                accountSettings.accessTokens.add(mAccessToken);
-            }
-        } else {
-            accountSettings = new AccountSettings();
-            accountSettings.accessTokens = new ArrayList<AccessToken>();
-            accountSettings.accessTokens.add(mAccessToken);
-        }
-
-        String exportJson = gson.toJson(accountSettings);
-
-        Editor editor = preferences.edit();
-        editor.putString(TOKENS, exportJson);
-        editor.commit();
-    }
-
-    public static class AccountSettings {
-        int index;
-        ArrayList<AccessToken> accessTokens;
     }
 
     /**
@@ -643,7 +582,7 @@ public class JustawayApplication extends Application {
         }
         Twitter twitter = getTwitterInstance();
 
-        AccessToken token = getAccessToken();
+        AccessToken token = sAccessTokenManager.getAccessToken();
         if (token != null) {
             twitter.setOAuthAccessToken(token);
             // アクセストークンまである時だけキャッシュしておく
@@ -672,7 +611,7 @@ public class JustawayApplication extends Application {
      * @return TwitterStreamインスタンス
      */
     public TwitterStream getTwitterStream() {
-        AccessToken token = getAccessToken();
+        AccessToken token = sAccessTokenManager.getAccessToken();
         if (token == null) {
             return null;
         }
@@ -695,7 +634,7 @@ public class JustawayApplication extends Application {
         if (mTwitterStream != null) {
             if (!mTwitterStreamConnected) {
                 mUserStreamAdapter.start();
-                mTwitterStream.setOAuthAccessToken(getAccessToken());
+                mTwitterStream.setOAuthAccessToken(sAccessTokenManager.getAccessToken());
                 mTwitterStream.user();
             }
             return;
@@ -748,66 +687,6 @@ public class JustawayApplication extends Application {
         } else {
             NotificationService.stop(this);
         }
-    }
-
-    public void removeAccessToken(AccessToken removeAccessToken) {
-        SharedPreferences preferences = getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        String json = preferences.getString(TOKENS, null);
-        Gson gson = new Gson();
-
-        AccountSettings accountSettings = gson.fromJson(json, AccountSettings.class);
-        AccessToken currentAccessToken = accountSettings.accessTokens.get(accountSettings.index);
-
-        /**
-         * 現在設定されているAccessTokenより先に削除すべきAccessTokenがある場合indexをデクリメントする
-         * これをしないと位置がずれる
-         */
-        for (AccessToken accessToken : accountSettings.accessTokens) {
-            if (accessToken.getUserId() == removeAccessToken.getUserId()) {
-                accountSettings.index--;
-                break;
-            }
-            if (accessToken.getUserId() == currentAccessToken.getUserId()) {
-                break;
-            }
-        }
-        accountSettings.accessTokens.remove(removeAccessToken);
-
-        String exportJson = gson.toJson(accountSettings);
-
-        Editor editor = preferences.edit();
-        editor.putString(TOKENS, exportJson);
-        editor.commit();
-    }
-
-    public void switchAccessToken(final AccessToken accessToken) {
-        setAccessToken(accessToken);
-        if (getStreamingMode()) {
-            showToast(R.string.toast_destroy_streaming);
-            mUserStreamAdapter.stop();
-            new AsyncTask<Void, Void, Void>() {
-                @Override
-                protected Void doInBackground(Void... params) {
-                    mTwitterStream.cleanUp();
-                    mTwitterStream.shutdown();
-                    return null;
-                }
-
-                @Override
-                protected void onPostExecute(Void status) {
-                    mTwitterStream.setOAuthAccessToken(accessToken);
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            showToast(R.string.toast_create_streaming);
-                            mUserStreamAdapter.start();
-                            mTwitterStream.user();
-                        }
-                    }, 5000);
-                }
-            }.execute();
-        }
-        EventBus.getDefault().post(new AccountChangeEvent());
     }
 
     private LongSparseArray<Boolean> mIsFavMap = new LongSparseArray<Boolean>();

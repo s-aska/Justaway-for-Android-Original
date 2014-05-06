@@ -14,11 +14,13 @@ import info.justaway.adapter.account.AccessTokenAdapter;
 import info.justaway.fragment.dialog.AccountSwitchDialogFragment;
 import info.justaway.listener.OnTrashListener;
 import info.justaway.listener.RemoveAccountListener;
+import info.justaway.model.AccessTokenManager;
 import twitter4j.auth.AccessToken;
 
 public class AccountSettingActivity extends FragmentActivity implements RemoveAccountListener {
 
     private JustawayApplication mApplication;
+    private AccessTokenManager mAccessTokenManager;
     private AccessTokenAdapter mAccountAdapter;
 
     @Override
@@ -34,8 +36,9 @@ public class AccountSettingActivity extends FragmentActivity implements RemoveAc
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
+        mAccessTokenManager = mApplication.getAccessTokenManager();
         mAccountAdapter = new AccessTokenAdapter(this, R.layout.row_account);
-        for (AccessToken accessToken : mApplication.getAccessTokens()) {
+        for (AccessToken accessToken : mAccessTokenManager.getAccessTokens()) {
             mAccountAdapter.add(accessToken);
         }
 
@@ -87,6 +90,6 @@ public class AccountSettingActivity extends FragmentActivity implements RemoveAc
     @Override
     public void removeAccount(AccessToken accessToken) {
         mAccountAdapter.remove(accessToken);
-        mApplication.removeAccessToken(accessToken);
+        mAccessTokenManager.removeAccessToken(accessToken);
     }
 }

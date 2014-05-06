@@ -19,11 +19,8 @@ import twitter4j.auth.AccessToken;
 public class AccessTokenAdapter extends ArrayAdapter<AccessToken> {
 
     static class ViewHolder {
-
-        @InjectView(R.id.icon)
-        ImageView mIcon;
-        @InjectView(R.id.screen_name)
-        TextView mScreenName;
+        @InjectView(R.id.icon) ImageView mIcon;
+        @InjectView(R.id.screen_name) TextView mScreenName;
 
         public ViewHolder(View view) {
             ButterKnife.inject(this, view);
@@ -43,7 +40,8 @@ public class AccessTokenAdapter extends ArrayAdapter<AccessToken> {
         mHighlightColor = highlightColor;
         mDefaultColor = defaultColor;
 
-        ArrayList<AccessToken> accessTokens = JustawayApplication.getApplication().getAccessTokens();
+        ArrayList<AccessToken> accessTokens =
+                JustawayApplication.getApplication().getAccessTokenManager().getAccessTokens();
         if (accessTokens != null) {
             for (AccessToken accessToken : accessTokens) {
                 add(accessToken);

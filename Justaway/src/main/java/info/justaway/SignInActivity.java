@@ -119,7 +119,7 @@ public class SignInActivity extends Activity {
                 JustawayApplication application = JustawayApplication.getApplication();
                 Twitter twitter = application.getTwitterInstance();
                 AccessToken accessToken = twitter.getOAuthAccessToken(mRequestToken, params[0]);
-                application.setAccessToken(accessToken);
+                application.getAccessTokenManager().setAccessToken(accessToken);
                 twitter.setOAuthAccessToken(accessToken);
                 return twitter.verifyCredentials();
             } catch (Exception e) {

@@ -153,7 +153,8 @@ public class PostActivity extends FragmentActivity {
         registerForContextMenu(mImgButton);
 
         // アカウント切り替え
-        ArrayList<AccessToken> accessTokens = JustawayApplication.getApplication().getAccessTokens();
+        ArrayList<AccessToken> accessTokens =
+                JustawayApplication.getApplication().getAccessTokenManager().getAccessTokens();
         AccessTokenAdapter adapter = new AccessTokenAdapter(this, R.layout.spinner_switch_account);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mSwitchAccountSpinner.setAdapter(adapter);

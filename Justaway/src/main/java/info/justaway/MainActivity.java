@@ -160,7 +160,7 @@ public class MainActivity extends FragmentActivity {
         /**
          * アクセストークンがない場合に認証用のアクティビティを起動する
          */
-        if (!mApplication.hasAccessToken()) {
+        if (!mApplication.getAccessTokenManager().hasAccessToken()) {
             Intent intent = new Intent(this, SignInActivity.class);
             startActivity(intent);
             finish();
@@ -265,7 +265,7 @@ public class MainActivity extends FragmentActivity {
                 }
                 if (mAccessTokenAdapter != null) {
                     mAccessTokenAdapter.clear();
-                    for (AccessToken accessToken : mApplication.getAccessTokens()) {
+                    for (AccessToken accessToken : mApplication.getAccessTokenManager().getAccessTokens()) {
                         mAccessTokenAdapter.add(accessToken);
                     }
                 }
