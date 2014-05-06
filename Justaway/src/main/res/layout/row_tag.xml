@@ -1,34 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="?android:attr/listPreferredItemHeight"
-              android:baselineAligned="false"
-              android:orientation="horizontal">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="?android:attr/listPreferredItemHeight">
 
-    <TextView
-        android:id="@+id/tab_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:paddingLeft="8dp"
-        android:textSize="20sp"/>
-
-    <TextView
-        android:id="@+id/name"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_gravity="center"
-        android:padding="8dp"
-        android:textSize="18sp"/>
-
-    <TextView
+    <info.justaway.widget.FontelloTextView
         android:id="@+id/handle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:padding="12dp"
+        android:layout_alignParentRight="true"
         android:background="@drawable/button_stateful_transparent"
+        android:padding="12dp"
         android:text="@string/fontello_menu"
         android:textSize="24sp"/>
-</LinearLayout>
+
+    <info.justaway.widget.FontelloTextView
+        android:id="@+id/tab_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@id/handle"
+        android:layout_gravity="center"
+        android:layout_marginRight="8dp"
+        android:layout_marginLeft="8dp"
+        android:textSize="20sp"
+        tools:text="家"/>
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/tab_icon"
+        android:layout_alignBaseline="@id/handle"
+        android:layout_gravity="center"
+        android:paddingRight="8dp"
+        tools:text="Home"
+        android:textSize="18sp"/>
+
+</RelativeLayout>
