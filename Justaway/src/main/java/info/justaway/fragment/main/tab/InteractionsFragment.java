@@ -74,6 +74,8 @@ public class InteractionsFragment extends BaseFragment {
                     paging.setCount(BasicSettings.getPageCount());
                 }
                 return TwitterManager.getTwitter().getMentionsTimeline(paging);
+            } catch (OutOfMemoryError e) {
+                return null;
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
