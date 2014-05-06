@@ -9,14 +9,11 @@ import info.justaway.model.UserIconManager;
 import info.justaway.settings.BasicSettings;
 import info.justaway.settings.MuteSettings;
 import info.justaway.util.ImageUtil;
-import twitter4j.ResponseList;
-import twitter4j.UserList;
 
 public class JustawayApplication extends Application {
 
     private static JustawayApplication sApplication;
     private static Typeface sFontello;
-    private static ResponseList<UserList> sUserLists;
 
     @Override
     public void onCreate() {
@@ -87,28 +84,5 @@ public class JustawayApplication extends Application {
 
     public static Typeface getFontello() {
         return sFontello;
-    }
-
-    /**
-     * ユーザーリストを必要とする画面がいくつかあり、都度APIを引くと重いと考え用意したメソッド達
-     */
-    public ResponseList<UserList> getUserLists() {
-        return sUserLists;
-    }
-
-    public void setUserLists(ResponseList<UserList> userLists) {
-        sUserLists = userLists;
-    }
-
-    public UserList getUserList(long id) {
-        if (sUserLists == null) {
-            return null;
-        }
-        for (UserList userList : sUserLists) {
-            if (userList.getId() == id) {
-                return userList;
-            }
-        }
-        return null;
     }
 }

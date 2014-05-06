@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import info.justaway.JustawayApplication;
 import info.justaway.fragment.main.tab.BaseFragment;
 import info.justaway.model.AccessTokenManager;
+import info.justaway.model.UserListCache;
 import twitter4j.UserList;
 
 /**
@@ -114,8 +115,7 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
     public CharSequence getPageTitle(int position) {
         TabInfo tab = mTabs.get(position);
         if (tab.mTabTitle.equals("-")) {
-            JustawayApplication application = JustawayApplication.getApplication();
-            UserList userList = application.getUserList(tab.mArgs.getInt("userListId"));
+            UserList userList = UserListCache.getUserList(tab.mArgs.getInt("userListId"));
             if (userList != null) {
                 if (userList.getUser().getId() == AccessTokenManager.getUserId()) {
                     tab.mTabTitle = userList.getName();

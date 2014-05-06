@@ -19,6 +19,7 @@ import info.justaway.event.AlertDialogEvent;
 import info.justaway.event.model.DestroyUserListEvent;
 import info.justaway.model.AccessTokenManager;
 import info.justaway.model.TabManager;
+import info.justaway.model.UserListCache;
 import info.justaway.model.UserListWithRegistered;
 import info.justaway.task.UserListsLoader;
 import info.justaway.util.ThemeUtil;
@@ -144,7 +145,6 @@ public class ChooseUserListsActivity extends FragmentActivity implements
 
     @Override
     public void onLoadFinished(Loader<ResponseList<UserList>> arg0, ResponseList<UserList> userLists) {
-        JustawayApplication application = JustawayApplication.getApplication();
         if (userLists != null) {
             for (UserList userList : userLists) {
                 UserListWithRegistered userListWithRegistered = new UserListWithRegistered();
@@ -153,7 +153,7 @@ public class ChooseUserListsActivity extends FragmentActivity implements
                 mAdapter.add(userListWithRegistered);
             }
         }
-        application.setUserLists(userLists);
+        UserListCache.setUserLists(userLists);
     }
 
     @Override
