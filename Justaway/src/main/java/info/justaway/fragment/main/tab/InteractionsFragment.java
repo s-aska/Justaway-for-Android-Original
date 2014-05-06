@@ -6,6 +6,7 @@ import android.view.View;
 import info.justaway.JustawayApplication;
 import info.justaway.event.model.StreamingCreateFavoriteEvent;
 import info.justaway.model.Row;
+import info.justaway.model.TabManager;
 import info.justaway.util.TwitterUtil;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
@@ -20,7 +21,7 @@ public class InteractionsFragment extends BaseFragment {
      * このタブを表す固有のID、ユーザーリストで正数を使うため負数を使う
      */
     public long getTabId() {
-        return -2L;
+        return TabManager.INTERACTIONS_TAB_ID;
     }
 
     /**

@@ -36,6 +36,7 @@ import info.justaway.event.action.AccountChangeEvent;
 import info.justaway.event.action.OpenEditorEvent;
 import info.justaway.event.connection.StreamingConnectionEvent;
 import info.justaway.model.Row;
+import info.justaway.model.TabManager;
 import info.justaway.settings.MuteSettings;
 import info.justaway.task.DestroyDirectMessageTask;
 import info.justaway.task.FavoriteTask;
@@ -356,89 +357,9 @@ public class JustawayApplication extends Application {
     /**
      * タブ管理
      */
-    private static final String TABS = "tabs-";
-    private ArrayList<Tab> mTabs = new ArrayList<Tab>();
-
-    public ArrayList<Tab> loadTabs() {
-        mTabs.clear();
-        SharedPreferences preferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
-        String json = preferences.getString(TABS.concat(String.valueOf(getUserId())).concat("/v2"), null);
-        if (json != null) {
-            Gson gson = new Gson();
-            TabData tabData = gson.fromJson(json, TabData.class);
-            mTabs = tabData.tabs;
-        }
-        if (mTabs.size() == 0) {
-            mTabs = generalTabs();
-        }
-        return mTabs;
-    }
-
-    public void saveTabs(ArrayList<Tab> tabs) {
-        TabData tabData = new TabData();
-        tabData.tabs = tabs;
-        Gson gson = new Gson();
-        String json = gson.toJson(tabData);
-        SharedPreferences preferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
-        Editor editor = preferences.edit();
-        editor.remove(TABS.concat(String.valueOf(getUserId())));
-        editor.putString(TABS.concat(String.valueOf(getUserId())).concat("/v2"), json);
-        editor.commit();
-        mTabs = tabs;
-    }
-
-    public ArrayList<Tab> generalTabs() {
-        ArrayList<Tab> tabs = new ArrayList<Tab>();
-        tabs.add(new Tab(-1L));
-        tabs.add(new Tab(-2L));
-        tabs.add(new Tab(-3L));
-        return tabs;
-    }
-
-    public static class TabData {
-        ArrayList<Tab> tabs;
-    }
-
-    public static class Tab {
-        public Long id;
-        public String name;
-
-        public Tab(Long id) {
-            this.id = id;
-        }
-
-        public String getName() {
-            if (id == -1L) {
-                return getApplication().getString(R.string.title_main);
-            } else if (id == -2L) {
-                return getApplication().getString(R.string.title_interactions);
-            } else if (id == -3L) {
-                return getApplication().getString(R.string.title_direct_messages);
-            } else {
-                return name;
-            }
-        }
-
-        public int getIcon() {
-            if (id == -1L) {
-                return R.string.fontello_home;
-            } else if (id == -2L) {
-                return R.string.fontello_at;
-            } else if (id == -3L) {
-                return R.string.fontello_mail;
-            } else {
-                return R.string.fontello_list;
-            }
-        }
-    }
-
-    public boolean hasTabId(Long findTab) {
-        for (Tab tab : mTabs) {
-            if (tab.id.equals(findTab)) {
-                return true;
-            }
-        }
-        return false;
+    public static final TabManager mTabManager = new TabManager();
+    public TabManager getTabManager() {
+        return mTabManager;
     }
 
     /**

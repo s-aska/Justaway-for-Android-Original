@@ -21,16 +21,21 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import info.justaway.model.TabManager;
+
 public class TabSettingsActivity extends FragmentActivity {
 
     private static final int REQUEST_CHOOSE_USER_LIST = 100;
+    private static final int HIGH_LIGHT_COLOR = Color.parseColor("#9933b5e5");
+    private static final int DEFAULT_COLOR = Color.TRANSPARENT;
 
     private TabAdapter mAdapter;
     private ListView mListView;
-    private JustawayApplication.Tab mDragTab;
+    private TabManager.Tab mDragTab;
     private boolean mSortable = false;
     private int mToPosition;
     private boolean mRemoveMode = false;
+    private TabManager mTabManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,11 +49,11 @@ public class TabSettingsActivity extends FragmentActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
+        mTabManager = JustawayApplication.getApplication().getTabManager();
         mListView = (ListView) findViewById(R.id.list);
 
         mAdapter = new TabAdapter(this, R.layout.row_tag);
-        JustawayApplication application = JustawayApplication.getApplication();
-        for (JustawayApplication.Tab tab : application.loadTabs()) {
+        for (TabManager.Tab tab : mTabManager.loadTabs()) {
             mAdapter.add(tab);
         }
 
@@ -107,14 +112,14 @@ public class TabSettingsActivity extends FragmentActivity {
         findViewById(R.id.button_save).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                JustawayApplication.getApplication().saveTabs(mAdapter.getTabs());
+                mTabManager.saveTabs(mAdapter.getTabs());
                 setResult(RESULT_OK);
                 finish();
             }
         });
     }
 
-    public void startDrag(JustawayApplication.Tab tab) {
+    public void startDrag(TabManager.Tab tab) {
         mDragTab = tab;
         mToPosition = 0;
         mSortable = true;
@@ -132,15 +137,15 @@ public class TabSettingsActivity extends FragmentActivity {
         super.onPrepareOptionsMenu(menu);
         MenuItem homeMenuItem = menu.findItem(R.id.menu_add_home_tab);
         if (homeMenuItem != null) {
-            homeMenuItem.setVisible(!mAdapter.hasTabId(-1L));
+            homeMenuItem.setVisible(!mAdapter.hasTabId(TabManager.TIMELINE_TAB_ID));
         }
         MenuItem interactionsMenuItem = menu.findItem(R.id.menu_add_interactions_tab);
         if (interactionsMenuItem != null) {
-            interactionsMenuItem.setVisible(!mAdapter.hasTabId(-2L));
+            interactionsMenuItem.setVisible(!mAdapter.hasTabId(TabManager.INTERACTIONS_TAB_ID));
         }
         MenuItem directMessagesMenuItem = menu.findItem(R.id.menu_add_direct_messages_tab);
         if (directMessagesMenuItem != null) {
-            directMessagesMenuItem.setVisible(!mAdapter.hasTabId(-3L));
+            directMessagesMenuItem.setVisible(!mAdapter.hasTabId(TabManager.DIRECT_MESSAGES_TAB_ID));
         }
         return true;
     }
@@ -152,16 +157,16 @@ public class TabSettingsActivity extends FragmentActivity {
                 finish();
                 break;
             case R.id.menu_add_home_tab:
-                mAdapter.insert(new JustawayApplication.Tab(-1L), 0);
+                mAdapter.insert(new TabManager.Tab(TabManager.TIMELINE_TAB_ID), 0);
                 break;
             case R.id.menu_add_interactions_tab:
-                mAdapter.insert(new JustawayApplication.Tab(-2L), 0);
+                mAdapter.insert(new TabManager.Tab(TabManager.INTERACTIONS_TAB_ID), 0);
                 break;
             case R.id.menu_add_direct_messages_tab:
-                mAdapter.insert(new JustawayApplication.Tab(-3L), 0);
+                mAdapter.insert(new TabManager.Tab(TabManager.DIRECT_MESSAGES_TAB_ID), 0);
                 break;
             case R.id.menu_user_list_tab:
-                JustawayApplication.getApplication().saveTabs(mAdapter.getTabs());
+                mTabManager.saveTabs(mAdapter.getTabs());
                 Intent intent = new Intent(this, ChooseUserListsActivity.class);
                 setResult(RESULT_OK);
                 startActivityForResult(intent, REQUEST_CHOOSE_USER_LIST);
@@ -176,9 +181,8 @@ public class TabSettingsActivity extends FragmentActivity {
         switch (requestCode) {
             case REQUEST_CHOOSE_USER_LIST:
                 if (resultCode == RESULT_OK) {
-                    JustawayApplication application = JustawayApplication.getApplication();
                     mAdapter.clear();
-                    for (JustawayApplication.Tab tab : application.loadTabs()) {
+                    for (TabManager.Tab tab : mTabManager.loadTabs()) {
                         mAdapter.add(tab);
                     }
                     mAdapter.notifyDataSetChanged();
@@ -190,12 +194,12 @@ public class TabSettingsActivity extends FragmentActivity {
         }
     }
 
-    public class TabAdapter extends ArrayAdapter<JustawayApplication.Tab> {
+    public class TabAdapter extends ArrayAdapter<TabManager.Tab> {
 
-        private ArrayList<JustawayApplication.Tab> mTabs = new ArrayList<JustawayApplication.Tab>();
+        private ArrayList<TabManager.Tab> mTabs = new ArrayList<TabManager.Tab>();
         private LayoutInflater mInflater;
         private int mLayout;
-        private JustawayApplication.Tab mCurrentTab;
+        private TabManager.Tab mCurrentTab;
 
         public TabAdapter(Context context, int textViewResourceId) {
             super(context, textViewResourceId);
@@ -203,29 +207,29 @@ public class TabSettingsActivity extends FragmentActivity {
             this.mLayout = textViewResourceId;
         }
 
-        public void setCurrentTab(JustawayApplication.Tab tab) {
+        public void setCurrentTab(TabManager.Tab tab) {
             mCurrentTab = tab;
             notifyDataSetChanged();
         }
 
-        public ArrayList<JustawayApplication.Tab> getTabs() {
+        public ArrayList<TabManager.Tab> getTabs() {
             return mTabs;
         }
 
         @Override
-        public void add(JustawayApplication.Tab tab) {
+        public void add(TabManager.Tab tab) {
             super.add(tab);
             mTabs.add(tab);
         }
 
         @Override
-        public void insert(JustawayApplication.Tab tab, int position) {
+        public void insert(TabManager.Tab tab, int position) {
             super.insert(tab, position);
             mTabs.add(position, tab);
         }
 
         @Override
-        public void remove(JustawayApplication.Tab tab) {
+        public void remove(TabManager.Tab tab) {
             super.remove(tab);
             mTabs.remove(tab);
         }
@@ -237,7 +241,7 @@ public class TabSettingsActivity extends FragmentActivity {
         }
 
         public boolean hasTabId(Long tabId) {
-            for (JustawayApplication.Tab tab : mTabs) {
+            for (TabManager.Tab tab : mTabs) {
                 if (tab.id.equals(tabId)) {
                     return true;
                 }
@@ -258,7 +262,7 @@ public class TabSettingsActivity extends FragmentActivity {
                 }
             }
 
-            final JustawayApplication.Tab tab = mTabs.get(position);
+            final TabManager.Tab tab = mTabs.get(position);
 
             TextView tabIcon = (TextView) view.findViewById(R.id.tab_icon);
             TextView name = (TextView) view.findViewById(R.id.name);
@@ -296,9 +300,9 @@ public class TabSettingsActivity extends FragmentActivity {
             }
 
             if (mCurrentTab != null && mCurrentTab == tab) {
-                view.setBackgroundColor(Color.parseColor("#9933b5e5"));
+                view.setBackgroundColor(HIGH_LIGHT_COLOR);
             } else {
-                view.setBackgroundColor(Color.TRANSPARENT);
+                view.setBackgroundColor(DEFAULT_COLOR);
             }
 
             return view;

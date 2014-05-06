@@ -5,6 +5,7 @@ import android.view.View;
 
 import info.justaway.JustawayApplication;
 import info.justaway.model.Row;
+import info.justaway.model.TabManager;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
 import twitter4j.Status;
@@ -18,7 +19,7 @@ public class TimelineFragment extends BaseFragment {
      * このタブを表す固有のID、ユーザーリストで正数を使うため負数を使う
      */
     public long getTabId() {
-        return -1L;
+        return TabManager.TIMELINE_TAB_ID;
     }
 
     /**

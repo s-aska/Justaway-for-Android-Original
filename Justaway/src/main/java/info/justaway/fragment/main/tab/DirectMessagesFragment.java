@@ -9,6 +9,7 @@ import java.util.Comparator;
 import info.justaway.JustawayApplication;
 import info.justaway.event.model.StreamingDestroyMessageEvent;
 import info.justaway.model.Row;
+import info.justaway.model.TabManager;
 import twitter4j.DirectMessage;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
@@ -20,7 +21,7 @@ public class DirectMessagesFragment extends BaseFragment {
      * このタブを表す固有のID、ユーザーリストで正数を使うため負数を使う
      */
     public long getTabId() {
-        return -3L;
+        return TabManager.DIRECT_MESSAGES_TAB_ID;
     }
 
     /**

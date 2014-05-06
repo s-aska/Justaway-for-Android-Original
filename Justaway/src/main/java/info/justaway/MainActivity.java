@@ -56,6 +56,7 @@ import info.justaway.fragment.main.tab.DirectMessagesFragment;
 import info.justaway.fragment.main.tab.InteractionsFragment;
 import info.justaway.fragment.main.tab.TimelineFragment;
 import info.justaway.fragment.main.tab.UserListFragment;
+import info.justaway.model.TabManager;
 import info.justaway.task.SendDirectMessageTask;
 import info.justaway.task.UpdateStatusTask;
 import info.justaway.util.TwitterUtil;
@@ -74,9 +75,6 @@ public class MainActivity extends FragmentActivity {
     private static final int REQUEST_SETTINGS = 300;
     private static final int REQUEST_TAB_SETTINGS = 400;
     private static final int ERROR_CODE_DUPLICATE_STATUS = 187;
-    private static final long TAB_ID_TIMELINE = -1L;
-    private static final long TAB_ID_INTERACTIONS = -2L;
-    private static final long TAB_ID_DIRECT_MESSAGE = -3L;
     private static final Pattern USER_LIST_PATTERN = Pattern.compile("^(@[a-zA-Z0-9_]+)/(.*)$");
     private JustawayApplication mApplication;
     private MainPagerAdapter mMainPagerAdapter;
@@ -485,7 +483,8 @@ public class MainActivity extends FragmentActivity {
     }
 
     public void setupTab() {
-        ArrayList<JustawayApplication.Tab> tabs = mApplication.loadTabs();
+        TabManager tabManager = mApplication.getTabManager();
+        ArrayList<TabManager.Tab> tabs = tabManager.loadTabs();
         if (tabs.size() > 0) {
             TypedValue outValueTextColor = new TypedValue();
             TypedValue outValueBackground = new TypedValue();
@@ -502,7 +501,7 @@ public class MainActivity extends FragmentActivity {
                     LinearLayout.LayoutParams.WRAP_CONTENT);
 
             int position = 0;
-            for (JustawayApplication.Tab tab : tabs) {
+            for (TabManager.Tab tab : tabs) {
                 Button button = new JustawayButton(this);
                 button.setLayoutParams(layoutParams);
                 button.setText(tab.getIcon());
@@ -513,11 +512,11 @@ public class MainActivity extends FragmentActivity {
                 button.setOnClickListener(mMenuOnClickListener);
                 button.setOnLongClickListener(mMenuOnLongClickListener);
                 mTabMenus.addView(button);
-                if (tab.id == TAB_ID_TIMELINE) {
+                if (tab.id == TabManager.TIMELINE_TAB_ID) {
                     mMainPagerAdapter.addTab(TimelineFragment.class, null, tab.getName(), tab.id);
-                } else if (tab.id == TAB_ID_INTERACTIONS) {
+                } else if (tab.id == TabManager.INTERACTIONS_TAB_ID) {
                     mMainPagerAdapter.addTab(InteractionsFragment.class, null, tab.getName(), tab.id);
-                } else if (tab.id == TAB_ID_DIRECT_MESSAGE) {
+                } else if (tab.id == TabManager.DIRECT_MESSAGES_TAB_ID) {
                     mMainPagerAdapter.addTab(DirectMessagesFragment.class, null, tab.getName(), tab.id);
                 } else {
                     Bundle args = new Bundle();
