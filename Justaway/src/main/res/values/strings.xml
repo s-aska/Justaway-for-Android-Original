@@ -217,5 +217,6 @@
     <string name="tab_tweets">Tweets</string>
     <string name="hint_list_name">25 characters or less</string>
     <string name="hint_list_description">100 characters or less</string>
+    <string name="label_account_setting">Account Setting</string>
 
 </resources>
