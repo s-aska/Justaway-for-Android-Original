@@ -1,13 +1,10 @@
 package info.justaway;
 
 import android.app.ActionBar;
-import android.content.ContentResolver;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -134,26 +131,6 @@ public class EditProfileActivity extends FragmentActivity implements LoaderManag
                 MessageUtil.showToast(R.string.toast_update_profile_failure);
             }
         }
-    }
-
-    private File uriToFile(Uri uri) {
-        ContentResolver cr = getContentResolver();
-        String[] columns = {MediaStore.Images.Media.DATA};
-        Cursor c = cr.query(uri, columns, null, null, null);
-        assert c != null;
-        c.moveToFirst();
-        String fileName = c.getString(0);
-        if (fileName == null) {
-            MessageUtil.showToast(getString(R.string.toast_set_image_failure));
-            return null;
-        }
-        File path = new File(fileName);
-
-        if (!path.exists()) {
-            return null;
-        }
-
-        return path;
     }
 
     @Override
