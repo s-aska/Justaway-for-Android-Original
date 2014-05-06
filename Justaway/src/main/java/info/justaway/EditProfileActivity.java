@@ -16,6 +16,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import java.io.File;
+import java.io.InputStream;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -26,6 +27,7 @@ import info.justaway.task.VerifyCredentialsLoader;
 import info.justaway.util.ImageUtil;
 import info.justaway.util.MessageUtil;
 import info.justaway.util.ThemeUtil;
+import info.justaway.util.TwitterUtil;
 import twitter4j.User;
 
 public class EditProfileActivity extends FragmentActivity implements LoaderManager.LoaderCallbacks<User> {
@@ -160,11 +162,19 @@ public class EditProfileActivity extends FragmentActivity implements LoaderManag
         switch (requestCode) {
             case REQ_PICK_PROFILE_IMAGE:
                 if (resultCode == RESULT_OK) {
-                    Uri uri = data.getData();
-                    File file = uriToFile(uri);
-                    if (file != null) {
-                        UpdateProfileImageFragment dialog = UpdateProfileImageFragment.newInstance(file, uri);
-                        dialog.show(getSupportFragmentManager(), "dialog");
+                    try {
+                        Uri uri = data.getData();
+                        if (uri == null) {
+                            return;
+                        }
+                        InputStream inputStream = getContentResolver().openInputStream(uri);
+                        File file = TwitterUtil.writeToTempFile(getCacheDir(), inputStream);
+                        if (file != null) {
+                            UpdateProfileImageFragment dialog = UpdateProfileImageFragment.newInstance(file, uri);
+                            dialog.show(getSupportFragmentManager(), "dialog");
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
                 break;

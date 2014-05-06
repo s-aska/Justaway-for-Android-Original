@@ -43,9 +43,7 @@ import android.widget.TextView;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -568,39 +566,13 @@ public class PostActivity extends FragmentActivity {
     private void setImage(Uri uri) {
         try {
             InputStream inputStream = getContentResolver().openInputStream(uri);
-            this.mImgPath = writeToTempFile(inputStream);
+            mImgPath = TwitterUtil.writeToTempFile(getCacheDir(), inputStream);
             MessageUtil.showToast(R.string.toast_set_image_success);
             ThemeUtil.setThemeTextColor(mContext, mImgButton, R.attr.holo_blue);
             mTweetButton.setEnabled(true);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-    }
-
-    private File writeToTempFile(InputStream inputStream) {
-        File cacheDir = getCacheDir();
-        if (cacheDir == null) {
-            return null;
-        }
-        if (!cacheDir.exists()) {
-            if (!cacheDir.mkdirs()) {
-                return null;
-            }
-        }
-        File file = new File(cacheDir, "justaway-temp-" + System.currentTimeMillis() + ".jpg");
-        try {
-            OutputStream outputStream = new FileOutputStream(file);
-            byte[] buffer = new byte[4096];
-            int size;
-            while (-1 != (size = inputStream.read(buffer))) {
-                outputStream.write(buffer, 0, size);
-            }
-            inputStream.close();
-            outputStream.close();
-        } catch (Exception e) {
-            return null;
-        }
-        return file;
     }
 
     private void updateCount(String str) {
