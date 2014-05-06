@@ -2,6 +2,7 @@
 
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -11,6 +12,7 @@
         android:layout_height="wrap_content"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
+        tools:background="@android:color/background_dark"
         android:background="?attr/menu_background"
         android:orientation="horizontal"
         android:baselineAligned="false">
@@ -29,7 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="@string/label_tweets"/>
+            android:text="@string/tab_tweets"/>
     </LinearLayout>
 
     <android.support.v4.view.ViewPager
