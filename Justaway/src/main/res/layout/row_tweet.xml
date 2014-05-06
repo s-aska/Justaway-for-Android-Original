@@ -18,7 +18,7 @@
         android:layout_marginBottom="2dp"
         android:orientation="horizontal">
 
-        <TextView
+        <info.justaway.widget.FontelloTextView
             android:id="@+id/action_icon"
             android:layout_width="48dp"
             android:layout_height="wrap_content"
@@ -100,7 +100,7 @@
                             tools:ignore="SmallSp"
                             tools:text="@justawayfactory"/>
 
-                        <TextView
+                        <info.justaway.widget.FontelloTextView
                             android:id="@+id/lock"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -108,8 +108,7 @@
                             android:text="@string/fontello_lock"
                             android:textColor="#666666"
                             android:textSize="10sp"
-                            tools:ignore="SmallSp"
-                            tools:text="鍵"/>
+                            tools:ignore="SmallSp"/>
 
                     </LinearLayout>
 
@@ -147,7 +146,7 @@
 
                 <TableRow tools:ignore="UselessParent">
 
-                    <TextView
+                    <info.justaway.widget.FontelloTextView
                         android:id="@+id/do_reply"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -155,10 +154,9 @@
                         android:text="@string/fontello_reply"
                         android:textColor="#666666"
                         android:textSize="14dp"
-                        tools:text="←"
                         tools:ignore="SpUsage"/>
 
-                    <TextView
+                    <info.justaway.widget.FontelloTextView
                         android:id="@+id/do_retweet"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -170,7 +168,6 @@
                         android:text="@string/fontello_retweet"
                         android:textColor="#666666"
                         android:textSize="14dp"
-                        tools:text="■"
                         tools:ignore="SpUsage"/>
 
                     <TextView
@@ -184,7 +181,7 @@
                         tools:ignore="SmallSp,SpUsage"
                         tools:text="12345"/>
 
-                    <TextView
+                    <info.justaway.widget.FontelloTextView
                         android:id="@+id/do_fav"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -195,7 +192,6 @@
                         android:text="@string/fontello_star"
                         android:textColor="#666666"
                         android:textSize="14dp"
-                        tools:text="■"
                         tools:ignore="SpUsage"/>
 
                     <TextView
@@ -206,7 +202,7 @@
                         android:paddingTop="6dp"
                         android:textColor="#999999"
                         android:textSize="10dp"
-                        tools:ignore="SmallSp,SpUsage"
+                        tools:ignore="SpUsage"
                         tools:text="12345"/>
 
                     <LinearLayout

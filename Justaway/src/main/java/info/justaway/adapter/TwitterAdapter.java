@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.util.TypedValue;
@@ -31,7 +30,6 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import de.greenrobot.event.EventBus;
 import info.justaway.BuildConfig;
-import info.justaway.JustawayApplication;
 import info.justaway.ProfileActivity;
 import info.justaway.R;
 import info.justaway.ScaleImageActivity;
@@ -56,51 +54,28 @@ import twitter4j.User;
 public class TwitterAdapter extends ArrayAdapter<Row> {
 
     static class ViewHolder {
-
-        @InjectView(R.id.action_container)
-        LinearLayout mActionContainer;
-        @InjectView(R.id.action_icon)
-        TextView mActionIcon;
-        @InjectView(R.id.action_by_display_name)
-        TextView mActionByDisplayName;
-        @InjectView(R.id.action_by_screen_name)
-        TextView mActionByScreenName;
-        @InjectView(R.id.icon)
-        ImageView mIcon;
-        @InjectView(R.id.display_name)
-        TextView mDisplayName;
-        @InjectView(R.id.screen_name)
-        TextView mScreenName;
-        @InjectView(R.id.lock)
-        TextView mLock;
-        @InjectView(R.id.datetime_relative)
-        TextView mDatetimeRelative;
-        @InjectView(R.id.status)
-        TextView mStatus;
-        @InjectView(R.id.images_container)
-        LinearLayout mImagesContainer;
-        @InjectView(R.id.menu_and_via_container)
-        TableLayout mMenuAndViaContainer;
-        @InjectView(R.id.do_reply)
-        TextView mDoReply;
-        @InjectView(R.id.do_retweet)
-        TextView mDoRetweet;
-        @InjectView(R.id.retweet_count)
-        TextView mRetweetCount;
-        @InjectView(R.id.do_fav)
-        TextView mDoFav;
-        @InjectView(R.id.fav_count)
-        TextView mFavCount;
-        @InjectView(R.id.via)
-        TextView mVia;
-        @InjectView(R.id.datetime)
-        TextView mDatetime;
-        @InjectView(R.id.retweet_container)
-        LinearLayout mRetweetContainer;
-        @InjectView(R.id.retweet_icon)
-        ImageView mRetweetIcon;
-        @InjectView(R.id.retweet_by)
-        TextView mRetweetBy;
+        @InjectView(R.id.action_container) LinearLayout mActionContainer;
+        @InjectView(R.id.action_icon) TextView mActionIcon;
+        @InjectView(R.id.action_by_display_name) TextView mActionByDisplayName;
+        @InjectView(R.id.action_by_screen_name) TextView mActionByScreenName;
+        @InjectView(R.id.icon) ImageView mIcon;
+        @InjectView(R.id.display_name) TextView mDisplayName;
+        @InjectView(R.id.screen_name) TextView mScreenName;
+        @InjectView(R.id.lock) TextView mLock;
+        @InjectView(R.id.datetime_relative) TextView mDatetimeRelative;
+        @InjectView(R.id.status) TextView mStatus;
+        @InjectView(R.id.images_container) LinearLayout mImagesContainer;
+        @InjectView(R.id.menu_and_via_container) TableLayout mMenuAndViaContainer;
+        @InjectView(R.id.do_reply) TextView mDoReply;
+        @InjectView(R.id.do_retweet) TextView mDoRetweet;
+        @InjectView(R.id.retweet_count) TextView mRetweetCount;
+        @InjectView(R.id.do_fav) TextView mDoFav;
+        @InjectView(R.id.fav_count) TextView mFavCount;
+        @InjectView(R.id.via) TextView mVia;
+        @InjectView(R.id.datetime) TextView mDatetime;
+        @InjectView(R.id.retweet_container) LinearLayout mRetweetContainer;
+        @InjectView(R.id.retweet_icon) ImageView mRetweetIcon;
+        @InjectView(R.id.retweet_by) TextView mRetweetBy;
 
         public ViewHolder(View view) {
             ButterKnife.inject(this, view);
@@ -114,8 +89,8 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     private int mColorBlue = 0;
     private static final int LIMIT = 100;
     private int mLimit = LIMIT;
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy/MM'/'dd' 'HH':'mm':'ss",
-            Locale.ENGLISH);
+    private static final SimpleDateFormat DATE_FORMAT =
+            new SimpleDateFormat("yyyy/MM'/'dd' 'HH':'mm':'ss", Locale.ENGLISH);
     private static final Pattern TWITPIC_PATTERN = Pattern.compile("^http://twitpic\\.com/(\\w+)$");
     private static final Pattern TWIPPLE_PATTERN = Pattern.compile("^http://p\\.twipple\\.jp/(\\w+)$");
     private static final Pattern INSTAGRAM_PATTERN = Pattern.compile("^http://instagram\\.com/p/([^/]+)/$");
@@ -128,6 +103,10 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mContext = context;
         mLayout = textViewResourceId;
+    }
+
+    public Context getContext() {
+        return mContext;
     }
 
     public void extensionAdd(Row row) {
@@ -313,7 +292,6 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
 
     private void renderMessage(ViewHolder holder, final DirectMessage message) {
 
-        Typeface fontello = JustawayApplication.getFontello();
         long userId = AccessTokenManager.getUserId();
 
         holder.mDoRetweet.setVisibility(View.GONE);
@@ -326,7 +304,6 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             holder.mDoReply.setVisibility(View.GONE);
         } else {
             holder.mDoReply.setVisibility(View.VISIBLE);
-            holder.mDoReply.setTypeface(fontello);
             holder.mDoReply.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -364,8 +341,6 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
 
         long userId = AccessTokenManager.getUserId();
 
-        Typeface fontello = JustawayApplication.getFontello();
-
         if (status.getFavoriteCount() > 0) {
             holder.mFavCount.setText(String.valueOf(status.getFavoriteCount()));
             holder.mFavCount.setVisibility(View.VISIBLE);
@@ -382,7 +357,6 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             holder.mRetweetCount.setVisibility(View.INVISIBLE);
         }
 
-        holder.mDoReply.setTypeface(fontello);
         holder.mDoReply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -390,7 +364,6 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             }
         });
 
-        holder.mDoRetweet.setTypeface(fontello);
         holder.mDoRetweet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -419,7 +392,6 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             }
         });
 
-        holder.mDoFav.setTypeface(fontello);
         holder.mDoFav.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -471,8 +443,6 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                 holder.mVia.setTextColor(Color.parseColor("#666666"));
             }
         }
-
-        holder.mActionIcon.setTypeface(fontello);
 
         // favの場合
         if (favorite != null) {
@@ -527,7 +497,6 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         }
 
         if (status.getUser().isProtected()) {
-            holder.mLock.setTypeface(fontello);
             holder.mLock.setVisibility(View.VISIBLE);
         } else {
             holder.mLock.setVisibility(View.INVISIBLE);
