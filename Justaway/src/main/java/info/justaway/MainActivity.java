@@ -488,9 +488,11 @@ public class MainActivity extends FragmentActivity {
         ArrayList<JustawayApplication.Tab> tabs = mApplication.loadTabs();
         if (tabs.size() > 0) {
             TypedValue outValueTextColor = new TypedValue();
+            TypedValue outValueBackground = new TypedValue();
             Resources.Theme theme = getTheme();
             if (theme != null) {
                 theme.resolveAttribute(R.attr.menu_text_color, outValueTextColor, true);
+                theme.resolveAttribute(R.attr.button_stateful, outValueBackground, true);
             }
             mTabMenus.removeAllViews();
             mMainPagerAdapter.clearTab();
@@ -504,7 +506,9 @@ public class MainActivity extends FragmentActivity {
                 Button button = new JustawayButton(this);
                 button.setLayoutParams(layoutParams);
                 button.setText(tab.getIcon());
+                button.setTextSize(22);
                 button.setTextColor(outValueTextColor.data);
+                button.setBackgroundResource(outValueBackground.resourceId);
                 bindTabListener(button, position++);
                 mTabMenus.addView(button);
                 if (tab.id == TAB_ID_TIMELINE) {
