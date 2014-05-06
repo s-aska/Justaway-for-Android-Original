@@ -23,6 +23,7 @@
         android:id="@+id/display_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="6dp"
         android:textSize="12sp"
         android:textStyle="bold"
         android:layout_toRightOf="@id/icon"
@@ -60,4 +61,5 @@
         android:layout_below="@id/display_name"
         tools:text="Justaway for Android"
         android:textSize="12sp"/>
+
 </RelativeLayout>

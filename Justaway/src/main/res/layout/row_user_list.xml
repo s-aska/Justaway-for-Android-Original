@@ -1,84 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="?android:attr/listPreferredItemHeight"
-              android:baselineAligned="false"
-              android:orientation="vertical"
               android:paddingBottom="3dp"
               android:paddingLeft="6dp"
               android:paddingRight="7dp"
               android:paddingTop="4dp">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginBottom="6dp"
+        android:layout_marginRight="6dp"
+        android:layout_marginTop="1dp"
+        android:contentDescription="@string/description_icon"
+        android:paddingTop="2dp"
+        tools:src="@drawable/ic_launcher"/>
+
+    <TextView
+        android:id="@+id/list_name"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:orientation="horizontal">
+        android:layout_toRightOf="@id/icon"
+        android:layout_marginBottom="6dp"
+        tools:text="justaway list"
+        android:textSize="12sp"
+        android:textStyle="bold"/>
 
-        <ImageView
-            android:id="@+id/icon"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginBottom="6dp"
-            android:layout_marginRight="6dp"
-            android:layout_marginTop="1dp"
-            android:contentDescription="@string/description_icon"
-            android:paddingTop="2dp"/>
+    <TextView
+        android:id="@+id/screen_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/list_name"
+        android:layout_alignBaseline="@id/list_name"
+        android:layout_marginLeft="4dp"
+        android:textColor="#666666"
+        tools:text="justawayfactory"
+        android:textSize="10sp"
+        tools:ignore="SmallSp"/>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+    <TextView
+        android:id="@+id/description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/icon"
+        android:layout_below="@id/list_name"
+        tools:text="justawayfactory"
+        android:textSize="12sp"/>
 
-            <TableLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="6dp"
-                android:stretchColumns="0">
+    <TextView
+        android:id="@+id/member_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/icon"
+        android:layout_below="@id/description"
+        android:textColor="#666666"
+        tools:text="893 members"
+        android:textSize="12sp"/>
 
-                <TableRow>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="left">
-
-                        <TextView
-                            android:id="@+id/list_name"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:textSize="12sp"
-                            android:textStyle="bold"/>
-
-                        <TextView
-                            android:id="@+id/screen_name"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="4dp"
-                            android:textColor="#666666"
-                            android:textSize="10sp"/>
-                    </LinearLayout>
-
-                </TableRow>
-
-            </TableLayout>
-
-            <TextView
-                android:id="@+id/description"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="12sp"/>
-
-            <TextView
-                android:id="@+id/member_count"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="#666666"
-                android:textSize="12sp"/>
-
-        </LinearLayout>
-    </LinearLayout>
-
-</LinearLayout>
+</RelativeLayout>
