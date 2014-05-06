@@ -509,7 +509,9 @@ public class MainActivity extends FragmentActivity {
                 button.setTextSize(22);
                 button.setTextColor(outValueTextColor.data);
                 button.setBackgroundResource(outValueBackground.resourceId);
-                bindTabListener(button, position++);
+                button.setTag(position++);
+                button.setOnClickListener(mMenuOnClickListener);
+                button.setOnLongClickListener(mMenuOnLongClickListener);
                 mTabMenus.addView(button);
                 if (tab.id == TAB_ID_TIMELINE) {
                     mMainPagerAdapter.addTab(TimelineFragment.class, null, tab.getName(), tab.id);
@@ -537,39 +539,46 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
-    private void bindTabListener(TextView textView, final int position) {
-        textView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                BaseFragment f = mMainPagerAdapter.findFragmentByPosition(position);
-                if (f == null) {
-                    return;
+    /**
+     * メニューをタップしたらページ移動（見ているページのメニューだったら一番上へスクロール）
+     */
+    private View.OnClickListener mMenuOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            int position = (Integer) view.getTag();
+            BaseFragment f = mMainPagerAdapter.findFragmentByPosition(position);
+            if (f == null) {
+                return;
+            }
+            int id = mViewPager.getCurrentItem();
+            if (id != position) {
+                mViewPager.setCurrentItem(position); // 自動スワイプ
+                if (f.isTop()) {
+                    showTopView(); // 移動先のページが先頭のツイートを表示していたらボタン色を白に
                 }
-                int id = mViewPager.getCurrentItem();
-                if (id != position) {
-                    mViewPager.setCurrentItem(position);
-                    if (f.isTop()) {
-                        showTopView();
-                    }
-                } else {
-                    if (f.goToTop()) {
-                        showTopView();
-                    }
+            } else {
+                if (f.goToTop()) {
+                    showTopView();
                 }
             }
-        });
-        textView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                BaseFragment f = mMainPagerAdapter.findFragmentByPosition(position);
-                if (f == null) {
-                    return false;
-                }
-                f.reload();
-                return true;
+        }
+    };
+
+    /**
+     * メニューをロングタップしたらリロード
+     */
+    private View.OnLongClickListener mMenuOnLongClickListener = new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View view) {
+            int position = (Integer) view.getTag();
+            BaseFragment f = mMainPagerAdapter.findFragmentByPosition(position);
+            if (f == null) {
+                return false;
             }
-        });
-    }
+            f.reload();
+            return true;
+        }
+    };
 
     private void setup() {
 
