@@ -22,20 +22,22 @@ import twitter4j.Status;
 public class NotificationService extends Service {
 
     public static boolean mStarted;
-    public static void start(JustawayApplication application) {
+    public static void start() {
         if (mStarted) {
             return;
         }
+        JustawayApplication application = JustawayApplication.getApplication();
         Intent intent = new Intent();
         intent.setClass(application, NotificationService.class);
         application.startService(intent);
         mStarted = true;
     }
 
-    public static void stop(JustawayApplication application) {
+    public static void stop() {
         if (!mStarted) {
             return;
         }
+        JustawayApplication application = JustawayApplication.getApplication();
         Intent intent = new Intent();
         intent.setClass(application, NotificationService.class);
         application.stopService(intent);

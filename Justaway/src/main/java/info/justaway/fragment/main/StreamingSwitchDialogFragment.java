@@ -30,12 +30,12 @@ public class StreamingSwitchDialogFragment extends DialogFragment {
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        JustawayApplication.getApplication().setStreamingMode(turnOn);
+                        JustawayApplication.getApplication().getBasicSettings().setStreamingMode(turnOn);
                         if (turnOn) {
-                            JustawayApplication.getApplication().startStreaming();
+                            JustawayApplication.getApplication().getTwitterManager().startStreaming();
                             JustawayApplication.showToast(R.string.toast_create_streaming);
                         } else {
-                            JustawayApplication.getApplication().stopStreaming();
+                            JustawayApplication.getApplication().getTwitterManager().stopStreaming();
                             JustawayApplication.showToast(R.string.toast_destroy_streaming);
                         }
                         dismiss();

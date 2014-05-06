@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import info.justaway.JustawayApplication;
+import info.justaway.model.Row;
 import info.justaway.util.TwitterUtil;
 import twitter4j.Status;
 import twitter4j.UserMentionEntity;
@@ -48,6 +49,14 @@ public class MuteSettings {
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString(PREF_KEY, exportJson);
         editor.commit();
+    }
+
+    public boolean isMute(Row row) {
+        if (row.isStatus()) {
+            return isMute(row.getStatus());
+        } else {
+            return false;
+        }
     }
 
     public Boolean isMute(Status status) {

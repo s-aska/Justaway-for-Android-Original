@@ -117,7 +117,7 @@ public class SignInActivity extends Activity {
         protected User doInBackground(String... params) {
             try {
                 JustawayApplication application = JustawayApplication.getApplication();
-                Twitter twitter = application.getTwitterInstance();
+                Twitter twitter = application.getTwitterManager().getTwitterInstance();
                 AccessToken accessToken = twitter.getOAuthAccessToken(mRequestToken, params[0]);
                 application.getAccessTokenManager().setAccessToken(accessToken);
                 twitter.setOAuthAccessToken(accessToken);
@@ -132,7 +132,7 @@ public class SignInActivity extends Activity {
         protected void onPostExecute(User user) {
             JustawayApplication.dismissProgressDialog();
             if (user != null) {
-                JustawayApplication.getApplication().addUserIconMap(user);
+                JustawayApplication.getApplication().getUserIconManager().addUserIconMap(user);
                 JustawayApplication.showToast(R.string.toast_sign_in_success);
                 successOAuth();
             }
@@ -147,7 +147,7 @@ public class SignInActivity extends Activity {
             @Override
             protected RequestToken doInBackground(Void... params) {
                 try {
-                    Twitter twitter = JustawayApplication.getApplication().getTwitterInstance();
+                    Twitter twitter = JustawayApplication.getApplication().getTwitterManager().getTwitterInstance();
                     return twitter.getOAuthRequestToken(getString(R.string.twitter_callback_url));
                 } catch (TwitterException e) {
                     e.printStackTrace();

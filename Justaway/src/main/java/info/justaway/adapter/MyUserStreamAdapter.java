@@ -14,6 +14,7 @@ import info.justaway.event.model.StreamingDestroyStatusEvent;
 import info.justaway.event.model.NotificationEvent;
 import info.justaway.event.model.StreamingUnFavoriteEvent;
 import info.justaway.model.Row;
+import info.justaway.settings.MuteSettings;
 import twitter4j.DirectMessage;
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
@@ -77,7 +78,7 @@ public class MyUserStreamAdapter extends UserStreamAdapter {
             return;
         }
         Row row = Row.newStatus(status);
-        if (JustawayApplication.isMute(row)) {
+        if (JustawayApplication.getApplication().getMuteSettings().isMute(row)) {
             return;
         }
         long userId = JustawayApplication.getApplication().getUserId();
@@ -112,7 +113,7 @@ public class MyUserStreamAdapter extends UserStreamAdapter {
         // 自分の fav を反映
         JustawayApplication application = JustawayApplication.getApplication();
         if (source.getId() == application.getUserId()) {
-            application.setFav(status.getId());
+            application.getFavRetweetManager().setFav(status.getId());
             return;
         }
         Row row = Row.newFavorite(source, target, status);
@@ -152,7 +153,7 @@ public class MyUserStreamAdapter extends UserStreamAdapter {
         // 自分の unfav を反映
         JustawayApplication application = JustawayApplication.getApplication();
         if (arg0.getId() == application.getUserId()) {
-            application.removeFav(arg2.getId());
+            application.getFavRetweetManager().removeFav(arg2.getId());
             return;
         }
         if (mPause) {
@@ -168,7 +169,7 @@ public class MyUserStreamAdapter extends UserStreamAdapter {
             return;
         }
         Row row = Row.newDirectMessage(directMessage);
-        if (JustawayApplication.isMute(row)) {
+        if (JustawayApplication.getApplication().getMuteSettings().isMute(row)) {
             return;
         }
         EventBus.getDefault().post(new NotificationEvent(row));

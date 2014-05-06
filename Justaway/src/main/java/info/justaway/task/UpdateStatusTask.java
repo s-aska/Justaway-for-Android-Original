@@ -29,7 +29,7 @@ public class UpdateStatusTask extends AsyncTask<StatusUpdate, Void, TwitterExcep
                 status = mApplication.getTwitter().updateStatus(statusUpdate);
             } else {
                 // ツイート画面から来たとき
-                Twitter twitter = mApplication.getTwitterInstance();
+                Twitter twitter = mApplication.getTwitterManager().getTwitterInstance();
                 twitter.setOAuthAccessToken(mAccessToken);
                 status = twitter.updateStatus(statusUpdate);
             }

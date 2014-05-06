@@ -114,7 +114,7 @@ public class FavoritesListFragment extends Fragment {
                 Paging paging = new Paging();
                 if (mMaxId > 0) {
                     paging.setMaxId(mMaxId - 1);
-                    paging.setCount(application.getPageCount());
+                    paging.setCount(application.getBasicSettings().getPageCount());
                 }
                 return JustawayApplication.getApplication().getTwitter().getFavorites(params[0], paging);
             } catch (Exception e) {

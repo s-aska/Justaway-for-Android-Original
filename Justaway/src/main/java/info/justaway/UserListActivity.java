@@ -16,6 +16,7 @@ import butterknife.OnClick;
 import info.justaway.adapter.SimplePagerAdapter;
 import info.justaway.fragment.list.UserListStatusesFragment;
 import info.justaway.fragment.list.UserMemberFragment;
+import info.justaway.util.ThemeUtil;
 import twitter4j.ResponseList;
 import twitter4j.UserList;
 
@@ -53,8 +54,8 @@ public class UserListActivity extends FragmentActivity {
         }
         mIsFollowing = mUserList.isFollowing();
 
-        mColorBlue = JustawayApplication.getApplication().getThemeTextColor(this, R.attr.holo_blue);
-        mColorWhite = JustawayApplication.getApplication().getThemeTextColor(this, R.attr.text_color);
+        mColorBlue = ThemeUtil.getThemeTextColor(this, R.attr.holo_blue);
+        mColorWhite = ThemeUtil.getThemeTextColor(this, R.attr.text_color);
         mUsersLabel.setTextColor(mColorBlue);
 
         setTitle(mUserList.getFullName());

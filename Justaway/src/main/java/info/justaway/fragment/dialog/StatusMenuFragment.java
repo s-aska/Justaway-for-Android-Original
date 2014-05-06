@@ -29,6 +29,7 @@ import info.justaway.MainActivity;
 import info.justaway.ProfileActivity;
 import info.justaway.R;
 import info.justaway.SearchActivity;
+import info.justaway.TwitterAction;
 import info.justaway.fragment.AroundFragment;
 import info.justaway.fragment.RetweetersFragment;
 import info.justaway.fragment.TalkFragment;
@@ -105,7 +106,7 @@ public class StatusMenuFragment extends DialogFragment {
             adapter.add(new Menu(R.string.context_menu_reply_direct_message, new Runnable() {
                 @Override
                 public void run() {
-                    mApplication.doReplyDirectMessage(directMessage, mActivity);
+                    TwitterAction.doReplyDirectMessage(directMessage, mActivity);
                     dismiss();
                 }
             }));
@@ -116,7 +117,7 @@ public class StatusMenuFragment extends DialogFragment {
             adapter.add(new Menu(R.string.context_menu_destroy_direct_message, new Runnable() {
                 @Override
                 public void run() {
-                    mApplication.doDestroyDirectMessage(directMessage.getId());
+                    TwitterAction.doDestroyDirectMessage(directMessage.getId());
                     dismiss();
                 }
             }));
@@ -173,7 +174,7 @@ public class StatusMenuFragment extends DialogFragment {
         adapter.add(new Menu(R.string.context_menu_reply, new Runnable() {
             @Override
             public void run() {
-                mApplication.doReply(source, mActivity);
+                TwitterAction.doReply(source, mActivity);
                 dismiss();
             }
         }));
@@ -185,7 +186,7 @@ public class StatusMenuFragment extends DialogFragment {
             adapter.add(new Menu(R.string.context_menu_reply_all, new Runnable() {
                 @Override
                 public void run() {
-                    mApplication.doReplyAll(source, mActivity);
+                    TwitterAction.doReplyAll(source, mActivity);
                     dismiss();
                 }
             }));
@@ -198,7 +199,7 @@ public class StatusMenuFragment extends DialogFragment {
             adapter.add(new Menu(R.string.context_menu_qt, new Runnable() {
                 @Override
                 public void run() {
-                    mApplication.doQuote(source, mActivity);
+                    TwitterAction.doQuote(source, mActivity);
                     dismiss();
                 }
             }));
@@ -207,11 +208,11 @@ public class StatusMenuFragment extends DialogFragment {
         /**
          * ふぁぼ / あんふぁぼ
          */
-        if (mApplication.isFav(status)) {
+        if (mApplication.getFavRetweetManager().isFav(status)) {
             adapter.add(new Menu(R.string.context_menu_destroy_favorite, new Runnable() {
                 @Override
                 public void run() {
-                    mApplication.doDestroyFavorite(status.getId());
+                    TwitterAction.doDestroyFavorite(status.getId());
                     dismiss();
                 }
             }));
@@ -219,7 +220,7 @@ public class StatusMenuFragment extends DialogFragment {
             adapter.add(new Menu(R.string.context_menu_create_favorite, new Runnable() {
                 @Override
                 public void run() {
-                    mApplication.doFavorite(status.getId());
+                    TwitterAction.doFavorite(status.getId());
                     dismiss();
                 }
             }));
@@ -241,7 +242,7 @@ public class StatusMenuFragment extends DialogFragment {
                 adapter.add(new Menu(R.string.context_menu_destroy_retweet, new Runnable() {
                     @Override
                     public void run() {
-                        mApplication.doDestroyRetweet(status);
+                        TwitterAction.doDestroyRetweet(status);
                         dismiss();
                     }
                 }));
@@ -258,7 +259,7 @@ public class StatusMenuFragment extends DialogFragment {
                 adapter.add(new Menu(R.string.context_menu_destroy_status, new Runnable() {
                     @Override
                     public void run() {
-                        new DestroyStatusTask(status.getId()).execute();
+                        TwitterAction.doDestroyStatus(status.getId());
                         dismiss();
                     }
                 }));
@@ -268,7 +269,7 @@ public class StatusMenuFragment extends DialogFragment {
         /**
          * 自分がRTした事があるツイート
          */
-        else if (mApplication.getRtId(status) != null) {
+        else if (mApplication.getFavRetweetManager().getRtId(status) != null) {
 
             /**
              * RT解除
@@ -276,7 +277,7 @@ public class StatusMenuFragment extends DialogFragment {
             adapter.add(new Menu(R.string.context_menu_destroy_retweet, new Runnable() {
                 @Override
                 public void run() {
-                    mApplication.doDestroyRetweet(status);
+                    TwitterAction.doDestroyRetweet(status);
                     dismiss();
                 }
             }));
@@ -290,7 +291,7 @@ public class StatusMenuFragment extends DialogFragment {
                 /**
                  * 未ふぁぼ
                  */
-                if (!mApplication.isFav(status)) {
+                if (!mApplication.getFavRetweetManager().isFav(status)) {
 
                     /**
                      * ふぁぼ＆RT
@@ -298,8 +299,8 @@ public class StatusMenuFragment extends DialogFragment {
                     adapter.add(new Menu(R.string.context_menu_favorite_and_retweet, new Runnable() {
                         @Override
                         public void run() {
-                            mApplication.doFavorite(status.getId());
-                            mApplication.doRetweet(status.getId());
+                            TwitterAction.doFavorite(status.getId());
+                            TwitterAction.doRetweet(status.getId());
                             dismiss();
                         }
                     }));
@@ -311,7 +312,7 @@ public class StatusMenuFragment extends DialogFragment {
                 adapter.add(new Menu(R.string.context_menu_retweet, new Runnable() {
                     @Override
                     public void run() {
-                        mApplication.doRetweet(status.getId());
+                        TwitterAction.doRetweet(status.getId());
                         dismiss();
                     }
                 }));

@@ -81,7 +81,7 @@ public class AccessTokenAdapter extends ArrayAdapter<AccessToken> {
 
         AccessToken accessToken = mAccessTokenList.get(position);
 
-        JustawayApplication.getApplication().displayUserIcon(accessToken.getUserId(), holder.mIcon);
+        JustawayApplication.getApplication().getUserIconManager().displayUserIcon(accessToken.getUserId(), holder.mIcon);
 
         holder.mScreenName.setText(accessToken.getScreenName());
 

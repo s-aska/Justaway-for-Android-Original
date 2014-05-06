@@ -46,7 +46,7 @@ public class TimelineFragment extends BaseFragment {
                 Paging paging = new Paging();
                 if (mMaxId > 0) {
                     paging.setMaxId(mMaxId - 1);
-                    paging.setCount(application.getPageCount());
+                    paging.setCount(application.getBasicSettings().getPageCount());
                 }
                 return application.getTwitter().getHomeTimeline(paging);
             } catch (Exception e) {

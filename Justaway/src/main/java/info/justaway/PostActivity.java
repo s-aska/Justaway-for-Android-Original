@@ -58,6 +58,7 @@ import info.justaway.plugin.TwiccaPlugin;
 import info.justaway.settings.PostStockSettings;
 import info.justaway.task.SendDirectMessageTask;
 import info.justaway.task.UpdateStatusTask;
+import info.justaway.util.ThemeUtil;
 import info.justaway.util.TwitterUtil;
 import twitter4j.Status;
 import twitter4j.StatusUpdate;
@@ -145,7 +146,7 @@ public class PostActivity extends FragmentActivity {
             }
         }
 
-        JustawayApplication.getApplication().warmUpUserIconMap();
+        JustawayApplication.getApplication().getUserIconManager().warmUpUserIconMap();
 
         Typeface fontello = JustawayApplication.getFontello();
         mCancel.setTypeface(fontello);
@@ -278,13 +279,13 @@ public class PostActivity extends FragmentActivity {
                 updateCount(s.toString());
                 if (s.toString().startsWith("D ")) {
                     mImgPath = null;
-                    JustawayApplication.getApplication().setThemeTextColor(mContext, mImgButton, R.attr.menu_text_color_disabled);
+                    ThemeUtil.setThemeTextColor(mContext, mImgButton, R.attr.menu_text_color_disabled);
                     mImgButton.setEnabled(false);
                 } else {
                     if (mImgPath == null) {
-                        JustawayApplication.getApplication().setThemeTextColor(mContext, mImgButton, R.attr.menu_text_color);
+                        ThemeUtil.setThemeTextColor(mContext, mImgButton, R.attr.menu_text_color);
                     } else {
-                        JustawayApplication.getApplication().setThemeTextColor(mContext, mImgButton, R.attr.holo_blue);
+                        ThemeUtil.setThemeTextColor(mContext, mImgButton, R.attr.holo_blue);
                     }
                     mImgButton.setEnabled(true);
                 }
@@ -474,7 +475,7 @@ public class PostActivity extends FragmentActivity {
                         } else {
                             mImgPath = null;
                             mTweetButton.setEnabled(false);
-                            JustawayApplication.getApplication().setThemeTextColor(mContext, mImgButton, R.attr.menu_text_color);
+                            ThemeUtil.setThemeTextColor(mContext, mImgButton, R.attr.menu_text_color);
                         }
                     } else if (e.getErrorCode() == ERROR_CODE_DUPLICATE_STATUS) {
                         JustawayApplication.showToast(getString(R.string.toast_update_status_already));
@@ -506,7 +507,7 @@ public class PostActivity extends FragmentActivity {
         mImgPath = (File) imagePath;
 
         if (mImgPath != null && mImgPath.exists()) {
-            JustawayApplication.getApplication().setThemeTextColor(mContext, mImgButton, R.attr.holo_blue);
+            ThemeUtil.setThemeTextColor(mContext, mImgButton, R.attr.holo_blue);
             mTweetButton.setEnabled(true);
         }
     }
@@ -570,7 +571,7 @@ public class PostActivity extends FragmentActivity {
             InputStream inputStream = getContentResolver().openInputStream(uri);
             this.mImgPath = writeToTempFile(inputStream);
             JustawayApplication.showToast(R.string.toast_set_image_success);
-            JustawayApplication.getApplication().setThemeTextColor(mContext, mImgButton, R.attr.holo_blue);
+            ThemeUtil.setThemeTextColor(mContext, mImgButton, R.attr.holo_blue);
             mTweetButton.setEnabled(true);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -611,7 +612,7 @@ public class PostActivity extends FragmentActivity {
         if (length < 0) {
             textColor = Color.RED;
         } else {
-            textColor = JustawayApplication.getApplication().getThemeTextColor(mContext, R.attr.menu_text_color);
+            textColor = ThemeUtil.getThemeTextColor(mContext, R.attr.menu_text_color);
         }
         mCount.setTextColor(textColor);
         mCount.setText(String.valueOf(length));
@@ -772,7 +773,7 @@ public class PostActivity extends FragmentActivity {
             assert view != null;
             view.setPadding(16, 0, 0, 0);
             ImageView icon = (ImageView) view.findViewById(R.id.icon);
-            JustawayApplication.getApplication().displayUserIcon(accessToken.getUserId(), icon);
+            JustawayApplication.getApplication().getUserIconManager().displayUserIcon(accessToken.getUserId(), icon);
             ((TextView) view.findViewById(R.id.screen_name)).setText(accessToken.getScreenName());
 
             return view;
@@ -791,7 +792,7 @@ public class PostActivity extends FragmentActivity {
 
             assert view != null;
             ImageView icon = (ImageView) view.findViewById(R.id.icon);
-            JustawayApplication.getApplication().displayUserIcon(accessToken.getUserId(), icon);
+            JustawayApplication.getApplication().getUserIconManager().displayUserIcon(accessToken.getUserId(), icon);
             ((TextView) view.findViewById(R.id.screen_name)).setText(accessToken.getScreenName());
 
             return view;

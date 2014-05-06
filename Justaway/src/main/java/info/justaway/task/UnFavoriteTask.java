@@ -23,7 +23,7 @@ public class UnFavoriteTask extends AsyncTask<Void, Void, TwitterException> {
          * 先にremoveFavしておかないとViewの星が戻ってしまう、
          * 重複エラー以外の理由で失敗し場合（通信エラー等）は戻す
          */
-        mApplication.removeFav(mStatusId);
+        mApplication.getFavRetweetManager().removeFav(mStatusId);
         EventBus.getDefault().post(new StatusActionEvent());
     }
 
@@ -44,7 +44,7 @@ public class UnFavoriteTask extends AsyncTask<Void, Void, TwitterException> {
         } else if (e.getErrorCode() == ERROR_CODE_DUPLICATE) {
             JustawayApplication.showToast(R.string.toast_destroy_favorite_already);
         } else {
-            mApplication.setFav(mStatusId);
+            mApplication.getFavRetweetManager().setFav(mStatusId);
             EventBus.getDefault().post(new StatusActionEvent());
             JustawayApplication.showToast(R.string.toast_destroy_favorite_failure);
         }

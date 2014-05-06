@@ -50,7 +50,7 @@ public class DirectMessagesFragment extends BaseFragment {
                 Paging directMessagesPaging = new Paging();
                 if (mDirectMessagesMaxId > 0) {
                     directMessagesPaging.setMaxId(mDirectMessagesMaxId - 1);
-                    directMessagesPaging.setCount(application.getPageCount() / 2);
+                    directMessagesPaging.setCount(application.getBasicSettings().getPageCount() / 2);
                 } else {
                     directMessagesPaging.setCount(10);
                 }
@@ -65,7 +65,7 @@ public class DirectMessagesFragment extends BaseFragment {
                 Paging sentDirectMessagesPaging = new Paging();
                 if (mSentDirectMessagesMaxId > 0) {
                     sentDirectMessagesPaging.setMaxId(mSentDirectMessagesMaxId - 1);
-                    sentDirectMessagesPaging.setCount(application.getPageCount() / 2);
+                    sentDirectMessagesPaging.setCount(application.getBasicSettings().getPageCount() / 2);
                 } else {
                     sentDirectMessagesPaging.setCount(10);
                 }

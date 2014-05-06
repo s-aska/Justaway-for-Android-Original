@@ -16,6 +16,7 @@ import butterknife.InjectView;
 import info.justaway.JustawayApplication;
 import info.justaway.R;
 import info.justaway.listener.OnTrashListener;
+import info.justaway.util.ThemeUtil;
 import info.justaway.widget.JustawayButton;
 import twitter4j.auth.AccessToken;
 
@@ -47,7 +48,7 @@ public class AccessTokenAdapter extends ArrayAdapter<AccessToken> {
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mLayout = textViewResourceId;
         mApplication = JustawayApplication.getApplication();
-        mColorBlue = mApplication.getThemeTextColor((Activity) context, R.attr.holo_blue);
+        mColorBlue = ThemeUtil.getThemeTextColor((Activity) context, R.attr.holo_blue);
     }
 
     @Override
@@ -82,7 +83,7 @@ public class AccessTokenAdapter extends ArrayAdapter<AccessToken> {
 
         final AccessToken accessToken = mAccountLists.get(position);
 
-        mApplication.displayUserIcon(accessToken.getUserId(), viewHolder.mIcon);
+        mApplication.getUserIconManager().displayUserIcon(accessToken.getUserId(), viewHolder.mIcon);
 
         viewHolder.mScreenName.setText(accessToken.getScreenName());
         viewHolder.mTrash.setTypeface(JustawayApplication.getFontello());

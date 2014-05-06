@@ -15,6 +15,7 @@ import info.justaway.fragment.dialog.AccountSwitchDialogFragment;
 import info.justaway.listener.OnTrashListener;
 import info.justaway.listener.RemoveAccountListener;
 import info.justaway.model.AccessTokenManager;
+import info.justaway.util.ThemeUtil;
 import twitter4j.auth.AccessToken;
 
 public class AccountSettingActivity extends FragmentActivity implements RemoveAccountListener {
@@ -26,8 +27,7 @@ public class AccountSettingActivity extends FragmentActivity implements RemoveAc
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mApplication = JustawayApplication.getApplication();
-        mApplication.setTheme(this);
+        ThemeUtil.setTheme(this);
         setContentView(R.layout.activity_account_setting);
 
         ActionBar actionBar = getActionBar();
@@ -36,6 +36,7 @@ public class AccountSettingActivity extends FragmentActivity implements RemoveAc
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
+        mApplication = JustawayApplication.getApplication();
         mAccessTokenManager = mApplication.getAccessTokenManager();
         mAccountAdapter = new AccessTokenAdapter(this, R.layout.row_account);
         for (AccessToken accessToken : mAccessTokenManager.getAccessTokens()) {

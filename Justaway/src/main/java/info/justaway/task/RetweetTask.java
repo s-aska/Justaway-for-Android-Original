@@ -17,7 +17,7 @@ public class RetweetTask extends AsyncTask<Void, Void, TwitterException> {
     public RetweetTask(long statusId) {
         mStatusId = statusId;
         mApplication = JustawayApplication.getApplication();
-        mApplication.setRtId(statusId, (long) 0);
+        mApplication.getFavRetweetManager().setRtId(statusId, (long) 0);
         EventBus.getDefault().post(new StatusActionEvent());
     }
 
@@ -25,10 +25,10 @@ public class RetweetTask extends AsyncTask<Void, Void, TwitterException> {
     protected TwitterException doInBackground(Void... params) {
         try {
             twitter4j.Status status = JustawayApplication.getApplication().getTwitter().retweetStatus(mStatusId);
-            mApplication.setRtId(status.getRetweetedStatus().getId(), status.getId());
+            mApplication.getFavRetweetManager().setRtId(status.getRetweetedStatus().getId(), status.getId());
             return null;
         } catch (TwitterException e) {
-            mApplication.setRtId(mStatusId, null);
+            mApplication.getFavRetweetManager().setRtId(mStatusId, null);
             e.printStackTrace();
             return e;
         }

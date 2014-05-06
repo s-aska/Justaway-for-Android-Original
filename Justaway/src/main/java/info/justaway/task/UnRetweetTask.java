@@ -20,7 +20,7 @@ public class UnRetweetTask extends AsyncTask<Void, Void, TwitterException> {
         mStatusId = statusId;
         mApplication = JustawayApplication.getApplication();
         if (mRetweetedStatusId > 0) {
-            mApplication.setRtId(mRetweetedStatusId, null);
+            mApplication.getFavRetweetManager().setRtId(mRetweetedStatusId, null);
             EventBus.getDefault().post(new StatusActionEvent());
         }
     }
@@ -44,7 +44,7 @@ public class UnRetweetTask extends AsyncTask<Void, Void, TwitterException> {
             JustawayApplication.showToast(R.string.toast_destroy_retweet_already);
         } else {
             if (mRetweetedStatusId > 0) {
-                mApplication.setRtId(mRetweetedStatusId, mStatusId);
+                mApplication.getFavRetweetManager().setRtId(mRetweetedStatusId, mStatusId);
                 EventBus.getDefault().post(new StatusActionEvent());
             }
             JustawayApplication.showToast(R.string.toast_destroy_retweet_failure);

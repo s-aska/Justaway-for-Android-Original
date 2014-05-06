@@ -21,11 +21,6 @@ public class AccessTokenManager {
                 .getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
     }
 
-    /**
-     * Twitterアクセストークン有無
-     *
-     * @return Twitterアクセストークン有無
-     */
     public Boolean hasAccessToken() {
         return getAccessToken() != null;
     }
@@ -41,13 +36,7 @@ public class AccessTokenManager {
         return accountSettings.accessTokens;
     }
 
-    /**
-     * Twitterアクセストークン取得
-     *
-     * @return Twitterアクセストークン
-     */
     public AccessToken getAccessToken() {
-        // キャッシュしておく
         if (mAccessToken != null) {
             return mAccessToken;
         }
@@ -63,11 +52,6 @@ public class AccessTokenManager {
         return mAccessToken;
     }
 
-    /**
-     * Twitterアクセストークン保存
-     *
-     * @param accessToken Twitterアクセストークン
-     */
     public void setAccessToken(AccessToken accessToken) {
 
         mAccessToken = accessToken;
@@ -140,7 +124,19 @@ public class AccessTokenManager {
         editor.commit();
     }
 
+    public long getUserId() {
+        if (mAccessToken == null) {
+            return -1L;
+        }
+        return mAccessToken.getUserId();
+    }
 
+    public String getScreenName() {
+        if (mAccessToken == null) {
+            return "";
+        }
+        return mAccessToken.getScreenName();
+    }
 
     public static class AccountSettings {
         int index;

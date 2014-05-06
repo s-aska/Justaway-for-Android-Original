@@ -12,6 +12,7 @@ import info.justaway.adapter.SimplePagerAdapter;
 import info.justaway.fragment.mute.SourceFragment;
 import info.justaway.fragment.mute.UserFragment;
 import info.justaway.fragment.mute.WordFragment;
+import info.justaway.util.ThemeUtil;
 
 public class MuteActivity extends FragmentActivity {
 
@@ -36,8 +37,8 @@ public class MuteActivity extends FragmentActivity {
         simplePagerAdapter.addTab(WordFragment.class, null);
         simplePagerAdapter.notifyDataSetChanged();
 
-        final int colorBlue = JustawayApplication.getApplication().getThemeTextColor(this, R.attr.holo_blue);
-        final int colorWhite = JustawayApplication.getApplication().getThemeTextColor(this, R.attr.text_color);
+        final int colorBlue = ThemeUtil.getThemeTextColor(this, R.attr.holo_blue);
+        final int colorWhite = ThemeUtil.getThemeTextColor(this, R.attr.text_color);
 
         /**
          * タブのラベル情報を配列に入れておく

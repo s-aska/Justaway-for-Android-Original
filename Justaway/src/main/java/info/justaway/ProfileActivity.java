@@ -34,6 +34,7 @@ import info.justaway.fragment.profile.UserListMembershipsFragment;
 import info.justaway.fragment.profile.UserTimelineFragment;
 import info.justaway.model.Profile;
 import info.justaway.task.ShowUserLoader;
+import info.justaway.util.ThemeUtil;
 import twitter4j.Relationship;
 import twitter4j.User;
 
@@ -286,8 +287,8 @@ public class ProfileActivity extends FragmentActivity implements
         };
 
 
-        final int colorBlue = JustawayApplication.getApplication().getThemeTextColor(this, R.attr.holo_blue);
-        final int colorWhite = JustawayApplication.getApplication().getThemeTextColor(this, R.attr.text_color);
+        final int colorBlue = ThemeUtil.getThemeTextColor(this, R.attr.holo_blue);
+        final int colorWhite = ThemeUtil.getThemeTextColor(this, R.attr.text_color);
 
         tabs[0].setTextColor(colorBlue);
 

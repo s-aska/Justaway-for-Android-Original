@@ -60,6 +60,7 @@ import info.justaway.model.TabManager;
 import info.justaway.task.SendDirectMessageTask;
 import info.justaway.task.UpdateStatusTask;
 import info.justaway.util.KeyboardUtil;
+import info.justaway.util.ThemeUtil;
 import info.justaway.util.TwitterUtil;
 import info.justaway.widget.AutoCompleteEditText;
 import info.justaway.widget.JustawayButton;
@@ -125,7 +126,7 @@ public class MainActivity extends FragmentActivity {
 
         @OnClick(R.id.action_bar_streaming_button)
         void actionBarToggleStreaming() {
-            final boolean turnOn = !mApplication.getStreamingMode();
+            final boolean turnOn = !mApplication.getBasicSettings().getStreamingMode();
             DialogFragment dialog = StreamingSwitchDialogFragment.newInstance(turnOn);
             dialog.show(getSupportFragmentManager(), "dialog");
         }
@@ -171,8 +172,8 @@ public class MainActivity extends FragmentActivity {
         /**
          * ビューで使う変数の初期化処理
          */
-        mDefaultTextColor = mApplication.getThemeTextColor(this, R.attr.menu_text_color);
-        mDisabledTextColor = mApplication.getThemeTextColor(this, R.attr.menu_text_color_disabled);
+        mDefaultTextColor = ThemeUtil.getThemeTextColor(this, R.attr.menu_text_color);
+        mDisabledTextColor = ThemeUtil.getThemeTextColor(this, R.attr.menu_text_color_disabled);
 
         /**
          * ActionBarの初期化処理
@@ -217,8 +218,8 @@ public class MainActivity extends FragmentActivity {
          */
         mAccessTokenAdapter = new AccessTokenAdapter(this,
                 R.layout.row_switch_account,
-                mApplication.getThemeTextColor(mActivity, R.attr.holo_blue),
-                mApplication.getThemeTextColor(mActivity, R.attr.text_color));
+                ThemeUtil.getThemeTextColor(mActivity, R.attr.holo_blue),
+                ThemeUtil.getThemeTextColor(mActivity, R.attr.text_color));
 
         View drawerFooterView = getLayoutInflater().inflate(R.layout.drawer_menu, null, false);
         new DrawerHolder(drawerFooterView);
@@ -243,7 +244,7 @@ public class MainActivity extends FragmentActivity {
 
         MyUncaughtExceptionHandler.showBugReportDialogIfExist(this);
 
-        if (mApplication.getKeepScreenOn()) {
+        if (mApplication.getBasicSettings().getKeepScreenOn()) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         } else {
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -272,7 +273,7 @@ public class MainActivity extends FragmentActivity {
                 break;
             case REQUEST_SETTINGS:
                 if (resultCode == RESULT_OK) {
-                    mApplication.resetDisplaySettings();
+                    mApplication.getBasicSettings().resetDisplaySettings();
                     finish();
                     startActivity(new Intent(this, this.getClass()));
                 }
@@ -297,8 +298,8 @@ public class MainActivity extends FragmentActivity {
             return;
         }
 
-        mApplication.resetDisplaySettings();
-        mApplication.resetNotification();
+        mApplication.getBasicSettings().resetDisplaySettings();
+        mApplication.getBasicSettings().resetNotification();
 
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -313,15 +314,15 @@ public class MainActivity extends FragmentActivity {
         }, 1000);
 
         if (mSwitchAccessToken != null) {
-            mApplication.switchAccessToken(mSwitchAccessToken);
+            mApplication.getTwitterManager().switchAccessToken(mSwitchAccessToken);
             mSwitchAccessToken = null;
         }
-        mApplication.resumeStreaming();
-        if (mApplication.getTwitterStreamConnected()) {
-            mApplication.setThemeTextColor(this, mActionBarHolder.streamingButton, R.attr.holo_green);
+        mApplication.getTwitterManager().resumeStreaming();
+        if (mApplication.getTwitterManager().getTwitterStreamConnected()) {
+            ThemeUtil.setThemeTextColor(this, mActionBarHolder.streamingButton, R.attr.holo_green);
         } else {
-            if (mApplication.getStreamingMode()) {
-                mApplication.setThemeTextColor(this, mActionBarHolder.streamingButton, R.attr.holo_red);
+            if (mApplication.getBasicSettings().getStreamingMode()) {
+                ThemeUtil.setThemeTextColor(this, mActionBarHolder.streamingButton, R.attr.holo_red);
             } else {
                 mActionBarHolder.streamingButton.setTextColor(Color.WHITE);
             }
@@ -330,7 +331,7 @@ public class MainActivity extends FragmentActivity {
 
     @Override
     protected void onPause() {
-        mApplication.pauseStreaming();
+        mApplication.getTwitterManager().pauseStreaming();
         EventBus.getDefault().unregister(this);
         super.onPause();
     }
@@ -470,7 +471,7 @@ public class MainActivity extends FragmentActivity {
         mQuickTweetEdit.setFocusable(true);
         mQuickTweetEdit.setFocusableInTouchMode(true);
         mQuickTweetEdit.setEnabled(true);
-        mApplication.setQuickMod(true);
+        mApplication.getBasicSettings().setQuickMod(true);
     }
 
     public void hideQuickPanel() {
@@ -480,7 +481,7 @@ public class MainActivity extends FragmentActivity {
         mQuickTweetEdit.clearFocus();
         mQuickTweetLayout.setVisibility(View.GONE);
         mInReplyToStatus = null;
-        mApplication.setQuickMod(false);
+        mApplication.getBasicSettings().setQuickMod(false);
     }
 
     public void setupTab() {
@@ -631,12 +632,12 @@ public class MainActivity extends FragmentActivity {
          */
         mQuickTweetEdit.addTextChangedListener(mQuickTweetTextWatcher);
 
-        if (mApplication.getQuickMode()) {
+        if (mApplication.getBasicSettings().getQuickMode()) {
             showQuickPanel();
         }
 
-        if (mApplication.getStreamingMode()) {
-            mApplication.startStreaming();
+        if (mApplication.getBasicSettings().getStreamingMode()) {
+            mApplication.getTwitterManager().startStreaming();
         }
     }
 
@@ -647,7 +648,7 @@ public class MainActivity extends FragmentActivity {
         LinearLayout tab_menus = (LinearLayout) findViewById(R.id.tab_menus);
         Button button = (Button) tab_menus.getChildAt(mViewPager.getCurrentItem());
         if (button != null) {
-            mApplication.setThemeTextColor(this, button, R.attr.menu_text_color);
+            ThemeUtil.setThemeTextColor(this, button, R.attr.menu_text_color);
         }
     }
 
@@ -675,7 +676,7 @@ public class MainActivity extends FragmentActivity {
         }
         AccessToken accessToken = mAccessTokenAdapter.getItem(position);
         if (mApplication.getUserId() != accessToken.getUserId()) {
-            mApplication.switchAccessToken(accessToken);
+            mApplication.getTwitterManager().switchAccessToken(accessToken);
             mAccessTokenAdapter.notifyDataSetChanged();
         }
         mDrawerLayout.closeDrawer(findViewById(R.id.left_drawer));
@@ -794,7 +795,7 @@ public class MainActivity extends FragmentActivity {
     };
 
     private ActionBarDrawerToggle getActionBarDrawerToggle() {
-        int drawer = mApplication.getThemeName().equals("black") ?
+        int drawer = mApplication.getBasicSettings().getThemeName().equals("black") ?
                 R.drawable.ic_dark_drawer :
                 R.drawable.ic_dark_drawer;
 
@@ -897,16 +898,16 @@ public class MainActivity extends FragmentActivity {
      * ストリーミングAPI接続
      */
     public void onEventMainThread(StreamingConnectionEvent event) {
-        if (mApplication.getStreamingMode()) {
+        if (mApplication.getBasicSettings().getStreamingMode()) {
             switch (event.getStatus()) {
                 case STREAMING_CONNECT:
-                    mApplication.setThemeTextColor(this, mActionBarHolder.streamingButton, R.attr.holo_green);
+                    ThemeUtil.setThemeTextColor(this, mActionBarHolder.streamingButton, R.attr.holo_green);
                     break;
                 case STREAMING_CLEANUP:
-                    mApplication.setThemeTextColor(this, mActionBarHolder.streamingButton, R.attr.holo_orange);
+                    ThemeUtil.setThemeTextColor(this, mActionBarHolder.streamingButton, R.attr.holo_orange);
                     break;
                 case STREAMING_DISCONNECT:
-                    mApplication.setThemeTextColor(this, mActionBarHolder.streamingButton, R.attr.holo_red);
+                    ThemeUtil.setThemeTextColor(this, mActionBarHolder.streamingButton, R.attr.holo_red);
                     break;
             }
         } else {
@@ -941,9 +942,9 @@ public class MainActivity extends FragmentActivity {
             return;
         }
         if (mViewPager.getCurrentItem() == position && event.getAutoScroll()) {
-            mApplication.setThemeTextColor(this, button, R.attr.menu_text_color);
+            ThemeUtil.setThemeTextColor(this, button, R.attr.menu_text_color);
         } else {
-            mApplication.setThemeTextColor(this, button, R.attr.holo_blue);
+            ThemeUtil.setThemeTextColor(this, button, R.attr.holo_blue);
         }
     }
 }

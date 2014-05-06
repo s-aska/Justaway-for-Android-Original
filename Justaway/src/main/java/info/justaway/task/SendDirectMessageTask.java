@@ -25,7 +25,7 @@ public class SendDirectMessageTask extends AsyncTask<String, Void, TwitterExcept
                 mApplication.getTwitter().sendDirectMessage(getOrEmpty(s, 1), getOrEmpty(s, 2));
             } else {
                 // ツイート画面から来たとき
-                Twitter twitter = mApplication.getTwitterInstance();
+                Twitter twitter = mApplication.getTwitterManager().getTwitterInstance();
                 twitter.setOAuthAccessToken(mAccessToken);
                 twitter.sendDirectMessage(getOrEmpty(s, 1), getOrEmpty(s, 2));
             }
