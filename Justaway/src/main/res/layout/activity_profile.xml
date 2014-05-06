@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:tools="http://schemas.android.com/tools"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
               android:layout_height="match_parent"
               android:orientation="vertical"
               android:layout_width="match_parent">
@@ -23,15 +24,13 @@
             android:layout_width="match_parent"
             android:layout_height="180dp"/>
 
-        <TextView
+        <com.viewpagerindicator.CirclePageIndicator
             android:id="@+id/symbol"
             android:layout_width="match_parent"
-            android:layout_height="20dp"
-            android:gravity="center"
             android:layout_gravity="bottom"
-            android:text="@string/profile_pointer"
-            android:textSize="8sp"
-            tools:ignore="SmallSp"/>
+            android:layout_height="wrap_content"
+            android:padding="10dip"
+            app:radius="4dp"/>
     </FrameLayout>
 
     <LinearLayout

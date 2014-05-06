@@ -19,6 +19,8 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.viewpagerindicator.CirclePageIndicator;
+
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
@@ -46,7 +48,7 @@ public class ProfileActivity extends FragmentActivity implements
 
     @InjectView(R.id.banner) ImageView mBanner;
     @InjectView(R.id.pager) ViewPager mPager;
-    @InjectView(R.id.symbol) TextView mSymbol;
+    @InjectView(R.id.symbol) CirclePageIndicator mSymbol;
     @InjectView(R.id.frame) FrameLayout mFrame;
     @InjectView(R.id.statuses_count) TextView mStatusesCount;
     @InjectView(R.id.friends_count) TextView mFriendsCount;
@@ -254,16 +256,7 @@ public class ProfileActivity extends FragmentActivity implements
         simplePagerAdapter.addTab(SummaryFragment.class, args);
         simplePagerAdapter.addTab(DescriptionFragment.class, args);
         simplePagerAdapter.notifyDataSetChanged();
-        mPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-                if (position == 0) {
-                    mSymbol.setText(getString(R.string.profile_pointer));
-                } else {
-                    mSymbol.setText(getString(R.string.profile_pointer_right));
-                }
-            }
-        });
+        mSymbol.setViewPager(mPager);
 
         // ユーザリスト用のタブ
         SimplePagerAdapter listPagerAdapter = new SimplePagerAdapter(this, mListPager);
