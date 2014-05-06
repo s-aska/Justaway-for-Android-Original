@@ -33,6 +33,7 @@ import info.justaway.event.action.StatusActionEvent;
 import info.justaway.listener.StatusClickListener;
 import info.justaway.listener.StatusLongClickListener;
 import info.justaway.model.Row;
+import info.justaway.util.KeyboardUtil;
 import twitter4j.Query;
 import twitter4j.QueryResult;
 import twitter4j.ResponseList;
@@ -126,7 +127,7 @@ public class SearchActivity extends FragmentActivity {
             mSearchWords.setText(query);
             search.performClick();
         } else {
-            JustawayApplication.getApplication().showKeyboard(mSearchWords);
+            KeyboardUtil.showKeyboard(mSearchWords);
         }
 
         mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
@@ -217,7 +218,7 @@ public class SearchActivity extends FragmentActivity {
 
     private void search() {
         mSearchListView.setVisibility(View.GONE);
-        JustawayApplication.getApplication().hideKeyboard(mSearchWords);
+        KeyboardUtil.hideKeyboard(mSearchWords);
         if (mSearchWords.getText() == null) return;
         Query query = new Query(mSearchWords.getText().toString().concat(" exclude:retweets"));
         mAdapter.clear();

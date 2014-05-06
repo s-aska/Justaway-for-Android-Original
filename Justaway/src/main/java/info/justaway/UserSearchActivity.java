@@ -17,6 +17,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import info.justaway.adapter.UserAdapter;
+import info.justaway.util.KeyboardUtil;
 import twitter4j.ResponseList;
 import twitter4j.User;
 
@@ -81,7 +82,7 @@ public class UserSearchActivity extends FragmentActivity {
             mSearchText.setText(query);
             search.performClick();
         } else {
-            JustawayApplication.getApplication().showKeyboard(mSearchText);
+            KeyboardUtil.showKeyboard(mSearchText);
         }
 
         mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
@@ -120,7 +121,7 @@ public class UserSearchActivity extends FragmentActivity {
     }
 
     private void search() {
-        JustawayApplication.getApplication().hideKeyboard(mSearchText);
+        KeyboardUtil.hideKeyboard(mSearchText);
         if (mSearchText.getText() == null) return;
         mAdapter.clear();
         mPage = 1;

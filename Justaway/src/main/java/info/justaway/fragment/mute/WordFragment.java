@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import info.justaway.JustawayApplication;
 import info.justaway.R;
 import info.justaway.settings.MuteSettings;
+import info.justaway.util.KeyboardUtil;
 
 public class WordFragment extends Fragment {
 
@@ -45,7 +46,7 @@ public class WordFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 final EditText editText = new EditText(getActivity());
-                application.showKeyboard(editText);
+                KeyboardUtil.showKeyboard(editText);
                 new AlertDialog.Builder(getActivity())
                         .setTitle(R.string.title_create_mute_word)
                         .setView(editText)

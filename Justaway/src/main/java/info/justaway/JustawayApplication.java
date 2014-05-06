@@ -16,7 +16,6 @@ import android.os.StrictMode;
 import android.support.v4.util.LongSparseArray;
 import android.util.TypedValue;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -367,45 +366,6 @@ public class JustawayApplication extends Application {
     }
 
     /**
-     * クックモードの記憶
-     */
-    private static final String QUICK_MODE = "quickMode";
-
-    public void setQuickMod(Boolean quickMode) {
-        SharedPreferences preferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
-        Editor editor = preferences.edit();
-        editor.putBoolean(QUICK_MODE, quickMode);
-        editor.commit();
-    }
-
-    public Boolean getQuickMode() {
-        SharedPreferences preferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
-        return preferences.getBoolean(QUICK_MODE, false);
-    }
-
-    /**
-     * ストリーミングモードの記憶
-     */
-    private static final String STREAMING_MODE = "streamingMode";
-    private Boolean mStreamingMode;
-
-    public void setStreamingMode(Boolean streamingMode) {
-        SharedPreferences preferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
-        Editor editor = preferences.edit();
-        editor.putBoolean(STREAMING_MODE, streamingMode);
-        editor.commit();
-        mStreamingMode = streamingMode;
-    }
-
-    public Boolean getStreamingMode() {
-        if (mStreamingMode != null) {
-            return mStreamingMode;
-        }
-        SharedPreferences preferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
-        return preferences.getBoolean(STREAMING_MODE, true);
-    }
-
-    /**
      * 設定管理
      */
     private static final String PREF_NAME_SETTINGS = "settings";
@@ -458,6 +418,45 @@ public class JustawayApplication extends Application {
             theme.resolveAttribute(resourceId, outValue, true);
         }
         return outValue.data;
+    }
+
+    /**
+     * クックモードの記憶
+     */
+    private static final String QUICK_MODE = "quickMode";
+
+    public void setQuickMod(Boolean quickMode) {
+        SharedPreferences preferences = getSharedPreferences(PREF_NAME_SETTINGS, Context.MODE_PRIVATE);
+        Editor editor = preferences.edit();
+        editor.putBoolean(QUICK_MODE, quickMode);
+        editor.commit();
+    }
+
+    public Boolean getQuickMode() {
+        SharedPreferences preferences = getSharedPreferences(PREF_NAME_SETTINGS, Context.MODE_PRIVATE);
+        return preferences.getBoolean(QUICK_MODE, false);
+    }
+
+    /**
+     * ストリーミングモードの記憶
+     */
+    private static final String STREAMING_MODE = "streamingMode";
+    private Boolean mStreamingMode;
+
+    public void setStreamingMode(Boolean streamingMode) {
+        SharedPreferences preferences = getSharedPreferences(PREF_NAME_SETTINGS, Context.MODE_PRIVATE);
+        Editor editor = preferences.edit();
+        editor.putBoolean(STREAMING_MODE, streamingMode);
+        editor.commit();
+        mStreamingMode = streamingMode;
+    }
+
+    public Boolean getStreamingMode() {
+        if (mStreamingMode != null) {
+            return mStreamingMode;
+        }
+        SharedPreferences preferences = getSharedPreferences(PREF_NAME_SETTINGS, Context.MODE_PRIVATE);
+        return preferences.getBoolean(STREAMING_MODE, true);
     }
 
     public void resetDisplaySettings() {
@@ -1006,43 +1005,6 @@ public class JustawayApplication extends Application {
             intent.putExtra("inReplyToStatus", status);
             context.startActivity(intent);
         }
-    }
-
-    public void showKeyboard(final View view) {
-        showKeyboard(view, 200);
-    }
-
-    public void showKeyboard(final View view, int delay) {
-        view.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                /**
-                 * 表示されてないEditViewを表示と同時にキーボード出したい場合
-                 * フォーカスが当たってないとキーボードは出てこないのリスナーを使う
-                 * 元々設定されているリスナーを引っ張りだし、キーボード出したら戻しておく（行儀良い）
-                 */
-                final View.OnFocusChangeListener listener = view.getOnFocusChangeListener();
-                view.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-                    @Override
-                    public void onFocusChange(View v, boolean has_focus) {
-                        if (!has_focus) {
-                            return;
-                        }
-                        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                        inputMethodManager.showSoftInput(v, InputMethodManager.SHOW_FORCED);
-                        v.setOnFocusChangeListener(listener);
-                    }
-                });
-                view.clearFocus();
-                view.requestFocus();
-            }
-        }, delay);
-    }
-
-    @SuppressWarnings("unused")
-    public void hideKeyboard(View view) {
-        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     public class MyConnectionLifeCycleListener implements ConnectionLifeCycleListener {

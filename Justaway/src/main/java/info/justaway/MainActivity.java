@@ -59,6 +59,7 @@ import info.justaway.fragment.main.tab.UserListFragment;
 import info.justaway.model.TabManager;
 import info.justaway.task.SendDirectMessageTask;
 import info.justaway.task.UpdateStatusTask;
+import info.justaway.util.KeyboardUtil;
 import info.justaway.util.TwitterUtil;
 import info.justaway.widget.AutoCompleteEditText;
 import info.justaway.widget.JustawayButton;
@@ -656,12 +657,12 @@ public class MainActivity extends FragmentActivity {
         mActionBarHolder.searchLayout.setVisibility(View.VISIBLE);
         mActionBarHolder.searchText.showDropDown();
         mActionBarHolder.searchText.setText("");
-        mApplication.showKeyboard(mActionBarHolder.searchText);
+        KeyboardUtil.showKeyboard(mActionBarHolder.searchText);
     }
 
     private void cancelSearch() {
         mActionBarHolder.searchText.setText("");
-        mApplication.hideKeyboard(mActionBarHolder.searchText);
+        KeyboardUtil.hideKeyboard(mActionBarHolder.searchText);
         mActionBarHolder.searchLayout.setVisibility(View.GONE);
         mActionBarHolder.normalLayout.setVisibility(View.VISIBLE);
         mDrawerToggle.setDrawerIndicatorEnabled(true);
@@ -819,7 +820,7 @@ public class MainActivity extends FragmentActivity {
                 }
                 Intent intent = null;
                 String searchWord = mActionBarHolder.searchText.getText().toString();
-                mApplication.hideKeyboard(mActionBarHolder.searchText);
+                KeyboardUtil.hideKeyboard(mActionBarHolder.searchText);
                 if (mUserSearchAdapter.isSavedMode()) {
                     intent = new Intent(mActivity, SearchActivity.class);
                     intent.putExtra("query", searchWord);
@@ -875,7 +876,7 @@ public class MainActivity extends FragmentActivity {
                 }
             }
             mInReplyToStatus = event.getInReplyToStatus();
-            mApplication.showKeyboard(mQuickTweetEdit);
+            KeyboardUtil.showKeyboard(mQuickTweetEdit);
         } else {
             Intent intent = new Intent(this, PostActivity.class);
             intent.putExtra("status", event.getText());
