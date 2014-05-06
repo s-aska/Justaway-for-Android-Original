@@ -15,10 +15,13 @@ import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnClick;
 import de.greenrobot.event.EventBus;
 import info.justaway.adapter.SimplePagerAdapter;
 import info.justaway.event.AlertDialogEvent;
@@ -37,7 +40,18 @@ import twitter4j.User;
 public class ProfileActivity extends FragmentActivity implements
         LoaderManager.LoaderCallbacks<Profile> {
 
-    private ImageView mBanner;
+    @InjectView(R.id.banner) ImageView mBanner;
+    @InjectView(R.id.pager) ViewPager mPager;
+    @InjectView(R.id.symbol) TextView mSymbol;
+    @InjectView(R.id.frame) FrameLayout mFrame;
+    @InjectView(R.id.statuses_count) TextView mStatusesCount;
+    @InjectView(R.id.friends_count) TextView mFriendsCount;
+    @InjectView(R.id.followers_count) TextView mFollowersCount;
+    @InjectView(R.id.listed_count) TextView mListedCount;
+    @InjectView(R.id.favourites_count) TextView mFavouritesCount;
+    @InjectView(R.id.collapse_label) TextView mCollapseLabel;
+    @InjectView(R.id.list_pager) ViewPager mListPager;
+
     private User mUser;
 
     @Override
@@ -45,6 +59,7 @@ public class ProfileActivity extends FragmentActivity implements
         super.onCreate(savedInstanceState);
         JustawayApplication.getApplication().setTheme(this);
         setContentView(R.layout.activity_profile);
+        ButterKnife.inject(this);
 
         ActionBar actionBar = getActionBar();
         if (actionBar != null) {
@@ -52,10 +67,8 @@ public class ProfileActivity extends FragmentActivity implements
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        mBanner = (ImageView) findViewById(R.id.banner);
-
         Typeface fontello = JustawayApplication.getFontello();
-        ((TextView) findViewById(R.id.collapse_label)).setTypeface(fontello);
+        mCollapseLabel.setTypeface(fontello);
 
         // インテント経由での起動をサポート
         Intent intent = getIntent();
@@ -213,16 +226,11 @@ public class ProfileActivity extends FragmentActivity implements
             JustawayApplication.showToast(R.string.toast_load_data_failure);
             return;
         }
-        ((TextView) findViewById(R.id.favourites_count)).setText(String.valueOf(mUser
-                .getFavouritesCount()));
-        ((TextView) findViewById(R.id.statuses_count)).setText(String.valueOf(mUser
-                .getStatusesCount()));
-        ((TextView) findViewById(R.id.friends_count)).setText(String.valueOf(mUser
-                .getFriendsCount()));
-        ((TextView) findViewById(R.id.followers_count)).setText(String.valueOf(mUser
-                .getFollowersCount()));
-        ((TextView) findViewById(R.id.listed_count)).setText(String.valueOf(mUser
-                .getListedCount()));
+        mFavouritesCount.setText(getString(R.string.label_favourites, mUser.getFavouritesCount()));
+        mStatusesCount.setText(getString(R.string.label_tweets, mUser.getStatusesCount()));
+        mFriendsCount.setText(getString(R.string.label_following, mUser.getFriendsCount()));
+        mFollowersCount.setText(getString(R.string.label_followers, mUser.getFollowersCount()));
+        mListedCount.setText(getString(R.string.label_listed, mUser.getListedCount()));
 
         String bannerUrl = mUser.getProfileBannerMobileRetinaURL();
         if (bannerUrl != null) {
@@ -234,8 +242,7 @@ public class ProfileActivity extends FragmentActivity implements
         /**
          * スワイプで動かせるタブを実装するのに最低限必要な実装
          */
-        final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-        SimplePagerAdapter simplePagerAdapter = new SimplePagerAdapter(this, viewPager);
+        SimplePagerAdapter simplePagerAdapter = new SimplePagerAdapter(this, mPager);
 
         Bundle args = new Bundle();
         args.putSerializable("user", mUser);
@@ -243,20 +250,19 @@ public class ProfileActivity extends FragmentActivity implements
         simplePagerAdapter.addTab(SummaryFragment.class, args);
         simplePagerAdapter.addTab(DescriptionFragment.class, args);
         simplePagerAdapter.notifyDataSetChanged();
-        viewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+        mPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
                 if (position == 0) {
-                    ((TextView) findViewById(R.id.symbol)).setText(getString(R.string.profile_pointer));
+                    mSymbol.setText(getString(R.string.profile_pointer));
                 } else {
-                    ((TextView) findViewById(R.id.symbol)).setText(getString(R.string.profile_pointer_right));
+                    mSymbol.setText(getString(R.string.profile_pointer_right));
                 }
             }
         });
 
         // ユーザリスト用のタブ
-        final ViewPager listViewPager = (ViewPager) findViewById(R.id.list_pager);
-        SimplePagerAdapter listPagerAdapter = new SimplePagerAdapter(this, listViewPager);
+        SimplePagerAdapter listPagerAdapter = new SimplePagerAdapter(this, mListPager);
 
         Bundle listArgs = new Bundle();
         listArgs.putSerializable("user", mUser);
@@ -266,50 +272,33 @@ public class ProfileActivity extends FragmentActivity implements
         listPagerAdapter.addTab(UserListMembershipsFragment.class, listArgs);
         listPagerAdapter.addTab(FavoritesListFragment.class, listArgs);
         listPagerAdapter.notifyDataSetChanged();
-        listViewPager.setOffscreenPageLimit(5);
+        mListPager.setOffscreenPageLimit(5);
 
         /**
          * タブのラベル情報を配列に入れておく
          */
-        final TextView[] countTexts = {
-                (TextView) findViewById(R.id.statuses_count),
-                (TextView) findViewById(R.id.friends_count),
-                (TextView) findViewById(R.id.followers_count),
-                (TextView) findViewById(R.id.listed_count),
-                (TextView) findViewById(R.id.favourites_count),
+        final TextView[] tabs = {
+                mStatusesCount,
+                mFriendsCount,
+                mFollowersCount,
+                mListedCount,
+                mFavouritesCount,
         };
 
-        final TextView[] labelTexts = {
-                (TextView) findViewById(R.id.statuses_count_label),
-                (TextView) findViewById(R.id.friends_count_label),
-                (TextView) findViewById(R.id.followers_count_label),
-                (TextView) findViewById(R.id.listed_count_label),
-                (TextView) findViewById(R.id.favourites_count_label),
-        };
-
-        final LinearLayout[] tabs = {
-                (LinearLayout) findViewById(R.id.statuses),
-                (LinearLayout) findViewById(R.id.friends),
-                (LinearLayout) findViewById(R.id.followers),
-                (LinearLayout) findViewById(R.id.listed),
-                (LinearLayout) findViewById(R.id.favourites),
-        };
 
         final int colorBlue = JustawayApplication.getApplication().getThemeTextColor(this, R.attr.holo_blue);
         final int colorWhite = JustawayApplication.getApplication().getThemeTextColor(this, R.attr.text_color);
 
-        countTexts[0].setTextColor(colorBlue);
-        labelTexts[0].setTextColor(colorBlue);
+        tabs[0].setTextColor(colorBlue);
 
-        listViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+        mListPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
                 /**
                  * タブのindexと選択されたpositionを比較して色を設定
                  */
-                for (int i = 0; i < countTexts.length; i++) {
-                    countTexts[i].setTextColor(i == position ? colorBlue : colorWhite);
-                    labelTexts[i].setTextColor(i == position ? colorBlue : colorWhite);
+                for (int i = 0; i < tabs.length; i++) {
+                    tabs[i].setTextColor(i == position ? colorBlue : colorWhite);
                 }
             }
         });
@@ -319,24 +308,23 @@ public class ProfileActivity extends FragmentActivity implements
             tabs[i].setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    listViewPager.setCurrentItem(finalI);
+                    mListPager.setCurrentItem(finalI);
                 }
             });
         }
 
-        findViewById(R.id.collapse).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                View frame = findViewById(R.id.frame);
-                if (frame.getVisibility() == View.VISIBLE) {
-                    findViewById(R.id.frame).setVisibility(View.GONE);
-                    ((TextView) findViewById(R.id.collapse_label)).setText(R.string.fontello_down);
-                } else {
-                    findViewById(R.id.frame).setVisibility(View.VISIBLE);
-                    ((TextView) findViewById(R.id.collapse_label)).setText(R.string.fontello_up);
-                }
-            }
-        });
+    }
+
+    @OnClick(R.id.collapse_label)
+    void onClickCollapse() {
+        View frame = findViewById(R.id.frame);
+        if (frame.getVisibility() == View.VISIBLE) {
+            mFrame.setVisibility(View.GONE);
+            mCollapseLabel.setText(R.string.fontello_down);
+        } else {
+            mFrame.setVisibility(View.VISIBLE);
+            mCollapseLabel.setText(R.string.fontello_up);
+        }
     }
 
     @Override
