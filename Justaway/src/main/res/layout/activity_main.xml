@@ -53,7 +53,7 @@
                 android:text="@string/label_tweet_count"
                 tools:textColor="@android:color/white"/>
 
-            <info.justaway.widget.JustawayButton
+            <info.justaway.widget.FontelloButton
                 android:id="@+id/send_button"
                 android:layout_width="42dp"
                 android:layout_height="wrap_content"
@@ -94,7 +94,7 @@
                         android:background="?attr/menu_background"
                         tools:background="@android:color/background_dark">
 
-                        <info.justaway.widget.JustawayButton
+                        <info.justaway.widget.FontelloButton
                             android:id="@+id/action_timeline"
                             android:layout_width="58dp"
                             android:layout_height="wrap_content"
@@ -105,7 +105,7 @@
                             tools:background="@drawable/button_stateful"
                             tools:textColor="@android:color/white"/>
 
-                        <info.justaway.widget.JustawayButton
+                        <info.justaway.widget.FontelloButton
                             android:id="@+id/action_interactions"
                             android:layout_width="58dp"
                             android:layout_height="wrap_content"
@@ -116,7 +116,7 @@
                             tools:background="@drawable/button_stateful"
                             tools:textColor="@android:color/white"/>
 
-                        <info.justaway.widget.JustawayButton
+                        <info.justaway.widget.FontelloButton
                             android:id="@+id/action_direct_message"
                             android:layout_width="58dp"
                             android:layout_height="wrap_content"
@@ -129,7 +129,7 @@
                     </LinearLayout>
                 </HorizontalScrollView>
 
-                <info.justaway.widget.JustawayButton
+                <info.justaway.widget.FontelloButton
                     android:id="@+id/post_button"
                     android:layout_width="58dp"
                     android:layout_height="wrap_content"

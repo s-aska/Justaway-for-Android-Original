@@ -6,14 +6,14 @@ import android.widget.Button;
 
 import info.justaway.JustawayApplication;
 
-public class JustawayButton extends Button {
+public class FontelloButton extends Button {
 
-    public JustawayButton(Context context) {
+    public FontelloButton(Context context) {
         super(context);
         init();
     }
 
-    public JustawayButton(Context context, AttributeSet attrs) {
+    public FontelloButton(Context context, AttributeSet attrs) {
         super(context, attrs);
         if (isInEditMode()) {
             return;
@@ -21,7 +21,7 @@ public class JustawayButton extends Button {
         init();
     }
 
-    public JustawayButton(Context context, AttributeSet attrs, int defStyle) {
+    public FontelloButton(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         if (isInEditMode()) {
             return;

@@ -63,7 +63,7 @@ import info.justaway.util.KeyboardUtil;
 import info.justaway.util.ThemeUtil;
 import info.justaway.util.TwitterUtil;
 import info.justaway.widget.AutoCompleteEditText;
-import info.justaway.widget.JustawayButton;
+import info.justaway.widget.FontelloButton;
 import twitter4j.Status;
 import twitter4j.StatusUpdate;
 import twitter4j.TwitterException;
@@ -504,7 +504,7 @@ public class MainActivity extends FragmentActivity {
 
             int position = 0;
             for (TabManager.Tab tab : tabs) {
-                Button button = new JustawayButton(this);
+                Button button = new FontelloButton(this);
                 button.setLayoutParams(layoutParams);
                 button.setText(tab.getIcon());
                 button.setTextSize(22);

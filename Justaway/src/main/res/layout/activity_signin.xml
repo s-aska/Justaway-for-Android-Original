@@ -10,7 +10,7 @@
               android:orientation="vertical"
               tools:context=".MainActivity">
 
-    <info.justaway.widget.JustawayButton
+    <info.justaway.widget.FontelloButton
         android:id="@+id/start_oauth_button"
         android:layout_width="128dp"
         android:layout_height="128dp"
