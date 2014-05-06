@@ -23,7 +23,7 @@
         android:layout_gravity="center"
         android:textSize="18sp"/>
 
-    <TextView
+    <info.justaway.widget.JustawayButton
         android:id="@+id/trash"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -32,7 +32,6 @@
         android:background="@drawable/button_stateful_transparent"
         android:text="@string/fontello_trash"
         android:textColor="#666666"
-        android:textSize="24sp"
-        tools:text="■"/>
+        android:textSize="24sp"/>
 
 </LinearLayout>
