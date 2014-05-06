@@ -98,7 +98,6 @@ public class MainActivity extends FragmentActivity {
     @InjectView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
     @InjectView(R.id.quick_tweet_layout) LinearLayout mQuickTweetLayout;
     @InjectView(R.id.tab_menus) LinearLayout mTabMenus;
-    @InjectView(R.id.main) LinearLayout mContainer;
     @InjectView(R.id.account_list) ListView mDrawerList;
     @InjectView(R.id.send_button) TextView mSendButton;
     @InjectView(R.id.post_button) Button mPostButton;
@@ -213,7 +212,7 @@ public class MainActivity extends FragmentActivity {
          */
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-        mContainer.requestFocus();
+        mDrawerLayout.requestFocus();
 
         /**
          * ナビゲーションドロワーの初期化処理

@@ -6,26 +6,17 @@
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:id="@+id/main"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:focusableInTouchMode="true"
-        tools:context=".MainActivity">
+        android:focusableInTouchMode="true">
 
-        <LinearLayout
-            android:layout_width="fill_parent"
+        <android.support.v4.view.ViewPager
+            android:id="@+id/pager"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginBottom="1dp"
-            android:layout_weight="1"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <android.support.v4.view.ViewPager
-                android:id="@+id/pager"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"/>
-        </LinearLayout>
+            android:layout_weight="1"/>
 
         <LinearLayout
             android:id="@+id/quick_tweet_layout"
@@ -144,19 +135,18 @@
 
     </LinearLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/left_drawer"
         android:layout_width="200dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:background="?attr/background"
-        android:orientation="vertical"
         tools:background="@android:color/background_dark">
 
         <ListView
             android:id="@+id/account_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
-    </LinearLayout>
+    </RelativeLayout>
 
 </android.support.v4.widget.DrawerLayout>

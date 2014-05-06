@@ -213,4 +213,8 @@
     <string name="hint_search">Twitterで検索</string>
     <string name="title_notification">通知設定</string>
     <string name="tab_tweets">ツイート</string>
+    <string name="hint_list_name">25文字以内</string>
+    <string name="hint_list_description">100文字以内</string>
+    <string name="label_account_setting">アカウント管理</string>
+
 </resources>

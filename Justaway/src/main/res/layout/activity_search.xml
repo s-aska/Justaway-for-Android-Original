@@ -1,56 +1,50 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:orientation="vertical"
+              tools:background="@android:color/background_dark"
               android:background="?attr/background">
 
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        tools:background="@android:color/background_dark"
         android:background="?attr/menu_background">
 
         <info.justaway.widget.ClearEditText
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="4dp"
             android:singleLine="true"
             android:id="@+id/searchWords"/>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
+        <info.justaway.widget.FontelloButton
+            android:id="@+id/search_button"
+            android:layout_width="58dp"
             android:layout_height="wrap_content"
-            android:gravity="right">
+            tools:background="@android:color/background_dark"
+            android:background="?attr/button_stateful"
+            android:text="@string/fontello_search"/>
 
-            <Button
-                android:id="@+id/search"
-                android:layout_width="58dp"
-                android:layout_height="wrap_content"
-                android:background="?attr/button_stateful"
-                android:text="@string/fontello_search"/>
-
-            <Button
-                android:id="@+id/tweet"
-                android:layout_width="58dp"
-                android:layout_height="wrap_content"
-                android:background="?attr/button_stateful"
-                android:text="@string/fontello_edit"/>
-        </LinearLayout>
+        <info.justaway.widget.FontelloButton
+            android:id="@+id/tweet_button"
+            android:layout_width="58dp"
+            android:layout_height="wrap_content"
+            tools:background="@android:color/background_dark"
+            android:background="?attr/button_stateful"
+            android:text="@string/fontello_edit"/>
 
     </LinearLayout>
 
     <ListView
-        android:id="@+id/search_list_view"
+        android:id="@+id/search_list"
         android:layout_height="0dp"
         android:layout_width="match_parent"
-        android:layout_weight="1"/>
-
-    <ListView
-        android:id="@+id/list_view"
-        android:layout_height="0dp"
-        android:layout_width="match_parent"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        android:visibility="gone"/>
 
     <ProgressBar
         android:id="@+id/guruguru"
