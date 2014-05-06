@@ -29,6 +29,11 @@ public class TwitterUtil {
         return 140 - length;
     }
 
+    /**
+     * source(via)からクライアント名を抜き出す
+     * @param source <a href="クライアントURL">クライアント名</a>という文字列
+     * @return クライアント名
+     */
     public static String getClientName(String source) {
         String[] tokens = source.split("[<>]");
         if (tokens.length > 1) {
@@ -38,6 +43,11 @@ public class TwitterUtil {
         }
     }
 
+    /**
+     * 自分宛てのメンションかどうかを判定する
+     * @param status ツイート
+     * @return true ... 自分宛てのメンション
+     */
     public static boolean isMentionForMe(Status status) {
         long userId = JustawayApplication.getApplication().getUserId();
         if (status.getInReplyToUserId() == userId) {
