@@ -215,5 +215,7 @@
     <string name="hint_search">Search</string>
     <string name="title_notification">Notification Settings</string>
     <string name="tab_tweets">Tweets</string>
+    <string name="hint_list_name">25 characters or less</string>
+    <string name="hint_list_description">100 characters or less</string>
 
 </resources>
