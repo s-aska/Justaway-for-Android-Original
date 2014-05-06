@@ -20,7 +20,26 @@ import info.justaway.model.Row;
 import twitter4j.Status;
 
 public class NotificationService extends Service {
-    public NotificationService() {
+
+    public static boolean mStarted;
+    public static void start(JustawayApplication application) {
+        if (mStarted) {
+            return;
+        }
+        Intent intent = new Intent();
+        intent.setClass(application, NotificationService.class);
+        application.startService(intent);
+        mStarted = true;
+    }
+
+    public static void stop(JustawayApplication application) {
+        if (!mStarted) {
+            return;
+        }
+        Intent intent = new Intent();
+        intent.setClass(application, NotificationService.class);
+        application.stopService(intent);
+        mStarted = false;
     }
 
     @Override

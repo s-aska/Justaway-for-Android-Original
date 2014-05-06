@@ -741,34 +741,13 @@ public class JustawayApplication extends Application {
         }
     }
 
-    private boolean mNotificationServiceStarted;
     public void resetNotification() {
         SharedPreferences preferences = getSharedPreferences(PREF_NAME_SETTINGS, Context.MODE_PRIVATE);
         if (preferences.getBoolean("notification_on", true)) {
-            startNotification();
+            NotificationService.start(this);
         } else {
-            stopNotification();
+            NotificationService.stop(this);
         }
-    }
-
-    public void startNotification() {
-        if (mNotificationServiceStarted) {
-            return;
-        }
-        Intent intent = new Intent();
-        intent.setClass(this, NotificationService.class);
-        startService(intent);
-        mNotificationServiceStarted = true;
-    }
-
-    public void stopNotification() {
-        if (!mNotificationServiceStarted) {
-            return;
-        }
-        Intent intent = new Intent();
-        intent.setClass(this, NotificationService.class);
-        stopService(intent);
-        mNotificationServiceStarted = false;
     }
 
     public void removeAccessToken(AccessToken removeAccessToken) {
