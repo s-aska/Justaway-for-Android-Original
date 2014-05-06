@@ -147,9 +147,6 @@ public class PostActivity extends FragmentActivity {
 
         JustawayApplication.getApplication().warmUpUserIconMap();
 
-        Typeface fontello = JustawayApplication.getFontello();
-        mCancel.setTypeface(fontello);
-
         registerForContextMenu(mImgButton);
 
         // アカウント切り替え

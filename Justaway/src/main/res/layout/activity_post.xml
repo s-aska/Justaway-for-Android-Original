@@ -50,7 +50,7 @@
                 android:textColor="?attr/text_color"
                 tools:text="New Version."/>
 
-            <TextView
+            <info.justaway.widget.FontelloTextView
                 android:id="@+id/in_reply_to_cancel"
                 android:layout_width="22dp"
                 android:layout_height="22dp"
