@@ -8,9 +8,11 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnClick;
 import info.justaway.adapter.SimplePagerAdapter;
 import info.justaway.fragment.list.UserListStatusesFragment;
 import info.justaway.fragment.list.UserMemberFragment;
@@ -18,6 +20,10 @@ import twitter4j.ResponseList;
 import twitter4j.UserList;
 
 public class UserListActivity extends FragmentActivity {
+
+    @InjectView(R.id.users_label) TextView mUsersLabel;
+    @InjectView(R.id.tweets_label) TextView mTweetsLabel;
+    @InjectView(R.id.list_pager) ViewPager mListPager;
 
     private UserList mUserList;
     private Boolean mIsFollowing;
@@ -32,6 +38,7 @@ public class UserListActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         JustawayApplication.getApplication().setTheme(this);
         setContentView(R.layout.activity_user_list);
+        ButterKnife.inject(this);
 
         ActionBar actionBar = getActionBar();
         if (actionBar != null) {
@@ -48,53 +55,48 @@ public class UserListActivity extends FragmentActivity {
 
         mColorBlue = JustawayApplication.getApplication().getThemeTextColor(this, R.attr.holo_blue);
         mColorWhite = JustawayApplication.getApplication().getThemeTextColor(this, R.attr.text_color);
-        ((TextView) findViewById(R.id.users_label)).setTextColor(mColorBlue);
+        mUsersLabel.setTextColor(mColorBlue);
 
         setTitle(mUserList.getFullName());
 
         /**
          * スワイプで動かせるタブを実装するのに最低限必要な実装
          */
-        final ViewPager viewPager = (ViewPager) findViewById(R.id.list_pager);
-        SimplePagerAdapter pagerAdapter = new SimplePagerAdapter(this, viewPager);
-
+        SimplePagerAdapter pagerAdapter = new SimplePagerAdapter(this, mListPager);
         Bundle args = new Bundle();
         args.putLong("listId", mUserList.getId());
 
         pagerAdapter.addTab(UserMemberFragment.class, args);
         pagerAdapter.addTab(UserListStatusesFragment.class, args);
         pagerAdapter.notifyDataSetChanged();
-        viewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+        mListPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
                 if (position == 0) {
-                    ((TextView) findViewById(R.id.users_label)).setTextColor(mColorBlue);
+                    mUsersLabel.setTextColor(mColorBlue);
                 } else {
-                    ((TextView) findViewById(R.id.tweets_label)).setTextColor(mColorBlue);
+                    mTweetsLabel.setTextColor(mColorBlue);
                 }
 
                 if (mCurrentPosition == 0) {
-                    ((TextView) findViewById(R.id.users_label)).setTextColor(mColorWhite);
+                    mUsersLabel.setTextColor(mColorWhite);
                 } else {
-                    ((TextView) findViewById(R.id.tweets_label)).setTextColor(mColorWhite);
+                    mTweetsLabel.setTextColor(mColorWhite);
                 }
 
                 mCurrentPosition = position;
             }
         });
+    }
 
-        findViewById(R.id.users_label).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                viewPager.setCurrentItem(0);
-            }
-        });
-        findViewById(R.id.tweets_label).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                viewPager.setCurrentItem(1);
-            }
-        });
+    @OnClick(R.id.users_label)
+    void onClickUsersLabel() {
+        mListPager.setCurrentItem(0);
+    }
+
+    @OnClick(R.id.tweets_label)
+    void onClickTweetsLabel() {
+        mListPager.setCurrentItem(1);
     }
 
     @Override
@@ -123,66 +125,67 @@ public class UserListActivity extends FragmentActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int itemId = item.getItemId();
-        if (itemId == android.R.id.home) {
-            finish();
-        } else if (itemId == MENU_CREATE) {
-            new AsyncTask<Void, Void, Boolean>() {
-                @Override
-                protected Boolean doInBackground(Void... params) {
-                    try {
-                        JustawayApplication.getApplication().getTwitter().createUserListSubscription(mUserList.getId());
-                        return true;
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        return false;
-                    }
-                }
-
-                @Override
-                protected void onPostExecute(Boolean success) {
-                    if (success) {
-                        JustawayApplication.showToast(R.string.toast_create_user_list_subscription_success);
-                        mIsFollowing = true;
-                        ResponseList<UserList> userLists = JustawayApplication.getApplication().getUserLists();
-                        if (userLists != null) {
-                            userLists.add(0, mUserList);
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
+            case MENU_CREATE:
+                new AsyncTask<Void, Void, Boolean>() {
+                    @Override
+                    protected Boolean doInBackground(Void... params) {
+                        try {
+                            JustawayApplication.getApplication().getTwitter().createUserListSubscription(mUserList.getId());
+                            return true;
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            return false;
                         }
-                    } else {
-                        JustawayApplication.showToast(R.string.toast_create_user_list_subscription_failure);
                     }
-                }
-            }.execute();
-        } else if (itemId == MENU_DESTROY) {
-            new AsyncTask<Void, Void, Boolean>() {
-                @Override
-                protected Boolean doInBackground(Void... params) {
-                    try {
-                        JustawayApplication.getApplication().getTwitter().destroyUserListSubscription(mUserList.getId());
-                        return true;
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        return false;
-                    }
-                }
 
-                @Override
-                protected void onPostExecute(Boolean success) {
-                    if (success) {
-                        JustawayApplication.showToast(R.string.toast_destroy_user_list_subscription_success);
-                        mIsFollowing = false;
-                        ResponseList<UserList> userLists = JustawayApplication.getApplication().getUserLists();
-                        if (userLists != null) {
-                            userLists.remove(mUserList);
+                    @Override
+                    protected void onPostExecute(Boolean success) {
+                        if (success) {
+                            JustawayApplication.showToast(R.string.toast_create_user_list_subscription_success);
+                            mIsFollowing = true;
+                            ResponseList<UserList> userLists = JustawayApplication.getApplication().getUserLists();
+                            if (userLists != null) {
+                                userLists.add(0, mUserList);
+                            }
+                        } else {
+                            JustawayApplication.showToast(R.string.toast_create_user_list_subscription_failure);
                         }
-                    } else {
-                        JustawayApplication.showToast(R.string.toast_destroy_user_list_subscription_failure);
                     }
-                }
-            }.execute();
+                }.execute();
+                break;
+            case MENU_DESTROY:
+                new AsyncTask<Void, Void, Boolean>() {
+                    @Override
+                    protected Boolean doInBackground(Void... params) {
+                        try {
+                            JustawayApplication.getApplication().getTwitter().destroyUserListSubscription(mUserList.getId());
+                            return true;
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            return false;
+                        }
+                    }
+
+                    @Override
+                    protected void onPostExecute(Boolean success) {
+                        if (success) {
+                            JustawayApplication.showToast(R.string.toast_destroy_user_list_subscription_success);
+                            mIsFollowing = false;
+                            ResponseList<UserList> userLists = JustawayApplication.getApplication().getUserLists();
+                            if (userLists != null) {
+                                userLists.remove(mUserList);
+                            }
+                        } else {
+                            JustawayApplication.showToast(R.string.toast_destroy_user_list_subscription_failure);
+                        }
+                    }
+                }.execute();
+                break;
         }
         return true;
     }
-
-
 }
