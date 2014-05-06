@@ -1,6 +1,7 @@
 package info.justaway.widget;
 
 import android.content.Context;
+import android.text.Editable;
 import android.util.AttributeSet;
 import android.widget.AutoCompleteTextView;
 
@@ -39,4 +40,15 @@ public class AutoCompleteEditText extends AutoCompleteTextView {
         return myThreshold;
     }
 
+    public String getString() {
+        Editable editable = getText();
+        if (editable == null) {
+            return "";
+        }
+        String string = editable.toString();
+        if (string == null) {
+            return "";
+        }
+        return string;
+    }
 }

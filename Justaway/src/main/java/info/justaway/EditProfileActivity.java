@@ -32,16 +32,11 @@ public class EditProfileActivity extends FragmentActivity implements LoaderManag
 
     private static final int REQ_PICK_PROFILE_IMAGE = 1;
 
-    @InjectView(R.id.icon)
-    ImageView mIcon;
-    @InjectView(R.id.name)
-    EditText mName;
-    @InjectView(R.id.location)
-    EditText mLocation;
-    @InjectView(R.id.url)
-    EditText mUrl;
-    @InjectView(R.id.description)
-    EditText mDescription;
+    @InjectView(R.id.icon) ImageView mIcon;
+    @InjectView(R.id.name) EditText mName;
+    @InjectView(R.id.location) EditText mLocation;
+    @InjectView(R.id.url) EditText mUrl;
+    @InjectView(R.id.description) EditText mDescription;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

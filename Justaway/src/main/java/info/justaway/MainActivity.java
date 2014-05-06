@@ -24,7 +24,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -67,6 +66,7 @@ import info.justaway.util.MessageUtil;
 import info.justaway.util.ThemeUtil;
 import info.justaway.util.TwitterUtil;
 import info.justaway.widget.AutoCompleteEditText;
+import info.justaway.widget.ClearEditText;
 import info.justaway.widget.FontelloButton;
 import twitter4j.Status;
 import twitter4j.StatusUpdate;
@@ -101,7 +101,7 @@ public class MainActivity extends FragmentActivity {
     @InjectView(R.id.account_list) ListView mDrawerList;
     @InjectView(R.id.send_button) TextView mSendButton;
     @InjectView(R.id.post_button) Button mPostButton;
-    @InjectView(R.id.quick_tweet_edit) EditText mQuickTweetEdit;
+    @InjectView(R.id.quick_tweet_edit) ClearEditText mQuickTweetEdit;
 
     /**
      * ButterKnife for ActionBar
@@ -684,8 +684,8 @@ public class MainActivity extends FragmentActivity {
 
     @OnClick(R.id.send_button)
     void send() {
-        String msg = mQuickTweetEdit.getText() != null ? mQuickTweetEdit.getText().toString() : null;
-        if (msg != null && msg.length() > 0) {
+        String msg = mQuickTweetEdit.getString();
+        if (msg.length() > 0) {
             MessageUtil.showProgressDialog(this, getString(R.string.progress_sending));
 
             if (msg.startsWith("D ")) {
@@ -730,19 +730,15 @@ public class MainActivity extends FragmentActivity {
     void openPost() {
         Intent intent = new Intent(this, PostActivity.class);
         if (mQuickTweetLayout.getVisibility() == View.VISIBLE) {
-            EditText status = (EditText) findViewById(R.id.quick_tweet_edit);
-            if (status == null) {
-                return;
-            }
-            String msg = status.getText() != null ? status.getText().toString() : null;
-            if (msg != null && msg.length() > 0) {
+            String msg = mQuickTweetEdit.getString();
+            if (msg.length() > 0) {
                 intent.putExtra("status", msg);
                 intent.putExtra("selection", msg.length());
                 if (mInReplyToStatus != null) {
                     intent.putExtra("inReplyToStatus", mInReplyToStatus);
                 }
-                status.setText("");
-                status.clearFocus();
+                mQuickTweetEdit.setText("");
+                mQuickTweetEdit.clearFocus();
             }
         }
         startActivity(intent);
@@ -820,7 +816,7 @@ public class MainActivity extends FragmentActivity {
                     return;
                 }
                 Intent intent = null;
-                String searchWord = mActionBarHolder.searchText.getText().toString();
+                String searchWord = mActionBarHolder.searchText.getString();
                 KeyboardUtil.hideKeyboard(mActionBarHolder.searchText);
                 if (mUserSearchAdapter.isSavedMode()) {
                     intent = new Intent(mActivity, SearchActivity.class);
