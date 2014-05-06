@@ -14,6 +14,9 @@ import java.io.File;
 
 import info.justaway.JustawayApplication;
 import info.justaway.R;
+import info.justaway.model.TwitterManager;
+import info.justaway.util.ImageUtil;
+import info.justaway.util.MessageUtil;
 import twitter4j.User;
 
 import static android.app.AlertDialog.Builder;
@@ -52,7 +55,7 @@ public class UpdateProfileImageFragment extends DialogFragment {
         image.setLayoutParams(new LinearLayout.LayoutParams(
                 340,
                 340));
-        JustawayApplication.getApplication().displayImage(uri.toString(), image);
+        ImageUtil.displayImage(uri.toString(), image);
         layout.addView(image);
         builder.setView(layout);
 
@@ -60,7 +63,7 @@ public class UpdateProfileImageFragment extends DialogFragment {
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        JustawayApplication.showProgressDialog(getActivity(), getString(R.string.progress_process));
+                        MessageUtil.showProgressDialog(getActivity(), getString(R.string.progress_process));
                         new UpdateProfileImageTask().execute();
                         dismiss();
                     }
@@ -82,7 +85,7 @@ public class UpdateProfileImageFragment extends DialogFragment {
         @Override
         protected User doInBackground(Void... params) {
             try {
-                return JustawayApplication.getApplication().getTwitter().updateProfileImage(mImgPath);
+                return TwitterManager.getTwitter().updateProfileImage(mImgPath);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -91,11 +94,11 @@ public class UpdateProfileImageFragment extends DialogFragment {
 
         @Override
         protected void onPostExecute(User user) {
-            JustawayApplication.dismissProgressDialog();
+            MessageUtil.dismissProgressDialog();
             if (user != null) {
-                JustawayApplication.showToast(R.string.toast_update_profile_image_success);
+                MessageUtil.showToast(R.string.toast_update_profile_image_success);
             } else {
-                JustawayApplication.showToast(R.string.toast_update_profile_image_failure);
+                MessageUtil.showToast(R.string.toast_update_profile_image_failure);
             }
         }
     }

@@ -21,7 +21,11 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 import info.justaway.fragment.profile.UpdateProfileImageFragment;
+import info.justaway.model.TwitterManager;
 import info.justaway.task.VerifyCredentialsLoader;
+import info.justaway.util.ImageUtil;
+import info.justaway.util.MessageUtil;
+import info.justaway.util.ThemeUtil;
 import twitter4j.User;
 
 public class EditProfileActivity extends FragmentActivity implements LoaderManager.LoaderCallbacks<User> {
@@ -42,7 +46,7 @@ public class EditProfileActivity extends FragmentActivity implements LoaderManag
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        JustawayApplication.getApplication().setTheme(this);
+        ThemeUtil.setTheme(this);
         setContentView(R.layout.activity_edit_profile);
         ButterKnife.inject(this);
 
@@ -68,7 +72,7 @@ public class EditProfileActivity extends FragmentActivity implements LoaderManag
 
     @OnClick(R.id.save_button)
     void saveProfile() {
-        JustawayApplication.showProgressDialog(this, getString(R.string.progress_process));
+        MessageUtil.showProgressDialog(this, getString(R.string.progress_process));
         new UpdateProfileTask().execute();
     }
 
@@ -89,7 +93,6 @@ public class EditProfileActivity extends FragmentActivity implements LoaderManag
 
     @Override
     public void onLoadFinished(Loader<User> loader, User user) {
-        JustawayApplication application = JustawayApplication.getApplication();
         if (user == null) {
             Intent intent = new Intent(this, SignInActivity.class);
             startActivity(intent);
@@ -99,7 +102,7 @@ public class EditProfileActivity extends FragmentActivity implements LoaderManag
             mLocation.setText(user.getLocation());
             mUrl.setText(user.getURLEntity().getExpandedURL());
             mDescription.setText(user.getDescription());
-            application.displayRoundedImage(user.getOriginalProfileImageURL(), mIcon);
+            ImageUtil.displayRoundedImage(user.getOriginalProfileImageURL(), mIcon);
         }
     }
 
@@ -113,7 +116,7 @@ public class EditProfileActivity extends FragmentActivity implements LoaderManag
         protected User doInBackground(Void... params) {
             try {
                 //noinspection ConstantConditions
-                return JustawayApplication.getApplication().getTwitter().updateProfile(
+                return TwitterManager.getTwitter().updateProfile(
                         mName.getText().toString(),
                         mUrl.getText().toString(),
                         mLocation.getText().toString(),
@@ -126,12 +129,12 @@ public class EditProfileActivity extends FragmentActivity implements LoaderManag
 
         @Override
         protected void onPostExecute(User user) {
-            JustawayApplication.dismissProgressDialog();
+            MessageUtil.dismissProgressDialog();
             if (user != null) {
-                JustawayApplication.showToast(R.string.toast_update_profile_success);
+                MessageUtil.showToast(R.string.toast_update_profile_success);
                 finish();
             } else {
-                JustawayApplication.showToast(R.string.toast_update_profile_failure);
+                MessageUtil.showToast(R.string.toast_update_profile_failure);
             }
         }
     }
@@ -144,7 +147,7 @@ public class EditProfileActivity extends FragmentActivity implements LoaderManag
         c.moveToFirst();
         String fileName = c.getString(0);
         if (fileName == null) {
-            JustawayApplication.showToast(getString(R.string.toast_set_image_failure));
+            MessageUtil.showToast(getString(R.string.toast_set_image_failure));
             return null;
         }
         File path = new File(fileName);

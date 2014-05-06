@@ -5,7 +5,7 @@ import android.content.Context;
 import java.util.Collections;
 import java.util.Comparator;
 
-import info.justaway.JustawayApplication;
+import info.justaway.model.TwitterManager;
 import twitter4j.DirectMessage;
 import twitter4j.ResponseList;
 import twitter4j.Twitter;
@@ -20,7 +20,7 @@ public class DirectMessagesLoader extends AbstractAsyncTaskLoader<ResponseList<D
     @Override
     public ResponseList<DirectMessage> loadInBackground() {
         try {
-            Twitter twitter = JustawayApplication.getApplication().getTwitter();
+            Twitter twitter = TwitterManager.getTwitter();
             // 受信したDM
             ResponseList<DirectMessage> statuses = twitter.getDirectMessages();
             // 送信したDM

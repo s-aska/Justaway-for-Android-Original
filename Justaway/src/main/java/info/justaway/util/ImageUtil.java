@@ -8,6 +8,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import info.justaway.JustawayApplication;
 import info.justaway.display.FadeInRoundedBitmapDisplayer;
+import info.justaway.settings.BasicSettings;
 
 public class ImageUtil {
     private static DisplayImageOptions sRoundedDisplayImageOptions;
@@ -43,7 +44,7 @@ public class ImageUtil {
             return;
         }
         view.setTag(url);
-        if (JustawayApplication.getApplication().getBasicSettings().getUserIconRoundedOn()) {
+        if (BasicSettings.getUserIconRoundedOn()) {
             if (sRoundedDisplayImageOptions == null) {
                 sRoundedDisplayImageOptions = new DisplayImageOptions.Builder()
                         .cacheInMemory(true)

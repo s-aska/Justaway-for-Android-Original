@@ -19,10 +19,9 @@ import info.justaway.JustawayApplication;
 import info.justaway.R;
 import info.justaway.settings.MuteSettings;
 import info.justaway.util.KeyboardUtil;
+import info.justaway.util.MessageUtil;
 
 public class WordFragment extends Fragment {
-
-    private MuteSettings mMuteSettings;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -36,9 +35,7 @@ public class WordFragment extends Fragment {
         ListView listView = (ListView) v.findViewById(R.id.list);
         listView.setAdapter(adapter);
 
-        final JustawayApplication application = JustawayApplication.getApplication();
-        mMuteSettings = application.getMuteSettings();
-        for (String word : mMuteSettings.getWords()) {
+        for (String word : MuteSettings.getWords()) {
             adapter.add(word);
         }
 
@@ -63,9 +60,9 @@ public class WordFragment extends Fragment {
                                             return;
                                         }
                                         adapter.add(word);
-                                        mMuteSettings.addWord(word);
-                                        mMuteSettings.saveMuteSettings();
-                                        JustawayApplication.showToast(R.string.toast_create_mute);
+                                        MuteSettings.addWord(word);
+                                        MuteSettings.saveMuteSettings();
+                                        MessageUtil.showToast(R.string.toast_create_mute);
                                     }
                                 }
                         )
@@ -136,8 +133,8 @@ public class WordFragment extends Fragment {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             remove(word);
-                                            mMuteSettings.removeWord(word);
-                                            mMuteSettings.saveMuteSettings();
+                                            MuteSettings.removeWord(word);
+                                            MuteSettings.saveMuteSettings();
                                         }
                                     }
                             )

@@ -37,7 +37,14 @@ import info.justaway.R;
 import info.justaway.ScaleImageActivity;
 import info.justaway.TwitterAction;
 import info.justaway.event.AlertDialogEvent;
+import info.justaway.model.AccessTokenManager;
+import info.justaway.model.FavRetweetManager;
 import info.justaway.model.Row;
+import info.justaway.model.UserIconManager;
+import info.justaway.settings.BasicSettings;
+import info.justaway.settings.MuteSettings;
+import info.justaway.util.ImageUtil;
+import info.justaway.util.MessageUtil;
 import info.justaway.util.ThemeUtil;
 import info.justaway.util.TwitterUtil;
 import twitter4j.DirectMessage;
@@ -100,7 +107,6 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         }
     }
 
-    private JustawayApplication mApplication;
     private Context mContext;
     private ArrayList<Row> mStatuses = new ArrayList<Row>();
     private LayoutInflater mInflater;
@@ -119,14 +125,13 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
 
     public TwitterAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId);
-        this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        this.mContext = context;
-        this.mLayout = textViewResourceId;
-        this.mApplication = JustawayApplication.getApplication();
+        mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mContext = context;
+        mLayout = textViewResourceId;
     }
 
     public void extensionAdd(Row row) {
-        if (mApplication.getMuteSettings().isMute(row)) {
+        if (MuteSettings.isMute(row)) {
             return;
         }
         if (exists(row)) {
@@ -140,7 +145,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
 
     @Override
     public void add(Row row) {
-        if (mApplication.getMuteSettings().isMute(row)) {
+        if (MuteSettings.isMute(row)) {
             return;
         }
         if (exists(row)) {
@@ -154,7 +159,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
 
     @Override
     public void insert(Row row, int index) {
-        if (mApplication.getMuteSettings().isMute(row)) {
+        if (MuteSettings.isMute(row)) {
             return;
         }
         if (exists(row)) {
@@ -193,8 +198,8 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         Status status = row.getStatus();
         if (status != null && status.isRetweeted()) {
             Status retweet = status.getRetweetedStatus();
-            if (retweet != null && status.getUser().getId() == mApplication.getUserId()) {
-                mApplication.getFavRetweetManager().setRtId(retweet.getId(), status.getId());
+            if (retweet != null && status.getUser().getId() == AccessTokenManager.getUserId()) {
+                FavRetweetManager.setRtId(retweet.getId(), status.getId());
             }
         }
     }
@@ -269,7 +274,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             holder = (ViewHolder) view.getTag();
         }
 
-        Integer fontSize = mApplication.getBasicSettings().getFontSize();
+        Integer fontSize = BasicSettings.getFontSize();
         if (!fontSize.equals(holder.mStatus.getTag())) {
             holder.mStatus.setTag(fontSize);
             holder.mStatus.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
@@ -309,7 +314,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     private void renderMessage(ViewHolder holder, final DirectMessage message) {
 
         Typeface fontello = JustawayApplication.getFontello();
-        long userId = JustawayApplication.getApplication().getUserId();
+        long userId = AccessTokenManager.getUserId();
 
         holder.mDoRetweet.setVisibility(View.GONE);
         holder.mDoFav.setVisibility(View.GONE);
@@ -341,7 +346,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         holder.mVia.setVisibility(View.GONE);
         holder.mRetweetContainer.setVisibility(View.GONE);
         holder.mImagesContainer.setVisibility(View.GONE);
-        mApplication.getUserIconManager().displayUserIcon(message.getSender(), holder.mIcon);
+        UserIconManager.displayUserIcon(message.getSender(), holder.mIcon);
         holder.mIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -357,7 +362,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     private void renderStatus(final ViewHolder holder, final Status status, Status retweet,
                               User favorite) {
 
-        long userId = JustawayApplication.getApplication().getUserId();
+        long userId = AccessTokenManager.getUserId();
 
         Typeface fontello = JustawayApplication.getFontello();
 
@@ -390,13 +395,13 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             @Override
             public void onClick(View v) {
                 if (status.getUser().isProtected()) {
-                    JustawayApplication.showToast(R.string.toast_protected_tweet_can_not_share);
+                    MessageUtil.showToast(R.string.toast_protected_tweet_can_not_share);
                     return;
                 }
-                Long id = mApplication.getFavRetweetManager().getRtId(status);
+                Long id = FavRetweetManager.getRtId(status);
                 if (id != null) {
                     if (id == 0) {
-                        JustawayApplication.showToast(R.string.toast_destroy_retweet_progress);
+                        MessageUtil.showToast(R.string.toast_destroy_retweet_progress);
                     } else {
                         DialogFragment dialog = new DestroyRetweetDialogFragment();
                         Bundle args = new Bundle(1);
@@ -430,13 +435,13 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             }
         });
 
-        if (mApplication.getFavRetweetManager().getRtId(status) != null) {
+        if (FavRetweetManager.getRtId(status) != null) {
             holder.mDoRetweet.setTextColor(mContext.getResources().getColor(R.color.holo_green_light));
         } else {
             holder.mDoRetweet.setTextColor(Color.parseColor("#666666"));
         }
 
-        if (mApplication.getFavRetweetManager().isFav(status)) {
+        if (FavRetweetManager.isFav(status)) {
             holder.mDoFav.setTag("is_fav");
             holder.mDoFav.setTextColor(mContext.getResources().getColor(R.color.holo_orange_light));
         } else {
@@ -493,11 +498,11 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                 holder.mMenuAndViaContainer.setVisibility(View.VISIBLE);
                 holder.mActionContainer.setVisibility(View.VISIBLE);
             } else {
-                if (mApplication.getBasicSettings().getUserIconSize().equals("none")) {
+                if (BasicSettings.getUserIconSize().equals("none")) {
                     holder.mRetweetIcon.setVisibility(View.GONE);
                 } else {
                     holder.mRetweetIcon.setVisibility(View.VISIBLE);
-                    mApplication.displayRoundedImage(retweet.getUser().getProfileImageURL(), holder.mRetweetIcon);
+                    ImageUtil.displayRoundedImage(retweet.getUser().getProfileImageURL(), holder.mRetweetIcon);
                 }
                 holder.mRetweetBy.setText("RT by " + retweet.getUser().getName() + " @" + retweet.getUser().getScreenName());
                 holder.mActionContainer.setVisibility(View.GONE);
@@ -527,7 +532,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         } else {
             holder.mLock.setVisibility(View.INVISIBLE);
         }
-        mApplication.getUserIconManager().displayUserIcon(status.getUser(), holder.mIcon);
+        UserIconManager.displayUserIcon(status.getUser(), holder.mIcon);
         holder.mIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -537,7 +542,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             }
         });
 
-        boolean displayThumbnail = mApplication.getBasicSettings().getDisplayThumbnailOn();
+        boolean displayThumbnail = BasicSettings.getDisplayThumbnailOn();
         URLEntity[] urls = retweet != null ? retweet.getURLEntities() : status.getURLEntities();
         ArrayList<String> imageUrls = new ArrayList<String>();
         String statusString = status.getText();
@@ -597,7 +602,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                 image.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 holder.mImagesContainer.addView(image, new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, 120));
-                mApplication.displayRoundedImage(url, image);
+                ImageUtil.displayRoundedImage(url, image);
                 // 画像タップで拡大表示（ピンチイン・ピンチアウトいつかちゃんとやる）
                 image.setOnClickListener(new View.OnClickListener() {
                     @Override

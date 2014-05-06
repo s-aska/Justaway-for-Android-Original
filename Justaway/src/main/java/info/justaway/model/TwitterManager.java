@@ -9,6 +9,8 @@ import info.justaway.R;
 import info.justaway.adapter.MyUserStreamAdapter;
 import info.justaway.event.action.AccountChangeEvent;
 import info.justaway.event.connection.StreamingConnectionEvent;
+import info.justaway.settings.BasicSettings;
+import info.justaway.util.MessageUtil;
 import twitter4j.ConnectionLifeCycleListener;
 import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
@@ -17,39 +19,37 @@ import twitter4j.TwitterStreamFactory;
 import twitter4j.auth.AccessToken;
 import twitter4j.conf.ConfigurationBuilder;
 
+/**
+ * Twitterインスタンス管理
+ */
 public class TwitterManager {
-    /**
-     * Twitterインスタンス管理
-     */
-    private Twitter mTwitter;
-    private JustawayApplication mApplication;
+    private static MyUserStreamAdapter sUserStreamAdapter;
+    private static TwitterStream sTwitterStream;
+    private static Twitter mTwitter;
+    private static boolean sTwitterStreamConnected;
 
-    public TwitterManager() {
-        mApplication = JustawayApplication.getApplication();
-    }
-
-    public void switchAccessToken(final AccessToken accessToken) {
-        mApplication.getAccessTokenManager().setAccessToken(accessToken);
-        if (mApplication.getBasicSettings().getStreamingMode()) {
-            JustawayApplication.showToast(R.string.toast_destroy_streaming);
-            mUserStreamAdapter.stop();
+    public static void switchAccessToken(final AccessToken accessToken) {
+        AccessTokenManager.setAccessToken(accessToken);
+        if (BasicSettings.getStreamingMode()) {
+            MessageUtil.showToast(R.string.toast_destroy_streaming);
+            sUserStreamAdapter.stop();
             new AsyncTask<Void, Void, Void>() {
                 @Override
                 protected Void doInBackground(Void... params) {
-                    mTwitterStream.cleanUp();
-                    mTwitterStream.shutdown();
+                    sTwitterStream.cleanUp();
+                    sTwitterStream.shutdown();
                     return null;
                 }
 
                 @Override
                 protected void onPostExecute(Void status) {
-                    mTwitterStream.setOAuthAccessToken(accessToken);
+                    sTwitterStream.setOAuthAccessToken(accessToken);
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            JustawayApplication.showToast(R.string.toast_create_streaming);
-                            mUserStreamAdapter.start();
-                            mTwitterStream.user();
+                            MessageUtil.showToast(R.string.toast_create_streaming);
+                            sUserStreamAdapter.start();
+                            sTwitterStream.user();
                         }
                     }, 5000);
                 }
@@ -58,30 +58,30 @@ public class TwitterManager {
         EventBus.getDefault().post(new AccountChangeEvent());
     }
 
-    private String getConsumerKey() {
-        return mApplication.getString(R.string.twitter_consumer_key);
+    private static String getConsumerKey() {
+        return JustawayApplication.getApplication().getString(R.string.twitter_consumer_key);
     }
 
-    private String getConsumerSecret() {
-        return mApplication.getString(R.string.twitter_consumer_secret);
+    private static String getConsumerSecret() {
+        return JustawayApplication.getApplication().getString(R.string.twitter_consumer_secret);
     }
 
-    public Twitter getTwitter() {
+    public static Twitter getTwitter() {
         if (mTwitter != null) {
             return mTwitter;
         }
         Twitter twitter = getTwitterInstance();
 
-        AccessToken token = mApplication.getAccessTokenManager().getAccessToken();
+        AccessToken token = AccessTokenManager.getAccessToken();
         if (token != null) {
             twitter.setOAuthAccessToken(token);
             // アクセストークンまである時だけキャッシュしておく
-            this.mTwitter = twitter;
+            mTwitter = twitter;
         }
         return twitter;
     }
 
-    public Twitter getTwitterInstance() {
+    public static Twitter getTwitterInstance() {
 
         TwitterFactory factory = new TwitterFactory();
         Twitter twitter = factory.getInstance();
@@ -90,8 +90,8 @@ public class TwitterManager {
         return twitter;
     }
 
-    public TwitterStream getTwitterStream() {
-        AccessToken token = mApplication.getAccessTokenManager().getAccessToken();
+    public static TwitterStream getTwitterStream() {
+        AccessToken token = AccessTokenManager.getAccessToken();
         if (token == null) {
             return null;
         }
@@ -102,42 +102,38 @@ public class TwitterManager {
         return new TwitterStreamFactory(conf).getInstance();
     }
 
-    private TwitterStream mTwitterStream;
-    private boolean mTwitterStreamConnected;
-    private MyUserStreamAdapter mUserStreamAdapter;
-
-    public boolean getTwitterStreamConnected() {
-        return mTwitterStreamConnected;
+    public static boolean getTwitterStreamConnected() {
+        return sTwitterStreamConnected;
     }
 
-    public void startStreaming() {
-        if (mTwitterStream != null) {
-            if (!mTwitterStreamConnected) {
-                mUserStreamAdapter.start();
-                mTwitterStream.setOAuthAccessToken(mApplication.getAccessTokenManager().getAccessToken());
-                mTwitterStream.user();
+    public static void startStreaming() {
+        if (sTwitterStream != null) {
+            if (!sTwitterStreamConnected) {
+                sUserStreamAdapter.start();
+                sTwitterStream.setOAuthAccessToken(AccessTokenManager.getAccessToken());
+                sTwitterStream.user();
             }
             return;
         }
-        mTwitterStream = getTwitterStream();
-        mUserStreamAdapter = new MyUserStreamAdapter();
-        mTwitterStream.addListener(mUserStreamAdapter);
-        mTwitterStream.addConnectionLifeCycleListener(new MyConnectionLifeCycleListener());
-        mTwitterStream.user();
-        mApplication.getBasicSettings().resetNotification();
+        sTwitterStream = getTwitterStream();
+        sUserStreamAdapter = new MyUserStreamAdapter();
+        sTwitterStream.addListener(sUserStreamAdapter);
+        sTwitterStream.addConnectionLifeCycleListener(new MyConnectionLifeCycleListener());
+        sTwitterStream.user();
+        BasicSettings.resetNotification();
     }
 
-    public void stopStreaming() {
-        if (mTwitterStream == null) {
+    public static void stopStreaming() {
+        if (sTwitterStream == null) {
             return;
         }
-        mApplication.getBasicSettings().setStreamingMode(false);
-        mUserStreamAdapter.stop();
+        BasicSettings.setStreamingMode(false);
+        sUserStreamAdapter.stop();
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
-                mTwitterStream.cleanUp();
-                mTwitterStream.shutdown();
+                sTwitterStream.cleanUp();
+                sTwitterStream.shutdown();
                 return null;
             }
 
@@ -148,34 +144,34 @@ public class TwitterManager {
         }.execute();
     }
 
-    public void pauseStreaming() {
-        if (mUserStreamAdapter != null) {
-            mUserStreamAdapter.pause();
+    public static void pauseStreaming() {
+        if (sUserStreamAdapter != null) {
+            sUserStreamAdapter.pause();
         }
     }
 
-    public void resumeStreaming() {
-        if (mUserStreamAdapter != null) {
-            mUserStreamAdapter.resume();
+    public static void resumeStreaming() {
+        if (sUserStreamAdapter != null) {
+            sUserStreamAdapter.resume();
         }
     }
 
-    public class MyConnectionLifeCycleListener implements ConnectionLifeCycleListener {
+    public static class MyConnectionLifeCycleListener implements ConnectionLifeCycleListener {
         @Override
         public void onConnect() {
-            mTwitterStreamConnected = true;
+            sTwitterStreamConnected = true;
             EventBus.getDefault().post(StreamingConnectionEvent.onConnect());
         }
 
         @Override
         public void onDisconnect() {
-            mTwitterStreamConnected = false;
+            sTwitterStreamConnected = false;
             EventBus.getDefault().post(StreamingConnectionEvent.onDisconnect());
         }
 
         @Override
         public void onCleanUp() {
-            mTwitterStreamConnected = false;
+            sTwitterStreamConnected = false;
             EventBus.getDefault().post(StreamingConnectionEvent.onCleanUp());
         }
     }

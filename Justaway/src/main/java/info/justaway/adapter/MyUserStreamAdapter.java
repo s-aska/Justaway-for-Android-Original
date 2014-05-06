@@ -13,7 +13,10 @@ import info.justaway.event.model.StreamingDestroyMessageEvent;
 import info.justaway.event.model.StreamingDestroyStatusEvent;
 import info.justaway.event.model.NotificationEvent;
 import info.justaway.event.model.StreamingUnFavoriteEvent;
+import info.justaway.model.AccessTokenManager;
+import info.justaway.model.FavRetweetManager;
 import info.justaway.model.Row;
+import info.justaway.model.TwitterManager;
 import info.justaway.settings.MuteSettings;
 import twitter4j.DirectMessage;
 import twitter4j.Status;
@@ -78,10 +81,10 @@ public class MyUserStreamAdapter extends UserStreamAdapter {
             return;
         }
         Row row = Row.newStatus(status);
-        if (JustawayApplication.getApplication().getMuteSettings().isMute(row)) {
+        if (MuteSettings.isMute(row)) {
             return;
         }
-        long userId = JustawayApplication.getApplication().getUserId();
+        long userId = AccessTokenManager.getUserId();
         Status retweet = status.getRetweetedStatus();
         if (status.getInReplyToUserId() == userId || (retweet != null && retweet.getUser().getId() == userId)) {
             EventBus.getDefault().post(new NotificationEvent(row));
@@ -111,9 +114,8 @@ public class MyUserStreamAdapter extends UserStreamAdapter {
             return;
         }
         // 自分の fav を反映
-        JustawayApplication application = JustawayApplication.getApplication();
-        if (source.getId() == application.getUserId()) {
-            application.getFavRetweetManager().setFav(status.getId());
+        if (source.getId() == AccessTokenManager.getUserId()) {
+            FavRetweetManager.setFav(status.getId());
             return;
         }
         Row row = Row.newFavorite(source, target, status);
@@ -124,7 +126,7 @@ public class MyUserStreamAdapter extends UserStreamAdapter {
             protected twitter4j.Status doInBackground(Row... params) {
                 mRow = params[0];
                 try {
-                    return JustawayApplication.getApplication().getTwitter().showStatus(mRow.getStatus().getId());
+                    return TwitterManager.getTwitter().showStatus(mRow.getStatus().getId());
                 } catch (Exception e) {
                     e.printStackTrace();
                     return null;
@@ -151,9 +153,8 @@ public class MyUserStreamAdapter extends UserStreamAdapter {
             return;
         }
         // 自分の unfav を反映
-        JustawayApplication application = JustawayApplication.getApplication();
-        if (arg0.getId() == application.getUserId()) {
-            application.getFavRetweetManager().removeFav(arg2.getId());
+        if (arg0.getId() == AccessTokenManager.getUserId()) {
+            FavRetweetManager.removeFav(arg2.getId());
             return;
         }
         if (mPause) {
@@ -169,7 +170,7 @@ public class MyUserStreamAdapter extends UserStreamAdapter {
             return;
         }
         Row row = Row.newDirectMessage(directMessage);
-        if (JustawayApplication.getApplication().getMuteSettings().isMute(row)) {
+        if (MuteSettings.isMute(row)) {
             return;
         }
         EventBus.getDefault().post(new NotificationEvent(row));

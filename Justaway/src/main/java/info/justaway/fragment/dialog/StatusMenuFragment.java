@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import info.justaway.JustawayApplication;
-import info.justaway.MainActivity;
 import info.justaway.ProfileActivity;
 import info.justaway.R;
 import info.justaway.SearchActivity;
@@ -33,10 +32,13 @@ import info.justaway.TwitterAction;
 import info.justaway.fragment.AroundFragment;
 import info.justaway.fragment.RetweetersFragment;
 import info.justaway.fragment.TalkFragment;
+import info.justaway.model.AccessTokenManager;
+import info.justaway.model.FavRetweetManager;
 import info.justaway.model.Row;
 import info.justaway.plugin.TwiccaPlugin;
 import info.justaway.settings.MuteSettings;
-import info.justaway.task.DestroyStatusTask;
+import info.justaway.util.MessageUtil;
+import info.justaway.util.ThemeUtil;
 import info.justaway.util.TwitterUtil;
 import twitter4j.DirectMessage;
 import twitter4j.HashtagEntity;
@@ -48,7 +50,6 @@ import twitter4j.UserMentionEntity;
 public class StatusMenuFragment extends DialogFragment {
 
     private FragmentActivity mActivity;
-    private JustawayApplication mApplication;
 
     private List<ResolveInfo> mTwiccaPlugins;
 
@@ -76,8 +77,7 @@ public class StatusMenuFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         mActivity = getActivity();
-        mApplication = JustawayApplication.getApplication();
-        mApplication.setTheme(mActivity);
+        ThemeUtil.setTheme(mActivity);
 
         final MenuAdapter adapter = new MenuAdapter(getActivity(), R.layout.row_menu);
         ListView listView = new ListView(mActivity);
@@ -182,7 +182,7 @@ public class StatusMenuFragment extends DialogFragment {
         /**
          * 全員にリプ
          */
-        if (mentions.length > 1 || (mentions.length == 1 && !mentions[0].getScreenName().equals(mApplication.getScreenName()))) {
+        if (mentions.length > 1 || (mentions.length == 1 && !mentions[0].getScreenName().equals(AccessTokenManager.getScreenName()))) {
             adapter.add(new Menu(R.string.context_menu_reply_all, new Runnable() {
                 @Override
                 public void run() {
@@ -208,7 +208,7 @@ public class StatusMenuFragment extends DialogFragment {
         /**
          * ふぁぼ / あんふぁぼ
          */
-        if (mApplication.getFavRetweetManager().isFav(status)) {
+        if (FavRetweetManager.isFav(status)) {
             adapter.add(new Menu(R.string.context_menu_destroy_favorite, new Runnable() {
                 @Override
                 public void run() {
@@ -229,7 +229,7 @@ public class StatusMenuFragment extends DialogFragment {
         /**
          * 自分のツイートまたはRT
          */
-        if (status.getUser().getId() == mApplication.getUserId()) {
+        if (status.getUser().getId() == AccessTokenManager.getUserId()) {
 
             /**
              * 自分のRT
@@ -269,7 +269,7 @@ public class StatusMenuFragment extends DialogFragment {
         /**
          * 自分がRTした事があるツイート
          */
-        else if (mApplication.getFavRetweetManager().getRtId(status) != null) {
+        else if (FavRetweetManager.getRtId(status) != null) {
 
             /**
              * RT解除
@@ -291,7 +291,7 @@ public class StatusMenuFragment extends DialogFragment {
                 /**
                  * 未ふぁぼ
                  */
-                if (!mApplication.getFavRetweetManager().isFav(status)) {
+                if (!FavRetweetManager.isFav(status)) {
 
                     /**
                      * ふぁぼ＆RT
@@ -543,10 +543,9 @@ public class StatusMenuFragment extends DialogFragment {
                         .setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                MuteSettings muteSettings = mApplication.getMuteSettings();
-                                muteSettings.addSource(TwitterUtil.getClientName(source.getSource()));
-                                muteSettings.saveMuteSettings();
-                                JustawayApplication.showToast(R.string.toast_create_mute);
+                                MuteSettings.addSource(TwitterUtil.getClientName(source.getSource()));
+                                MuteSettings.saveMuteSettings();
+                                MessageUtil.showToast(R.string.toast_create_mute);
                                 dismiss();
                             }
                         })
@@ -571,10 +570,9 @@ public class StatusMenuFragment extends DialogFragment {
                             .setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                    MuteSettings muteSettings = mApplication.getMuteSettings();
-                                    muteSettings.addWord("#" + hashtag.getText());
-                                    muteSettings.saveMuteSettings();
-                                    JustawayApplication.showToast(R.string.toast_create_mute);
+                                    MuteSettings.addWord("#" + hashtag.getText());
+                                    MuteSettings.saveMuteSettings();
+                                    MessageUtil.showToast(R.string.toast_create_mute);
                                     dismiss();
                                 }
                             })
@@ -599,10 +597,9 @@ public class StatusMenuFragment extends DialogFragment {
                         .setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                MuteSettings muteSettings = mApplication.getMuteSettings();
-                                muteSettings.addUser(source.getUser().getId(), source.getUser().getScreenName());
-                                muteSettings.saveMuteSettings();
-                                JustawayApplication.showToast(R.string.toast_create_mute);
+                                MuteSettings.addUser(source.getUser().getId(), source.getUser().getScreenName());
+                                MuteSettings.saveMuteSettings();
+                                MessageUtil.showToast(R.string.toast_create_mute);
                                 dismiss();
                             }
                         })

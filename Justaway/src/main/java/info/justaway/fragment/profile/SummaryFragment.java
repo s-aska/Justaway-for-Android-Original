@@ -15,9 +15,12 @@ import info.justaway.EditProfileActivity;
 import info.justaway.JustawayApplication;
 import info.justaway.R;
 import info.justaway.ScaleImageActivity;
+import info.justaway.model.AccessTokenManager;
 import info.justaway.task.DestroyBlockTask;
 import info.justaway.task.DestroyFriendshipTask;
 import info.justaway.task.FollowTask;
+import info.justaway.util.ImageUtil;
+import info.justaway.util.MessageUtil;
 import twitter4j.Relationship;
 import twitter4j.User;
 
@@ -36,8 +39,6 @@ public class SummaryFragment extends Fragment {
         if (v == null) {
             return null;
         }
-
-        final JustawayApplication application = JustawayApplication.getApplication();
 
         final User user = (User) getArguments().getSerializable("user");
         final Relationship relationship = (Relationship) getArguments().getSerializable("relationship");
@@ -58,7 +59,7 @@ public class SummaryFragment extends Fragment {
         lock.setVisibility(View.GONE);
 
         String iconUrl = user.getBiggerProfileImageURL();
-        application.displayRoundedImage(iconUrl, icon);
+        ImageUtil.displayRoundedImage(iconUrl, icon);
 
         // アイコンタップで拡大
         icon.setOnClickListener(new View.OnClickListener() {
@@ -83,7 +84,7 @@ public class SummaryFragment extends Fragment {
         }
 
         follow.setVisibility(View.VISIBLE);
-        if (user.getId() == application.getUserId()) {
+        if (user.getId() == AccessTokenManager.getUserId()) {
             follow.setText(R.string.button_edit_profile);
         } else if (mFollowFlg) {
             follow.setText(R.string.button_unfollow);
@@ -98,7 +99,7 @@ public class SummaryFragment extends Fragment {
                 if (mRuntimeFlg) {
                     return;
                 }
-                if (user.getId() == application.getUserId()) {
+                if (user.getId() == AccessTokenManager.getUserId()) {
                     Intent intent = new Intent(getActivity(), EditProfileActivity.class);
                     startActivity(intent);
                 } else if (mFollowFlg) {
@@ -110,17 +111,17 @@ public class SummaryFragment extends Fragment {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             mRuntimeFlg = true;
-                                            JustawayApplication.showProgressDialog(getActivity(), getString(R.string.progress_process));
+                                            MessageUtil.showProgressDialog(getActivity(), getString(R.string.progress_process));
                                             DestroyFriendshipTask task = new DestroyFriendshipTask() {
                                                 @Override
                                                 protected void onPostExecute(Boolean success) {
-                                                    JustawayApplication.dismissProgressDialog();
+                                                    MessageUtil.dismissProgressDialog();
                                                     if (success) {
-                                                        JustawayApplication.showToast(R.string.toast_destroy_friendship_success);
+                                                        MessageUtil.showToast(R.string.toast_destroy_friendship_success);
                                                         follow.setText(R.string.button_follow);
                                                         mFollowFlg = false;
                                                     } else {
-                                                        JustawayApplication.showToast(R.string.toast_destroy_friendship_failure);
+                                                        MessageUtil.showToast(R.string.toast_destroy_friendship_failure);
                                                     }
                                                     mRuntimeFlg = false;
                                                 }
@@ -148,17 +149,17 @@ public class SummaryFragment extends Fragment {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             mRuntimeFlg = true;
-                                            JustawayApplication.showProgressDialog(getActivity(), getString(R.string.progress_process));
+                                            MessageUtil.showProgressDialog(getActivity(), getString(R.string.progress_process));
                                             DestroyBlockTask task = new DestroyBlockTask() {
                                                 @Override
                                                 protected void onPostExecute(Boolean success) {
-                                                    JustawayApplication.dismissProgressDialog();
+                                                    MessageUtil.dismissProgressDialog();
                                                     if (success) {
-                                                        JustawayApplication.showToast(R.string.toast_destroy_block_success);
+                                                        MessageUtil.showToast(R.string.toast_destroy_block_success);
                                                         follow.setText(R.string.button_follow);
                                                         mBlocking = false;
                                                     } else {
-                                                        JustawayApplication.showToast(R.string.toast_destroy_block_failure);
+                                                        MessageUtil.showToast(R.string.toast_destroy_block_failure);
                                                     }
                                                     mRuntimeFlg = false;
                                                 }
@@ -185,17 +186,17 @@ public class SummaryFragment extends Fragment {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             mRuntimeFlg = true;
-                                            JustawayApplication.showProgressDialog(getActivity(), getString(R.string.progress_process));
+                                            MessageUtil.showProgressDialog(getActivity(), getString(R.string.progress_process));
                                             FollowTask task = new FollowTask() {
                                                 @Override
                                                 protected void onPostExecute(Boolean success) {
-                                                    JustawayApplication.dismissProgressDialog();
+                                                    MessageUtil.dismissProgressDialog();
                                                     if (success) {
-                                                        JustawayApplication.showToast(R.string.toast_follow_success);
+                                                        MessageUtil.showToast(R.string.toast_follow_success);
                                                         follow.setText(R.string.button_unfollow);
                                                         mFollowFlg = true;
                                                     } else {
-                                                        JustawayApplication.showToast(R.string.toast_follow_failure);
+                                                        MessageUtil.showToast(R.string.toast_follow_failure);
                                                     }
                                                     mRuntimeFlg = false;
                                                 }

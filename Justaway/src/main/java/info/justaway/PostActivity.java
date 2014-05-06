@@ -14,7 +14,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.BatteryManager;
 import android.os.Build;
@@ -54,10 +53,14 @@ import java.util.List;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import info.justaway.model.AccessTokenManager;
+import info.justaway.model.UserIconManager;
 import info.justaway.plugin.TwiccaPlugin;
 import info.justaway.settings.PostStockSettings;
 import info.justaway.task.SendDirectMessageTask;
 import info.justaway.task.UpdateStatusTask;
+import info.justaway.util.ImageUtil;
+import info.justaway.util.MessageUtil;
 import info.justaway.util.ThemeUtil;
 import info.justaway.util.TwitterUtil;
 import twitter4j.Status;
@@ -104,7 +107,7 @@ public class PostActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        JustawayApplication.getApplication().setTheme(this);
+        ThemeUtil.setTheme(this);
         setContentView(R.layout.activity_post);
         ButterKnife.inject(this);
         mContext = this;
@@ -146,13 +149,12 @@ public class PostActivity extends FragmentActivity {
             }
         }
 
-        JustawayApplication.getApplication().getUserIconManager().warmUpUserIconMap();
+        UserIconManager.warmUpUserIconMap();
 
         registerForContextMenu(mImgButton);
 
         // アカウント切り替え
-        ArrayList<AccessToken> accessTokens =
-                JustawayApplication.getApplication().getAccessTokenManager().getAccessTokens();
+        ArrayList<AccessToken> accessTokens = AccessTokenManager.getAccessTokens();
         AccessTokenAdapter adapter = new AccessTokenAdapter(this, R.layout.spinner_switch_account);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mSwitchAccountSpinner.setAdapter(adapter);
@@ -162,7 +164,7 @@ public class PostActivity extends FragmentActivity {
             for (AccessToken accessToken : accessTokens) {
                 adapter.add(accessToken);
 
-                if (JustawayApplication.getApplication().getUserId() == accessToken.getUserId()) {
+                if (AccessTokenManager.getUserId() == accessToken.getUserId()) {
                     mSwitchAccountSpinner.setSelection(i);
                 }
                 i++;
@@ -206,7 +208,7 @@ public class PostActivity extends FragmentActivity {
                 inReplyToStatus = inReplyToStatus.getRetweetedStatus();
             }
             mInReplyToStatusId = inReplyToStatus.getId();
-            JustawayApplication.getApplication().displayRoundedImage(inReplyToStatus.getUser().getProfileImageURL(),
+            ImageUtil.displayRoundedImage(inReplyToStatus.getUser().getProfileImageURL(),
                     mInReplyToUserIcon);
 
             mInReplyToStatus.setText(inReplyToStatus.getText());
@@ -433,21 +435,21 @@ public class PostActivity extends FragmentActivity {
 
     @OnClick(R.id.tweet_button)
     void tweet() {
-        JustawayApplication.showProgressDialog(mContext, getString(R.string.progress_sending));
+        MessageUtil.showProgressDialog(mContext, getString(R.string.progress_sending));
         String text = mStatusText.getText().toString();
 
         if (text.startsWith("D ")) {
             SendDirectMessageTask task = new SendDirectMessageTask((AccessToken) mSwitchAccountSpinner.getSelectedItem()) {
                 @Override
                 protected void onPostExecute(TwitterException e) {
-                    JustawayApplication.dismissProgressDialog();
+                    MessageUtil.dismissProgressDialog();
                     if (e == null) {
                         mStatusText.setText("");
                         if (!mWidgetMode) {
                             finish();
                         }
                     } else {
-                        JustawayApplication.showToast(R.string.toast_update_status_failure);
+                        MessageUtil.showToast(R.string.toast_update_status_failure);
                     }
                 }
             };
@@ -464,7 +466,7 @@ public class PostActivity extends FragmentActivity {
             UpdateStatusTask task = new UpdateStatusTask((AccessToken) mSwitchAccountSpinner.getSelectedItem()) {
                 @Override
                 protected void onPostExecute(TwitterException e) {
-                    JustawayApplication.dismissProgressDialog();
+                    MessageUtil.dismissProgressDialog();
                     if (e == null) {
                         mStatusText.setText("");
                         if (!mWidgetMode) {
@@ -475,9 +477,9 @@ public class PostActivity extends FragmentActivity {
                             ThemeUtil.setThemeTextColor(mContext, mImgButton, R.attr.menu_text_color);
                         }
                     } else if (e.getErrorCode() == ERROR_CODE_DUPLICATE_STATUS) {
-                        JustawayApplication.showToast(getString(R.string.toast_update_status_already));
+                        MessageUtil.showToast(getString(R.string.toast_update_status_already));
                     } else {
-                        JustawayApplication.showToast(R.string.toast_update_status_failure);
+                        MessageUtil.showToast(R.string.toast_update_status_failure);
                     }
                 }
             };
@@ -567,7 +569,7 @@ public class PostActivity extends FragmentActivity {
         try {
             InputStream inputStream = getContentResolver().openInputStream(uri);
             this.mImgPath = writeToTempFile(inputStream);
-            JustawayApplication.showToast(R.string.toast_set_image_success);
+            MessageUtil.showToast(R.string.toast_set_image_success);
             ThemeUtil.setThemeTextColor(mContext, mImgButton, R.attr.holo_blue);
             mTweetButton.setEnabled(true);
         } catch (FileNotFoundException e) {
@@ -770,7 +772,7 @@ public class PostActivity extends FragmentActivity {
             assert view != null;
             view.setPadding(16, 0, 0, 0);
             ImageView icon = (ImageView) view.findViewById(R.id.icon);
-            JustawayApplication.getApplication().getUserIconManager().displayUserIcon(accessToken.getUserId(), icon);
+            UserIconManager.displayUserIcon(accessToken.getUserId(), icon);
             ((TextView) view.findViewById(R.id.screen_name)).setText(accessToken.getScreenName());
 
             return view;
@@ -789,7 +791,7 @@ public class PostActivity extends FragmentActivity {
 
             assert view != null;
             ImageView icon = (ImageView) view.findViewById(R.id.icon);
-            JustawayApplication.getApplication().getUserIconManager().displayUserIcon(accessToken.getUserId(), icon);
+            UserIconManager.displayUserIcon(accessToken.getUserId(), icon);
             ((TextView) view.findViewById(R.id.screen_name)).setText(accessToken.getScreenName());
 
             return view;

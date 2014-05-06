@@ -3,7 +3,7 @@ package info.justaway.util;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import info.justaway.JustawayApplication;
+import info.justaway.model.AccessTokenManager;
 import twitter4j.Status;
 import twitter4j.UserMentionEntity;
 
@@ -49,7 +49,7 @@ public class TwitterUtil {
      * @return true ... 自分宛てのメンション
      */
     public static boolean isMentionForMe(Status status) {
-        long userId = JustawayApplication.getApplication().getUserId();
+        long userId = AccessTokenManager.getUserId();
         if (status.getInReplyToUserId() == userId) {
             return true;
         }

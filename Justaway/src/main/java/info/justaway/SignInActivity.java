@@ -11,6 +11,11 @@ import android.widget.TextView;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import info.justaway.model.AccessTokenManager;
+import info.justaway.model.TwitterManager;
+import info.justaway.model.UserIconManager;
+import info.justaway.util.MessageUtil;
+import info.justaway.util.ThemeUtil;
 import info.justaway.widget.FontelloButton;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -29,7 +34,7 @@ public class SignInActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        JustawayApplication.getApplication().setTheme(this);
+        ThemeUtil.setTheme(this);
         setContentView(R.layout.activity_signin);
 
         ButterKnife.inject(this);
@@ -51,7 +56,7 @@ public class SignInActivity extends Activity {
                     if (oauth_verifier != null && !oauth_verifier.isEmpty()) {
                         mStartOauthButton.setVisibility(View.GONE);
                         mConnectWithTwitter.setVisibility(View.GONE);
-                        JustawayApplication.showProgressDialog(this, getString(R.string.progress_process));
+                        MessageUtil.showProgressDialog(this, getString(R.string.progress_process));
                         new VerifyOAuthTask().execute(oauth_verifier);
                     }
                 }
@@ -101,7 +106,7 @@ public class SignInActivity extends Activity {
         if (oauth_verifier == null || oauth_verifier.isEmpty()) {
             return;
         }
-        JustawayApplication.showProgressDialog(this, getString(R.string.progress_process));
+        MessageUtil.showProgressDialog(this, getString(R.string.progress_process));
         new VerifyOAuthTask().execute(oauth_verifier);
     }
 
@@ -116,10 +121,9 @@ public class SignInActivity extends Activity {
         @Override
         protected User doInBackground(String... params) {
             try {
-                JustawayApplication application = JustawayApplication.getApplication();
-                Twitter twitter = application.getTwitterManager().getTwitterInstance();
+                Twitter twitter = TwitterManager.getTwitterInstance();
                 AccessToken accessToken = twitter.getOAuthAccessToken(mRequestToken, params[0]);
-                application.getAccessTokenManager().setAccessToken(accessToken);
+                AccessTokenManager.setAccessToken(accessToken);
                 twitter.setOAuthAccessToken(accessToken);
                 return twitter.verifyCredentials();
             } catch (Exception e) {
@@ -130,10 +134,10 @@ public class SignInActivity extends Activity {
 
         @Override
         protected void onPostExecute(User user) {
-            JustawayApplication.dismissProgressDialog();
+            MessageUtil.dismissProgressDialog();
             if (user != null) {
-                JustawayApplication.getApplication().getUserIconManager().addUserIconMap(user);
-                JustawayApplication.showToast(R.string.toast_sign_in_success);
+                UserIconManager.addUserIconMap(user);
+                MessageUtil.showToast(R.string.toast_sign_in_success);
                 successOAuth();
             }
         }
@@ -142,12 +146,12 @@ public class SignInActivity extends Activity {
 
     @OnClick(R.id.start_oauth_button)
     void startOAuth() {
-        JustawayApplication.showProgressDialog(this, getString(R.string.progress_process));
+        MessageUtil.showProgressDialog(this, getString(R.string.progress_process));
         AsyncTask<Void, Void, RequestToken> task = new AsyncTask<Void, Void, RequestToken>() {
             @Override
             protected RequestToken doInBackground(Void... params) {
                 try {
-                    Twitter twitter = JustawayApplication.getApplication().getTwitterManager().getTwitterInstance();
+                    Twitter twitter = TwitterManager.getTwitterInstance();
                     return twitter.getOAuthRequestToken(getString(R.string.twitter_callback_url));
                 } catch (TwitterException e) {
                     e.printStackTrace();
@@ -157,14 +161,14 @@ public class SignInActivity extends Activity {
 
             @Override
             protected void onPostExecute(RequestToken token) {
-                JustawayApplication.dismissProgressDialog();
+                MessageUtil.dismissProgressDialog();
                 if (token == null) {
-                    JustawayApplication.showToast(R.string.toast_connection_failure);
+                    MessageUtil.showToast(R.string.toast_connection_failure);
                     return;
                 }
                 final String url = token.getAuthorizationURL();
                 if (url == null) {
-                    JustawayApplication.showToast(R.string.toast_get_authorization_url_failure);
+                    MessageUtil.showToast(R.string.toast_get_authorization_url_failure);
                     return;
                 }
                 mRequestToken = token;

@@ -16,6 +16,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 
 import de.greenrobot.event.EventBus;
 import info.justaway.event.model.NotificationEvent;
+import info.justaway.model.AccessTokenManager;
 import info.justaway.model.Row;
 import twitter4j.Status;
 
@@ -91,7 +92,7 @@ public class NotificationService extends Service {
         SharedPreferences preferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
         JustawayApplication application = JustawayApplication.getApplication();
 
-        long userId = application.getUserId();
+        long userId = AccessTokenManager.getUserId();
 
         Row row = event.getRow();
         Status status = row.getStatus();

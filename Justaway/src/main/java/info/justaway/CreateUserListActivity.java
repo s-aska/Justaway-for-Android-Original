@@ -9,6 +9,10 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 
+import info.justaway.model.TwitterManager;
+import info.justaway.util.MessageUtil;
+import info.justaway.util.ThemeUtil;
+
 public class CreateUserListActivity extends Activity {
 
     private EditText mListName;
@@ -18,7 +22,7 @@ public class CreateUserListActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        JustawayApplication.getApplication().setTheme(this);
+        ThemeUtil.setTheme(this);
         setContentView(R.layout.activity_create_user_list);
 
         final Activity activity = this;
@@ -35,7 +39,7 @@ public class CreateUserListActivity extends Activity {
         findViewById(R.id.save).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                JustawayApplication.showProgressDialog(activity, getString(R.string.progress_process));
+                MessageUtil.showProgressDialog(activity, getString(R.string.progress_process));
                 if (rg.getCheckedRadioButtonId() == R.id.public_radio) {
                     mPrivacy = true;
                 }
@@ -59,7 +63,7 @@ public class CreateUserListActivity extends Activity {
         protected Boolean doInBackground(Void... params) {
             try {
                 // noinspection ConstantConditions
-                JustawayApplication.getApplication().getTwitter().createUserList(
+                TwitterManager.getTwitter().createUserList(
                         mListName.getText().toString(),
                         mPrivacy,
                         mDescription.getText().toString());
@@ -72,12 +76,12 @@ public class CreateUserListActivity extends Activity {
 
         @Override
         protected void onPostExecute(Boolean success) {
-            JustawayApplication.dismissProgressDialog();
+            MessageUtil.dismissProgressDialog();
             if (success) {
-                JustawayApplication.showToast(R.string.toast_create_user_list_success);
+                MessageUtil.showToast(R.string.toast_create_user_list_success);
                 finish();
             } else {
-                JustawayApplication.showToast(R.string.toast_create_user_list_failure);
+                MessageUtil.showToast(R.string.toast_create_user_list_failure);
             }
         }
     }

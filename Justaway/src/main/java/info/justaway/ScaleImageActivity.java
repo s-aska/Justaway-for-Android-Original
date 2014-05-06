@@ -23,6 +23,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import info.justaway.task.PhotoLoader;
+import info.justaway.util.MessageUtil;
 import info.justaway.widget.ScaleImageView;
 
 /**
@@ -122,7 +123,7 @@ public class ScaleImageActivity extends FragmentActivity implements LoaderManage
                 String[] paths = {file.getPath()};
                 String[] types = {"image/jpeg"};
                 MediaScannerConnection.scanFile(getApplicationContext(), paths, types, null);
-                JustawayApplication.showToast(R.string.toast_save_image_success);
+                MessageUtil.showToast(R.string.toast_save_image_success);
                 finish();
             } catch (Exception e) {
                 e.printStackTrace();

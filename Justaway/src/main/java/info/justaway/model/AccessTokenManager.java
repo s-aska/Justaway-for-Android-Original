@@ -14,18 +14,18 @@ public class AccessTokenManager {
 
     private static final String TOKENS = "tokens";
     private static final String PREF_NAME = "twitter_access_token";
-    private AccessToken mAccessToken;
+    private static AccessToken sAccessToken;
 
-    private SharedPreferences getSharedPreferences() {
+    private static SharedPreferences getSharedPreferences() {
         return JustawayApplication.getApplication()
                 .getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
     }
 
-    public Boolean hasAccessToken() {
+    public static Boolean hasAccessToken() {
         return getAccessToken() != null;
     }
 
-    public ArrayList<AccessToken> getAccessTokens() {
+    public static ArrayList<AccessToken> getAccessTokens() {
         String json = getSharedPreferences().getString(TOKENS, null);
         if (json == null) {
             return null;
@@ -36,9 +36,9 @@ public class AccessTokenManager {
         return accountSettings.accessTokens;
     }
 
-    public AccessToken getAccessToken() {
-        if (mAccessToken != null) {
-            return mAccessToken;
+    public static AccessToken getAccessToken() {
+        if (sAccessToken != null) {
+            return sAccessToken;
         }
 
         String json = getSharedPreferences().getString(TOKENS, null);
@@ -48,15 +48,15 @@ public class AccessTokenManager {
 
         Gson gson = new Gson();
         AccountSettings accountSettings = gson.fromJson(json, AccountSettings.class);
-        mAccessToken = accountSettings.accessTokens.get(accountSettings.index);
-        return mAccessToken;
+        sAccessToken = accountSettings.accessTokens.get(accountSettings.index);
+        return sAccessToken;
     }
 
-    public void setAccessToken(AccessToken accessToken) {
+    public static void setAccessToken(AccessToken accessToken) {
 
-        mAccessToken = accessToken;
+        sAccessToken = accessToken;
 
-        JustawayApplication.getApplication().getTwitter().setOAuthAccessToken(mAccessToken);
+        TwitterManager.getTwitter().setOAuthAccessToken(sAccessToken);
 
         SharedPreferences preferences = getSharedPreferences();
         String json = preferences.getString(TOKENS, null);
@@ -79,12 +79,12 @@ public class AccessTokenManager {
 
             if (!existUser) {
                 accountSettings.index = accountSettings.accessTokens.size();
-                accountSettings.accessTokens.add(mAccessToken);
+                accountSettings.accessTokens.add(sAccessToken);
             }
         } else {
             accountSettings = new AccountSettings();
             accountSettings.accessTokens = new ArrayList<AccessToken>();
-            accountSettings.accessTokens.add(mAccessToken);
+            accountSettings.accessTokens.add(sAccessToken);
         }
 
         String exportJson = gson.toJson(accountSettings);
@@ -94,7 +94,7 @@ public class AccessTokenManager {
         editor.commit();
     }
 
-    public void removeAccessToken(AccessToken removeAccessToken) {
+    public static void removeAccessToken(AccessToken removeAccessToken) {
         SharedPreferences preferences = getSharedPreferences();
         String json = preferences.getString(TOKENS, null);
         Gson gson = new Gson();
@@ -124,18 +124,18 @@ public class AccessTokenManager {
         editor.commit();
     }
 
-    public long getUserId() {
-        if (mAccessToken == null) {
+    public static long getUserId() {
+        if (sAccessToken == null) {
             return -1L;
         }
-        return mAccessToken.getUserId();
+        return sAccessToken.getUserId();
     }
 
-    public String getScreenName() {
-        if (mAccessToken == null) {
+    public static String getScreenName() {
+        if (sAccessToken == null) {
             return "";
         }
-        return mAccessToken.getScreenName();
+        return sAccessToken.getScreenName();
     }
 
     public static class AccountSettings {

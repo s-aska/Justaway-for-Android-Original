@@ -10,9 +10,9 @@ import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
-import info.justaway.JustawayApplication;
 import info.justaway.R;
 import info.justaway.adapter.UserAdapter;
+import info.justaway.model.TwitterManager;
 import twitter4j.PagableResponseList;
 import twitter4j.User;
 
@@ -83,7 +83,7 @@ public class FollowingListFragment extends Fragment {
         @Override
         protected PagableResponseList<User> doInBackground(Long... params) {
             try {
-                PagableResponseList<User> friendsList = JustawayApplication.getApplication().getTwitter().getFriendsList(params[0], mCursor);
+                PagableResponseList<User> friendsList = TwitterManager.getTwitter().getFriendsList(params[0], mCursor);
                 mCursor = friendsList.getNextCursor();
                 return friendsList;
             } catch (Exception e) {

@@ -2,8 +2,9 @@ package info.justaway.task;
 
 import android.content.Context;
 
-import info.justaway.JustawayApplication;
+import info.justaway.model.AccessTokenManager;
 import info.justaway.model.Profile;
+import info.justaway.model.TwitterManager;
 import twitter4j.Relationship;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -27,16 +28,15 @@ public class ShowUserLoader extends AbstractAsyncTaskLoader<Profile> {
     @Override
     public Profile loadInBackground() {
         try {
-            JustawayApplication application = JustawayApplication.getApplication();
-            Twitter twitter = application.getTwitter();
+            Twitter twitter = TwitterManager.getTwitter();
             User user;
             Relationship relationship;
             if (mScreenName != null) {
                 user = twitter.showUser(mScreenName);
-                relationship = twitter.showFriendship(application.getScreenName(), mScreenName);
+                relationship = twitter.showFriendship(AccessTokenManager.getScreenName(), mScreenName);
             } else {
                 user = twitter.showUser(mUserId);
-                relationship = twitter.showFriendship(application.getUserId(), mUserId);
+                relationship = twitter.showFriendship(AccessTokenManager.getUserId(), mUserId);
             }
             Profile profile = new Profile();
             profile.setRelationship(relationship);

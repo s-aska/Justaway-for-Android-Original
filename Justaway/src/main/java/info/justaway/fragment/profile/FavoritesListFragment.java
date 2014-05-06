@@ -11,7 +11,6 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import de.greenrobot.event.EventBus;
-import info.justaway.JustawayApplication;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.event.model.StreamingDestroyStatusEvent;
@@ -19,6 +18,8 @@ import info.justaway.event.action.StatusActionEvent;
 import info.justaway.listener.StatusClickListener;
 import info.justaway.listener.StatusLongClickListener;
 import info.justaway.model.Row;
+import info.justaway.model.TwitterManager;
+import info.justaway.settings.BasicSettings;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
 import twitter4j.Status;
@@ -110,13 +111,12 @@ public class FavoritesListFragment extends Fragment {
         @Override
         protected ResponseList<twitter4j.Status> doInBackground(String... params) {
             try {
-                JustawayApplication application = JustawayApplication.getApplication();
                 Paging paging = new Paging();
                 if (mMaxId > 0) {
                     paging.setMaxId(mMaxId - 1);
-                    paging.setCount(application.getBasicSettings().getPageCount());
+                    paging.setCount(BasicSettings.getPageCount());
                 }
-                return JustawayApplication.getApplication().getTwitter().getFavorites(params[0], paging);
+                return TwitterManager.getTwitter().getFavorites(params[0], paging);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;

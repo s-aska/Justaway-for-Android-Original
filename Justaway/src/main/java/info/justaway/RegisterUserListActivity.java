@@ -17,6 +17,7 @@ import java.util.HashMap;
 import info.justaway.adapter.RegisterListAdapter;
 import info.justaway.model.UserListWithRegistered;
 import info.justaway.task.RegisterUserListsLoader;
+import info.justaway.util.ThemeUtil;
 import twitter4j.ResponseList;
 import twitter4j.UserList;
 
@@ -29,7 +30,7 @@ public class RegisterUserListActivity extends FragmentActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        JustawayApplication.getApplication().setTheme(this);
+        ThemeUtil.setTheme(this);
         setContentView(R.layout.list);
 
         ActionBar actionBar = getActionBar();

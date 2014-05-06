@@ -11,9 +11,10 @@ import android.widget.CompoundButton;
 
 import java.util.ArrayList;
 
-import info.justaway.JustawayApplication;
 import info.justaway.R;
+import info.justaway.model.TwitterManager;
 import info.justaway.model.UserListWithRegistered;
+import info.justaway.util.MessageUtil;
 
 public class RegisterListAdapter extends ArrayAdapter<UserListWithRegistered> {
 
@@ -61,51 +62,50 @@ public class RegisterListAdapter extends ArrayAdapter<UserListWithRegistered> {
             checkbox.setOnCheckedChangeListener(null);
             checkbox.setChecked(userListWithRegistered.isRegistered());
             checkbox.setTag(userListWithRegistered.getUserList().getId());
+            checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    if (b == userListWithRegistered.isRegistered()) {
+                        return;
+                    }
+                    userListWithRegistered.setRegistered(b);
+                    MessageUtil.showProgressDialog(getContext(), getContext().getString(R.string.progress_process));
+                    if (b) {
+                        CreateUserListMembersTask task = new CreateUserListMembersTask() {
+                            @Override
+                            protected void onPostExecute(Boolean success) {
+                                MessageUtil.dismissProgressDialog();
+                                if (success) {
+                                    MessageUtil.showToast(R.string.toast_add_to_list_success);
+                                } else {
+                                    MessageUtil.showToast(R.string.toast_add_to_list_failure);
+                                    userListWithRegistered.setRegistered(false);
+                                    notifyDataSetChanged();
+                                }
+                            }
+
+                        };
+                        task.execute(userListWithRegistered.getUserList().getId());
+                    } else {
+                        DestroyUserListMembersTask task = new DestroyUserListMembersTask() {
+
+                            @Override
+                            protected void onPostExecute(Boolean success) {
+                                MessageUtil.dismissProgressDialog();
+                                if (success) {
+                                    MessageUtil.showToast(R.string.toast_remove_from_list_success);
+                                } else {
+                                    MessageUtil.showToast(R.string.toast_remove_from_list_failure);
+                                    userListWithRegistered.setRegistered(true);
+                                    notifyDataSetChanged();
+                                }
+                            }
+                        };
+                        task.execute(userListWithRegistered.getUserList().getId());
+                    }
+                }
+            });
         }
-
-        checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (b == userListWithRegistered.isRegistered()) {
-                    return;
-                }
-                userListWithRegistered.setRegistered(b);
-                JustawayApplication.showProgressDialog(getContext(), getContext().getString(R.string.progress_process));
-                if (b) {
-                    CreateUserListMembersTask task = new CreateUserListMembersTask() {
-                        @Override
-                        protected void onPostExecute(Boolean success) {
-                            JustawayApplication.dismissProgressDialog();
-                            if (success) {
-                                JustawayApplication.showToast(R.string.toast_add_to_list_success);
-                            } else {
-                                JustawayApplication.showToast(R.string.toast_add_to_list_failure);
-                                userListWithRegistered.setRegistered(false);
-                                notifyDataSetChanged();
-                            }
-                        }
-
-                    };
-                    task.execute(userListWithRegistered.getUserList().getId());
-                } else {
-                    DestroyUserListMembersTask task = new DestroyUserListMembersTask() {
-
-                        @Override
-                        protected void onPostExecute(Boolean success) {
-                            JustawayApplication.dismissProgressDialog();
-                            if (success) {
-                                JustawayApplication.showToast(R.string.toast_remove_from_list_success);
-                            } else {
-                                JustawayApplication.showToast(R.string.toast_remove_from_list_failure);
-                                userListWithRegistered.setRegistered(true);
-                                notifyDataSetChanged();
-                            }
-                        }
-                    };
-                    task.execute(userListWithRegistered.getUserList().getId());
-                }
-            }
-        });
         return view;
     }
 
@@ -114,7 +114,7 @@ public class RegisterListAdapter extends ArrayAdapter<UserListWithRegistered> {
         @Override
         protected Boolean doInBackground(Long... params) {
             try {
-                JustawayApplication.getApplication().getTwitter().createUserListMembers(params[0], mUserId);
+                TwitterManager.getTwitter().createUserListMembers(params[0], mUserId);
                 return true;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -128,7 +128,7 @@ public class RegisterListAdapter extends ArrayAdapter<UserListWithRegistered> {
         @Override
         protected Boolean doInBackground(Long... params) {
             try {
-                JustawayApplication.getApplication().getTwitter().destroyUserListMembers(params[0], mUserId);
+                TwitterManager.getTwitter().destroyUserListMembers(params[0], mUserId);
                 return true;
             } catch (Exception e) {
                 e.printStackTrace();

@@ -20,8 +20,9 @@ import info.justaway.event.action.StatusActionEvent;
 import info.justaway.listener.StatusClickListener;
 import info.justaway.listener.StatusLongClickListener;
 import info.justaway.model.Row;
+import info.justaway.model.TwitterManager;
+import info.justaway.util.MessageUtil;
 import twitter4j.Status;
-import twitter4j.Twitter;
 
 /**
  * ツイート表示用のアクティビティ
@@ -30,7 +31,6 @@ public class StatusActivity extends FragmentActivity {
 
     private ProgressDialog mProgressDialog;
     private TwitterAdapter mAdapter;
-    private Twitter mTwitter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +81,6 @@ public class StatusActivity extends FragmentActivity {
         listView.setOnItemLongClickListener(new StatusLongClickListener(mAdapter, this));
 
         if (statusId > 0) {
-            mTwitter = JustawayApplication.getApplication().getTwitter();
             showProgressDialog(getString(R.string.progress_loading));
             new LoadTask().execute(statusId);
         } else {
@@ -90,7 +89,6 @@ public class StatusActivity extends FragmentActivity {
                 mAdapter.add(Row.newStatus(status));
                 long inReplyToStatusId = status.getInReplyToStatusId();
                 if (inReplyToStatusId > 0) {
-                    mTwitter = JustawayApplication.getApplication().getTwitter();
                     showProgressDialog(getString(R.string.progress_loading));
                     new LoadTask().execute(inReplyToStatusId);
                 }
@@ -145,7 +143,7 @@ public class StatusActivity extends FragmentActivity {
         @Override
         protected twitter4j.Status doInBackground(Long... params) {
             try {
-                return mTwitter.showStatus(params[0]);
+                return TwitterManager.getTwitter().showStatus(params[0]);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -163,7 +161,7 @@ public class StatusActivity extends FragmentActivity {
                     new LoadTask().execute(inReplyToStatusId);
                 }
             } else {
-                JustawayApplication.showToast(R.string.toast_load_data_failure);
+                MessageUtil.showToast(R.string.toast_load_data_failure);
             }
         }
     }

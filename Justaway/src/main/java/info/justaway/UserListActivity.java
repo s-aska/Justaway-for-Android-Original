@@ -16,6 +16,8 @@ import butterknife.OnClick;
 import info.justaway.adapter.SimplePagerAdapter;
 import info.justaway.fragment.list.UserListStatusesFragment;
 import info.justaway.fragment.list.UserMemberFragment;
+import info.justaway.model.TwitterManager;
+import info.justaway.util.MessageUtil;
 import info.justaway.util.ThemeUtil;
 import twitter4j.ResponseList;
 import twitter4j.UserList;
@@ -37,7 +39,7 @@ public class UserListActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        JustawayApplication.getApplication().setTheme(this);
+        ThemeUtil.setTheme(this);
         setContentView(R.layout.activity_user_list);
         ButterKnife.inject(this);
 
@@ -135,7 +137,7 @@ public class UserListActivity extends FragmentActivity {
                     @Override
                     protected Boolean doInBackground(Void... params) {
                         try {
-                            JustawayApplication.getApplication().getTwitter().createUserListSubscription(mUserList.getId());
+                            TwitterManager.getTwitter().createUserListSubscription(mUserList.getId());
                             return true;
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -146,14 +148,14 @@ public class UserListActivity extends FragmentActivity {
                     @Override
                     protected void onPostExecute(Boolean success) {
                         if (success) {
-                            JustawayApplication.showToast(R.string.toast_create_user_list_subscription_success);
+                            MessageUtil.showToast(R.string.toast_create_user_list_subscription_success);
                             mIsFollowing = true;
                             ResponseList<UserList> userLists = JustawayApplication.getApplication().getUserLists();
                             if (userLists != null) {
                                 userLists.add(0, mUserList);
                             }
                         } else {
-                            JustawayApplication.showToast(R.string.toast_create_user_list_subscription_failure);
+                            MessageUtil.showToast(R.string.toast_create_user_list_subscription_failure);
                         }
                     }
                 }.execute();
@@ -163,7 +165,7 @@ public class UserListActivity extends FragmentActivity {
                     @Override
                     protected Boolean doInBackground(Void... params) {
                         try {
-                            JustawayApplication.getApplication().getTwitter().destroyUserListSubscription(mUserList.getId());
+                            TwitterManager.getTwitter().destroyUserListSubscription(mUserList.getId());
                             return true;
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -174,14 +176,14 @@ public class UserListActivity extends FragmentActivity {
                     @Override
                     protected void onPostExecute(Boolean success) {
                         if (success) {
-                            JustawayApplication.showToast(R.string.toast_destroy_user_list_subscription_success);
+                            MessageUtil.showToast(R.string.toast_destroy_user_list_subscription_success);
                             mIsFollowing = false;
                             ResponseList<UserList> userLists = JustawayApplication.getApplication().getUserLists();
                             if (userLists != null) {
                                 userLists.remove(mUserList);
                             }
                         } else {
-                            JustawayApplication.showToast(R.string.toast_destroy_user_list_subscription_failure);
+                            MessageUtil.showToast(R.string.toast_destroy_user_list_subscription_failure);
                         }
                     }
                 }.execute();

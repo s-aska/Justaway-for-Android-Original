@@ -2,7 +2,7 @@ package info.justaway.task;
 
 import android.content.Context;
 
-import info.justaway.JustawayApplication;
+import info.justaway.model.TwitterManager;
 import info.justaway.model.UserListStatusesWithMembers;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
@@ -17,13 +17,13 @@ public class UserListStatusesLoader extends AbstractAsyncTaskLoader<UserListStat
 
     public UserListStatusesLoader(Context context, long userListId) {
         super(context);
-        this.mUserListId = userListId;
+        mUserListId = userListId;
     }
 
     @Override
     public UserListStatusesWithMembers loadInBackground() {
         try {
-            Twitter twitter = JustawayApplication.getApplication().getTwitter();
+            Twitter twitter = TwitterManager.getTwitter();
             ResponseList<Status> statuses = twitter.getUserListStatuses(mUserListId,
                     new Paging(1, 40));
             ResponseList<User> members = twitter.getUserListMembers(mUserListId, 0);

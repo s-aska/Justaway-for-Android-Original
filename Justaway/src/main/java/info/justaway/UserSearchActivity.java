@@ -6,7 +6,6 @@ import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,7 +16,10 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import info.justaway.adapter.UserAdapter;
+import info.justaway.model.TwitterManager;
 import info.justaway.util.KeyboardUtil;
+import info.justaway.util.MessageUtil;
+import info.justaway.util.ThemeUtil;
 import twitter4j.ResponseList;
 import twitter4j.User;
 
@@ -34,7 +36,7 @@ public class UserSearchActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        JustawayApplication.getApplication().setTheme(this);
+        ThemeUtil.setTheme(this);
         setContentView(R.layout.activity_user_search);
 
         ActionBar actionBar = getActionBar();
@@ -136,7 +138,7 @@ public class UserSearchActivity extends FragmentActivity {
         protected ResponseList<User> doInBackground(String... params) {
             String query = params[0];
             try {
-                return JustawayApplication.getApplication().getTwitter().searchUsers(query, mPage);
+                return TwitterManager.getTwitter().searchUsers(query, mPage);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -147,7 +149,7 @@ public class UserSearchActivity extends FragmentActivity {
         protected void onPostExecute(ResponseList<User> users) {
             mProgressBar.setVisibility(View.GONE);
             if (users == null) {
-                JustawayApplication.showToast(R.string.toast_load_data_failure);
+                MessageUtil.showToast(R.string.toast_load_data_failure);
                 return;
             }
             for (User user : users) {

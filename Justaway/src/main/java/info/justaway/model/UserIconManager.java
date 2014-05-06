@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import info.justaway.JustawayApplication;
+import info.justaway.settings.BasicSettings;
+import info.justaway.util.ImageUtil;
 import twitter4j.ResponseList;
 import twitter4j.TwitterException;
 import twitter4j.User;
@@ -21,16 +23,16 @@ public class UserIconManager {
 
     private static final String PREF_NAME_USER_ICON_MAP = "user_icon_map";
     private static final String PREF_KEY_USER_ICON_MAP = "data/v2";
-    private JustawayApplication mApplication;
-    private HashMap<String, String> mUserIconMap = new HashMap<String, String>();
+    private static HashMap<String, String> sUserIconMap = new HashMap<String, String>();
 
-    public UserIconManager() {
-        mApplication = JustawayApplication.getApplication();
+    private static SharedPreferences getSharedPreferences() {
+        return JustawayApplication.getApplication()
+                .getSharedPreferences(PREF_NAME_USER_ICON_MAP, Context.MODE_PRIVATE);
     }
 
-    public void displayUserIcon(User user, final ImageView view) {
+    public static void displayUserIcon(User user, final ImageView view) {
         String url;
-        String size = mApplication.getBasicSettings().getUserIconSize();
+        String size = BasicSettings.getUserIconSize();
         if (size.equals("bigger")) {
             url = user.getBiggerProfileImageURL();
         } else if (size.equals("normal")) {
@@ -41,20 +43,20 @@ public class UserIconManager {
             view.setVisibility(View.GONE);
             return;
         }
-        if (mApplication.getBasicSettings().getUserIconRoundedOn()) {
-            mApplication.displayRoundedImage(url, view);
+        if (BasicSettings.getUserIconRoundedOn()) {
+            ImageUtil.displayRoundedImage(url, view);
         } else {
-            mApplication.displayImage(url, view);
+            ImageUtil.displayImage(url, view);
         }
     }
 
     /**
      * userIdからアイコンを取得する
      */
-    public void displayUserIcon(final long userId, final ImageView view) {
-        String url = mUserIconMap.get(String.valueOf(userId));
+    public static void displayUserIcon(final long userId, final ImageView view) {
+        String url = sUserIconMap.get(String.valueOf(userId));
         if (url != null) {
-            mApplication.displayRoundedImage(url, view);
+            ImageUtil.displayRoundedImage(url, view);
             return;
         }
 
@@ -63,15 +65,15 @@ public class UserIconManager {
     }
 
     @SuppressWarnings("unchecked")
-    public void addUserIconMap(User user) {
-        final SharedPreferences preferences = mApplication.getSharedPreferences(PREF_NAME_USER_ICON_MAP, Context.MODE_PRIVATE);
+    public static void addUserIconMap(User user) {
+        final SharedPreferences preferences = getSharedPreferences();
         final Gson gson = new Gson();
         String json = preferences.getString(PREF_KEY_USER_ICON_MAP, null);
         if (json != null) {
-            mUserIconMap = gson.fromJson(json, mUserIconMap.getClass());
+            sUserIconMap = gson.fromJson(json, sUserIconMap.getClass());
         }
-        mUserIconMap.put(String.valueOf(user.getId()), user.getBiggerProfileImageURL());
-        String exportJson = gson.toJson(mUserIconMap);
+        sUserIconMap.put(String.valueOf(user.getId()), user.getBiggerProfileImageURL());
+        String exportJson = gson.toJson(sUserIconMap);
         SharedPreferences.Editor editor = preferences.edit();
         editor.clear();
         editor.putString(PREF_KEY_USER_ICON_MAP, exportJson);
@@ -79,17 +81,16 @@ public class UserIconManager {
     }
 
     @SuppressWarnings("unchecked")
-    public void warmUpUserIconMap() {
-        ArrayList<AccessToken> accessTokens = mApplication.getAccessTokenManager().getAccessTokens();
+    public static void warmUpUserIconMap() {
+        ArrayList<AccessToken> accessTokens = AccessTokenManager.getAccessTokens();
         if (accessTokens == null || accessTokens.size() == 0) {
             return;
         }
 
-        final SharedPreferences preferences = mApplication.getSharedPreferences(PREF_NAME_USER_ICON_MAP, Context.MODE_PRIVATE);
         final Gson gson = new Gson();
-        String json = preferences.getString(PREF_KEY_USER_ICON_MAP, null);
+        String json = getSharedPreferences().getString(PREF_KEY_USER_ICON_MAP, null);
         if (json != null) {
-            mUserIconMap = gson.fromJson(json, mUserIconMap.getClass());
+            sUserIconMap = gson.fromJson(json, sUserIconMap.getClass());
         }
 
         final long userIds[] = new long[accessTokens.size()];
@@ -104,7 +105,7 @@ public class UserIconManager {
             @Override
             protected ResponseList<User> doInBackground(Void... voids) {
                 try {
-                    return mApplication.getTwitterManager().getTwitter().lookupUsers(userIds);
+                    return TwitterManager.getTwitter().lookupUsers(userIds);
                 } catch (TwitterException e) {
                     e.printStackTrace();
                 }
@@ -116,12 +117,12 @@ public class UserIconManager {
                 if (users == null) {
                     return;
                 }
-                mUserIconMap.clear();
+                sUserIconMap.clear();
                 for (User user : users) {
-                    mUserIconMap.put(String.valueOf(user.getId()), user.getBiggerProfileImageURL());
+                    sUserIconMap.put(String.valueOf(user.getId()), user.getBiggerProfileImageURL());
                 }
-                String exportJson = gson.toJson(mUserIconMap);
-                SharedPreferences.Editor editor = preferences.edit();
+                String exportJson = gson.toJson(sUserIconMap);
+                SharedPreferences.Editor editor = getSharedPreferences().edit();
                 editor.clear();
                 editor.putString(PREF_KEY_USER_ICON_MAP, exportJson);
                 editor.commit();

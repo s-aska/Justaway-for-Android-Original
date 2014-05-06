@@ -15,6 +15,7 @@ import info.justaway.JustawayApplication;
 import info.justaway.ProfileActivity;
 import info.justaway.R;
 import info.justaway.UserListActivity;
+import info.justaway.util.ImageUtil;
 import twitter4j.UserList;
 
 public class UserListAdapter extends ArrayAdapter<UserList> {
@@ -72,7 +73,7 @@ public class UserListAdapter extends ArrayAdapter<UserList> {
 
         ImageView icon = (ImageView) view.findViewById(R.id.icon);
         String iconUrl = userList.getUser().getBiggerProfileImageURL();
-        mApplication.displayRoundedImage(iconUrl, icon);
+        ImageUtil.displayRoundedImage(iconUrl, icon);
 
         holder.list_name.setText(userList.getName());
         holder.screen_name.setText(userList.getUser().getScreenName()

@@ -56,10 +56,14 @@ import info.justaway.fragment.main.tab.DirectMessagesFragment;
 import info.justaway.fragment.main.tab.InteractionsFragment;
 import info.justaway.fragment.main.tab.TimelineFragment;
 import info.justaway.fragment.main.tab.UserListFragment;
+import info.justaway.model.AccessTokenManager;
 import info.justaway.model.TabManager;
+import info.justaway.model.TwitterManager;
+import info.justaway.settings.BasicSettings;
 import info.justaway.task.SendDirectMessageTask;
 import info.justaway.task.UpdateStatusTask;
 import info.justaway.util.KeyboardUtil;
+import info.justaway.util.MessageUtil;
 import info.justaway.util.ThemeUtil;
 import info.justaway.util.TwitterUtil;
 import info.justaway.widget.AutoCompleteEditText;
@@ -78,7 +82,6 @@ public class MainActivity extends FragmentActivity {
     private static final int REQUEST_TAB_SETTINGS = 400;
     private static final int ERROR_CODE_DUPLICATE_STATUS = 187;
     private static final Pattern USER_LIST_PATTERN = Pattern.compile("^(@[a-zA-Z0-9_]+)/(.*)$");
-    private JustawayApplication mApplication;
     private MainPagerAdapter mMainPagerAdapter;
     private ViewPager mViewPager;
     private Status mInReplyToStatus;
@@ -126,7 +129,7 @@ public class MainActivity extends FragmentActivity {
 
         @OnClick(R.id.action_bar_streaming_button)
         void actionBarToggleStreaming() {
-            final boolean turnOn = !mApplication.getBasicSettings().getStreamingMode();
+            final boolean turnOn = !BasicSettings.getStreamingMode();
             DialogFragment dialog = StreamingSwitchDialogFragment.newInstance(turnOn);
             dialog.show(getSupportFragmentManager(), "dialog");
         }
@@ -154,14 +157,13 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mApplication = JustawayApplication.getApplication();
-        mApplication.setTheme(this);
+        ThemeUtil.setTheme(this);
         mActivity = this;
 
         /**
          * アクセストークンがない場合に認証用のアクティビティを起動する
          */
-        if (!mApplication.getAccessTokenManager().hasAccessToken()) {
+        if (!AccessTokenManager.hasAccessToken()) {
             Intent intent = new Intent(this, SignInActivity.class);
             startActivity(intent);
             finish();
@@ -244,7 +246,7 @@ public class MainActivity extends FragmentActivity {
 
         MyUncaughtExceptionHandler.showBugReportDialogIfExist(this);
 
-        if (mApplication.getBasicSettings().getKeepScreenOn()) {
+        if (BasicSettings.getKeepScreenOn()) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         } else {
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -266,14 +268,14 @@ public class MainActivity extends FragmentActivity {
                 }
                 if (mAccessTokenAdapter != null) {
                     mAccessTokenAdapter.clear();
-                    for (AccessToken accessToken : mApplication.getAccessTokenManager().getAccessTokens()) {
+                    for (AccessToken accessToken : AccessTokenManager.getAccessTokens()) {
                         mAccessTokenAdapter.add(accessToken);
                     }
                 }
                 break;
             case REQUEST_SETTINGS:
                 if (resultCode == RESULT_OK) {
-                    mApplication.getBasicSettings().resetDisplaySettings();
+                    BasicSettings.init();
                     finish();
                     startActivity(new Intent(this, this.getClass()));
                 }
@@ -298,8 +300,8 @@ public class MainActivity extends FragmentActivity {
             return;
         }
 
-        mApplication.getBasicSettings().resetDisplaySettings();
-        mApplication.getBasicSettings().resetNotification();
+        BasicSettings.init();
+        BasicSettings.resetNotification();
 
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -314,14 +316,14 @@ public class MainActivity extends FragmentActivity {
         }, 1000);
 
         if (mSwitchAccessToken != null) {
-            mApplication.getTwitterManager().switchAccessToken(mSwitchAccessToken);
+            TwitterManager.switchAccessToken(mSwitchAccessToken);
             mSwitchAccessToken = null;
         }
-        mApplication.getTwitterManager().resumeStreaming();
-        if (mApplication.getTwitterManager().getTwitterStreamConnected()) {
+        TwitterManager.resumeStreaming();
+        if (TwitterManager.getTwitterStreamConnected()) {
             ThemeUtil.setThemeTextColor(this, mActionBarHolder.streamingButton, R.attr.holo_green);
         } else {
-            if (mApplication.getBasicSettings().getStreamingMode()) {
+            if (BasicSettings.getStreamingMode()) {
                 ThemeUtil.setThemeTextColor(this, mActionBarHolder.streamingButton, R.attr.holo_red);
             } else {
                 mActionBarHolder.streamingButton.setTextColor(Color.WHITE);
@@ -331,7 +333,7 @@ public class MainActivity extends FragmentActivity {
 
     @Override
     protected void onPause() {
-        mApplication.getTwitterManager().pauseStreaming();
+        TwitterManager.pauseStreaming();
         EventBus.getDefault().unregister(this);
         super.onPause();
     }
@@ -378,7 +380,7 @@ public class MainActivity extends FragmentActivity {
                 break;
             case R.id.profile:
                 intent = new Intent(this, ProfileActivity.class);
-                intent.putExtra("userId", mApplication.getUserId());
+                intent.putExtra("userId", AccessTokenManager.getUserId());
                 startActivity(intent);
                 break;
             case R.id.tab_settings:
@@ -456,7 +458,7 @@ public class MainActivity extends FragmentActivity {
                 mActionBarHolder.subTitle.setText(matcher.group(1));
             } else {
                 mActionBarHolder.title.setText(title);
-                mActionBarHolder.subTitle.setText("@" + mApplication.getScreenName());
+                mActionBarHolder.subTitle.setText("@" + AccessTokenManager.getScreenName());
             }
         }
     }
@@ -471,7 +473,7 @@ public class MainActivity extends FragmentActivity {
         mQuickTweetEdit.setFocusable(true);
         mQuickTweetEdit.setFocusableInTouchMode(true);
         mQuickTweetEdit.setEnabled(true);
-        mApplication.getBasicSettings().setQuickMod(true);
+        BasicSettings.setQuickMod(true);
     }
 
     public void hideQuickPanel() {
@@ -481,12 +483,11 @@ public class MainActivity extends FragmentActivity {
         mQuickTweetEdit.clearFocus();
         mQuickTweetLayout.setVisibility(View.GONE);
         mInReplyToStatus = null;
-        mApplication.getBasicSettings().setQuickMod(false);
+        BasicSettings.setQuickMod(false);
     }
 
     public void setupTab() {
-        TabManager tabManager = mApplication.getTabManager();
-        ArrayList<TabManager.Tab> tabs = tabManager.loadTabs();
+        ArrayList<TabManager.Tab> tabs = TabManager.loadTabs();
         if (tabs.size() > 0) {
             TypedValue outValueTextColor = new TypedValue();
             TypedValue outValueBackground = new TypedValue();
@@ -632,12 +633,12 @@ public class MainActivity extends FragmentActivity {
          */
         mQuickTweetEdit.addTextChangedListener(mQuickTweetTextWatcher);
 
-        if (mApplication.getBasicSettings().getQuickMode()) {
+        if (BasicSettings.getQuickMode()) {
             showQuickPanel();
         }
 
-        if (mApplication.getBasicSettings().getStreamingMode()) {
-            mApplication.getTwitterManager().startStreaming();
+        if (BasicSettings.getStreamingMode()) {
+            TwitterManager.startStreaming();
         }
     }
 
@@ -675,8 +676,8 @@ public class MainActivity extends FragmentActivity {
             return;
         }
         AccessToken accessToken = mAccessTokenAdapter.getItem(position);
-        if (mApplication.getUserId() != accessToken.getUserId()) {
-            mApplication.getTwitterManager().switchAccessToken(accessToken);
+        if (AccessTokenManager.getUserId() != accessToken.getUserId()) {
+            TwitterManager.switchAccessToken(accessToken);
             mAccessTokenAdapter.notifyDataSetChanged();
         }
         mDrawerLayout.closeDrawer(findViewById(R.id.left_drawer));
@@ -686,17 +687,17 @@ public class MainActivity extends FragmentActivity {
     void send() {
         String msg = mQuickTweetEdit.getText() != null ? mQuickTweetEdit.getText().toString() : null;
         if (msg != null && msg.length() > 0) {
-            JustawayApplication.showProgressDialog(this, getString(R.string.progress_sending));
+            MessageUtil.showProgressDialog(this, getString(R.string.progress_sending));
 
             if (msg.startsWith("D ")) {
                 SendDirectMessageTask task = new SendDirectMessageTask(null) {
                     @Override
                     protected void onPostExecute(TwitterException e) {
-                        JustawayApplication.dismissProgressDialog();
+                        MessageUtil.dismissProgressDialog();
                         if (e == null) {
                             mQuickTweetEdit.setText("");
                         } else {
-                            JustawayApplication.showToast(R.string.toast_update_status_failure);
+                            MessageUtil.showToast(R.string.toast_update_status_failure);
                         }
                     }
                 };
@@ -711,13 +712,13 @@ public class MainActivity extends FragmentActivity {
                 UpdateStatusTask task = new UpdateStatusTask(null) {
                     @Override
                     protected void onPostExecute(TwitterException e) {
-                        JustawayApplication.dismissProgressDialog();
+                        MessageUtil.dismissProgressDialog();
                         if (e == null) {
                             mQuickTweetEdit.setText("");
                         } else if (e.getErrorCode() == ERROR_CODE_DUPLICATE_STATUS) {
-                            JustawayApplication.showToast(getString(R.string.toast_update_status_already));
+                            MessageUtil.showToast(getString(R.string.toast_update_status_already));
                         } else {
-                            JustawayApplication.showToast(R.string.toast_update_status_failure);
+                            MessageUtil.showToast(R.string.toast_update_status_failure);
                         }
                     }
                 };
@@ -795,7 +796,7 @@ public class MainActivity extends FragmentActivity {
     };
 
     private ActionBarDrawerToggle getActionBarDrawerToggle() {
-        int drawer = mApplication.getBasicSettings().getThemeName().equals("black") ?
+        int drawer = BasicSettings.getThemeName().equals("black") ?
                 R.drawable.ic_dark_drawer :
                 R.drawable.ic_dark_drawer;
 
@@ -898,7 +899,7 @@ public class MainActivity extends FragmentActivity {
      * ストリーミングAPI接続
      */
     public void onEventMainThread(StreamingConnectionEvent event) {
-        if (mApplication.getBasicSettings().getStreamingMode()) {
+        if (BasicSettings.getStreamingMode()) {
             switch (event.getStatus()) {
                 case STREAMING_CONNECT:
                     ThemeUtil.setThemeTextColor(this, mActionBarHolder.streamingButton, R.attr.holo_green);

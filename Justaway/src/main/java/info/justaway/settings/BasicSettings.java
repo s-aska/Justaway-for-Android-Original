@@ -9,57 +9,57 @@ import info.justaway.NotificationService;
 public class BasicSettings {
 
     private static final String PREF_NAME_SETTINGS = "settings";
-    private int mFontSize;
-    private String mLongTapAction;
-    private String mThemeName;
-    private Boolean mUserIconRounded;
-    private Boolean mDisplayThumbnail;
-    private String mUserIconSize;
-    private int mPageCount;
+    private static int mFontSize;
+    private static String mLongTapAction;
+    private static String mThemeName;
+    private static Boolean mUserIconRounded;
+    private static Boolean mDisplayThumbnail;
+    private static String mUserIconSize;
+    private static int mPageCount;
 
     private static final String STREAMING_MODE = "streamingMode";
-    private Boolean mStreamingMode;
+    private static Boolean mStreamingMode;
 
     private static final String QUICK_MODE = "quickMode";
 
-    public SharedPreferences getSharedPreferences() {
+    public static SharedPreferences getSharedPreferences() {
         return JustawayApplication.getApplication()
                 .getSharedPreferences(PREF_NAME_SETTINGS, Context.MODE_PRIVATE);
     }
 
-    public void setQuickMod(Boolean quickMode) {
+    public static void setQuickMod(Boolean quickMode) {
         SharedPreferences.Editor editor = getSharedPreferences().edit();
         editor.putBoolean(QUICK_MODE, quickMode);
         editor.commit();
     }
 
-    public Boolean getQuickMode() {
+    public static Boolean getQuickMode() {
         return getSharedPreferences().getBoolean(QUICK_MODE, false);
     }
 
-    public Boolean getNotificationOn() {
+    public static Boolean getNotificationOn() {
         return getSharedPreferences().getBoolean("notification_on", true);
     }
 
-    public void setStreamingMode(Boolean streamingMode) {
+    public static void setStreamingMode(Boolean streamingMode) {
         SharedPreferences.Editor editor = getSharedPreferences().edit();
         editor.putBoolean(STREAMING_MODE, streamingMode);
         editor.commit();
         mStreamingMode = streamingMode;
     }
 
-    public Boolean getStreamingMode() {
+    public static Boolean getStreamingMode() {
         if (mStreamingMode != null) {
             return mStreamingMode;
         }
         return getSharedPreferences().getBoolean(STREAMING_MODE, true);
     }
 
-    public boolean getKeepScreenOn() {
+    public static boolean getKeepScreenOn() {
         return getSharedPreferences().getBoolean("keep_screen_on", true);
     }
 
-    public void resetDisplaySettings() {
+    public static void init() {
         SharedPreferences preferences = getSharedPreferences();
         mFontSize = Integer.parseInt(preferences.getString("font_size", "12"));
         mLongTapAction = preferences.getString("long_tap", "nothing");
@@ -70,7 +70,7 @@ public class BasicSettings {
         mPageCount = Integer.parseInt(preferences.getString("page_count", "200"));
     }
 
-    public void resetNotification() {
+    public static void resetNotification() {
         if (getNotificationOn()) {
             NotificationService.start();
         } else {
@@ -78,19 +78,19 @@ public class BasicSettings {
         }
     }
 
-    public int getFontSize() {
+    public static int getFontSize() {
         return mFontSize;
     }
 
-    public String getThemeName() {
+    public static String getThemeName() {
         return mThemeName;
     }
 
-    public String getLongTapAction() {
+    public static String getLongTapAction() {
         return mLongTapAction;
     }
 
-    public boolean getUserIconRoundedOn() {
+    public static boolean getUserIconRoundedOn() {
         if (mUserIconRounded != null) {
             return mUserIconRounded;
         }
@@ -98,7 +98,7 @@ public class BasicSettings {
         return mUserIconRounded;
     }
 
-    public String getUserIconSize() {
+    public static String getUserIconSize() {
         if (mUserIconSize != null) {
             return mUserIconSize;
         }
@@ -106,7 +106,7 @@ public class BasicSettings {
         return mUserIconSize;
     }
 
-    public boolean getDisplayThumbnailOn() {
+    public static boolean getDisplayThumbnailOn() {
         if (mDisplayThumbnail != null) {
             return mDisplayThumbnail;
         }
@@ -114,7 +114,7 @@ public class BasicSettings {
         return mDisplayThumbnail;
     }
 
-    public int getPageCount() {
+    public static int getPageCount() {
         if (mPageCount > 0) {
             return mPageCount;
         }

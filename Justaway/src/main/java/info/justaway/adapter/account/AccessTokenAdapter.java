@@ -16,6 +16,8 @@ import butterknife.InjectView;
 import info.justaway.JustawayApplication;
 import info.justaway.R;
 import info.justaway.listener.OnTrashListener;
+import info.justaway.model.AccessTokenManager;
+import info.justaway.model.UserIconManager;
 import info.justaway.util.ThemeUtil;
 import info.justaway.widget.FontelloButton;
 import twitter4j.auth.AccessToken;
@@ -26,7 +28,6 @@ public class AccessTokenAdapter extends ArrayAdapter<AccessToken> {
     private LayoutInflater mInflater;
     private int mLayout;
     private OnTrashListener mOnTrashListener;
-    private JustawayApplication mApplication;
     private int mColorBlue;
 
     class ViewHolder {
@@ -47,7 +48,6 @@ public class AccessTokenAdapter extends ArrayAdapter<AccessToken> {
         super(context, textViewResourceId);
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mLayout = textViewResourceId;
-        mApplication = JustawayApplication.getApplication();
         mColorBlue = ThemeUtil.getThemeTextColor((Activity) context, R.attr.holo_blue);
     }
 
@@ -83,12 +83,12 @@ public class AccessTokenAdapter extends ArrayAdapter<AccessToken> {
 
         final AccessToken accessToken = mAccountLists.get(position);
 
-        mApplication.getUserIconManager().displayUserIcon(accessToken.getUserId(), viewHolder.mIcon);
+        UserIconManager.displayUserIcon(accessToken.getUserId(), viewHolder.mIcon);
 
         viewHolder.mScreenName.setText(accessToken.getScreenName());
         viewHolder.mTrash.setTypeface(JustawayApplication.getFontello());
 
-        if (mApplication.getUserId() == accessToken.getUserId()) {
+        if (AccessTokenManager.getUserId() == accessToken.getUserId()) {
             viewHolder.mScreenName.setTextColor(mColorBlue);
             viewHolder.mTrash.setVisibility(View.GONE);
         }

@@ -7,11 +7,11 @@ import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.AdapterView;
 
-import info.justaway.JustawayApplication;
 import info.justaway.TwitterAction;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.fragment.AroundFragment;
 import info.justaway.fragment.TalkFragment;
+import info.justaway.settings.BasicSettings;
 import twitter4j.Status;
 
 public class StatusLongClickListener implements AdapterView.OnItemLongClickListener {
@@ -27,8 +27,7 @@ public class StatusLongClickListener implements AdapterView.OnItemLongClickListe
     @Override
     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
         Bundle args = new Bundle();
-        JustawayApplication application = JustawayApplication.getApplication();
-        String action = application.getBasicSettings().getLongTapAction();
+        String action = BasicSettings.getLongTapAction();
 
         if (mAdapter.getItem(position).isDirectMessage()) {
             return false;

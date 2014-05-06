@@ -20,8 +20,6 @@ import info.justaway.settings.MuteSettings;
 
 public class SourceFragment extends Fragment {
 
-    private MuteSettings mMuteSettings;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.list, container, false);
@@ -34,9 +32,7 @@ public class SourceFragment extends Fragment {
         ListView listView = (ListView) v.findViewById(R.id.list);
         listView.setAdapter(adapter);
 
-        JustawayApplication application = JustawayApplication.getApplication();
-        mMuteSettings = application.getMuteSettings();
-        for (String source : mMuteSettings.getSources()) {
+        for (String source : MuteSettings.getSources()) {
             adapter.add(source);
         }
 
@@ -95,8 +91,8 @@ public class SourceFragment extends Fragment {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             remove(source);
-                                            mMuteSettings.removeSource(source);
-                                            mMuteSettings.saveMuteSettings();
+                                            MuteSettings.removeSource(source);
+                                            MuteSettings.saveMuteSettings();
                                         }
                                     }
                             )

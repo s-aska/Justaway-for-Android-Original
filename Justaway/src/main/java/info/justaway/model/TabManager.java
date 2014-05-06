@@ -16,44 +16,55 @@ public class TabManager {
     public static final long INTERACTIONS_TAB_ID = -2L;
     public static final long DIRECT_MESSAGES_TAB_ID = -3L;
     private static final String TABS = "tabs-";
-    private ArrayList<Tab> mTabs = new ArrayList<Tab>();
+    private static ArrayList<Tab> sTabs = new ArrayList<Tab>();
 
-    public ArrayList<Tab> loadTabs() {
-        mTabs.clear();
-        JustawayApplication application = JustawayApplication.getApplication();
-        SharedPreferences preferences = application.getSharedPreferences("settings", Context.MODE_PRIVATE);
-        String json = preferences.getString(TABS.concat(String.valueOf(application.getUserId())).concat("/v2"), null);
+    private static SharedPreferences getSharedPreferences() {
+        return JustawayApplication.getApplication()
+                .getSharedPreferences("settings", Context.MODE_PRIVATE);
+    }
+
+    public static ArrayList<Tab> loadTabs() {
+        sTabs.clear();
+        String json = getSharedPreferences().getString(TABS.concat(
+                String.valueOf(AccessTokenManager.getUserId())).concat("/v2"), null);
         if (json != null) {
             Gson gson = new Gson();
             TabData tabData = gson.fromJson(json, TabData.class);
-            mTabs = tabData.tabs;
+            sTabs = tabData.tabs;
         }
-        if (mTabs.size() == 0) {
-            mTabs = generalTabs();
+        if (sTabs.size() == 0) {
+            sTabs = generalTabs();
         }
-        return mTabs;
+        return sTabs;
     }
 
-    public void saveTabs(ArrayList<Tab> tabs) {
-        JustawayApplication application = JustawayApplication.getApplication();
+    public static void saveTabs(ArrayList<Tab> tabs) {
         TabData tabData = new TabData();
         tabData.tabs = tabs;
         Gson gson = new Gson();
         String json = gson.toJson(tabData);
-        SharedPreferences preferences = application.getSharedPreferences("settings", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.remove(TABS.concat(String.valueOf(application.getUserId())));
-        editor.putString(TABS.concat(String.valueOf(application.getUserId())).concat("/v2"), json);
+        SharedPreferences.Editor editor = getSharedPreferences().edit();
+        editor.remove(TABS.concat(String.valueOf(AccessTokenManager.getUserId())));
+        editor.putString(TABS.concat(String.valueOf(AccessTokenManager.getUserId())).concat("/v2"), json);
         editor.commit();
-        mTabs = tabs;
+        sTabs = tabs;
     }
 
-    public ArrayList<Tab> generalTabs() {
+    public static ArrayList<Tab> generalTabs() {
         ArrayList<Tab> tabs = new ArrayList<Tab>();
         tabs.add(new Tab(TIMELINE_TAB_ID));
         tabs.add(new Tab(INTERACTIONS_TAB_ID));
         tabs.add(new Tab(DIRECT_MESSAGES_TAB_ID));
         return tabs;
+    }
+
+    public static boolean hasTabId(Long findTab) {
+        for (Tab tab : sTabs) {
+            if (tab.id.equals(findTab)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static class TabData {
@@ -91,14 +102,5 @@ public class TabManager {
                 return R.string.fontello_list;
             }
         }
-    }
-
-    public boolean hasTabId(Long findTab) {
-        for (Tab tab : mTabs) {
-            if (tab.id.equals(findTab)) {
-                return true;
-            }
-        }
-        return false;
     }
 }

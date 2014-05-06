@@ -6,10 +6,11 @@ import android.view.View;
 import java.util.Collections;
 import java.util.Comparator;
 
-import info.justaway.JustawayApplication;
 import info.justaway.event.model.StreamingDestroyMessageEvent;
 import info.justaway.model.Row;
 import info.justaway.model.TabManager;
+import info.justaway.model.TwitterManager;
+import info.justaway.settings.BasicSettings;
 import twitter4j.DirectMessage;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
@@ -43,14 +44,13 @@ public class DirectMessagesFragment extends BaseFragment {
         @Override
         protected ResponseList<DirectMessage> doInBackground(Void... params) {
             try {
-                JustawayApplication application = JustawayApplication.getApplication();
-                Twitter twitter = application.getTwitter();
+                Twitter twitter = TwitterManager.getTwitter();
 
                 // 受信したDM
                 Paging directMessagesPaging = new Paging();
                 if (mDirectMessagesMaxId > 0) {
                     directMessagesPaging.setMaxId(mDirectMessagesMaxId - 1);
-                    directMessagesPaging.setCount(application.getBasicSettings().getPageCount() / 2);
+                    directMessagesPaging.setCount(BasicSettings.getPageCount() / 2);
                 } else {
                     directMessagesPaging.setCount(10);
                 }
@@ -65,7 +65,7 @@ public class DirectMessagesFragment extends BaseFragment {
                 Paging sentDirectMessagesPaging = new Paging();
                 if (mSentDirectMessagesMaxId > 0) {
                     sentDirectMessagesPaging.setMaxId(mSentDirectMessagesMaxId - 1);
-                    sentDirectMessagesPaging.setCount(application.getBasicSettings().getPageCount() / 2);
+                    sentDirectMessagesPaging.setCount(BasicSettings.getPageCount() / 2);
                 } else {
                     sentDirectMessagesPaging.setCount(10);
                 }

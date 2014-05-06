@@ -14,6 +14,8 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import info.justaway.JustawayApplication;
 import info.justaway.R;
+import info.justaway.model.AccessTokenManager;
+import info.justaway.model.UserIconManager;
 import twitter4j.auth.AccessToken;
 
 public class AccessTokenAdapter extends ArrayAdapter<AccessToken> {
@@ -40,8 +42,7 @@ public class AccessTokenAdapter extends ArrayAdapter<AccessToken> {
         mHighlightColor = highlightColor;
         mDefaultColor = defaultColor;
 
-        ArrayList<AccessToken> accessTokens =
-                JustawayApplication.getApplication().getAccessTokenManager().getAccessTokens();
+        ArrayList<AccessToken> accessTokens = AccessTokenManager.getAccessTokens();
         if (accessTokens != null) {
             for (AccessToken accessToken : accessTokens) {
                 add(accessToken);
@@ -81,14 +82,14 @@ public class AccessTokenAdapter extends ArrayAdapter<AccessToken> {
 
         AccessToken accessToken = mAccessTokenList.get(position);
 
-        JustawayApplication.getApplication().getUserIconManager().displayUserIcon(accessToken.getUserId(), holder.mIcon);
+        UserIconManager.displayUserIcon(accessToken.getUserId(), holder.mIcon);
 
         holder.mScreenName.setText(accessToken.getScreenName());
 
         /**
          * 使用中のアカウントはハイライト表示
          */
-        if (JustawayApplication.getApplication().getUserId() == accessToken.getUserId()) {
+        if (AccessTokenManager.getUserId() == accessToken.getUserId()) {
             holder.mScreenName.setTextColor(mHighlightColor);
         } else {
             holder.mScreenName.setTextColor(mDefaultColor);

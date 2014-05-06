@@ -17,41 +17,42 @@ import twitter4j.UserMentionEntity;
 
 public class MuteSettings {
 
-    private MuteSettingsData mMuteSettingsData;
+    private static MuteSettingsData sMuteSettingsData;
     private static final String PREF_NAME = "mute_settings";
     private static final String PREF_KEY = "data";
-    private JustawayApplication mApplication;
 
-    public MuteSettings() {
-        mApplication = JustawayApplication.getApplication();
+    public static void init() {
         loadMuteSettings();
     }
 
+    private static SharedPreferences getSharedPreferences() {
+        return JustawayApplication.getApplication()
+                .getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+    }
+
     @SuppressLint("UseSparseArrays")
-    public void loadMuteSettings() {
-        SharedPreferences preferences = mApplication.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        String json = preferences.getString(PREF_KEY, null);
+    public static void loadMuteSettings() {
+        String json = getSharedPreferences().getString(PREF_KEY, null);
         Gson gson = new Gson();
         if (json != null) {
-            mMuteSettingsData = gson.fromJson(json, MuteSettingsData.class);
+            sMuteSettingsData = gson.fromJson(json, MuteSettingsData.class);
         } else {
-            mMuteSettingsData = new MuteSettingsData();
-            mMuteSettingsData.sourceMap = new HashMap<String, Boolean>();
-            mMuteSettingsData.userMap = new HashMap<Long, String>();
-            mMuteSettingsData.words = new ArrayList<String>();
+            sMuteSettingsData = new MuteSettingsData();
+            sMuteSettingsData.sourceMap = new HashMap<String, Boolean>();
+            sMuteSettingsData.userMap = new HashMap<Long, String>();
+            sMuteSettingsData.words = new ArrayList<String>();
         }
     }
 
-    public void saveMuteSettings() {
-        SharedPreferences preferences = mApplication.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+    public static void saveMuteSettings() {
         Gson gson = new Gson();
-        String exportJson = gson.toJson(mMuteSettingsData);
-        SharedPreferences.Editor editor = preferences.edit();
+        String exportJson = gson.toJson(sMuteSettingsData);
+        SharedPreferences.Editor editor = getSharedPreferences().edit();
         editor.putString(PREF_KEY, exportJson);
         editor.commit();
     }
 
-    public boolean isMute(Row row) {
+    public static boolean isMute(Row row) {
         if (row.isStatus()) {
             return isMute(row.getStatus());
         } else {
@@ -59,26 +60,26 @@ public class MuteSettings {
         }
     }
 
-    public Boolean isMute(Status status) {
-        if (mMuteSettingsData.userMap.get(status.getUser().getId()) != null) {
+    public static Boolean isMute(Status status) {
+        if (sMuteSettingsData.userMap.get(status.getUser().getId()) != null) {
             return true;
 
         }
         UserMentionEntity[] mentions = status.getUserMentionEntities();
         for (UserMentionEntity mention : mentions) {
-            if (mMuteSettingsData.userMap.get(mention.getId()) != null) {
+            if (sMuteSettingsData.userMap.get(mention.getId()) != null) {
                 return true;
 
             }
         }
         Status retweetedStatus = status.getRetweetedStatus();
         if (retweetedStatus != null) {
-            if (mMuteSettingsData.userMap.get(retweetedStatus.getUser().getId()) != null) {
+            if (sMuteSettingsData.userMap.get(retweetedStatus.getUser().getId()) != null) {
                 return true;
             }
         }
         Status source = retweetedStatus != null ? retweetedStatus : status;
-        if (mMuteSettingsData.sourceMap.get(TwitterUtil.getClientName(source.getSource())) != null) {
+        if (sMuteSettingsData.sourceMap.get(TwitterUtil.getClientName(source.getSource())) != null) {
             return true;
         }
         String text = source.getText();
@@ -90,49 +91,49 @@ public class MuteSettings {
         return false;
     }
 
-    public void addSource(String source) {
-        mMuteSettingsData.sourceMap.put(source, true);
+    public static void addSource(String source) {
+        sMuteSettingsData.sourceMap.put(source, true);
     }
 
-    public void removeSource(String source) {
-        mMuteSettingsData.sourceMap.remove(source);
+    public static void removeSource(String source) {
+        sMuteSettingsData.sourceMap.remove(source);
     }
 
-    public void addUser(Long userId, String screenName) {
-        mMuteSettingsData.userMap.put(userId, screenName);
+    public static void addUser(Long userId, String screenName) {
+        sMuteSettingsData.userMap.put(userId, screenName);
     }
 
-    public void removeUser(Long userId) {
-        mMuteSettingsData.userMap.remove(userId);
+    public static void removeUser(Long userId) {
+        sMuteSettingsData.userMap.remove(userId);
     }
 
-    public void addWord(String word) {
-        for (String muteWord : mMuteSettingsData.words) {
+    public static void addWord(String word) {
+        for (String muteWord : sMuteSettingsData.words) {
             if (muteWord.equals(word)) {
                 return;
             }
         }
-        mMuteSettingsData.words.add(word);
+        sMuteSettingsData.words.add(word);
     }
 
-    public void removeWord(String word) {
-        mMuteSettingsData.words.remove(word);
+    public static void removeWord(String word) {
+        sMuteSettingsData.words.remove(word);
     }
 
-    public ArrayList<String> getSources() {
+    public static ArrayList<String> getSources() {
         ArrayList<String> sources = new ArrayList<String>();
-        for (String key : mMuteSettingsData.sourceMap.keySet()) {
+        for (String key : sMuteSettingsData.sourceMap.keySet()) {
             sources.add(key);
         }
         return sources;
     }
 
-    public HashMap<Long, String> getUserMap() {
-        return mMuteSettingsData.userMap;
+    public static HashMap<Long, String> getUserMap() {
+        return sMuteSettingsData.userMap;
     }
 
-    public ArrayList<String> getWords() {
-        return mMuteSettingsData.words;
+    public static ArrayList<String> getWords() {
+        return sMuteSettingsData.words;
     }
 
     public static class MuteSettingsData {

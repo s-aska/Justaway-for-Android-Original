@@ -33,7 +33,10 @@ import info.justaway.event.action.StatusActionEvent;
 import info.justaway.listener.StatusClickListener;
 import info.justaway.listener.StatusLongClickListener;
 import info.justaway.model.Row;
+import info.justaway.model.TwitterManager;
 import info.justaway.util.KeyboardUtil;
+import info.justaway.util.MessageUtil;
+import info.justaway.util.ThemeUtil;
 import twitter4j.Query;
 import twitter4j.QueryResult;
 import twitter4j.ResponseList;
@@ -53,7 +56,7 @@ public class SearchActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        JustawayApplication.getApplication().setTheme(this);
+        ThemeUtil.setTheme(this);
         setContentView(R.layout.activity_search);
 
         ActionBar actionBar = getActionBar();
@@ -233,7 +236,7 @@ public class SearchActivity extends FragmentActivity {
         protected QueryResult doInBackground(Query... params) {
             Query query = params[0];
             try {
-                return JustawayApplication.getApplication().getTwitter().search(query);
+                return TwitterManager.getTwitter().search(query);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -243,7 +246,7 @@ public class SearchActivity extends FragmentActivity {
         @Override
         protected void onPostExecute(QueryResult queryResult) {
             if (queryResult == null) {
-                JustawayApplication.showToast(R.string.toast_load_data_failure);
+                MessageUtil.showToast(R.string.toast_load_data_failure);
                 return;
             }
             if (queryResult.hasNext()) {
@@ -275,7 +278,7 @@ public class SearchActivity extends FragmentActivity {
         protected SavedSearch doInBackground(String... params) {
             String query = params[0];
             try {
-                return JustawayApplication.getApplication().getTwitter().createSavedSearch(query);
+                return TwitterManager.getTwitter().createSavedSearch(query);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -287,7 +290,7 @@ public class SearchActivity extends FragmentActivity {
             if (savedSearch == null) {
                 return;
             }
-            JustawayApplication.showToast(getString(R.string.toast_save_success));
+            MessageUtil.showToast(getString(R.string.toast_save_success));
         }
     }
 
@@ -296,7 +299,7 @@ public class SearchActivity extends FragmentActivity {
         protected SavedSearch doInBackground(Integer... params) {
             Integer id = params[0];
             try {
-                return JustawayApplication.getApplication().getTwitter().destroySavedSearch(id);
+                return TwitterManager.getTwitter().destroySavedSearch(id);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -308,7 +311,7 @@ public class SearchActivity extends FragmentActivity {
             if (savedSearch == null) {
                 return;
             }
-            JustawayApplication.showToast(getString(R.string.toast_destroy_success));
+            MessageUtil.showToast(getString(R.string.toast_destroy_success));
         }
     }
 
@@ -316,7 +319,7 @@ public class SearchActivity extends FragmentActivity {
         @Override
         protected ResponseList<SavedSearch> doInBackground(Void... params) {
             try {
-                return JustawayApplication.getApplication().getTwitter().getSavedSearches();
+                return TwitterManager.getTwitter().getSavedSearches();
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;

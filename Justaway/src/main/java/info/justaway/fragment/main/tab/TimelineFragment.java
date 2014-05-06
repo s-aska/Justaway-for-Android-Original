@@ -3,9 +3,11 @@ package info.justaway.fragment.main.tab;
 import android.os.AsyncTask;
 import android.view.View;
 
-import info.justaway.JustawayApplication;
+import info.justaway.model.AccessTokenManager;
 import info.justaway.model.Row;
 import info.justaway.model.TabManager;
+import info.justaway.model.TwitterManager;
+import info.justaway.settings.BasicSettings;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
 import twitter4j.Status;
@@ -30,7 +32,7 @@ public class TimelineFragment extends BaseFragment {
     @Override
     protected boolean isSkip(Row row) {
         Status retweet = row.getStatus().getRetweetedStatus();
-        return retweet != null && retweet.getUser().getId() == JustawayApplication.getApplication().getUserId();
+        return retweet != null && retweet.getUser().getId() == AccessTokenManager.getUserId();
     }
 
     @Override
@@ -42,13 +44,12 @@ public class TimelineFragment extends BaseFragment {
         @Override
         protected ResponseList<twitter4j.Status> doInBackground(Void... params) {
             try {
-                JustawayApplication application = JustawayApplication.getApplication();
                 Paging paging = new Paging();
                 if (mMaxId > 0) {
                     paging.setMaxId(mMaxId - 1);
-                    paging.setCount(application.getBasicSettings().getPageCount());
+                    paging.setCount(BasicSettings.getPageCount());
                 }
-                return application.getTwitter().getHomeTimeline(paging);
+                return TwitterManager.getTwitter().getHomeTimeline(paging);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;

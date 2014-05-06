@@ -17,6 +17,7 @@ import butterknife.InjectView;
 import info.justaway.JustawayApplication;
 import info.justaway.ProfileActivity;
 import info.justaway.R;
+import info.justaway.util.ImageUtil;
 import twitter4j.URLEntity;
 import twitter4j.User;
 
@@ -85,7 +86,7 @@ public class UserAdapter extends ArrayAdapter<User> {
         final User user = mUsers.get(position);
 
         String iconUrl = user.getBiggerProfileImageURL();
-        JustawayApplication.getApplication().displayRoundedImage(iconUrl, holder.mIcon);
+        ImageUtil.displayRoundedImage(iconUrl, holder.mIcon);
 
         holder.mDisplayName.setText(user.getName());
         holder.mScreenName.setText("@" + user.getScreenName());

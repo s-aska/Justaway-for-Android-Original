@@ -12,8 +12,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import info.justaway.JustawayApplication;
 import info.justaway.R;
+import info.justaway.model.TwitterManager;
 import twitter4j.ResponseList;
 import twitter4j.SavedSearch;
 
@@ -67,7 +67,7 @@ public class UserSearchAdapter extends ArrayAdapter<String> implements Filterabl
 
     @Override
     public Filter getFilter() {
-        Filter filter = new Filter() {
+        return new Filter() {
             @Override
             protected FilterResults performFiltering(CharSequence constraint) {
                 FilterResults filterResults = new FilterResults();
@@ -105,14 +105,13 @@ public class UserSearchAdapter extends ArrayAdapter<String> implements Filterabl
                 }
             }
         };
-        return filter;
     }
 
     public class SavedSearchesTask extends AsyncTask<Void, Void, ResponseList<SavedSearch>> {
         @Override
         protected ResponseList<SavedSearch> doInBackground(Void... params) {
             try {
-                return JustawayApplication.getApplication().getTwitter().getSavedSearches();
+                return TwitterManager.getTwitter().getSavedSearches();
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;

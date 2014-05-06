@@ -3,10 +3,12 @@ package info.justaway.fragment.main.tab;
 import android.os.AsyncTask;
 import android.view.View;
 
-import info.justaway.JustawayApplication;
 import info.justaway.event.model.StreamingCreateFavoriteEvent;
+import info.justaway.model.AccessTokenManager;
 import info.justaway.model.Row;
 import info.justaway.model.TabManager;
+import info.justaway.model.TwitterManager;
+import info.justaway.settings.BasicSettings;
 import info.justaway.util.TwitterUtil;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
@@ -43,7 +45,7 @@ public class InteractionsFragment extends BaseFragment {
             /**
              * 自分のツイートがRTされた時
              */
-            if (retweet != null && retweet.getUser().getId() == JustawayApplication.getApplication().getUserId()) {
+            if (retweet != null && retweet.getUser().getId() == AccessTokenManager.getUserId()) {
                 return false;
             }
 
@@ -66,13 +68,12 @@ public class InteractionsFragment extends BaseFragment {
         @Override
         protected ResponseList<twitter4j.Status> doInBackground(Void... params) {
             try {
-                JustawayApplication application = JustawayApplication.getApplication();
                 Paging paging = new Paging();
                 if (mMaxId > 0) {
                     paging.setMaxId(mMaxId - 1);
-                    paging.setCount(application.getBasicSettings().getPageCount());
+                    paging.setCount(BasicSettings.getPageCount());
                 }
-                return application.getTwitter().getMentionsTimeline(paging);
+                return TwitterManager.getTwitter().getMentionsTimeline(paging);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;

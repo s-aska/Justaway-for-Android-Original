@@ -5,12 +5,12 @@ import android.content.res.Resources;
 import android.util.TypedValue;
 import android.widget.TextView;
 
-import info.justaway.JustawayApplication;
 import info.justaway.R;
+import info.justaway.settings.BasicSettings;
 
 public class ThemeUtil {
     public static void setTheme(Activity activity) {
-        if (JustawayApplication.getApplication().getBasicSettings().getThemeName().equals("black")) {
+        if (BasicSettings.getThemeName().equals("black")) {
             activity.setTheme(R.style.BlackTheme);
         } else {
             activity.setTheme(R.style.WhiteTheme);

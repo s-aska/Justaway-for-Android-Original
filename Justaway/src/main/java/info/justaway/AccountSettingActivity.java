@@ -20,8 +20,6 @@ import twitter4j.auth.AccessToken;
 
 public class AccountSettingActivity extends FragmentActivity implements RemoveAccountListener {
 
-    private JustawayApplication mApplication;
-    private AccessTokenManager mAccessTokenManager;
     private AccessTokenAdapter mAccountAdapter;
 
     @Override
@@ -36,10 +34,8 @@ public class AccountSettingActivity extends FragmentActivity implements RemoveAc
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        mApplication = JustawayApplication.getApplication();
-        mAccessTokenManager = mApplication.getAccessTokenManager();
         mAccountAdapter = new AccessTokenAdapter(this, R.layout.row_account);
-        for (AccessToken accessToken : mAccessTokenManager.getAccessTokens()) {
+        for (AccessToken accessToken : AccessTokenManager.getAccessTokens()) {
             mAccountAdapter.add(accessToken);
         }
 
@@ -57,7 +53,7 @@ public class AccountSettingActivity extends FragmentActivity implements RemoveAc
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 AccessToken accessToken = mAccountAdapter.getItem(i);
-                if (mApplication.getUserId() != accessToken.getUserId()) {
+                if (AccessTokenManager.getUserId() != accessToken.getUserId()) {
                     Intent data = new Intent();
                     data.putExtra("accessToken", accessToken);
                     setResult(RESULT_OK, data);
@@ -91,6 +87,6 @@ public class AccountSettingActivity extends FragmentActivity implements RemoveAc
     @Override
     public void removeAccount(AccessToken accessToken) {
         mAccountAdapter.remove(accessToken);
-        mAccessTokenManager.removeAccessToken(accessToken);
+        AccessTokenManager.removeAccessToken(accessToken);
     }
 }

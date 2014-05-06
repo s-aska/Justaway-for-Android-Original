@@ -17,9 +17,11 @@ import de.greenrobot.event.EventBus;
 import info.justaway.adapter.SubscribeUserListAdapter;
 import info.justaway.event.AlertDialogEvent;
 import info.justaway.event.model.DestroyUserListEvent;
+import info.justaway.model.AccessTokenManager;
 import info.justaway.model.TabManager;
 import info.justaway.model.UserListWithRegistered;
 import info.justaway.task.UserListsLoader;
+import info.justaway.util.ThemeUtil;
 import twitter4j.ResponseList;
 import twitter4j.UserList;
 
@@ -27,15 +29,12 @@ public class ChooseUserListsActivity extends FragmentActivity implements
         LoaderManager.LoaderCallbacks<ResponseList<UserList>> {
 
     private SubscribeUserListAdapter mAdapter;
-    private JustawayApplication mApplication;
-    private TabManager mTabManager;
 
     @SuppressLint("UseSparseArrays")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mApplication = JustawayApplication.getApplication();
-        mApplication.setTheme(this);
+        ThemeUtil.setTheme(this);
         setContentView(R.layout.activity_choose_user_lists);
 
         ActionBar actionBar = getActionBar();
@@ -44,7 +43,6 @@ public class ChooseUserListsActivity extends FragmentActivity implements
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        mTabManager = mApplication.getTabManager();
         ListView listView = (ListView) findViewById(R.id.list);
         mAdapter = new SubscribeUserListAdapter(this, R.layout.row_subscribe_user_list);
         listView.setAdapter(mAdapter);
@@ -73,7 +71,7 @@ public class ChooseUserListsActivity extends FragmentActivity implements
                 }
                 HashMap<Long, Boolean> tabMap = new HashMap<Long, Boolean>();
                 ArrayList<TabManager.Tab> tabs = new ArrayList<TabManager.Tab>();
-                for (TabManager.Tab tab : mTabManager.loadTabs()) {
+                for (TabManager.Tab tab : TabManager.loadTabs()) {
                     if (tabMap.get(tab.id) != null) {
                         continue;
                     }
@@ -87,7 +85,7 @@ public class ChooseUserListsActivity extends FragmentActivity implements
                         continue;
                     }
                     TabManager.Tab tab = new TabManager.Tab(userList.getId());
-                    if (userList.getUser().getId() == mApplication.getUserId()) {
+                    if (userList.getUser().getId() == AccessTokenManager.getUserId()) {
                         tab.name = userList.getName();
                     } else {
                         tab.name = userList.getFullName();
@@ -95,7 +93,7 @@ public class ChooseUserListsActivity extends FragmentActivity implements
                     tabs.add(tab);
                     tabMap.put(tab.id, true);
                 }
-                mTabManager.saveTabs(tabs);
+                TabManager.saveTabs(tabs);
                 setResult(RESULT_OK);
                 finish();
             }
@@ -150,7 +148,7 @@ public class ChooseUserListsActivity extends FragmentActivity implements
         if (userLists != null) {
             for (UserList userList : userLists) {
                 UserListWithRegistered userListWithRegistered = new UserListWithRegistered();
-                userListWithRegistered.setRegistered(mTabManager.hasTabId(userList.getId()));
+                userListWithRegistered.setRegistered(TabManager.hasTabId(userList.getId()));
                 userListWithRegistered.setUserList(userList);
                 mAdapter.add(userListWithRegistered);
             }

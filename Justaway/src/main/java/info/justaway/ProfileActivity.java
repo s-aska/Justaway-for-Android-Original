@@ -33,7 +33,10 @@ import info.justaway.fragment.profile.SummaryFragment;
 import info.justaway.fragment.profile.UserListMembershipsFragment;
 import info.justaway.fragment.profile.UserTimelineFragment;
 import info.justaway.model.Profile;
+import info.justaway.model.TwitterManager;
 import info.justaway.task.ShowUserLoader;
+import info.justaway.util.ImageUtil;
+import info.justaway.util.MessageUtil;
 import info.justaway.util.ThemeUtil;
 import twitter4j.Relationship;
 import twitter4j.User;
@@ -58,7 +61,7 @@ public class ProfileActivity extends FragmentActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        JustawayApplication.getApplication().setTheme(this);
+        ThemeUtil.setTheme(this);
         setContentView(R.layout.activity_profile);
         ButterKnife.inject(this);
 
@@ -84,7 +87,7 @@ public class ProfileActivity extends FragmentActivity implements
                 args.putLong("userId", intent.getLongExtra("userId", 0));
             }
         }
-        JustawayApplication.showProgressDialog(this, getString(R.string.progress_loading));
+        MessageUtil.showProgressDialog(this, getString(R.string.progress_loading));
         getSupportLoaderManager().initLoader(0, args, this);
     }
 
@@ -161,7 +164,7 @@ public class ProfileActivity extends FragmentActivity implements
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        JustawayApplication.showProgressDialog(ProfileActivity.this, getString(R.string.progress_process));
+                                        MessageUtil.showProgressDialog(ProfileActivity.this, getString(R.string.progress_process));
                                         new ReportSpamTask().execute(mUser.getId());
                                     }
                                 }
@@ -185,7 +188,7 @@ public class ProfileActivity extends FragmentActivity implements
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        JustawayApplication.showProgressDialog(ProfileActivity.this, getString(R.string.progress_process));
+                                        MessageUtil.showProgressDialog(ProfileActivity.this, getString(R.string.progress_process));
                                         new CreateBlockTask().execute(mUser.getId());
                                     }
                                 }
@@ -217,14 +220,14 @@ public class ProfileActivity extends FragmentActivity implements
 
     @Override
     public void onLoadFinished(Loader<Profile> arg0, Profile profile) {
-        JustawayApplication.dismissProgressDialog();
+        MessageUtil.dismissProgressDialog();
         if (profile == null) {
-            JustawayApplication.showToast(R.string.toast_load_data_failure);
+            MessageUtil.showToast(R.string.toast_load_data_failure);
             return;
         }
         mUser = profile.getUser();
         if (mUser == null) {
-            JustawayApplication.showToast(R.string.toast_load_data_failure);
+            MessageUtil.showToast(R.string.toast_load_data_failure);
             return;
         }
         mFavouritesCount.setText(getString(R.string.label_favourites, mUser.getFavouritesCount()));
@@ -235,7 +238,7 @@ public class ProfileActivity extends FragmentActivity implements
 
         String bannerUrl = mUser.getProfileBannerMobileRetinaURL();
         if (bannerUrl != null) {
-            JustawayApplication.getApplication().displayImage(bannerUrl, mBanner);
+            ImageUtil.displayImage(bannerUrl, mBanner);
         }
 
         Relationship relationship = profile.getRelationship();
@@ -345,7 +348,7 @@ public class ProfileActivity extends FragmentActivity implements
         protected Boolean doInBackground(Long... params) {
             Long userId = params[0];
             try {
-                JustawayApplication.getApplication().getTwitter().reportSpam(userId);
+                TwitterManager.getTwitter().reportSpam(userId);
                 return true;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -355,12 +358,12 @@ public class ProfileActivity extends FragmentActivity implements
 
         @Override
         protected void onPostExecute(Boolean success) {
-            JustawayApplication.dismissProgressDialog();
+            MessageUtil.dismissProgressDialog();
             if (success) {
-                JustawayApplication.showToast(R.string.toast_report_spam_success);
+                MessageUtil.showToast(R.string.toast_report_spam_success);
                 restart();
             } else {
-                JustawayApplication.showToast(R.string.toast_report_spam_failure);
+                MessageUtil.showToast(R.string.toast_report_spam_failure);
             }
 
         }
@@ -371,7 +374,7 @@ public class ProfileActivity extends FragmentActivity implements
         protected Boolean doInBackground(Long... params) {
             Long userId = params[0];
             try {
-                JustawayApplication.getApplication().getTwitter().createBlock(userId);
+                TwitterManager.getTwitter().createBlock(userId);
                 return true;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -381,12 +384,12 @@ public class ProfileActivity extends FragmentActivity implements
 
         @Override
         protected void onPostExecute(Boolean success) {
-            JustawayApplication.dismissProgressDialog();
+            MessageUtil.dismissProgressDialog();
             if (success) {
-                JustawayApplication.showToast(R.string.toast_create_block_success);
+                MessageUtil.showToast(R.string.toast_create_block_success);
                 restart();
             } else {
-                JustawayApplication.showToast(R.string.toast_create_block_failure);
+                MessageUtil.showToast(R.string.toast_create_block_failure);
             }
 
         }

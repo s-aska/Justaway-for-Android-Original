@@ -35,9 +35,7 @@ public class UserFragment extends Fragment {
         ListView listView = (ListView) v.findViewById(R.id.list);
         listView.setAdapter(adapter);
 
-        JustawayApplication application = JustawayApplication.getApplication();
-        mMuteSettings = application.getMuteSettings();
-        HashMap<Long, String> userMap = mMuteSettings.getUserMap();
+        HashMap<Long, String> userMap = MuteSettings.getUserMap();
         for (Long userId : userMap.keySet()) {
             User user = new User();
             user.userId = userId;
@@ -106,8 +104,8 @@ public class UserFragment extends Fragment {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             remove(user);
-                                            mMuteSettings.removeUser(user.userId);
-                                            mMuteSettings.saveMuteSettings();
+                                            MuteSettings.removeUser(user.userId);
+                                            MuteSettings.saveMuteSettings();
                                         }
                                     }
                             )

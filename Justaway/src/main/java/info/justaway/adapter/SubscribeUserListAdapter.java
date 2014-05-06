@@ -20,6 +20,7 @@ import de.greenrobot.event.EventBus;
 import info.justaway.JustawayApplication;
 import info.justaway.R;
 import info.justaway.event.AlertDialogEvent;
+import info.justaway.model.AccessTokenManager;
 import info.justaway.model.UserListWithRegistered;
 import info.justaway.task.DestroyUserListSubscriptionTask;
 import info.justaway.task.DestroyUserListTask;
@@ -29,14 +30,12 @@ public class SubscribeUserListAdapter extends ArrayAdapter<UserListWithRegistere
 
     private ArrayList<UserListWithRegistered> mUserLists = new ArrayList<UserListWithRegistered>();
     private LayoutInflater mInflater;
-    private JustawayApplication mApplication;
     private int mLayout;
 
     public SubscribeUserListAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId);
-        this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        this.mLayout = textViewResourceId;
-        this.mApplication = JustawayApplication.getApplication();
+        mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mLayout = textViewResourceId;
     }
 
     @Override
@@ -82,7 +81,7 @@ public class SubscribeUserListAdapter extends ArrayAdapter<UserListWithRegistere
             @Override
             public void onClick(View view) {
 
-                if (mApplication.getUserId() == userList.getUser().getId()) {
+                if (AccessTokenManager.getUserId() == userList.getUser().getId()) {
                     // 自分のリストの場合はリスト削除
                     DialogFragment dialog = new DestroyUserListDialogFragment();
                     Bundle args = new Bundle(1);
@@ -102,7 +101,7 @@ public class SubscribeUserListAdapter extends ArrayAdapter<UserListWithRegistere
 
         CheckBox checkbox = (CheckBox) view.findViewById(R.id.checkbox);
         if (checkbox != null) {
-            if (mApplication.getUserId() == userList.getUser().getId()) {
+            if (AccessTokenManager.getUserId() == userList.getUser().getId()) {
                 checkbox.setText(userList.getName());
             } else {
                 checkbox.setText(userList.getFullName());

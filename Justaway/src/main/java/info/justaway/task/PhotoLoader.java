@@ -2,10 +2,9 @@ package info.justaway.task;
 
 import android.content.Context;
 
-import info.justaway.JustawayApplication;
+import info.justaway.model.TwitterManager;
 import twitter4j.MediaEntity;
 import twitter4j.Status;
-import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
 public class PhotoLoader extends AbstractAsyncTaskLoader<String> {
@@ -22,8 +21,7 @@ public class PhotoLoader extends AbstractAsyncTaskLoader<String> {
     @Override
     public String loadInBackground() {
         try {
-            Twitter twitter = JustawayApplication.getApplication().getTwitter();
-            Status status = twitter.showStatus(mStatusId);
+            Status status = TwitterManager.getTwitter().showStatus(mStatusId);
             MediaEntity[] mediaEntities = status.getMediaEntities();
             if (mediaEntities.length < mIndex) {
                 return null;

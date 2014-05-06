@@ -22,6 +22,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import info.justaway.model.TabManager;
+import info.justaway.util.ThemeUtil;
 
 public class TabSettingsActivity extends FragmentActivity {
 
@@ -35,12 +36,11 @@ public class TabSettingsActivity extends FragmentActivity {
     private boolean mSortable = false;
     private int mToPosition;
     private boolean mRemoveMode = false;
-    private TabManager mTabManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        JustawayApplication.getApplication().setTheme(this);
+        ThemeUtil.setTheme(this);
         setContentView(R.layout.activity_tab_settings);
 
         ActionBar actionBar = getActionBar();
@@ -49,11 +49,10 @@ public class TabSettingsActivity extends FragmentActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        mTabManager = JustawayApplication.getApplication().getTabManager();
         mListView = (ListView) findViewById(R.id.list);
 
         mAdapter = new TabAdapter(this, R.layout.row_tag);
-        for (TabManager.Tab tab : mTabManager.loadTabs()) {
+        for (TabManager.Tab tab : TabManager.loadTabs()) {
             mAdapter.add(tab);
         }
 
@@ -112,7 +111,7 @@ public class TabSettingsActivity extends FragmentActivity {
         findViewById(R.id.button_save).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mTabManager.saveTabs(mAdapter.getTabs());
+                TabManager.saveTabs(mAdapter.getTabs());
                 setResult(RESULT_OK);
                 finish();
             }
@@ -166,7 +165,7 @@ public class TabSettingsActivity extends FragmentActivity {
                 mAdapter.insert(new TabManager.Tab(TabManager.DIRECT_MESSAGES_TAB_ID), 0);
                 break;
             case R.id.menu_user_list_tab:
-                mTabManager.saveTabs(mAdapter.getTabs());
+                TabManager.saveTabs(mAdapter.getTabs());
                 Intent intent = new Intent(this, ChooseUserListsActivity.class);
                 setResult(RESULT_OK);
                 startActivityForResult(intent, REQUEST_CHOOSE_USER_LIST);
@@ -182,7 +181,7 @@ public class TabSettingsActivity extends FragmentActivity {
             case REQUEST_CHOOSE_USER_LIST:
                 if (resultCode == RESULT_OK) {
                     mAdapter.clear();
-                    for (TabManager.Tab tab : mTabManager.loadTabs()) {
+                    for (TabManager.Tab tab : TabManager.loadTabs()) {
                         mAdapter.add(tab);
                     }
                     mAdapter.notifyDataSetChanged();

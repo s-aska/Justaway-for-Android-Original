@@ -5,8 +5,9 @@ import android.os.Bundle;
 import android.support.v4.util.LongSparseArray;
 import android.view.View;
 
-import info.justaway.JustawayApplication;
 import info.justaway.model.Row;
+import info.justaway.model.TwitterManager;
+import info.justaway.settings.BasicSettings;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
 import twitter4j.Status;
@@ -48,12 +49,11 @@ public class UserListFragment extends BaseFragment {
         @Override
         protected ResponseList<twitter4j.Status> doInBackground(Void... params) {
             try {
-                JustawayApplication application = JustawayApplication.getApplication();
-                Twitter twitter = application.getTwitter();
+                Twitter twitter = TwitterManager.getTwitter();
                 Paging paging = new Paging();
                 if (mMaxId > 0) {
                     paging.setMaxId(mMaxId - 1);
-                    paging.setCount(application.getBasicSettings().getPageCount());
+                    paging.setCount(BasicSettings.getPageCount());
                 } else {
                     ResponseList<User> members = twitter.getUserListMembers(mUserListId, 0);
                     for (User user : members) {

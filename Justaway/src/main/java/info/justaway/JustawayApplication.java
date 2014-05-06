@@ -1,25 +1,15 @@
 package info.justaway;
 
-import android.app.Activity;
 import android.app.Application;
-import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.os.StrictMode;
-import android.widget.ImageView;
 
-import info.justaway.model.AccessTokenManager;
-import info.justaway.model.FavRetweetManager;
-import info.justaway.model.TabManager;
-import info.justaway.model.TwitterManager;
 import info.justaway.model.UserIconManager;
 import info.justaway.settings.BasicSettings;
 import info.justaway.settings.MuteSettings;
 import info.justaway.util.ImageUtil;
-import info.justaway.util.MessageUtil;
-import info.justaway.util.ThemeUtil;
 import twitter4j.ResponseList;
-import twitter4j.Twitter;
 import twitter4j.UserList;
 
 public class JustawayApplication extends Application {
@@ -27,13 +17,6 @@ public class JustawayApplication extends Application {
     private static JustawayApplication sApplication;
     private static Typeface sFontello;
     private static ResponseList<UserList> sUserLists;
-    private static AccessTokenManager sAccessTokenManager;
-    private static FavRetweetManager sFavRetweetManager;
-    private static UserIconManager sUserIconManager;
-    private static TwitterManager sTwitterManager;
-    private static MuteSettings sMuteSettings;
-    private static final BasicSettings sBasicSettings = new BasicSettings();
-    private static final TabManager sTabManager = new TabManager();
 
     @Override
     public void onCreate() {
@@ -50,11 +33,14 @@ public class JustawayApplication extends Application {
          */
         ImageUtil.init();
 
-        sAccessTokenManager = new AccessTokenManager();
-        sFavRetweetManager = new FavRetweetManager();
-        sUserIconManager = new UserIconManager();
-        sTwitterManager = new TwitterManager();
-        sMuteSettings = new MuteSettings();
+        /**
+         * 設定ファイル読み込み
+         */
+        MuteSettings.init();
+
+        BasicSettings.init();
+
+        UserIconManager.warmUpUserIconMap();
 
         sFontello = Typeface.createFromAsset(getAssets(), "fontello.ttf");
 
@@ -62,10 +48,6 @@ public class JustawayApplication extends Application {
         if (BuildConfig.DEBUG) {
             Thread.setDefaultUncaughtExceptionHandler(new MyUncaughtExceptionHandler(sApplication));
         }
-
-        sBasicSettings.resetDisplaySettings();
-
-        sUserIconManager.warmUpUserIconMap();
     }
 
     /**
@@ -105,77 +87,6 @@ public class JustawayApplication extends Application {
 
     public static Typeface getFontello() {
         return sFontello;
-    }
-
-    public FavRetweetManager getFavRetweetManager() {
-        return sFavRetweetManager;
-    }
-
-    public TwitterManager getTwitterManager() {
-        return sTwitterManager;
-    }
-
-    public MuteSettings getMuteSettings() {
-        return sMuteSettings;
-    }
-
-    public AccessTokenManager getAccessTokenManager() {
-        return sAccessTokenManager;
-    }
-
-    public TabManager getTabManager() {
-        return sTabManager;
-    }
-
-    public UserIconManager getUserIconManager() {
-        return sUserIconManager;
-    }
-
-    public BasicSettings getBasicSettings() {
-        return sBasicSettings;
-    }
-
-    /**
-     * ソース互換性維持のためのエイリアス、ここから下のソースはいずれすべて消す
-     */
-    public void displayImage(String url, ImageView view) {
-        ImageUtil.displayImage(url, view);
-    }
-
-    public void displayRoundedImage(String url, ImageView view) {
-        ImageUtil.displayRoundedImage(url, view);
-    }
-
-    public static void showToast(String text) {
-        MessageUtil.showToast(text);
-    }
-
-    public static void showToast(int id) {
-        MessageUtil.showToast(id);
-    }
-
-    public static void showProgressDialog(Context context, String message) {
-        MessageUtil.showProgressDialog(context,  message);
-    }
-
-    public static void dismissProgressDialog() {
-        MessageUtil.dismissProgressDialog();
-    }
-
-    public void setTheme(Activity activity) {
-        ThemeUtil.setTheme(activity);
-    }
-
-    public long getUserId() {
-        return sAccessTokenManager.getUserId();
-    }
-
-    public String getScreenName() {
-        return sAccessTokenManager.getScreenName();
-    }
-
-    public Twitter getTwitter() {
-        return sTwitterManager.getTwitter();
     }
 
     /**

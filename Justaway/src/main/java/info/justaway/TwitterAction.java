@@ -5,12 +5,15 @@ import android.content.Intent;
 
 import de.greenrobot.event.EventBus;
 import info.justaway.event.action.OpenEditorEvent;
+import info.justaway.model.AccessTokenManager;
+import info.justaway.model.FavRetweetManager;
 import info.justaway.task.DestroyDirectMessageTask;
 import info.justaway.task.DestroyStatusTask;
 import info.justaway.task.FavoriteTask;
 import info.justaway.task.RetweetTask;
 import info.justaway.task.UnFavoriteTask;
 import info.justaway.task.UnRetweetTask;
+import info.justaway.util.MessageUtil;
 import twitter4j.DirectMessage;
 import twitter4j.UserMentionEntity;
 
@@ -31,8 +34,7 @@ public class TwitterAction {
     }
 
     public static void doDestroyRetweet(twitter4j.Status status) {
-        JustawayApplication application = JustawayApplication.getApplication();
-        if (status.getUser().getId() == application.getUserId()) {
+        if (status.getUser().getId() == AccessTokenManager.getUserId()) {
             // 自分がRTしたStatus
             twitter4j.Status retweet = status.getRetweetedStatus();
             if (retweet != null) {
@@ -45,14 +47,14 @@ public class TwitterAction {
             Long retweetedStatusId = -1L;
 
             // リツイート
-            Long statusId = application.getFavRetweetManager().getRtId(status.getId());
+            Long statusId = FavRetweetManager.getRtId(status.getId());
             if (statusId != null && statusId > 0) {
                 // そのStatusそのものをRTしている
                 retweetedStatusId = status.getId();
             } else {
                 twitter4j.Status retweet = status.getRetweetedStatus();
                 if (retweet != null) {
-                    statusId = application.getFavRetweetManager().getRtId(retweet.getId());
+                    statusId = FavRetweetManager.getRtId(retweet.getId());
                     if (statusId != null && statusId > 0) {
                         // そのStatusがRTした元StatusをRTしている
                         retweetedStatusId = retweet.getId();
@@ -62,7 +64,7 @@ public class TwitterAction {
 
             if (statusId != null && statusId == 0L) {
                 // 処理中は 0
-                JustawayApplication.showToast(R.string.toast_destroy_retweet_progress);
+                MessageUtil.showToast(R.string.toast_destroy_retweet_progress);
             } else if (statusId != null && statusId > 0 && retweetedStatusId > 0) {
                 new UnRetweetTask(retweetedStatusId, statusId).execute();
             }
@@ -70,7 +72,7 @@ public class TwitterAction {
     }
 
     public static void doReply(twitter4j.Status status, Context context) {
-        Long userId = JustawayApplication.getApplication().getUserId();
+        Long userId = AccessTokenManager.getUserId();
         UserMentionEntity[] mentions = status.getUserMentionEntities();
         String text;
         if (status.getUser().getId() == userId && mentions.length == 1) {
@@ -90,7 +92,7 @@ public class TwitterAction {
     }
 
     public static void doReplyAll(twitter4j.Status status, Context context) {
-        Long userId = JustawayApplication.getApplication().getUserId();
+        long userId = AccessTokenManager.getUserId();
         UserMentionEntity[] mentions = status.getUserMentionEntities();
         String text = "";
         int selection_start = 0;
@@ -124,7 +126,7 @@ public class TwitterAction {
 
     public static void doReplyDirectMessage(DirectMessage directMessage, Context context) {
         String text;
-        if (JustawayApplication.getApplication().getUserId() == directMessage.getSender().getId()) {
+        if (AccessTokenManager.getUserId() == directMessage.getSender().getId()) {
             text = "D " + directMessage.getRecipient().getScreenName() + " ";
         } else {
             text = "D " + directMessage.getSender().getScreenName() + " ";
