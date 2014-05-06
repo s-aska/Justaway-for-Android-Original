@@ -54,7 +54,7 @@ import twitter4j.User;
 public class TwitterAdapter extends ArrayAdapter<Row> {
 
     static class ViewHolder {
-        @InjectView(R.id.action_container) LinearLayout mActionContainer;
+        @InjectView(R.id.action_container) ViewGroup mActionContainer;
         @InjectView(R.id.action_icon) TextView mActionIcon;
         @InjectView(R.id.action_by_display_name) TextView mActionByDisplayName;
         @InjectView(R.id.action_by_screen_name) TextView mActionByScreenName;
@@ -64,8 +64,8 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         @InjectView(R.id.lock) TextView mLock;
         @InjectView(R.id.datetime_relative) TextView mDatetimeRelative;
         @InjectView(R.id.status) TextView mStatus;
-        @InjectView(R.id.images_container) LinearLayout mImagesContainer;
-        @InjectView(R.id.menu_and_via_container) TableLayout mMenuAndViaContainer;
+        @InjectView(R.id.images_container) ViewGroup mImagesContainer;
+        @InjectView(R.id.menu_and_via_container) ViewGroup mMenuAndViaContainer;
         @InjectView(R.id.do_reply) TextView mDoReply;
         @InjectView(R.id.do_retweet) TextView mDoRetweet;
         @InjectView(R.id.retweet_count) TextView mRetweetCount;
@@ -73,7 +73,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         @InjectView(R.id.fav_count) TextView mFavCount;
         @InjectView(R.id.via) TextView mVia;
         @InjectView(R.id.datetime) TextView mDatetime;
-        @InjectView(R.id.retweet_container) LinearLayout mRetweetContainer;
+        @InjectView(R.id.retweet_container) View mRetweetContainer;
         @InjectView(R.id.retweet_icon) ImageView mRetweetIcon;
         @InjectView(R.id.retweet_by) TextView mRetweetBy;
 
