@@ -1,18 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="?android:attr/listPreferredItemHeight"
-              android:baselineAligned="false"
-              android:orientation="horizontal"
-              android:padding="8dp"
-              tools:ignore="UseCompoundDrawables">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="?android:attr/listPreferredItemHeight"
+                android:padding="8dp">
 
     <ImageView
         android:id="@+id/icon"
         android:layout_width="32dp"
         android:layout_height="32dp"
         android:layout_marginRight="8dp"
+        tools:src="@drawable/ic_launcher"
         android:contentDescription="@string/description_icon"/>
 
     <TextView
@@ -20,6 +18,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:textSize="18sp"/>
-
-</LinearLayout>
+        android:layout_toRightOf="@id/icon"
+        android:textSize="18sp"
+        tools:text="justawayfactory"/>
+</RelativeLayout>

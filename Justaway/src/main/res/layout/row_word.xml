@@ -4,10 +4,7 @@
               android:layout_height="?android:attr/listPreferredItemHeight"
               android:baselineAligned="false"
               android:orientation="horizontal"
-              android:paddingTop="8dp"
-              android:paddingBottom="8dp"
-              android:paddingLeft="8dp"
-              android:paddingRight="8dp">
+              android:padding="8dp">
 
     <TextView
         android:id="@+id/word"
@@ -17,7 +14,7 @@
         android:layout_gravity="center"
         android:textSize="18sp"/>
 
-    <TextView
+    <info.justaway.widget.FontelloTextView
         android:id="@+id/trash"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
