@@ -16,8 +16,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import de.greenrobot.event.EventBus;
@@ -73,7 +71,6 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     }
 
     private Context mContext;
-    private ArrayList<Row> mStatuses = new ArrayList<Row>();
     private LayoutInflater mInflater;
     private int mLayout;
     private int mColorBlue = 0;
@@ -99,7 +96,6 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             return;
         }
         super.add(row);
-        mStatuses.add(row);
         filter(row);
         mLimit++;
     }
@@ -113,7 +109,6 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             return;
         }
         super.add(row);
-        mStatuses.add(row);
         filter(row);
         limitation();
     }
@@ -127,7 +122,6 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             return;
         }
         super.insert(row, index);
-        mStatuses.add(index, row);
         filter(row);
         limitation();
     }
@@ -136,7 +130,8 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         // 先頭の3つくらい見れば十分
         int max = 3;
         if (row.isStatus()) {
-            for (Row status : mStatuses) {
+            for (int i = 0; i < getCount(); i++) {
+                Row status = getItem(i);
                 if (status.isStatus() && status.getStatus().getId() == row.getStatus().getId()) {
                     return true;
                 }
@@ -152,7 +147,6 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     @Override
     public void remove(Row row) {
         super.remove(row);
-        mStatuses.remove(row);
     }
 
     private void filter(Row row) {
@@ -167,7 +161,8 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
 
     @SuppressWarnings("unused")
     public void replaceStatus(Status status) {
-        for (Row row : mStatuses) {
+        for (int i = 0; i < getCount(); i++) {
+            Row row = getItem(i);
             if (!row.isDirectMessage() && row.getStatus().getId() == status.getId()) {
                 row.setStatus(status);
                 notifyDataSetChanged();
@@ -178,7 +173,8 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
 
     public int removeStatus(long statusId) {
         int position = 0;
-        for (Row row : mStatuses) {
+        for (int i = 0; i < getCount(); i++) {
+            Row row = getItem(i);
             if (!row.isDirectMessage() && row.getStatus().getId() == statusId) {
                 remove(row);
                 return position;
@@ -189,7 +185,8 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     }
 
     public void removeDirectMessage(long directMessageId) {
-        for (Row row : mStatuses) {
+        for (int i = 0; i < getCount(); i++) {
+            Row row = getItem(i);
             if (row.isDirectMessage() && row.getMessage().getId() == directMessageId) {
                 remove(row);
                 break;
@@ -198,11 +195,11 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     }
 
     public void limitation() {
-        int size = mStatuses.size();
+        int size = getCount();
         if (size > mLimit) {
             int count = size - mLimit;
             for (int i = 0; i < count; i++) {
-                super.remove(mStatuses.remove(size - i - 1));
+                super.remove(getItem(size - i - 1));
             }
         }
     }
@@ -210,7 +207,6 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     @Override
     public void clear() {
         super.clear();
-        mStatuses.clear();
         mLimit = LIMIT;
     }
 
@@ -245,7 +241,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         }
 
         // 表示すべきデータの取得
-        Row row = mStatuses.get(position);
+        Row row = getItem(position);
 
         if (row.isDirectMessage()) {
             DirectMessage message = row.getMessage();
@@ -494,13 +490,11 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         });
 
         // RTの場合はRT元
-        Status source = retweet != null ? retweet : status;
-
-        holder.mStatus.setText(StatusUtil.getExpandedText(source));
+        holder.mStatus.setText(StatusUtil.getExpandedText(status));
 
         // プレビュー表示On
         if (BasicSettings.getDisplayThumbnailOn()) {
-            ImageUtil.displayThumbnailImages(mContext, holder.mImagesContainer, source);
+            ImageUtil.displayThumbnailImages(mContext, holder.mImagesContainer, status);
         } else {
             holder.mImagesContainer.setVisibility(View.GONE);
         }
