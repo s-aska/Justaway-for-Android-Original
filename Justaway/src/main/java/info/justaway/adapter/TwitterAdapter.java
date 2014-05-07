@@ -38,7 +38,6 @@ import info.justaway.util.MessageUtil;
 import info.justaway.util.StatusUtil;
 import info.justaway.util.ThemeUtil;
 import info.justaway.util.TimeUtil;
-import info.justaway.util.TwitterUtil;
 import twitter4j.DirectMessage;
 import twitter4j.Status;
 import twitter4j.User;
