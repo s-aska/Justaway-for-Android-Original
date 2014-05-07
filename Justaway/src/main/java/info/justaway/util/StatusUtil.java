@@ -1,5 +1,9 @@
 package info.justaway.util;
 
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.UnderlineSpan;
+
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,6 +22,10 @@ public class StatusUtil {
     private static final Pattern IMAGES_PATTERN = Pattern.compile("^https?://.*\\.(png|gif|jpeg|jpg)$");
     private static final Pattern YOUTUBE_PATTERN = Pattern.compile("^https?://(?:www\\.youtube\\.com/watch\\?.*v=|youtu\\.be/)([\\w-]+)");
     private static final Pattern NICONICO_PATTERN = Pattern.compile("^http://(?:www\\.nicovideo\\.jp/watch|nico\\.ms)/sm(\\d+)$");
+
+    private static final Pattern URL_PATTERN = Pattern.compile("(http://|https://)[\\w\\.\\-/:#\\?=&;%~\\+]+");
+    private static final Pattern MENTION_PATTERN = Pattern.compile("@[a-zA-Z0-9_]+");
+    private static final Pattern HASHTAG_PATTERN = Pattern.compile("#\\S+");
 
     /**
      * source(via)からクライアント名を抜き出す
@@ -65,7 +73,13 @@ public class StatusUtil {
         for (URLEntity url : status.getURLEntities()) {
             Pattern p = Pattern.compile(url.getURL());
             Matcher m = p.matcher(text);
-            text = m.replaceAll(url.getDisplayURL());
+            text = m.replaceAll(url.getExpandedURL());
+        }
+
+        for (MediaEntity media : status.getMediaEntities()) {
+            Pattern p = Pattern.compile(media.getURL());
+            Matcher m = p.matcher(text);
+            text = m.replaceAll(media.getExpandedURL());
         }
         return text;
     }
@@ -120,5 +134,33 @@ public class StatusUtil {
             imageUrls.add(media.getMediaURL());
         }
         return imageUrls;
+    }
+
+    public static SpannableStringBuilder generateUnderline(String str) {
+        // URL、メンション、ハッシュタグ が含まれていたら下線を付ける
+        SpannableStringBuilder sb = new SpannableStringBuilder();
+        sb.append(str);
+        UnderlineSpan us;
+
+        Matcher urlMatcher = URL_PATTERN.matcher(str);
+        while (urlMatcher.find()) {
+            us = new UnderlineSpan();
+            sb.setSpan(us, urlMatcher.start(), urlMatcher.end(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+
+
+        Matcher mentionMatcher = MENTION_PATTERN.matcher(str);
+        while (mentionMatcher.find()) {
+            us = new UnderlineSpan();
+            sb.setSpan(us, mentionMatcher.start(), mentionMatcher.end(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+
+        Matcher hashtagMatcher = HASHTAG_PATTERN.matcher(str);
+        while (hashtagMatcher.find()) {
+            us = new UnderlineSpan();
+            sb.setSpan(us, hashtagMatcher.start(), hashtagMatcher.end(), Spanned.SPAN_INCLUSIVE_INCLUSIVE);
+        }
+
+        return sb;
     }
 }

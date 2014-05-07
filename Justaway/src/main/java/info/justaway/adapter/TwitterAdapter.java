@@ -22,7 +22,6 @@ import de.greenrobot.event.EventBus;
 import info.justaway.BuildConfig;
 import info.justaway.ProfileActivity;
 import info.justaway.R;
-import info.justaway.util.ActionUtil;
 import info.justaway.event.AlertDialogEvent;
 import info.justaway.model.AccessTokenManager;
 import info.justaway.model.FavRetweetManager;
@@ -30,6 +29,7 @@ import info.justaway.model.Row;
 import info.justaway.model.UserIconManager;
 import info.justaway.settings.BasicSettings;
 import info.justaway.settings.MuteSettings;
+import info.justaway.util.ActionUtil;
 import info.justaway.util.ImageUtil;
 import info.justaway.util.MessageUtil;
 import info.justaway.util.StatusUtil;
@@ -485,7 +485,8 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         });
 
         // RTの場合はRT元
-        holder.mStatus.setText(StatusUtil.getExpandedText(status));
+        String statusString = StatusUtil.getExpandedText(status);
+        holder.mStatus.setText(StatusUtil.generateUnderline(statusString));
 
         // プレビュー表示On
         if (BasicSettings.getDisplayThumbnailOn()) {
