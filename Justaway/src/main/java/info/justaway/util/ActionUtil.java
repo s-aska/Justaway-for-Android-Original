@@ -1,9 +1,12 @@
-package info.justaway;
+package info.justaway.util;
 
 import android.content.Context;
 import android.content.Intent;
 
 import de.greenrobot.event.EventBus;
+import info.justaway.MainActivity;
+import info.justaway.PostActivity;
+import info.justaway.R;
 import info.justaway.event.action.OpenEditorEvent;
 import info.justaway.model.AccessTokenManager;
 import info.justaway.model.FavRetweetManager;
@@ -13,11 +16,10 @@ import info.justaway.task.FavoriteTask;
 import info.justaway.task.RetweetTask;
 import info.justaway.task.UnFavoriteTask;
 import info.justaway.task.UnRetweetTask;
-import info.justaway.util.MessageUtil;
 import twitter4j.DirectMessage;
 import twitter4j.UserMentionEntity;
 
-public class TwitterAction {
+public class ActionUtil {
     public static void doFavorite(Long statusId) {
         new FavoriteTask(statusId).execute();
     }
@@ -25,6 +27,7 @@ public class TwitterAction {
     public static void doDestroyFavorite(Long statusId) {
         new UnFavoriteTask(statusId).execute();
     }
+
     public static void doDestroyStatus(Long statusId) {
         new DestroyStatusTask(statusId).execute();
     }

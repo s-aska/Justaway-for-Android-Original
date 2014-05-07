@@ -24,7 +24,7 @@ import de.greenrobot.event.EventBus;
 import info.justaway.BuildConfig;
 import info.justaway.ProfileActivity;
 import info.justaway.R;
-import info.justaway.TwitterAction;
+import info.justaway.util.ActionUtil;
 import info.justaway.event.AlertDialogEvent;
 import info.justaway.model.AccessTokenManager;
 import info.justaway.model.FavRetweetManager;
@@ -289,7 +289,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             holder.mDoReply.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    TwitterAction.doReplyDirectMessage(message, mContext);
+                    ActionUtil.doReplyDirectMessage(message, mContext);
                 }
             });
         }
@@ -342,7 +342,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         holder.mDoReply.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TwitterAction.doReplyAll(status, mContext);
+                ActionUtil.doReplyAll(status, mContext);
             }
         });
 
@@ -380,11 +380,11 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                 if (holder.mDoFav.getTag().equals("is_fav")) {
                     holder.mDoFav.setTag("no_fav");
                     holder.mDoFav.setTextColor(Color.parseColor("#666666"));
-                    TwitterAction.doDestroyFavorite(status.getId());
+                    ActionUtil.doDestroyFavorite(status.getId());
                 } else {
                     holder.mDoFav.setTag("is_fav");
                     holder.mDoFav.setTextColor(mContext.getResources().getColor(R.color.holo_orange_light));
-                    TwitterAction.doFavorite(status.getId());
+                    ActionUtil.doFavorite(status.getId());
                 }
             }
         });
@@ -520,7 +520,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            TwitterAction.doQuote(status, getActivity());
+                            ActionUtil.doQuote(status, getActivity());
                             dismiss();
                         }
                     }
@@ -529,7 +529,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            TwitterAction.doRetweet(status.getId());
+                            ActionUtil.doRetweet(status.getId());
                             dismiss();
                         }
                     }
@@ -560,7 +560,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            TwitterAction.doDestroyRetweet(status);
+                            ActionUtil.doDestroyRetweet(status);
                             dismiss();
                         }
                     }
