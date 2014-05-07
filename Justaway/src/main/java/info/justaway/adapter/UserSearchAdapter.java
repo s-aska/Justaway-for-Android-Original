@@ -29,15 +29,16 @@ public class UserSearchAdapter extends ArrayAdapter<String> implements Filterabl
 
     public UserSearchAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId);
-        this.mContext = context;
-        this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        this.mLayout = textViewResourceId;
+        mContext = context;
+        mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mLayout = textViewResourceId;
         new SavedSearchesTask().execute();
     }
 
     public boolean isSavedMode() {
         return mSavedMode;
     }
+
     @Override
     public String getItem(int position) {
         return mStrings.get(position);

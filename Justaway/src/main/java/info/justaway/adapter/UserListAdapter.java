@@ -9,9 +9,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-
-import info.justaway.JustawayApplication;
 import info.justaway.ProfileActivity;
 import info.justaway.R;
 import info.justaway.UserListActivity;
@@ -27,24 +24,15 @@ public class UserListAdapter extends ArrayAdapter<UserList> {
         TextView member_count;
     }
 
-    private JustawayApplication mApplication;
-    private ArrayList<UserList> mUserLists = new ArrayList<UserList>();
     private Context mContext;
     private LayoutInflater mInflater;
     private int mLayout;
 
     public UserListAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId);
-        this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        this.mContext = context;
-        this.mLayout = textViewResourceId;
-        this.mApplication = (JustawayApplication) context.getApplicationContext();
-    }
-
-    @Override
-    public void add(UserList userList) {
-        super.add(userList);
-        mUserLists.add(userList);
+        mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mContext = context;
+        mLayout = textViewResourceId;
     }
 
     @Override
@@ -69,7 +57,7 @@ public class UserListAdapter extends ArrayAdapter<UserList> {
             holder = (ViewHolder) view.getTag();
         }
 
-        final UserList userList = mUserLists.get(position);
+        final UserList userList = getItem(position);
 
         ImageView icon = (ImageView) view.findViewById(R.id.icon);
         String iconUrl = userList.getUser().getBiggerProfileImageURL();

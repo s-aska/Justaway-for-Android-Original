@@ -28,7 +28,6 @@ public class AccessTokenAdapter extends ArrayAdapter<AccessToken> {
         }
     }
 
-    private ArrayList<AccessToken> mAccessTokenList = new ArrayList<AccessToken>();
     private LayoutInflater mInflater;
     private int mLayout;
     private int mHighlightColor;
@@ -50,18 +49,6 @@ public class AccessTokenAdapter extends ArrayAdapter<AccessToken> {
     }
 
     @Override
-    public void add(AccessToken accessToken) {
-        super.add(accessToken);
-        mAccessTokenList.add(accessToken);
-    }
-
-    @Override
-    public void clear() {
-        super.clear();
-        mAccessTokenList.clear();
-    }
-
-    @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
 
@@ -79,7 +66,7 @@ public class AccessTokenAdapter extends ArrayAdapter<AccessToken> {
             holder = (ViewHolder) view.getTag();
         }
 
-        AccessToken accessToken = mAccessTokenList.get(position);
+        AccessToken accessToken = getItem(position);
 
         UserIconManager.displayUserIcon(accessToken.getUserId(), holder.mIcon);
 

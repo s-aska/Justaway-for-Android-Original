@@ -8,8 +8,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import info.justaway.R;
@@ -22,7 +20,6 @@ import twitter4j.auth.AccessToken;
 
 public class AccessTokenAdapter extends ArrayAdapter<AccessToken> {
 
-    private ArrayList<AccessToken> mAccountLists = new ArrayList<AccessToken>();
     private LayoutInflater mInflater;
     private int mLayout;
     private OnTrashListener mOnTrashListener;
@@ -50,18 +47,6 @@ public class AccessTokenAdapter extends ArrayAdapter<AccessToken> {
     }
 
     @Override
-    public void add(AccessToken account) {
-        super.add(account);
-        mAccountLists.add(account);
-    }
-
-    @Override
-    public void remove(AccessToken accessToken) {
-        super.remove(accessToken);
-        mAccountLists.remove(accessToken);
-    }
-
-    @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder;
 
@@ -79,7 +64,7 @@ public class AccessTokenAdapter extends ArrayAdapter<AccessToken> {
             viewHolder = (ViewHolder) view.getTag();
         }
 
-        final AccessToken accessToken = mAccountLists.get(position);
+        final AccessToken accessToken = getItem(position);
 
         UserIconManager.displayUserIcon(accessToken.getUserId(), viewHolder.mIcon);
 

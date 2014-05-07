@@ -144,11 +144,6 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         return false;
     }
 
-    @Override
-    public void remove(Row row) {
-        super.remove(row);
-    }
-
     private void filter(Row row) {
         Status status = row.getStatus();
         if (status != null && status.isRetweeted()) {

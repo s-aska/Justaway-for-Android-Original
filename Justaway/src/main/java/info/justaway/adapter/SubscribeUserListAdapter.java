@@ -13,8 +13,6 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
-import java.util.ArrayList;
-
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import de.greenrobot.event.EventBus;
@@ -29,7 +27,6 @@ import twitter4j.UserList;
 
 public class SubscribeUserListAdapter extends ArrayAdapter<UserListWithRegistered> {
 
-    private ArrayList<UserListWithRegistered> mUserLists = new ArrayList<UserListWithRegistered>();
     private LayoutInflater mInflater;
     private int mLayout;
 
@@ -48,20 +45,9 @@ public class SubscribeUserListAdapter extends ArrayAdapter<UserListWithRegistere
         mLayout = textViewResourceId;
     }
 
-    @Override
-    public void add(UserListWithRegistered userListWithRegistered) {
-        super.add(userListWithRegistered);
-        mUserLists.add(userListWithRegistered);
-    }
-
-    @Override
-    public void remove(UserListWithRegistered userListWithRegistered) {
-        super.remove(userListWithRegistered);
-        mUserLists.remove(userListWithRegistered);
-    }
-
     public UserListWithRegistered findByUserListId(Long userListId) {
-        for (UserListWithRegistered userListWithRegistered : mUserLists) {
+        for (int i = 0; i < getCount(); i++) {
+            UserListWithRegistered userListWithRegistered = getItem(i);
             if (userListWithRegistered.getUserList().getId() == userListId) {
                 return userListWithRegistered;
             }
@@ -87,7 +73,7 @@ public class SubscribeUserListAdapter extends ArrayAdapter<UserListWithRegistere
             viewHolder = (ViewHolder) view.getTag();
         }
 
-        final UserListWithRegistered userListWithRegistered = mUserLists.get(position);
+        final UserListWithRegistered userListWithRegistered = getItem(position);
         final UserList userList = userListWithRegistered.getUserList();
 
         viewHolder.mTrash.setOnClickListener(new View.OnClickListener() {
