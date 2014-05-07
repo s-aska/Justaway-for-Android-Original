@@ -15,16 +15,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TableLayout;
 import android.widget.TextView;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -32,7 +25,6 @@ import de.greenrobot.event.EventBus;
 import info.justaway.BuildConfig;
 import info.justaway.ProfileActivity;
 import info.justaway.R;
-import info.justaway.ScaleImageActivity;
 import info.justaway.TwitterAction;
 import info.justaway.event.AlertDialogEvent;
 import info.justaway.model.AccessTokenManager;
@@ -43,12 +35,12 @@ import info.justaway.settings.BasicSettings;
 import info.justaway.settings.MuteSettings;
 import info.justaway.util.ImageUtil;
 import info.justaway.util.MessageUtil;
+import info.justaway.util.StatusUtil;
 import info.justaway.util.ThemeUtil;
+import info.justaway.util.TimeUtil;
 import info.justaway.util.TwitterUtil;
 import twitter4j.DirectMessage;
-import twitter4j.MediaEntity;
 import twitter4j.Status;
-import twitter4j.URLEntity;
 import twitter4j.User;
 
 public class TwitterAdapter extends ArrayAdapter<Row> {
@@ -89,14 +81,6 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     private int mColorBlue = 0;
     private static final int LIMIT = 100;
     private int mLimit = LIMIT;
-    private static final SimpleDateFormat DATE_FORMAT =
-            new SimpleDateFormat("yyyy/MM'/'dd' 'HH':'mm':'ss", Locale.ENGLISH);
-    private static final Pattern TWITPIC_PATTERN = Pattern.compile("^http://twitpic\\.com/(\\w+)$");
-    private static final Pattern TWIPPLE_PATTERN = Pattern.compile("^http://p\\.twipple\\.jp/(\\w+)$");
-    private static final Pattern INSTAGRAM_PATTERN = Pattern.compile("^http://instagram\\.com/p/([^/]+)/$");
-    private static final Pattern IMAGES_PATTERN = Pattern.compile("^https?://.*\\.(png|gif|jpeg|jpg)$");
-    private static final Pattern YOUTUBE_PATTERN = Pattern.compile("^https?://(?:www\\.youtube\\.com/watch\\?.*v=|youtu\\.be/)([\\w-]+)");
-    private static final Pattern NICONICO_PATTERN = Pattern.compile("^http://(?:www\\.nicovideo\\.jp/watch|nico\\.ms)/sm(\\d+)$");
 
     public TwitterAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId);
@@ -318,8 +302,8 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         holder.mStatus.setText("D " + message.getRecipientScreenName()
                 + " " + message.getText());
         holder.mDatetime
-                .setText(getAbsoluteTime(message.getCreatedAt()));
-        holder.mDatetimeRelative.setText(getRelativeTime(message.getCreatedAt()));
+                .setText(TimeUtil.getAbsoluteTime(message.getCreatedAt()));
+        holder.mDatetimeRelative.setText(TimeUtil.getRelativeTime(message.getCreatedAt()));
         holder.mVia.setVisibility(View.GONE);
         holder.mRetweetContainer.setVisibility(View.GONE);
         holder.mImagesContainer.setVisibility(View.GONE);
@@ -423,10 +407,10 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
 
         holder.mDisplayName.setText(status.getUser().getName());
         holder.mScreenName.setText("@" + status.getUser().getScreenName());
-        holder.mDatetimeRelative.setText(getRelativeTime(status.getCreatedAt()));
-        holder.mDatetime.setText(getAbsoluteTime(status.getCreatedAt()));
+        holder.mDatetimeRelative.setText(TimeUtil.getRelativeTime(status.getCreatedAt()));
+        holder.mDatetime.setText(TimeUtil.getAbsoluteTime(status.getCreatedAt()));
 
-        String via = TwitterUtil.getClientName(status.getSource());
+        String via = StatusUtil.getClientName(status.getSource());
         holder.mVia.setText("via " + via);
         holder.mVia.setVisibility(View.VISIBLE);
 
@@ -482,7 +466,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         } else {
 
             // 自分へのリプ
-            if (TwitterUtil.isMentionForMe(status)) {
+            if (StatusUtil.isMentionForMe(status)) {
                 holder.mActionIcon.setText(R.string.fontello_at);
                 holder.mActionIcon.setTextColor(mContext.getResources().getColor(R.color.holo_red_light));
                 holder.mActionByDisplayName.setText(status.getUser().getName());
@@ -511,101 +495,17 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             }
         });
 
-        boolean displayThumbnail = BasicSettings.getDisplayThumbnailOn();
-        URLEntity[] urls = retweet != null ? retweet.getURLEntities() : status.getURLEntities();
-        ArrayList<String> imageUrls = new ArrayList<String>();
-        String statusString = status.getText();
-        for (URLEntity url : urls) {
-            Pattern p = Pattern.compile(url.getURL());
-            Matcher m = p.matcher(statusString);
-            statusString = m.replaceAll(url.getExpandedURL());
-            if (!displayThumbnail) {
-                continue;
-            }
-            Matcher twitpic_matcher = TWITPIC_PATTERN.matcher(url.getExpandedURL());
-            if (twitpic_matcher.find()) {
-                imageUrls.add("http://twitpic.com/show/full/" + twitpic_matcher.group(1));
-                continue;
-            }
-            Matcher twipple_matcher = TWIPPLE_PATTERN.matcher(url.getExpandedURL());
-            if (twipple_matcher.find()) {
-                imageUrls.add("http://p.twpl.jp/show/orig/" + twipple_matcher.group(1));
-                continue;
-            }
-            Matcher instagram_matcher = INSTAGRAM_PATTERN.matcher(url.getExpandedURL());
-            if (instagram_matcher.find()) {
-                imageUrls.add(url.getExpandedURL() + "media?size=l");
-                continue;
-            }
-            Matcher youtube_matcher = YOUTUBE_PATTERN.matcher(url.getExpandedURL());
-            if (youtube_matcher.find()) {
-                imageUrls.add("http://i.ytimg.com/vi/" + youtube_matcher.group(1) + "/hqdefault.jpg");
-                continue;
-            }
-            Matcher niconico_matcher = NICONICO_PATTERN.matcher(url.getExpandedURL());
-            if (niconico_matcher.find()) {
-                int id = Integer.valueOf(niconico_matcher.group(1));
-                int host = id % 4 + 1;
-                imageUrls.add("http://tn-skr" + host + ".smilevideo.jp/smile?i=" + id + ".L");
-                continue;
-            }
-            Matcher images_matcher = IMAGES_PATTERN.matcher(url.getExpandedURL());
-            if (images_matcher.find()) {
-                imageUrls.add(url.getExpandedURL());
-            }
-        }
-        holder.mStatus.setText(statusString);
+        // RTの場合はRT元
+        Status source = retweet != null ? retweet : status;
 
-        if (!displayThumbnail) {
-            holder.mImagesContainer.setVisibility(View.GONE);
-            return;
-        }
-        MediaEntity[] medias = retweet != null ? retweet.getMediaEntities() : status.getMediaEntities();
-        for (MediaEntity media : medias) {
-            imageUrls.add(media.getMediaURL());
-        }
-        holder.mImagesContainer.removeAllViews();
-        if (imageUrls.size() > 0) {
-            for (final String url : imageUrls) {
-                ImageView image = new ImageView(mContext);
-                image.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                holder.mImagesContainer.addView(image, new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT, 120));
-                ImageUtil.displayRoundedImage(url, image);
-                // 画像タップで拡大表示（ピンチイン・ピンチアウトいつかちゃんとやる）
-                image.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(v.getContext(), ScaleImageActivity.class);
-                        intent.putExtra("url", url);
-                        mContext.startActivity(intent);
-                    }
-                });
-            }
-            holder.mImagesContainer.setVisibility(View.VISIBLE);
+        holder.mStatus.setText(StatusUtil.getExpandedText(source));
+
+        // プレビュー表示On
+        if (BasicSettings.getDisplayThumbnailOn()) {
+            ImageUtil.displayThumbnailImages(mContext, holder.mImagesContainer, source);
         } else {
             holder.mImagesContainer.setVisibility(View.GONE);
         }
-    }
-
-
-    private String getRelativeTime(Date date) {
-        int diff = (int) (((new Date()).getTime() - date.getTime()) / 1000);
-        if (diff < 1) {
-            return "now";
-        } else if (diff < 60) {
-            return diff + "s";
-        } else if (diff < 3600) {
-            return (diff / 60) + "m";
-        } else if (diff < 86400) {
-            return (diff / 3600) + "h";
-        } else {
-            return (diff / 86400) + "d";
-        }
-    }
-
-    private String getAbsoluteTime(Date date) {
-        return DATE_FORMAT.format(date);
     }
 
     public static final class RetweetDialogFragment extends DialogFragment {
