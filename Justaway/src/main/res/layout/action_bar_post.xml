@@ -16,11 +16,12 @@
         tools:text="Home"
         tools:ignore="SpUsage"/>
 
-    <Button
+    <info.justaway.widget.FontelloButton
         android:id="@+id/undo"
         android:layout_width="58dp"
         android:layout_height="wrap_content"
         android:text="@string/fontello_undo"
+        android:enabled="false"
         android:background="@drawable/action_bar_stateful"
         tools:paddingBottom="0dp"/>
 

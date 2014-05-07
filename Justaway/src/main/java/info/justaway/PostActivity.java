@@ -58,6 +58,7 @@ import info.justaway.util.ImageUtil;
 import info.justaway.util.MessageUtil;
 import info.justaway.util.ThemeUtil;
 import info.justaway.util.TwitterUtil;
+import info.justaway.widget.FontelloButton;
 import twitter4j.Status;
 import twitter4j.StatusUpdate;
 import twitter4j.TwitterException;
@@ -79,10 +80,9 @@ public class PostActivity extends FragmentActivity {
     private AlertDialog mHashtagDialog;
     private boolean mWidgetMode;
     private PostStockSettings mPostStockSettings;
-    private TextView mTitle;
-    private TextView mUndoButton;
     private ArrayList<String> mTextHistory = new ArrayList<String>();
     private List<ResolveInfo> mTwiccaPlugins;
+    private ActionBarHolder mActionBarHolder;
 
     @InjectView(R.id.in_reply_to_cancel) TextView mCancel;
     @InjectView(R.id.in_reply_to_user_icon) ImageView mInReplyToUserIcon;
@@ -97,6 +97,34 @@ public class PostActivity extends FragmentActivity {
     @InjectView(R.id.hashtag_button) Button mHashtagButton;
     @InjectView(R.id.count) TextView mCount;
 
+
+    class ActionBarHolder {
+
+        @InjectView(R.id.title) TextView mTitle;
+        @InjectView(R.id.undo) FontelloButton mUndo;
+
+        @OnClick(R.id.undo)
+        void undo() {
+            String text = mTextHistory.get(mTextHistory.size() - 1);
+            if (mStatusText.getText() != null && text.equals(mStatusText.getText().toString())) {
+                mTextHistory.remove(mTextHistory.size() - 1);
+                if (mTextHistory.size() > 0) {
+                    text = mTextHistory.get(mTextHistory.size() - 1);
+                }
+            }
+            mStatusText.setText(text);
+            mStatusText.setSelection(mStatusText.length());
+            mTextHistory.remove(mTextHistory.size() - 1);
+            if (mTextHistory.size() > 0 && text.equals(mStatusText.getText().toString())) {
+                mTextHistory.remove(mTextHistory.size() - 1);
+            }
+            mUndo.setEnabled(mTextHistory.size() > 0);
+        }
+
+        public ActionBarHolder(View view) {
+            ButterKnife.inject(this, view);
+        }
+    }
 
     @SuppressWarnings("MagicConstant")
     @Override
@@ -116,30 +144,7 @@ public class PostActivity extends FragmentActivity {
                 actionBar.setDisplayOptions(options | ActionBar.DISPLAY_SHOW_CUSTOM);
                 if (actionBar.getCustomView() == null) {
                     actionBar.setCustomView(R.layout.action_bar_post);
-                    ViewGroup group = (ViewGroup) actionBar.getCustomView();
-                    mTitle = (TextView) group.findViewById(R.id.title);
-                    mUndoButton = (TextView) group.findViewById(R.id.undo);
-                    mUndoButton.setTypeface(JustawayApplication.getFontello());
-                    mUndoButton.setEnabled(false);
-                    mUndoButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            String text = mTextHistory.get(mTextHistory.size() - 1);
-                            if (mStatusText.getText() != null && text.equals(mStatusText.getText().toString())) {
-                                mTextHistory.remove(mTextHistory.size() - 1);
-                                if (mTextHistory.size() > 0) {
-                                    text = mTextHistory.get(mTextHistory.size() - 1);
-                                }
-                            }
-                            mStatusText.setText(text);
-                            mStatusText.setSelection(mStatusText.length());
-                            mTextHistory.remove(mTextHistory.size() - 1);
-                            if (mTextHistory.size() > 0 && text.equals(mStatusText.getText().toString())) {
-                                mTextHistory.remove(mTextHistory.size() - 1);
-                            }
-                            mUndoButton.setEnabled(mTextHistory.size() > 0);
-                        }
-                    });
+                    mActionBarHolder = new ActionBarHolder(actionBar.getCustomView());
                 }
             }
         }
@@ -173,9 +178,9 @@ public class PostActivity extends FragmentActivity {
         }
         mWidgetMode = intent.getBooleanExtra("widget", false);
         if (mWidgetMode) {
-            mTitle.setText(getString(R.string.widget_title_post_mode));
+            mActionBarHolder.mTitle.setText(getString(R.string.widget_title_post_mode));
         } else {
-            mTitle.setText(getString(R.string.title_post));
+            mActionBarHolder.mTitle.setText(getString(R.string.title_post));
             if (actionBar != null) {
                 actionBar.setHomeButtonEnabled(true);
                 actionBar.setDisplayHomeAsUpEnabled(true);
@@ -293,7 +298,7 @@ public class PostActivity extends FragmentActivity {
                 if (mTextHistory.size() == 0 || !s.toString().equals(mTextHistory.get(mTextHistory.size() - 1))) {
                     mTextHistory.add(s.toString());
                 }
-                mUndoButton.setEnabled(mTextHistory.size() > 0);
+                mActionBarHolder.mUndo.setEnabled(mTextHistory.size() > 0);
             }
         });
     }
