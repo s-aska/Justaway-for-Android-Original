@@ -4,7 +4,6 @@ import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -40,6 +39,7 @@ import info.justaway.task.ShowUserLoader;
 import info.justaway.util.ImageUtil;
 import info.justaway.util.MessageUtil;
 import info.justaway.util.ThemeUtil;
+import info.justaway.widget.FontelloTextView;
 import twitter4j.Relationship;
 import twitter4j.User;
 
@@ -55,7 +55,7 @@ public class ProfileActivity extends FragmentActivity implements
     @InjectView(R.id.followers_count) TextView mFollowersCount;
     @InjectView(R.id.listed_count) TextView mListedCount;
     @InjectView(R.id.favourites_count) TextView mFavouritesCount;
-    @InjectView(R.id.collapse_label) TextView mCollapseLabel;
+    @InjectView(R.id.collapse_label) FontelloTextView mCollapseLabel;
     @InjectView(R.id.list_pager) ViewPager mListPager;
 
     private User mUser;
@@ -72,9 +72,6 @@ public class ProfileActivity extends FragmentActivity implements
             actionBar.setHomeButtonEnabled(true);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-
-        Typeface fontello = JustawayApplication.getFontello();
-        mCollapseLabel.setTypeface(fontello);
 
         // インテント経由での起動をサポート
         Intent intent = getIntent();

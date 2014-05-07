@@ -734,7 +734,6 @@ public class PostActivity extends FragmentActivity {
 
             assert view != null;
             ((TextView) view.findViewById(R.id.word)).setText(draft);
-            ((TextView) view.findViewById(R.id.trash)).setTypeface(JustawayApplication.getFontello());
 
             view.findViewById(R.id.trash).setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -782,7 +781,6 @@ public class PostActivity extends FragmentActivity {
 
             assert view != null;
             ((TextView) view.findViewById(R.id.word)).setText(hashtag);
-            ((TextView) view.findViewById(R.id.trash)).setTypeface(JustawayApplication.getFontello());
 
             view.findViewById(R.id.trash).setOnClickListener(new View.OnClickListener() {
                 @Override

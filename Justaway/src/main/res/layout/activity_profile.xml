@@ -93,7 +93,7 @@
             tools:text="1234567\nFAVOURITES"
             tools:ignore="SpUsage"/>
 
-        <TextView
+        <info.justaway.widget.FontelloTextView
             android:id="@+id/collapse_label"
             android:layout_width="36dp"
             android:layout_height="match_parent"
