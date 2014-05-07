@@ -11,7 +11,7 @@ import java.util.HashMap;
 
 import info.justaway.JustawayApplication;
 import info.justaway.model.Row;
-import info.justaway.util.TwitterUtil;
+import info.justaway.util.StatusUtil;
 import twitter4j.Status;
 import twitter4j.UserMentionEntity;
 
@@ -79,7 +79,7 @@ public class MuteSettings {
             }
         }
         Status source = retweetedStatus != null ? retweetedStatus : status;
-        if (sMuteSettingsData.sourceMap.get(TwitterUtil.getClientName(source.getSource())) != null) {
+        if (sMuteSettingsData.sourceMap.get(StatusUtil.getClientName(source.getSource())) != null) {
             return true;
         }
         String text = source.getText();

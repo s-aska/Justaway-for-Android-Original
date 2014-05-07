@@ -24,7 +24,6 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import info.justaway.JustawayApplication;
 import info.justaway.ProfileActivity;
 import info.justaway.R;
 import info.justaway.SearchActivity;
@@ -38,8 +37,8 @@ import info.justaway.model.Row;
 import info.justaway.plugin.TwiccaPlugin;
 import info.justaway.settings.MuteSettings;
 import info.justaway.util.MessageUtil;
+import info.justaway.util.StatusUtil;
 import info.justaway.util.ThemeUtil;
-import info.justaway.util.TwitterUtil;
 import twitter4j.DirectMessage;
 import twitter4j.HashtagEntity;
 import twitter4j.Status;
@@ -535,15 +534,15 @@ public class StatusMenuFragment extends DialogFragment {
         /**
          * viaをミュート
          */
-        adapter.add(new Menu(String.format(mActivity.getString(R.string.context_menu_mute), TwitterUtil.getClientName(source.getSource())), new Runnable() {
+        adapter.add(new Menu(String.format(mActivity.getString(R.string.context_menu_mute), StatusUtil.getClientName(source.getSource())), new Runnable() {
             @Override
             public void run() {
                 new AlertDialog.Builder(getActivity())
-                        .setTitle(String.format(getString(R.string.context_create_mute), TwitterUtil.getClientName(source.getSource())))
+                        .setTitle(String.format(getString(R.string.context_create_mute), StatusUtil.getClientName(source.getSource())))
                         .setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                MuteSettings.addSource(TwitterUtil.getClientName(source.getSource()));
+                                MuteSettings.addSource(StatusUtil.getClientName(source.getSource()));
                                 MuteSettings.saveMuteSettings();
                                 MessageUtil.showToast(R.string.toast_create_mute);
                                 dismiss();

@@ -9,7 +9,7 @@ import info.justaway.model.Row;
 import info.justaway.model.TabManager;
 import info.justaway.model.TwitterManager;
 import info.justaway.settings.BasicSettings;
-import info.justaway.util.TwitterUtil;
+import info.justaway.util.StatusUtil;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
 import twitter4j.Status;
@@ -52,7 +52,7 @@ public class InteractionsFragment extends BaseFragment {
             /**
              * 自分宛のメンション（但し「自分をメンションに含むツイートがRTされた時」はうざいので除く）
              */
-            if (retweet == null && TwitterUtil.isMentionForMe(status)) {
+            if (retweet == null && StatusUtil.isMentionForMe(status)) {
                 return false;
             }
         }
