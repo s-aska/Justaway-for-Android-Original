@@ -57,6 +57,7 @@ import info.justaway.plugin.TwiccaPlugin;
 import info.justaway.settings.PostStockSettings;
 import info.justaway.task.SendDirectMessageTask;
 import info.justaway.task.UpdateStatusTask;
+import info.justaway.util.FileUtil;
 import info.justaway.util.ImageUtil;
 import info.justaway.util.MessageUtil;
 import info.justaway.util.ThemeUtil;
@@ -566,7 +567,7 @@ public class PostActivity extends FragmentActivity {
     private void setImage(Uri uri) {
         try {
             InputStream inputStream = getContentResolver().openInputStream(uri);
-            mImgPath = TwitterUtil.writeToTempFile(getCacheDir(), inputStream);
+            mImgPath = FileUtil.writeToTempFile(getCacheDir(), inputStream);
             MessageUtil.showToast(R.string.toast_set_image_success);
             ThemeUtil.setThemeTextColor(mContext, mImgButton, R.attr.holo_blue);
             mTweetButton.setEnabled(true);

@@ -21,10 +21,10 @@ import butterknife.OnClick;
 import info.justaway.fragment.profile.UpdateProfileImageFragment;
 import info.justaway.model.TwitterManager;
 import info.justaway.task.VerifyCredentialsLoader;
+import info.justaway.util.FileUtil;
 import info.justaway.util.ImageUtil;
 import info.justaway.util.MessageUtil;
 import info.justaway.util.ThemeUtil;
-import info.justaway.util.TwitterUtil;
 import twitter4j.User;
 
 public class EditProfileActivity extends FragmentActivity implements LoaderManager.LoaderCallbacks<User> {
@@ -145,7 +145,7 @@ public class EditProfileActivity extends FragmentActivity implements LoaderManag
                             return;
                         }
                         InputStream inputStream = getContentResolver().openInputStream(uri);
-                        File file = TwitterUtil.writeToTempFile(getCacheDir(), inputStream);
+                        File file = FileUtil.writeToTempFile(getCacheDir(), inputStream);
                         if (file != null) {
                             UpdateProfileImageFragment dialog = UpdateProfileImageFragment.newInstance(file, uri);
                             dialog.show(getSupportFragmentManager(), "dialog");
