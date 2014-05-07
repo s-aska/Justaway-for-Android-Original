@@ -38,7 +38,7 @@
                 android:textSize="23sp"
                 tools:text="Justaway"/>
 
-            <TextView
+            <info.justaway.widget.FontelloTextView
                 android:id="@+id/lock"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -51,8 +51,7 @@
                 android:textSize="20sp"
                 android:layout_marginTop="3dp"
                 android:layout_marginLeft="6dp"
-                android:text="@string/fontello_lock"
-                tools:text="鍵"/>
+                android:text="@string/fontello_lock"/>
         </LinearLayout>
 
         <TextView

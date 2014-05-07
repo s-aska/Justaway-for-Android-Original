@@ -7,7 +7,7 @@ import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.AdapterView;
 
-import info.justaway.TwitterAction;
+import info.justaway.util.ActionUtil;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.fragment.AroundFragment;
 import info.justaway.fragment.TalkFragment;
@@ -38,7 +38,7 @@ public class StatusLongClickListener implements AdapterView.OnItemLongClickListe
         final Status source = retweet != null ? retweet : status;
 
         if (action.equals("quote")) {
-            TwitterAction.doQuote(source, mActivity);
+            ActionUtil.doQuote(source, mActivity);
         } else if (action.equals("talk")) {
             if (source.getInReplyToStatusId() > 0) {
                 TalkFragment dialog = new TalkFragment();
@@ -62,7 +62,7 @@ public class StatusLongClickListener implements AdapterView.OnItemLongClickListe
                     + "/status/" + String.valueOf(status.getId()));
             mActivity.startActivity(intent);
         } else if (action.equals("reply_all")) {
-            TwitterAction.doReplyAll(source, mActivity);
+            ActionUtil.doReplyAll(source, mActivity);
         } else {
             return false;
         }

@@ -15,13 +15,13 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import info.justaway.JustawayApplication;
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import info.justaway.R;
 import info.justaway.settings.MuteSettings;
+import info.justaway.widget.FontelloTextView;
 
 public class UserFragment extends Fragment {
-
-    private MuteSettings mMuteSettings;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -53,6 +53,15 @@ public class UserFragment extends Fragment {
 
     public class UserAdapter extends ArrayAdapter<User> {
 
+        class ViewHolder {
+            @InjectView(R.id.word) TextView mWord;
+            @InjectView(R.id.trash) FontelloTextView mTrash;
+
+            ViewHolder(View view) {
+                ButterKnife.inject(this, view);
+            }
+        }
+
         private ArrayList<User> mUserList = new ArrayList<User>();
         private LayoutInflater mInflater;
         private int mLayout;
@@ -76,24 +85,27 @@ public class UserFragment extends Fragment {
 
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
+            ViewHolder viewHolder;
 
             // ビューを受け取る
             View view = convertView;
             if (view == null) {
                 // 受け取ったビューがnullなら新しくビューを生成
                 view = mInflater.inflate(this.mLayout, null);
-                assert view != null;
+                if (view == null) {
+                    return null;
+                }
+                viewHolder = new ViewHolder(view);
+                view.setTag(viewHolder);
+            } else {
+                viewHolder = (ViewHolder) view.getTag();
             }
 
             final User user = mUserList.get(position);
 
-            TextView screenName = (TextView) view.findViewById(R.id.word);
-            screenName.setText("@".concat(user.screenName));
+            viewHolder.mWord.setText("@".concat(user.screenName));
 
-            TextView trash = (TextView) view.findViewById(R.id.trash);
-            trash.setTypeface(JustawayApplication.getFontello());
-
-            trash.setOnClickListener(new View.OnClickListener() {
+            viewHolder.mTrash.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     new AlertDialog.Builder(getActivity())

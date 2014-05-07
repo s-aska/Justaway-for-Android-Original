@@ -4,7 +4,6 @@ import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.LayoutInflater;
@@ -21,8 +20,11 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import info.justaway.model.TabManager;
 import info.justaway.util.ThemeUtil;
+import info.justaway.widget.FontelloTextView;
 
 public class TabSettingsActivity extends FragmentActivity {
 
@@ -195,6 +197,16 @@ public class TabSettingsActivity extends FragmentActivity {
 
     public class TabAdapter extends ArrayAdapter<TabManager.Tab> {
 
+        class ViewHolder {
+            @InjectView(R.id.handle) FontelloTextView mHandle;
+            @InjectView(R.id.tab_icon) FontelloTextView mTabIcon;
+            @InjectView(R.id.name) TextView mName;
+
+            ViewHolder(View view) {
+                ButterKnife.inject(this, view);
+            }
+        }
+
         private ArrayList<TabManager.Tab> mTabs = new ArrayList<TabManager.Tab>();
         private LayoutInflater mInflater;
         private int mLayout;
@@ -250,6 +262,7 @@ public class TabSettingsActivity extends FragmentActivity {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
+            ViewHolder viewHolder;
 
             // ビューを受け取る
             View view = convertView;
@@ -259,34 +272,30 @@ public class TabSettingsActivity extends FragmentActivity {
                 if (view == null) {
                     return null;
                 }
+                viewHolder = new ViewHolder(view);
+                view.setTag(viewHolder);
+            } else {
+                viewHolder = (ViewHolder) view.getTag();
             }
 
             final TabManager.Tab tab = mTabs.get(position);
 
-            TextView tabIcon = (TextView) view.findViewById(R.id.tab_icon);
-            TextView name = (TextView) view.findViewById(R.id.name);
-            TextView handle = (TextView) view.findViewById(R.id.handle);
-
-            Typeface fontello = JustawayApplication.getFontello();
-            tabIcon.setTypeface(fontello);
-            handle.setTypeface(fontello);
-
-            tabIcon.setText(tab.getIcon());
-            name.setText(tab.getName());
+            viewHolder.mTabIcon.setText(tab.getIcon());
+            viewHolder.mName.setText(tab.getName());
 
             if (mRemoveMode) {
-                handle.setText(R.string.fontello_trash);
-                handle.setOnTouchListener(null);
-                handle.setOnClickListener(new View.OnClickListener() {
+                viewHolder.mHandle.setText(R.string.fontello_trash);
+                viewHolder.mHandle.setOnTouchListener(null);
+                viewHolder.mHandle.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         mAdapter.remove(tab);
                     }
                 });
             } else {
-                handle.setText(R.string.fontello_menu);
-                handle.setOnClickListener(null);
-                handle.setOnTouchListener(new View.OnTouchListener() {
+                viewHolder.mHandle.setText(R.string.fontello_menu);
+                viewHolder.mHandle.setOnClickListener(null);
+                viewHolder.mHandle.setOnTouchListener(new View.OnTouchListener() {
                     @Override
                     public boolean onTouch(View view, MotionEvent motionEvent) {
                         if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {

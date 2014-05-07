@@ -2,7 +2,6 @@ package info.justaway;
 
 import android.app.ActionBar;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -46,8 +45,6 @@ public class UserSearchActivity extends FragmentActivity {
         }
 
         Button search = (Button) findViewById(R.id.search);
-        Typeface fontello = JustawayApplication.getFontello();
-        search.setTypeface(fontello);
 
         mSearchText = (EditText) findViewById(R.id.search_text);
         mProgressBar = (ProgressBar) findViewById(R.id.guruguru);
