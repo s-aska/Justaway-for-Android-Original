@@ -12,7 +12,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import info.justaway.EditProfileActivity;
-import info.justaway.JustawayApplication;
 import info.justaway.R;
 import info.justaway.ScaleImageActivity;
 import info.justaway.model.AccessTokenManager;
@@ -55,7 +54,6 @@ public class SummaryFragment extends Fragment {
         TextView followedBy = (TextView) v.findViewById(R.id.followed_by);
         final TextView follow = (TextView) v.findViewById(R.id.follow);
         TextView lock = (TextView) v.findViewById(R.id.lock);
-        lock.setTypeface(JustawayApplication.getFontello());
         lock.setVisibility(View.GONE);
 
         String iconUrl = user.getBiggerProfileImageURL();

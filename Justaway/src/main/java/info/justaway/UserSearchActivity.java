@@ -46,8 +46,6 @@ public class UserSearchActivity extends FragmentActivity {
         }
 
         Button search = (Button) findViewById(R.id.search);
-        Typeface fontello = JustawayApplication.getFontello();
-        search.setTypeface(fontello);
 
         mSearchText = (EditText) findViewById(R.id.search_text);
         mProgressBar = (ProgressBar) findViewById(R.id.guruguru);

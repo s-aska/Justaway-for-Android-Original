@@ -15,11 +15,13 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import info.justaway.JustawayApplication;
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import info.justaway.R;
 import info.justaway.settings.MuteSettings;
 import info.justaway.util.KeyboardUtil;
 import info.justaway.util.MessageUtil;
+import info.justaway.widget.FontelloTextView;
 
 public class WordFragment extends Fragment {
 
@@ -83,6 +85,15 @@ public class WordFragment extends Fragment {
 
     public class WordAdapter extends ArrayAdapter<String> {
 
+        class ViewHolder {
+            @InjectView(R.id.word) TextView mWord;
+            @InjectView(R.id.trash) FontelloTextView mTrash;
+
+            ViewHolder(View view) {
+                ButterKnife.inject(this, view);
+            }
+        }
+
         private ArrayList<String> mWordList = new ArrayList<String>();
         private LayoutInflater mInflater;
         private int mLayout;
@@ -106,23 +117,27 @@ public class WordFragment extends Fragment {
 
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
+            ViewHolder viewHolder;
 
             // ビューを受け取る
             View view = convertView;
             if (view == null) {
                 // 受け取ったビューがnullなら新しくビューを生成
                 view = mInflater.inflate(this.mLayout, null);
-                assert view != null;
+                if (view == null) {
+                    return null;
+                }
+                viewHolder = new ViewHolder(view);
+                view.setTag(viewHolder);
+            } else {
+                viewHolder = (ViewHolder) view.getTag();
             }
 
             final String word = mWordList.get(position);
 
-            ((TextView) view.findViewById(R.id.word)).setText(word);
+            viewHolder.mWord.setText(word);
 
-            TextView trash = (TextView) view.findViewById(R.id.trash);
-            trash.setTypeface(JustawayApplication.getFontello());
-
-            trash.setOnClickListener(new View.OnClickListener() {
+            viewHolder.mTrash.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     new AlertDialog.Builder(getActivity())

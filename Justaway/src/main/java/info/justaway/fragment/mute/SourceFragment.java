@@ -53,10 +53,6 @@ public class SourceFragment extends Fragment {
 
     public class SourceAdapter extends ArrayAdapter<String> {
 
-        private ArrayList<String> mSourceList = new ArrayList<String>();
-        private LayoutInflater mInflater;
-        private int mLayout;
-
         class ViewHolder {
             @InjectView(R.id.word) TextView mWord;
             @InjectView(R.id.trash) FontelloTextView mTrash;
@@ -65,6 +61,10 @@ public class SourceFragment extends Fragment {
                 ButterKnife.inject(this, view);
             }
         }
+
+        private ArrayList<String> mSourceList = new ArrayList<String>();
+        private LayoutInflater mInflater;
+        private int mLayout;
 
         public SourceAdapter(Context context, int textViewResourceId) {
             super(context, textViewResourceId);
