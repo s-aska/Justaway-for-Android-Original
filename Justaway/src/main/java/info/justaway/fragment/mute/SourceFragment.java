@@ -1,9 +1,11 @@
 package info.justaway.fragment.mute;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,11 +16,15 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import info.justaway.JustawayApplication;
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import info.justaway.R;
 import info.justaway.settings.MuteSettings;
+import info.justaway.widget.FontelloTextView;
 
 public class SourceFragment extends Fragment {
+
+    private SourceAdapter mSourceAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -27,16 +33,22 @@ public class SourceFragment extends Fragment {
             return null;
         }
 
-        SourceAdapter adapter = new SourceAdapter(getActivity(), R.layout.row_word);
+        mSourceAdapter = new SourceAdapter(getActivity(), R.layout.row_word);
 
         ListView listView = (ListView) v.findViewById(R.id.list);
-        listView.setAdapter(adapter);
+        listView.setAdapter(mSourceAdapter);
 
         for (String source : MuteSettings.getSources()) {
-            adapter.add(source);
+            mSourceAdapter.add(source);
         }
 
         return v;
+    }
+
+    public void removeSource(String source) {
+        mSourceAdapter.remove(source);
+        MuteSettings.removeSource(source);
+        MuteSettings.saveMuteSettings();
     }
 
     public class SourceAdapter extends ArrayAdapter<String> {
@@ -45,10 +57,19 @@ public class SourceFragment extends Fragment {
         private LayoutInflater mInflater;
         private int mLayout;
 
+        class ViewHolder {
+            @InjectView(R.id.word) TextView mWord;
+            @InjectView(R.id.trash) FontelloTextView mTrash;
+
+            ViewHolder(View view) {
+                ButterKnife.inject(this, view);
+            }
+        }
+
         public SourceAdapter(Context context, int textViewResourceId) {
             super(context, textViewResourceId);
-            this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            this.mLayout = textViewResourceId;
+            mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            mLayout = textViewResourceId;
         }
 
         @Override
@@ -64,51 +85,65 @@ public class SourceFragment extends Fragment {
 
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
+            ViewHolder viewHolder;
 
             // ビューを受け取る
             View view = convertView;
             if (view == null) {
                 // 受け取ったビューがnullなら新しくビューを生成
                 view = mInflater.inflate(this.mLayout, null);
-                assert view != null;
+                if (view == null) {
+                    return null;
+                }
+                viewHolder = new ViewHolder(view);
+                view.setTag(viewHolder);
+            } else {
+                viewHolder = (ViewHolder) view.getTag();
             }
 
             final String source = mSourceList.get(position);
 
-            ((TextView) view.findViewById(R.id.word)).setText(source);
-
-            TextView trash = (TextView) view.findViewById(R.id.trash);
-            trash.setTypeface(JustawayApplication.getFontello());
-
-            trash.setOnClickListener(new View.OnClickListener() {
+            viewHolder.mWord.setText(source);
+            viewHolder.mTrash.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    new AlertDialog.Builder(getActivity())
-                            .setTitle(String.format(getString(R.string.confirm_destroy_mute), source))
-                            .setPositiveButton(
-                                    R.string.button_yes,
-                                    new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                            remove(source);
-                                            MuteSettings.removeSource(source);
-                                            MuteSettings.saveMuteSettings();
-                                        }
-                                    }
-                            )
-                            .setNegativeButton(
-                                    R.string.button_no,
-                                    new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialog, int which) {
-                                        }
-                                    }
-                            )
-                            .show();
+                    final Bundle args = new Bundle(1);
+                    args.putString("source", source);
+
+                    final ConfirmDialogFragment fragment = new ConfirmDialogFragment();
+                    fragment.setArguments(args);
+                    fragment.show(getFragmentManager(), "dialog");
                 }
             });
 
             return view;
+        }
+    }
+
+    public final class ConfirmDialogFragment extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            final String source = getArguments().getString("source");
+            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle(String.format(getString(R.string.confirm_destroy_mute), source));
+            builder.setPositiveButton(
+                    R.string.button_yes,
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            removeSource(source);
+                        }
+                    }
+            );
+            builder.setNegativeButton(
+                            R.string.button_no,
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                }
+                            }
+                    );
+            return builder.create();
         }
     }
 }

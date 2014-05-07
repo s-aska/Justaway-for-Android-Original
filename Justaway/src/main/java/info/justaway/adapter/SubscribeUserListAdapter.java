@@ -12,18 +12,19 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import de.greenrobot.event.EventBus;
-import info.justaway.JustawayApplication;
 import info.justaway.R;
 import info.justaway.event.AlertDialogEvent;
 import info.justaway.model.AccessTokenManager;
 import info.justaway.model.UserListWithRegistered;
 import info.justaway.task.DestroyUserListSubscriptionTask;
 import info.justaway.task.DestroyUserListTask;
+import info.justaway.widget.FontelloTextView;
 import twitter4j.UserList;
 
 public class SubscribeUserListAdapter extends ArrayAdapter<UserListWithRegistered> {
@@ -31,6 +32,15 @@ public class SubscribeUserListAdapter extends ArrayAdapter<UserListWithRegistere
     private ArrayList<UserListWithRegistered> mUserLists = new ArrayList<UserListWithRegistered>();
     private LayoutInflater mInflater;
     private int mLayout;
+
+    static class ViewHolder {
+        @InjectView(R.id.checkbox) CheckBox mCheckBox;
+        @InjectView(R.id.trash) FontelloTextView mTrash;
+
+        ViewHolder(View view) {
+            ButterKnife.inject(this, view);
+        }
+    }
 
     public SubscribeUserListAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId);
@@ -61,6 +71,7 @@ public class SubscribeUserListAdapter extends ArrayAdapter<UserListWithRegistere
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        ViewHolder viewHolder;
 
         // ビューを受け取る
         View view = convertView;
@@ -70,17 +81,18 @@ public class SubscribeUserListAdapter extends ArrayAdapter<UserListWithRegistere
             if (view == null) {
                 return null;
             }
+            viewHolder = new ViewHolder(view);
+            view.setTag(viewHolder);
+        } else {
+            viewHolder = (ViewHolder) view.getTag();
         }
 
         final UserListWithRegistered userListWithRegistered = mUserLists.get(position);
         final UserList userList = userListWithRegistered.getUserList();
 
-        TextView trash = (TextView) view.findViewById(R.id.trash);
-        trash.setTypeface(JustawayApplication.getFontello());
-        trash.setOnClickListener(new View.OnClickListener() {
+        viewHolder.mTrash.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 if (AccessTokenManager.getUserId() == userList.getUser().getId()) {
                     // 自分のリストの場合はリスト削除
                     DialogFragment dialog = new DestroyUserListDialogFragment();
@@ -99,22 +111,19 @@ public class SubscribeUserListAdapter extends ArrayAdapter<UserListWithRegistere
             }
         });
 
-        CheckBox checkbox = (CheckBox) view.findViewById(R.id.checkbox);
-        if (checkbox != null) {
-            if (AccessTokenManager.getUserId() == userList.getUser().getId()) {
-                checkbox.setText(userList.getName());
-            } else {
-                checkbox.setText(userList.getFullName());
-            }
-            checkbox.setOnCheckedChangeListener(null);
-            checkbox.setChecked(userListWithRegistered.isRegistered());
-            checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                    userListWithRegistered.setRegistered(b);
-                }
-            });
+        if (AccessTokenManager.getUserId() == userList.getUser().getId()) {
+            viewHolder.mCheckBox.setText(userList.getName());
+        } else {
+            viewHolder.mCheckBox.setText(userList.getFullName());
         }
+        viewHolder.mCheckBox.setOnCheckedChangeListener(null);
+        viewHolder.mCheckBox.setChecked(userListWithRegistered.isRegistered());
+        viewHolder.mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                userListWithRegistered.setRegistered(b);
+            }
+        });
 
         return view;
     }

@@ -86,7 +86,6 @@ public class AccessTokenAdapter extends ArrayAdapter<AccessToken> {
         UserIconManager.displayUserIcon(accessToken.getUserId(), viewHolder.mIcon);
 
         viewHolder.mScreenName.setText(accessToken.getScreenName());
-        viewHolder.mTrash.setTypeface(JustawayApplication.getFontello());
 
         if (AccessTokenManager.getUserId() == accessToken.getUserId()) {
             viewHolder.mScreenName.setTextColor(mColorBlue);

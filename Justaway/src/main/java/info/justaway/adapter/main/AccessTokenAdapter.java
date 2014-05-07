@@ -12,7 +12,6 @@ import java.util.ArrayList;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import info.justaway.JustawayApplication;
 import info.justaway.R;
 import info.justaway.model.AccessTokenManager;
 import info.justaway.model.UserIconManager;
