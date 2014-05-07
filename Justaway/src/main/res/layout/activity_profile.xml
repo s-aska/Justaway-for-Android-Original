@@ -26,10 +26,10 @@
 
         <com.viewpagerindicator.CirclePageIndicator
             android:id="@+id/symbol"
-            android:layout_width="match_parent"
-            android:layout_gravity="bottom"
+            android:layout_width="64dp"
+            android:layout_gravity="bottom|center"
             android:layout_height="wrap_content"
-            android:padding="10dip"
+            android:padding="10dp"
             app:radius="4dp"/>
     </FrameLayout>
 
