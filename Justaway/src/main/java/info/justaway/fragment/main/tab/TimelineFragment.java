@@ -45,7 +45,7 @@ public class TimelineFragment extends BaseFragment {
         protected ResponseList<twitter4j.Status> doInBackground(Void... params) {
             try {
                 Paging paging = new Paging();
-                if (mMaxId > 0) {
+                if (mMaxId > 0 && !mReloading) {
                     paging.setMaxId(mMaxId - 1);
                     paging.setCount(BasicSettings.getPageCount());
                 }
@@ -68,7 +68,7 @@ public class TimelineFragment extends BaseFragment {
                 return;
             }
             if (mReloading) {
-                mAdapter.clear();
+                clear();
                 for (twitter4j.Status status : statuses) {
                     if (mMaxId <= 0L || mMaxId > status.getId()) {
                         mMaxId = status.getId();

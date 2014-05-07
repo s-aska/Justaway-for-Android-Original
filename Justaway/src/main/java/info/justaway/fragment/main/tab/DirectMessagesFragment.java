@@ -48,7 +48,7 @@ public class DirectMessagesFragment extends BaseFragment {
 
                 // 受信したDM
                 Paging directMessagesPaging = new Paging();
-                if (mDirectMessagesMaxId > 0) {
+                if (mDirectMessagesMaxId > 0 && !mReloading) {
                     directMessagesPaging.setMaxId(mDirectMessagesMaxId - 1);
                     directMessagesPaging.setCount(BasicSettings.getPageCount() / 2);
                 } else {
@@ -63,7 +63,7 @@ public class DirectMessagesFragment extends BaseFragment {
 
                 // 送信したDM
                 Paging sentDirectMessagesPaging = new Paging();
-                if (mSentDirectMessagesMaxId > 0) {
+                if (mSentDirectMessagesMaxId > 0 && !mReloading) {
                     sentDirectMessagesPaging.setMaxId(mSentDirectMessagesMaxId - 1);
                     sentDirectMessagesPaging.setCount(BasicSettings.getPageCount() / 2);
                 } else {
@@ -106,7 +106,7 @@ public class DirectMessagesFragment extends BaseFragment {
                 return;
             }
             if (mReloading) {
-                mAdapter.clear();
+                clear();
                 for (DirectMessage status : statuses) {
                     mAdapter.add(Row.newDirectMessage(status));
                 }

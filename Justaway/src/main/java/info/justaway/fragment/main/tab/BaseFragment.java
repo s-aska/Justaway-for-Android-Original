@@ -112,7 +112,6 @@ public abstract class BaseFragment extends Fragment implements OnRefreshListener
 
     public void reload() {
         mReloading = true;
-        clear();
         mPullToRefreshLayout.setRefreshing(true);
         taskExecute();
     }
