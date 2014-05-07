@@ -37,8 +37,8 @@ public class MuteActivity extends FragmentActivity {
         simplePagerAdapter.addTab(WordFragment.class, null);
         simplePagerAdapter.notifyDataSetChanged();
 
-        final int colorBlue = ThemeUtil.getThemeTextColor(this, R.attr.holo_blue);
-        final int colorWhite = ThemeUtil.getThemeTextColor(this, R.attr.text_color);
+        final int colorBlue = ThemeUtil.getThemeTextColor(R.attr.holo_blue);
+        final int colorWhite = ThemeUtil.getThemeTextColor(R.attr.text_color);
 
         /**
          * タブのラベル情報を配列に入れておく

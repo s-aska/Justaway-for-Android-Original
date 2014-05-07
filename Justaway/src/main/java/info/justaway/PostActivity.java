@@ -277,13 +277,13 @@ public class PostActivity extends FragmentActivity {
                 updateCount(s.toString());
                 if (s.toString().startsWith("D ")) {
                     mImgPath = null;
-                    ThemeUtil.setThemeTextColor(mContext, mImgButton, R.attr.menu_text_color_disabled);
+                    ThemeUtil.setThemeTextColor(mImgButton, R.attr.menu_text_color_disabled);
                     mImgButton.setEnabled(false);
                 } else {
                     if (mImgPath == null) {
-                        ThemeUtil.setThemeTextColor(mContext, mImgButton, R.attr.menu_text_color);
+                        ThemeUtil.setThemeTextColor(mImgButton, R.attr.menu_text_color);
                     } else {
-                        ThemeUtil.setThemeTextColor(mContext, mImgButton, R.attr.holo_blue);
+                        ThemeUtil.setThemeTextColor(mImgButton, R.attr.holo_blue);
                     }
                     mImgButton.setEnabled(true);
                 }
@@ -473,7 +473,7 @@ public class PostActivity extends FragmentActivity {
                         } else {
                             mImgPath = null;
                             mTweetButton.setEnabled(false);
-                            ThemeUtil.setThemeTextColor(mContext, mImgButton, R.attr.menu_text_color);
+                            ThemeUtil.setThemeTextColor(mImgButton, R.attr.menu_text_color);
                         }
                     } else if (e.getErrorCode() == ERROR_CODE_DUPLICATE_STATUS) {
                         MessageUtil.showToast(getString(R.string.toast_update_status_already));
@@ -505,7 +505,7 @@ public class PostActivity extends FragmentActivity {
         mImgPath = (File) imagePath;
 
         if (mImgPath != null && mImgPath.exists()) {
-            ThemeUtil.setThemeTextColor(mContext, mImgButton, R.attr.holo_blue);
+            ThemeUtil.setThemeTextColor(mImgButton, R.attr.holo_blue);
             mTweetButton.setEnabled(true);
         }
     }
@@ -569,7 +569,7 @@ public class PostActivity extends FragmentActivity {
             InputStream inputStream = getContentResolver().openInputStream(uri);
             mImgPath = FileUtil.writeToTempFile(getCacheDir(), inputStream);
             MessageUtil.showToast(R.string.toast_set_image_success);
-            ThemeUtil.setThemeTextColor(mContext, mImgButton, R.attr.holo_blue);
+            ThemeUtil.setThemeTextColor(mImgButton, R.attr.holo_blue);
             mTweetButton.setEnabled(true);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -584,7 +584,7 @@ public class PostActivity extends FragmentActivity {
         if (length < 0) {
             textColor = Color.RED;
         } else {
-            textColor = ThemeUtil.getThemeTextColor(mContext, R.attr.menu_text_color);
+            textColor = ThemeUtil.getThemeTextColor(R.attr.menu_text_color);
         }
         mCount.setTextColor(textColor);
         mCount.setText(String.valueOf(length));

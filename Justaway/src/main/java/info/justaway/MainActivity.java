@@ -173,8 +173,8 @@ public class MainActivity extends FragmentActivity {
         /**
          * ビューで使う変数の初期化処理
          */
-        mDefaultTextColor = ThemeUtil.getThemeTextColor(this, R.attr.menu_text_color);
-        mDisabledTextColor = ThemeUtil.getThemeTextColor(this, R.attr.menu_text_color_disabled);
+        mDefaultTextColor = ThemeUtil.getThemeTextColor(R.attr.menu_text_color);
+        mDisabledTextColor = ThemeUtil.getThemeTextColor(R.attr.menu_text_color_disabled);
 
         /**
          * ActionBarの初期化処理
@@ -219,8 +219,8 @@ public class MainActivity extends FragmentActivity {
          */
         mAccessTokenAdapter = new AccessTokenAdapter(this,
                 R.layout.row_switch_account,
-                ThemeUtil.getThemeTextColor(mActivity, R.attr.holo_blue),
-                ThemeUtil.getThemeTextColor(mActivity, R.attr.text_color));
+                ThemeUtil.getThemeTextColor(R.attr.holo_blue),
+                ThemeUtil.getThemeTextColor(R.attr.text_color));
 
         View drawerFooterView = getLayoutInflater().inflate(R.layout.drawer_menu, null, false);
         new DrawerHolder(drawerFooterView);
@@ -320,10 +320,10 @@ public class MainActivity extends FragmentActivity {
         }
         TwitterManager.resumeStreaming();
         if (TwitterManager.getTwitterStreamConnected()) {
-            ThemeUtil.setThemeTextColor(this, mActionBarHolder.streamingButton, R.attr.holo_green);
+            ThemeUtil.setThemeTextColor(mActionBarHolder.streamingButton, R.attr.holo_green);
         } else {
             if (BasicSettings.getStreamingMode()) {
-                ThemeUtil.setThemeTextColor(this, mActionBarHolder.streamingButton, R.attr.holo_red);
+                ThemeUtil.setThemeTextColor(mActionBarHolder.streamingButton, R.attr.holo_red);
             } else {
                 mActionBarHolder.streamingButton.setTextColor(Color.WHITE);
             }
@@ -648,7 +648,7 @@ public class MainActivity extends FragmentActivity {
         LinearLayout tab_menus = (LinearLayout) findViewById(R.id.tab_menus);
         Button button = (Button) tab_menus.getChildAt(mViewPager.getCurrentItem());
         if (button != null) {
-            ThemeUtil.setThemeTextColor(this, button, R.attr.menu_text_color);
+            ThemeUtil.setThemeTextColor(button, R.attr.menu_text_color);
         }
     }
 
@@ -897,13 +897,13 @@ public class MainActivity extends FragmentActivity {
         if (BasicSettings.getStreamingMode()) {
             switch (event.getStatus()) {
                 case STREAMING_CONNECT:
-                    ThemeUtil.setThemeTextColor(this, mActionBarHolder.streamingButton, R.attr.holo_green);
+                    ThemeUtil.setThemeTextColor(mActionBarHolder.streamingButton, R.attr.holo_green);
                     break;
                 case STREAMING_CLEANUP:
-                    ThemeUtil.setThemeTextColor(this, mActionBarHolder.streamingButton, R.attr.holo_orange);
+                    ThemeUtil.setThemeTextColor(mActionBarHolder.streamingButton, R.attr.holo_orange);
                     break;
                 case STREAMING_DISCONNECT:
-                    ThemeUtil.setThemeTextColor(this, mActionBarHolder.streamingButton, R.attr.holo_red);
+                    ThemeUtil.setThemeTextColor(mActionBarHolder.streamingButton, R.attr.holo_red);
                     break;
             }
         } else {
@@ -938,9 +938,9 @@ public class MainActivity extends FragmentActivity {
             return;
         }
         if (mViewPager.getCurrentItem() == position && event.getAutoScroll()) {
-            ThemeUtil.setThemeTextColor(this, button, R.attr.menu_text_color);
+            ThemeUtil.setThemeTextColor(button, R.attr.menu_text_color);
         } else {
-            ThemeUtil.setThemeTextColor(this, button, R.attr.holo_blue);
+            ThemeUtil.setThemeTextColor(button, R.attr.holo_blue);
         }
     }
 }

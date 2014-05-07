@@ -57,8 +57,8 @@ public class UserListActivity extends FragmentActivity {
         }
         mIsFollowing = mUserList.isFollowing();
 
-        mColorBlue = ThemeUtil.getThemeTextColor(this, R.attr.holo_blue);
-        mColorWhite = ThemeUtil.getThemeTextColor(this, R.attr.text_color);
+        mColorBlue = ThemeUtil.getThemeTextColor(R.attr.holo_blue);
+        mColorWhite = ThemeUtil.getThemeTextColor(R.attr.text_color);
         mUsersLabel.setTextColor(mColorBlue);
 
         setTitle(mUserList.getFullName());

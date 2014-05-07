@@ -283,8 +283,8 @@ public class ProfileActivity extends FragmentActivity implements
         };
 
 
-        final int colorBlue = ThemeUtil.getThemeTextColor(this, R.attr.holo_blue);
-        final int colorWhite = ThemeUtil.getThemeTextColor(this, R.attr.text_color);
+        final int colorBlue = ThemeUtil.getThemeTextColor(R.attr.holo_blue);
+        final int colorWhite = ThemeUtil.getThemeTextColor(R.attr.text_color);
 
         tabs[0].setTextColor(colorBlue);
 

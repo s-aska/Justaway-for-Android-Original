@@ -9,28 +9,29 @@ import info.justaway.R;
 import info.justaway.settings.BasicSettings;
 
 public class ThemeUtil {
+    private static Resources.Theme sTheme;
+
     public static void setTheme(Activity activity) {
         if (BasicSettings.getThemeName().equals("black")) {
             activity.setTheme(R.style.BlackTheme);
         } else {
             activity.setTheme(R.style.WhiteTheme);
         }
+        sTheme = activity.getTheme();
     }
 
-    public static void setThemeTextColor(Activity activity, TextView view, int resourceId) {
+    public static void setThemeTextColor(TextView view, int resourceId) {
         TypedValue outValue = new TypedValue();
-        Resources.Theme theme = activity.getTheme();
-        if (theme != null) {
-            theme.resolveAttribute(resourceId, outValue, true);
+        if (sTheme != null) {
+            sTheme.resolveAttribute(resourceId, outValue, true);
             view.setTextColor(outValue.data);
         }
     }
 
-    public static int getThemeTextColor(Activity activity, int resourceId) {
+    public static int getThemeTextColor(int resourceId) {
         TypedValue outValue = new TypedValue();
-        Resources.Theme theme = activity.getTheme();
-        if (theme != null) {
-            theme.resolveAttribute(resourceId, outValue, true);
+        if (sTheme != null) {
+            sTheme.resolveAttribute(resourceId, outValue, true);
         }
         return outValue.data;
     }

@@ -1,6 +1,5 @@
 package info.justaway.adapter;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -419,7 +418,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         if (BuildConfig.DEBUG) {
             if (via.equals("Justaway for Android")) {
                 if (mColorBlue == 0) {
-                    mColorBlue = ThemeUtil.getThemeTextColor((Activity) mContext, R.attr.holo_blue);
+                    mColorBlue = ThemeUtil.getThemeTextColor(R.attr.holo_blue);
                 }
                 holder.mVia.setTextColor(mColorBlue);
             } else {

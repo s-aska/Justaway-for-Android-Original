@@ -1,6 +1,5 @@
 package info.justaway.adapter.account;
 
-import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +12,6 @@ import java.util.ArrayList;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import info.justaway.JustawayApplication;
 import info.justaway.R;
 import info.justaway.listener.OnTrashListener;
 import info.justaway.model.AccessTokenManager;
@@ -48,7 +46,7 @@ public class AccessTokenAdapter extends ArrayAdapter<AccessToken> {
         super(context, textViewResourceId);
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mLayout = textViewResourceId;
-        mColorBlue = ThemeUtil.getThemeTextColor((Activity) context, R.attr.holo_blue);
+        mColorBlue = ThemeUtil.getThemeTextColor(R.attr.holo_blue);
     }
 
     @Override
