@@ -121,8 +121,6 @@
     <string name="notification_favorite_ticker">"さんがお気に入りに登録しました: "</string>
     <string name="notification_retweet_ticker">"さんがリツイート: "</string>
     <string name="official_website">http://justaway.info/</string>
-    <string name="profile_pointer">●　○</string>
-    <string name="profile_pointer_right">○　●</string>
     <string name="progress_loading">読み込み中！！１１１１１</string>
     <string name="progress_process">処理中！！１１１１１</string>
     <string name="progress_sending">送信中！！１１１１１</string>
