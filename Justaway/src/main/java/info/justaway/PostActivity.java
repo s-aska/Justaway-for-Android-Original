@@ -9,14 +9,10 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.net.Uri;
-import android.os.BatteryManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.MediaStore;
@@ -369,61 +365,12 @@ public class PostActivity extends FragmentActivity {
 
     @OnClick(R.id.suddenly_button)
     void setSuddenly() {
+        assert mStatusText.getText() != null;
         String text = mStatusText.getText().toString();
         int selectStart = mStatusText.getSelectionStart();
         int selectEnd = mStatusText.getSelectionEnd();
 
-        // 突然の死対象のテキストを取得
-        String targetText;
-        if (selectStart != selectEnd) {
-            targetText = text.substring(selectStart, selectEnd) + "\n";
-        } else {
-            targetText = text + "\n";
-        }
-
-        String top = "";
-        String under = "";
-        Paint paint = new Paint();
-        float maxTextWidth = 0;
-
-        // 対象のテキストの最大文字列幅を取得
-        String[] lines = targetText.split("\\n");
-        for (String line : lines) {
-            if (paint.measureText(line) > maxTextWidth) {
-                maxTextWidth = paint.measureText(line);
-            }
-        }
-
-        // 上と下を作る
-        int i;
-        for (i = 0; (maxTextWidth / 12) > i; i++) {
-            top += "人";
-        }
-        for (i = 0; (maxTextWidth / 13) > i; i++) {
-            under += "^Y";
-        }
-
-        String suddenly = "";
-        for (String line : lines) {
-            float spaceWidth = maxTextWidth - paint.measureText(line);
-            // maxとくらべて13以上差がある場合はスペースを挿入して調整する
-            if (spaceWidth >= 12) {
-                int spaceNumber = (int) spaceWidth / 12;
-                for (i = 0; i < spaceNumber; i++) {
-                    line += "　";
-                }
-                if ((spaceWidth % 12) >= 6) {
-                    line += "　";
-                }
-            }
-            suddenly = suddenly.concat("＞ " + line + " ＜\n");
-        }
-
-        if (selectStart != selectEnd) {
-            mStatusText.setText(text.substring(0, selectStart) + "＿" + top + "＿\n" + suddenly + "￣" + under + "￣" + text.substring(selectEnd));
-        } else {
-            mStatusText.setText("＿" + top + "＿\n" + suddenly + "￣" + under + "￣");
-        }
+        mStatusText.setText(TwitterUtil.convertSuddenly(text, selectStart, selectEnd));
     }
 
     @OnClick(R.id.img_button)
@@ -682,33 +629,8 @@ public class PostActivity extends FragmentActivity {
                 mStatusText.setText("");
                 break;
             case R.id.tweet_battery:
-                Intent batteryIntent = registerReceiver(null,
-                        new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-
-                if (batteryIntent == null) {
-                    break;
-                }
-                int level = batteryIntent.getIntExtra("level", 0);
-                int scale = batteryIntent.getIntExtra("scale", 100);
-                int status = batteryIntent.getIntExtra("status", 0);
-                int battery = level * 100 / scale;
-                String model = Build.MODEL;
-
-                switch (status) {
-                    case BatteryManager.BATTERY_STATUS_FULL:
-                        mStatusText.setText(model + " のバッテリー残量：" + battery + "% (0゜・◡・♥​​)");
-                        break;
-                    case BatteryManager.BATTERY_STATUS_CHARGING:
-                        mStatusText.setText(model + " のバッテリー残量：" + battery + "% 充電なう(・◡・♥​​)");
-                        break;
-                    default:
-                        if (level <= 14) {
-                            mStatusText.setText(model + " のバッテリー残量：" + battery + "% (◞‸◟)");
-                        } else {
-                            mStatusText.setText(model + " のバッテリー残量：" + battery + "% (・◡・♥​​)");
-                        }
-                        break;
-                }
+                // バッテリー情報をセットする
+                mStatusText.setText(TwitterUtil.getBatteryStatus(mContext));
                 break;
         }
         return true;
