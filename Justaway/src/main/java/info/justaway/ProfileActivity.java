@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -259,6 +260,46 @@ public class ProfileActivity extends FragmentActivity implements
         simplePagerAdapter.addTab(DescriptionFragment.class, args);
         simplePagerAdapter.notifyDataSetChanged();
         mSymbol.setViewPager(mPager);
+
+        /**
+         * スワイプの度合いに応じて背景色を暗くする
+         * これは透明度＆背景色黒で実現している、背景色黒だけだと背景画像が見えないが、
+         * 透明度を指定することで背景画像の表示と白色のテキストの視認性を両立している
+         */
+        mPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+                /**
+                 * 背景色の透過度の範囲は00〜99とする（FFは真っ黒で背景画像が見えない）
+                 * 99は10進数で153
+                 * positionは0が1ページ目（スワイプ中含む）で1だと完全に2ページ目に遷移した状態
+                 * positionOffsetには0.0〜1.0のスクロール率がかえってくる、真ん中だと0.5
+                 * hexにはpositionOffsetに応じて00〜99（153）の値が入るように演算を行う
+                 * 例えばpositionOffsetが0.5の場合はhexは4dになる
+                 * positionが1の場合は最大値（99）を無条件で設定している
+                 */
+
+                final int maxHex = 153; // 0x99
+                String hex = position == 1 ? "99" : String.format("%02X", (int) (maxHex * positionOffset));
+                mPager.setBackgroundColor(Color.parseColor("#" + hex + "000000"));
+
+                // OnPageChangeListenerは1つしかセットできないのでCirclePageIndicatorの奴も呼んであげる
+                mSymbol.onPageScrolled(position, positionOffset, positionOffsetPixels);
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                // OnPageChangeListenerは1つしかセットできないのでCirclePageIndicatorの奴も呼んであげる
+                mSymbol.onPageSelected(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                // OnPageChangeListenerは1つしかセットできないのでCirclePageIndicatorの奴も呼んであげる
+                mSymbol.onPageScrollStateChanged(state);
+            }
+        });
 
         // ユーザリスト用のタブ
         SimplePagerAdapter listPagerAdapter = new SimplePagerAdapter(this, mListPager);
