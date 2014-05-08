@@ -67,6 +67,7 @@
         android:id="@+id/action_bar_search_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginBottom="2dp"
         android:visibility="gone">
 
         <info.justaway.widget.AutoCompleteEditText
