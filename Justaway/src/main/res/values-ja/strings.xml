@@ -214,5 +214,6 @@
     <string name="hint_list_name">25文字以内</string>
     <string name="hint_list_description">100文字以内</string>
     <string name="label_account_setting">アカウント管理</string>
+    <string name="menu_open_aclog">Aclogで開く</string>
 
 </resources>

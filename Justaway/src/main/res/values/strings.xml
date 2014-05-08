@@ -218,5 +218,6 @@
     <string name="hint_list_name">25 characters or less</string>
     <string name="hint_list_description">100 characters or less</string>
     <string name="label_account_setting">Account Setting</string>
+    <string name="menu_open_aclog">Open Aclog</string>
 
 </resources>
