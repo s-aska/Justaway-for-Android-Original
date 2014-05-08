@@ -80,6 +80,7 @@ public class MainActivity extends FragmentActivity {
     private static final int REQUEST_ACCOUNT_SETTING = 200;
     private static final int REQUEST_SETTINGS = 300;
     private static final int REQUEST_TAB_SETTINGS = 400;
+    private static final int REQUEST_SEARCH = 500;
     private static final int ERROR_CODE_DUPLICATE_STATUS = 187;
     private static final Pattern USER_LIST_PATTERN = Pattern.compile("^(@[a-zA-Z0-9_]+)/(.*)$");
     private MainPagerAdapter mMainPagerAdapter;
@@ -278,6 +279,9 @@ public class MainActivity extends FragmentActivity {
                     finish();
                     startActivity(new Intent(this, this.getClass()));
                 }
+                break;
+            case REQUEST_SEARCH:
+                cancelSearch();
                 break;
             default:
                 break;
@@ -815,30 +819,32 @@ public class MainActivity extends FragmentActivity {
                 if (mActionBarHolder.searchText.getText() == null) {
                     return;
                 }
-                Intent intent = null;
+                Intent intent;
                 String searchWord = mActionBarHolder.searchText.getString();
                 KeyboardUtil.hideKeyboard(mActionBarHolder.searchText);
                 if (mUserSearchAdapter.isSavedMode()) {
                     intent = new Intent(mActivity, SearchActivity.class);
                     intent.putExtra("query", searchWord);
-                    startActivity(intent);
+                    startActivityForResult(intent, REQUEST_SEARCH);
                     return;
                 }
                 switch (i) {
                     case 0:
                         intent = new Intent(mActivity, SearchActivity.class);
                         intent.putExtra("query", searchWord);
+                        startActivityForResult(intent, REQUEST_SEARCH);
                         break;
                     case 1:
                         intent = new Intent(mActivity, UserSearchActivity.class);
                         intent.putExtra("query", searchWord);
+                        startActivityForResult(intent, REQUEST_SEARCH);
                         break;
                     case 2:
                         intent = new Intent(mActivity, ProfileActivity.class);
                         intent.putExtra("screenName", searchWord);
+                        startActivity(intent);
                         break;
                 }
-                startActivity(intent);
             }
         };
     }
