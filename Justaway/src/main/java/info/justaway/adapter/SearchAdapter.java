@@ -17,7 +17,7 @@ import info.justaway.model.TwitterManager;
 import twitter4j.ResponseList;
 import twitter4j.SavedSearch;
 
-public class UserSearchAdapter extends ArrayAdapter<String> implements Filterable {
+public class SearchAdapter extends ArrayAdapter<String> implements Filterable {
 
     private ArrayList<String> mStrings = new ArrayList<String>();
     private ArrayList<String> mSavedSearches = new ArrayList<String>();
@@ -27,7 +27,7 @@ public class UserSearchAdapter extends ArrayAdapter<String> implements Filterabl
     private Context mContext;
     private boolean mSavedMode = false;
 
-    public UserSearchAdapter(Context context, int textViewResourceId) {
+    public SearchAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId);
         mContext = context;
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

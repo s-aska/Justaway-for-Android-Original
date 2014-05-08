@@ -39,7 +39,7 @@ import butterknife.OnClick;
 import butterknife.OnItemClick;
 import butterknife.OnLongClick;
 import de.greenrobot.event.EventBus;
-import info.justaway.adapter.UserSearchAdapter;
+import info.justaway.adapter.SearchAdapter;
 import info.justaway.adapter.main.AccessTokenAdapter;
 import info.justaway.adapter.main.MainPagerAdapter;
 import info.justaway.event.AlertDialogEvent;
@@ -91,7 +91,7 @@ public class MainActivity extends FragmentActivity {
     private AccessTokenAdapter mAccessTokenAdapter;
     private AccessToken mSwitchAccessToken;
     private boolean mFirstBoot = true;
-    private UserSearchAdapter mUserSearchAdapter;
+    private SearchAdapter mSearchAdapter;
     private int mDefaultTextColor;
     private int mDisabledTextColor;
     private ActionBarHolder mActionBarHolder;
@@ -193,9 +193,9 @@ public class MainActivity extends FragmentActivity {
                 if (actionBar.getCustomView() == null) {
                     actionBar.setCustomView(R.layout.action_bar_main);
                     mActionBarHolder = new ActionBarHolder(actionBar.getCustomView());
-                    mUserSearchAdapter = new UserSearchAdapter(this, R.layout.row_auto_complete);
+                    mSearchAdapter = new SearchAdapter(this, R.layout.row_auto_complete);
                     mActionBarHolder.searchText.setThreshold(0);
-                    mActionBarHolder.searchText.setAdapter(mUserSearchAdapter);
+                    mActionBarHolder.searchText.setAdapter(mSearchAdapter);
                     mActionBarHolder.searchText.setOnItemClickListener(getActionBarAutoCompleteOnClickListener());
                 }
             }
@@ -822,7 +822,7 @@ public class MainActivity extends FragmentActivity {
                 Intent intent;
                 String searchWord = mActionBarHolder.searchText.getString();
                 KeyboardUtil.hideKeyboard(mActionBarHolder.searchText);
-                if (mUserSearchAdapter.isSavedMode()) {
+                if (mSearchAdapter.isSavedMode()) {
                     intent = new Intent(mActivity, SearchActivity.class);
                     intent.putExtra("query", searchWord);
                     startActivityForResult(intent, REQUEST_SEARCH);
