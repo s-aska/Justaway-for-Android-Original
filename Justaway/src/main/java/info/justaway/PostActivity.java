@@ -71,6 +71,7 @@ public class PostActivity extends FragmentActivity {
     private static final int REQUEST_TWICCA = 3;
     private static final int OPTION_MENU_GROUP_TWICCA = 1;
     private static final int ERROR_CODE_DUPLICATE_STATUS = 187;
+    private static final int ERROR_CODE_NOT_FOLLOW_DM = 150;
 
     private Activity mContext;
     private Long mInReplyToStatusId;
@@ -399,6 +400,8 @@ public class PostActivity extends FragmentActivity {
                         if (!mWidgetMode) {
                             finish();
                         }
+                    } else if (e.getErrorCode() == ERROR_CODE_NOT_FOLLOW_DM) {
+                        MessageUtil.showToast(getString(R.string.toast_update_status_not_Follow));
                     } else {
                         MessageUtil.showToast(R.string.toast_update_status_failure);
                     }
