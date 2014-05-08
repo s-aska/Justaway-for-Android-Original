@@ -31,8 +31,12 @@ public class TimelineFragment extends BaseFragment {
      */
     @Override
     protected boolean isSkip(Row row) {
-        Status retweet = row.getStatus().getRetweetedStatus();
-        return retweet != null && retweet.getUser().getId() == AccessTokenManager.getUserId();
+        if (row.isStatus()) {
+            Status retweet = row.getStatus().getRetweetedStatus();
+            return retweet != null && retweet.getUser().getId() == AccessTokenManager.getUserId();
+        } else {
+            return true;
+        }
     }
 
     @Override

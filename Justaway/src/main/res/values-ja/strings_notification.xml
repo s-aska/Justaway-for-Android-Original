@@ -3,6 +3,7 @@
     <string name="pref_title_notification_on">通知</string>
     <string name="pref_description_notification_on">ストリーミング接続中のみ有効</string>
     <string name="pref_title_notification_reply_on">リプを通知</string>
+    <string name="pref_title_notification_message_on">DMを通知</string>
     <string name="pref_title_notification_favorite_on">ふぁぼを通知</string>
     <string name="pref_title_notification_retweet_on">RTを通知</string>
     <string name="pref_title_notification_vibrate_on">バイブレーションする</string>
