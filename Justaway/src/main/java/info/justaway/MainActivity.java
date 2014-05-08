@@ -194,6 +194,7 @@ public class MainActivity extends FragmentActivity {
                     actionBar.setCustomView(R.layout.action_bar_main);
                     mActionBarHolder = new ActionBarHolder(actionBar.getCustomView());
                     mSearchAdapter = new SearchAdapter(this, R.layout.row_auto_complete);
+                    mActionBarHolder.searchText.setTypeface(JustawayApplication.getFontello());
                     mActionBarHolder.searchText.setThreshold(0);
                     mActionBarHolder.searchText.setAdapter(mSearchAdapter);
                     mActionBarHolder.searchText.setOnItemClickListener(getActionBarAutoCompleteOnClickListener());
