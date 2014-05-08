@@ -197,6 +197,7 @@ public class MainActivity extends FragmentActivity {
                     mActionBarHolder.searchText.setThreshold(0);
                     mActionBarHolder.searchText.setAdapter(mSearchAdapter);
                     mActionBarHolder.searchText.setOnItemClickListener(getActionBarAutoCompleteOnClickListener());
+                    mActionBarHolder.searchText.setOnKeyListener(getOnKeyListener());
                 }
             }
         }
@@ -845,6 +846,29 @@ public class MainActivity extends FragmentActivity {
                         startActivity(intent);
                         break;
                 }
+            }
+        };
+    }
+
+    // エンターキーで検索する
+    private View.OnKeyListener getOnKeyListener() {
+        return new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN
+                        && keyCode == KeyEvent.KEYCODE_ENTER) {
+                    if (mActionBarHolder.searchText.getText() == null) {
+                        return false;
+                    }
+                    Intent intent;
+                    String searchWord = mActionBarHolder.searchText.getString();
+                    KeyboardUtil.hideKeyboard(mActionBarHolder.searchText);
+                    intent = new Intent(mActivity, SearchActivity.class);
+                    intent.putExtra("query", searchWord);
+                    startActivityForResult(intent, REQUEST_SEARCH);
+                    return true;
+                }
+                return false;
             }
         };
     }
