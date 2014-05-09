@@ -15,7 +15,7 @@ dependencies {
     compile "com.viewpagerindicator:library:${viewpagerIndicatorVersion}"
     apt "com.jakewharton:butterknife:${butterKnifeVersion}"
 
-    compile project(':plugins:ActionBar-PullToRefresh:library')
+    compile "com.github.chrisbanes.actionbarpulltorefresh:library:0.9.9"
     compile fileTree(dir: 'libs', include: '*.jar')
 }
 
