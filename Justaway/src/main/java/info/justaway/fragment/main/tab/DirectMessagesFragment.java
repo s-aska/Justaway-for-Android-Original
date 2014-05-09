@@ -1,21 +1,16 @@
 package info.justaway.fragment.main.tab;
 
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ListView;
-import android.widget.ProgressBar;
 
 import java.util.Collections;
 import java.util.Comparator;
 
-import info.justaway.JustawayApplication;
-import info.justaway.R;
-import info.justaway.adapter.TwitterAdapter;
-import info.justaway.event.model.DestroyDirectMessageEvent;
+import info.justaway.event.model.StreamingDestroyMessageEvent;
 import info.justaway.model.Row;
+import info.justaway.model.TabManager;
+import info.justaway.model.TwitterManager;
+import info.justaway.settings.BasicSettings;
 import twitter4j.DirectMessage;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
@@ -23,101 +18,39 @@ import twitter4j.Twitter;
 
 public class DirectMessagesFragment extends BaseFragment {
 
-    private Boolean mAutoLoader = false;
-    private Boolean mReload = false;
-    private long mDirectMessagesMaxId = 0L;
-    private long mSentDirectMessagesMaxId = 0L;
-    private ProgressBar mFooter;
-
+    /**
+     * このタブを表す固有のID、ユーザーリストで正数を使うため負数を使う
+     */
     public long getTabId() {
-        return -3L;
+        return TabManager.DIRECT_MESSAGES_TAB_ID;
     }
 
+    /**
+     * このタブに表示するツイートの定義
+     * @param row ストリーミングAPIから受け取った情報（ツイートやDM）
+     * @return trueは表示しない、falseは表示する
+     */
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = super.onCreateView(inflater, container, savedInstanceState);
-        mFooter = (ProgressBar) v.findViewById(R.id.guruguru);
-        return v;
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        if (mDirectMessagesMaxId == 0L && mSentDirectMessagesMaxId == 0L) {
-            mDirectMessagesMaxId = -1L;
-            new DirectMessagesTask().execute();
-        }
-    }
-
-    @Override
-    public void reload() {
-        mReload = true;
-        clear();
-        getPullToRefreshLayout().setRefreshing(true);
-        new DirectMessagesTask().execute();
-    }
-
-    @Override
-    public void clear() {
-        mDirectMessagesMaxId = 0L;
-        mSentDirectMessagesMaxId = 0L;
-        TwitterAdapter adapter = getListAdapter();
-        if (adapter != null) {
-            adapter.clear();
-        }
-    }
-
-    @Override
-    public void onRefreshStarted(View view) {
-        reload();
-    }
-
-    @Override
-    protected void additionalReading() {
-        if (!mAutoLoader || mReload) {
-            return;
-        }
-        mFooter.setVisibility(View.VISIBLE);
-        mAutoLoader = false;
-        new DirectMessagesTask().execute();
-    }
-
-    public void onEventMainThread(DestroyDirectMessageEvent event) {
-        remove(event.getStatusId());
-    }
-
-    @Override
-    protected boolean skip(Row row) {
+    protected boolean isSkip(Row row) {
         return !row.isDirectMessage();
     }
 
-    public void remove(final long directMessageId) {
-        ListView listView = getListView();
-        if (listView == null) {
-            return;
-        }
-
-        final TwitterAdapter adapter = (TwitterAdapter) listView.getAdapter();
-        listView.post(new Runnable() {
-            @Override
-            public void run() {
-                adapter.removeDirectMessage(directMessageId);
-            }
-        });
+    @Override
+    protected void taskExecute() {
+        new DirectMessagesTask().execute();
     }
 
     private class DirectMessagesTask extends AsyncTask<Void, Void, ResponseList<DirectMessage>> {
         @Override
         protected ResponseList<DirectMessage> doInBackground(Void... params) {
             try {
-                JustawayApplication application = JustawayApplication.getApplication();
-                Twitter twitter = application.getTwitter();
+                Twitter twitter = TwitterManager.getTwitter();
 
                 // 受信したDM
                 Paging directMessagesPaging = new Paging();
-                if (mDirectMessagesMaxId > 0) {
+                if (mDirectMessagesMaxId > 0 && !mReloading) {
                     directMessagesPaging.setMaxId(mDirectMessagesMaxId - 1);
-                    directMessagesPaging.setCount(application.getPageCount() / 2);
+                    directMessagesPaging.setCount(BasicSettings.getPageCount() / 2);
                 } else {
                     directMessagesPaging.setCount(10);
                 }
@@ -130,9 +63,9 @@ public class DirectMessagesFragment extends BaseFragment {
 
                 // 送信したDM
                 Paging sentDirectMessagesPaging = new Paging();
-                if (mSentDirectMessagesMaxId > 0) {
+                if (mSentDirectMessagesMaxId > 0 && !mReloading) {
                     sentDirectMessagesPaging.setMaxId(mSentDirectMessagesMaxId - 1);
-                    sentDirectMessagesPaging.setCount(application.getPageCount() / 2);
+                    sentDirectMessagesPaging.setCount(BasicSettings.getPageCount() / 2);
                 } else {
                     sentDirectMessagesPaging.setCount(10);
                 }
@@ -155,6 +88,8 @@ public class DirectMessagesFragment extends BaseFragment {
                     }
                 });
                 return directMessages;
+            } catch (OutOfMemoryError e) {
+                return null;
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -165,26 +100,33 @@ public class DirectMessagesFragment extends BaseFragment {
         protected void onPostExecute(ResponseList<DirectMessage> statuses) {
             mFooter.setVisibility(View.GONE);
             if (statuses == null || statuses.size() == 0) {
-                mReload = false;
-                getPullToRefreshLayout().setRefreshComplete();
-                getListView().setVisibility(View.VISIBLE);
+                mReloading = false;
+                mPullToRefreshLayout.setRefreshComplete();
+                mListView.setVisibility(View.VISIBLE);
                 return;
             }
-            TwitterAdapter adapter = getListAdapter();
-            if (mReload) {
-                adapter.clear();
+            if (mReloading) {
+                clear();
                 for (DirectMessage status : statuses) {
-                    adapter.add(Row.newDirectMessage(status));
+                    mAdapter.add(Row.newDirectMessage(status));
                 }
-                mReload = false;
-                getPullToRefreshLayout().setRefreshComplete();
+                mReloading = false;
+                mPullToRefreshLayout.setRefreshComplete();
             } else {
                 for (DirectMessage status : statuses) {
-                    adapter.extensionAdd(Row.newDirectMessage(status));
+                    mAdapter.extensionAdd(Row.newDirectMessage(status));
                 }
                 mAutoLoader = true;
-                getListView().setVisibility(View.VISIBLE);
+                mListView.setVisibility(View.VISIBLE);
             }
         }
+    }
+
+    /**
+     * DM削除通知
+     * @param event DMのID
+     */
+    public void onEventMainThread(StreamingDestroyMessageEvent event) {
+        mAdapter.removeDirectMessage(event.getStatusId());
     }
 }

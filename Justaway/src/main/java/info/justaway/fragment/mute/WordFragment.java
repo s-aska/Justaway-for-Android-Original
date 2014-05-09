@@ -15,13 +15,15 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import info.justaway.JustawayApplication;
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import info.justaway.R;
 import info.justaway.settings.MuteSettings;
+import info.justaway.util.KeyboardUtil;
+import info.justaway.util.MessageUtil;
+import info.justaway.widget.FontelloTextView;
 
 public class WordFragment extends Fragment {
-
-    private MuteSettings mMuteSettings;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -35,9 +37,7 @@ public class WordFragment extends Fragment {
         ListView listView = (ListView) v.findViewById(R.id.list);
         listView.setAdapter(adapter);
 
-        final JustawayApplication application = JustawayApplication.getApplication();
-        mMuteSettings = application.getMuteSettings();
-        for (String word : mMuteSettings.getWords()) {
+        for (String word : MuteSettings.getWords()) {
             adapter.add(word);
         }
 
@@ -45,7 +45,7 @@ public class WordFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 final EditText editText = new EditText(getActivity());
-                application.showKeyboard(editText);
+                KeyboardUtil.showKeyboard(editText);
                 new AlertDialog.Builder(getActivity())
                         .setTitle(R.string.title_create_mute_word)
                         .setView(editText)
@@ -62,9 +62,9 @@ public class WordFragment extends Fragment {
                                             return;
                                         }
                                         adapter.add(word);
-                                        mMuteSettings.addWord(word);
-                                        mMuteSettings.saveMuteSettings();
-                                        JustawayApplication.showToast(R.string.toast_create_mute);
+                                        MuteSettings.addWord(word);
+                                        MuteSettings.saveMuteSettings();
+                                        MessageUtil.showToast(R.string.toast_create_mute);
                                     }
                                 }
                         )
@@ -84,6 +84,15 @@ public class WordFragment extends Fragment {
     }
 
     public class WordAdapter extends ArrayAdapter<String> {
+
+        class ViewHolder {
+            @InjectView(R.id.word) TextView mWord;
+            @InjectView(R.id.trash) FontelloTextView mTrash;
+
+            ViewHolder(View view) {
+                ButterKnife.inject(this, view);
+            }
+        }
 
         private ArrayList<String> mWordList = new ArrayList<String>();
         private LayoutInflater mInflater;
@@ -108,23 +117,27 @@ public class WordFragment extends Fragment {
 
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
+            ViewHolder viewHolder;
 
             // ビューを受け取る
             View view = convertView;
             if (view == null) {
                 // 受け取ったビューがnullなら新しくビューを生成
                 view = mInflater.inflate(this.mLayout, null);
-                assert view != null;
+                if (view == null) {
+                    return null;
+                }
+                viewHolder = new ViewHolder(view);
+                view.setTag(viewHolder);
+            } else {
+                viewHolder = (ViewHolder) view.getTag();
             }
 
             final String word = mWordList.get(position);
 
-            ((TextView) view.findViewById(R.id.word)).setText(word);
+            viewHolder.mWord.setText(word);
 
-            TextView trash = (TextView) view.findViewById(R.id.trash);
-            trash.setTypeface(JustawayApplication.getFontello());
-
-            trash.setOnClickListener(new View.OnClickListener() {
+            viewHolder.mTrash.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     new AlertDialog.Builder(getActivity())
@@ -135,8 +148,8 @@ public class WordFragment extends Fragment {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
                                             remove(word);
-                                            mMuteSettings.removeWord(word);
-                                            mMuteSettings.saveMuteSettings();
+                                            MuteSettings.removeWord(word);
+                                            MuteSettings.saveMuteSettings();
                                         }
                                     }
                             )

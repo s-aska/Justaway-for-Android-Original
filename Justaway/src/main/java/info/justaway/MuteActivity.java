@@ -12,13 +12,14 @@ import info.justaway.adapter.SimplePagerAdapter;
 import info.justaway.fragment.mute.SourceFragment;
 import info.justaway.fragment.mute.UserFragment;
 import info.justaway.fragment.mute.WordFragment;
+import info.justaway.util.ThemeUtil;
 
 public class MuteActivity extends FragmentActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        JustawayApplication.getApplication().setTheme(this);
+        ThemeUtil.setTheme(this);
         setContentView(R.layout.activity_mute);
 
         ActionBar actionBar = getActionBar();
@@ -36,8 +37,8 @@ public class MuteActivity extends FragmentActivity {
         simplePagerAdapter.addTab(WordFragment.class, null);
         simplePagerAdapter.notifyDataSetChanged();
 
-        final int colorBlue = JustawayApplication.getApplication().getThemeTextColor(this, R.attr.holo_blue);
-        final int colorWhite = JustawayApplication.getApplication().getThemeTextColor(this, R.attr.text_color);
+        final int colorBlue = ThemeUtil.getThemeTextColor(R.attr.holo_blue);
+        final int colorWhite = ThemeUtil.getThemeTextColor(R.attr.text_color);
 
         /**
          * タブのラベル情報を配列に入れておく

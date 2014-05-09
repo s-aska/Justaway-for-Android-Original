@@ -2,7 +2,6 @@ package info.justaway.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,65 +9,45 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import info.justaway.JustawayApplication;
 import info.justaway.ProfileActivity;
 import info.justaway.R;
+import info.justaway.util.ImageUtil;
+import info.justaway.widget.FontelloTextView;
 import twitter4j.URLEntity;
 import twitter4j.User;
 
 public class UserAdapter extends ArrayAdapter<User> {
 
     static class ViewHolder {
-
-        @InjectView(R.id.icon)
-        ImageView mIcon;
-        @InjectView(R.id.display_name)
-        TextView mDisplayName;
-        @InjectView(R.id.screen_name)
-        TextView mScreenName;
-        @InjectView(R.id.lock)
-        TextView mFontelloLock;
-        @InjectView(R.id.description)
-        TextView mDescription;
+        @InjectView(R.id.icon) ImageView mIcon;
+        @InjectView(R.id.display_name) TextView mDisplayName;
+        @InjectView(R.id.screen_name) TextView mScreenName;
+        @InjectView(R.id.lock) FontelloTextView mFontelloLock;
+        @InjectView(R.id.description) TextView mDescription;
 
         public ViewHolder(View view) {
             ButterKnife.inject(this, view);
         }
     }
 
-    private ArrayList<User> mUsers = new ArrayList<User>();
     private Context mContext;
     private LayoutInflater mInflater;
     private int mLayout;
 
     public UserAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId);
-        this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        this.mContext = context;
-        this.mLayout = textViewResourceId;
-    }
-
-    @Override
-    public void add(User user) {
-        super.add(user);
-        mUsers.add(user);
-    }
-
-    @Override
-    public void clear() {
-        super.clear();
-        mUsers.clear();
+        mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mContext = context;
+        mLayout = textViewResourceId;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        ViewHolder holder;
 
         // ビューを受け取る
-        ViewHolder holder;
         View view = convertView;
         if (view == null) {
             // 受け取ったビューがnullなら新しくビューを生成
@@ -82,10 +61,10 @@ public class UserAdapter extends ArrayAdapter<User> {
             holder = (ViewHolder) view.getTag();
         }
 
-        final User user = mUsers.get(position);
+        final User user = getItem(position);
 
         String iconUrl = user.getBiggerProfileImageURL();
-        JustawayApplication.getApplication().displayRoundedImage(iconUrl, holder.mIcon);
+        ImageUtil.displayRoundedImage(iconUrl, holder.mIcon);
 
         holder.mDisplayName.setText(user.getName());
         holder.mScreenName.setText("@" + user.getScreenName());
@@ -103,9 +82,7 @@ public class UserAdapter extends ArrayAdapter<User> {
             holder.mDescription.setVisibility(View.GONE);
         }
 
-        Typeface fontello = JustawayApplication.getFontello();
         if (user.isProtected()) {
-            holder.mFontelloLock.setTypeface(fontello);
             holder.mFontelloLock.setVisibility(View.VISIBLE);
         } else {
             holder.mFontelloLock.setVisibility(View.INVISIBLE);

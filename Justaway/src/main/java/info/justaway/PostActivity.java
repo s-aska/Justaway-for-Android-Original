@@ -9,15 +9,10 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Typeface;
 import android.net.Uri;
-import android.os.BatteryManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.MediaStore;
@@ -44,9 +39,7 @@ import android.widget.TextView;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,11 +47,18 @@ import java.util.List;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import info.justaway.model.AccessTokenManager;
+import info.justaway.model.UserIconManager;
 import info.justaway.plugin.TwiccaPlugin;
 import info.justaway.settings.PostStockSettings;
 import info.justaway.task.SendDirectMessageTask;
 import info.justaway.task.UpdateStatusTask;
+import info.justaway.util.FileUtil;
+import info.justaway.util.ImageUtil;
+import info.justaway.util.MessageUtil;
+import info.justaway.util.ThemeUtil;
 import info.justaway.util.TwitterUtil;
+import info.justaway.widget.FontelloButton;
 import twitter4j.Status;
 import twitter4j.StatusUpdate;
 import twitter4j.TwitterException;
@@ -71,31 +71,8 @@ public class PostActivity extends FragmentActivity {
     private static final int REQUEST_TWICCA = 3;
     private static final int OPTION_MENU_GROUP_TWICCA = 1;
     private static final int ERROR_CODE_DUPLICATE_STATUS = 187;
+    private static final int ERROR_CODE_NOT_FOLLOW_DM = 150;
 
-    @InjectView(R.id.in_reply_to_layout)
-    RelativeLayout mInReplyToLayout;
-    @InjectView(R.id.in_reply_to_user_icon)
-    ImageView mInReplyToUserIcon;
-    @InjectView(R.id.in_reply_to_status)
-    TextView mInReplyToStatus;
-    @InjectView(R.id.cancel)
-    TextView mCancel;
-    @InjectView(R.id.switch_account_spinner)
-    Spinner mSwitchAccountSpinner;
-    @InjectView(R.id.status_text)
-    EditText mStatusText;
-    @InjectView(R.id.suddenly_button)
-    Button mSuddenlyButton;
-    @InjectView(R.id.img_button)
-    Button mImgButton;
-    @InjectView(R.id.draft_button)
-    Button mDraftButton;
-    @InjectView(R.id.hashtag_button)
-    Button mHashtagButton;
-    @InjectView(R.id.count)
-    TextView mCount;
-    @InjectView(R.id.tweet_button)
-    Button mTweetButton;
     private Activity mContext;
     private Long mInReplyToStatusId;
     private File mImgPath;
@@ -104,16 +81,57 @@ public class PostActivity extends FragmentActivity {
     private AlertDialog mHashtagDialog;
     private boolean mWidgetMode;
     private PostStockSettings mPostStockSettings;
-    private TextView mTitle;
-    private TextView mUndoButton;
     private ArrayList<String> mTextHistory = new ArrayList<String>();
     private List<ResolveInfo> mTwiccaPlugins;
+    private ActionBarHolder mActionBarHolder;
+
+    @InjectView(R.id.in_reply_to_cancel) TextView mCancel;
+    @InjectView(R.id.in_reply_to_user_icon) ImageView mInReplyToUserIcon;
+    @InjectView(R.id.in_reply_to_status) TextView mInReplyToStatus;
+    @InjectView(R.id.in_reply_to_layout) RelativeLayout mInReplyToLayout;
+    @InjectView(R.id.switch_account_spinner) Spinner mSwitchAccountSpinner;
+    @InjectView(R.id.status_text) EditText mStatusText;
+    @InjectView(R.id.suddenly_button) Button mSuddenlyButton;
+    @InjectView(R.id.tweet_button) Button mTweetButton;
+    @InjectView(R.id.img_button) Button mImgButton;
+    @InjectView(R.id.draft_button) Button mDraftButton;
+    @InjectView(R.id.hashtag_button) Button mHashtagButton;
+    @InjectView(R.id.count) TextView mCount;
+
+
+    class ActionBarHolder {
+
+        @InjectView(R.id.title) TextView mTitle;
+        @InjectView(R.id.undo) FontelloButton mUndo;
+
+        @OnClick(R.id.undo)
+        void undo() {
+            String text = mTextHistory.get(mTextHistory.size() - 1);
+            if (mStatusText.getText() != null && text.equals(mStatusText.getText().toString())) {
+                mTextHistory.remove(mTextHistory.size() - 1);
+                if (mTextHistory.size() > 0) {
+                    text = mTextHistory.get(mTextHistory.size() - 1);
+                }
+            }
+            mStatusText.setText(text);
+            mStatusText.setSelection(mStatusText.length());
+            mTextHistory.remove(mTextHistory.size() - 1);
+            if (mTextHistory.size() > 0 && text.equals(mStatusText.getText().toString())) {
+                mTextHistory.remove(mTextHistory.size() - 1);
+            }
+            mUndo.setEnabled(mTextHistory.size() > 0);
+        }
+
+        public ActionBarHolder(View view) {
+            ButterKnife.inject(this, view);
+        }
+    }
 
     @SuppressWarnings("MagicConstant")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        JustawayApplication.getApplication().setTheme(this);
+        ThemeUtil.setTheme(this);
         setContentView(R.layout.activity_post);
         ButterKnife.inject(this);
         mContext = this;
@@ -127,58 +145,27 @@ public class PostActivity extends FragmentActivity {
                 actionBar.setDisplayOptions(options | ActionBar.DISPLAY_SHOW_CUSTOM);
                 if (actionBar.getCustomView() == null) {
                     actionBar.setCustomView(R.layout.action_bar_post);
-                    ViewGroup group = (ViewGroup) actionBar.getCustomView();
-                    mTitle = (TextView) group.findViewById(R.id.title);
-                    mUndoButton = (TextView) group.findViewById(R.id.undo);
-                    mUndoButton.setTypeface(JustawayApplication.getFontello());
-                    mUndoButton.setEnabled(false);
-                    mUndoButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            String text = mTextHistory.get(mTextHistory.size() - 1);
-                            if (mStatusText.getText() != null && text.equals(mStatusText.getText().toString())) {
-                                mTextHistory.remove(mTextHistory.size() - 1);
-                                if (mTextHistory.size() > 0) {
-                                    text = mTextHistory.get(mTextHistory.size() - 1);
-                                }
-                            }
-                            mStatusText.setText(text);
-                            mStatusText.setSelection(mStatusText.length());
-                            mTextHistory.remove(mTextHistory.size() - 1);
-                            if (mTextHistory.size() > 0 && text.equals(mStatusText.getText().toString())) {
-                                mTextHistory.remove(mTextHistory.size() - 1);
-                            }
-                            mUndoButton.setEnabled(mTextHistory.size() > 0);
-                        }
-                    });
+                    mActionBarHolder = new ActionBarHolder(actionBar.getCustomView());
                 }
             }
         }
 
-        JustawayApplication.getApplication().warmUpUserIconMap();
-
-        Typeface fontello = JustawayApplication.getFontello();
-        mImgButton.setTypeface(fontello);
-        mTweetButton.setTypeface(fontello);
-        mSuddenlyButton.setTypeface(fontello);
-        mDraftButton.setTypeface(fontello);
-        mHashtagButton.setTypeface(fontello);
-        mCancel.setTypeface(fontello);
+        UserIconManager.warmUpUserIconMap();
 
         registerForContextMenu(mImgButton);
 
         // アカウント切り替え
+        ArrayList<AccessToken> accessTokens = AccessTokenManager.getAccessTokens();
         AccessTokenAdapter adapter = new AccessTokenAdapter(this, R.layout.spinner_switch_account);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mSwitchAccountSpinner.setAdapter(adapter);
-        ArrayList<AccessToken> accessTokens = JustawayApplication.getApplication().getAccessTokens();
 
         if (accessTokens != null) {
             int i = 0;
             for (AccessToken accessToken : accessTokens) {
                 adapter.add(accessToken);
 
-                if (JustawayApplication.getApplication().getUserId() == accessToken.getUserId()) {
+                if (AccessTokenManager.getUserId() == accessToken.getUserId()) {
                     mSwitchAccountSpinner.setSelection(i);
                 }
                 i++;
@@ -192,9 +179,9 @@ public class PostActivity extends FragmentActivity {
         }
         mWidgetMode = intent.getBooleanExtra("widget", false);
         if (mWidgetMode) {
-            mTitle.setText(getString(R.string.widget_title_post_mode));
+            mActionBarHolder.mTitle.setText(getString(R.string.widget_title_post_mode));
         } else {
-            mTitle.setText(getString(R.string.title_post));
+            mActionBarHolder.mTitle.setText(getString(R.string.title_post));
             if (actionBar != null) {
                 actionBar.setHomeButtonEnabled(true);
                 actionBar.setDisplayHomeAsUpEnabled(true);
@@ -222,7 +209,7 @@ public class PostActivity extends FragmentActivity {
                 inReplyToStatus = inReplyToStatus.getRetweetedStatus();
             }
             mInReplyToStatusId = inReplyToStatus.getId();
-            JustawayApplication.getApplication().displayRoundedImage(inReplyToStatus.getUser().getProfileImageURL(),
+            ImageUtil.displayRoundedImage(inReplyToStatus.getUser().getProfileImageURL(),
                     mInReplyToUserIcon);
 
             mInReplyToStatus.setText(inReplyToStatus.getText());
@@ -292,13 +279,13 @@ public class PostActivity extends FragmentActivity {
                 updateCount(s.toString());
                 if (s.toString().startsWith("D ")) {
                     mImgPath = null;
-                    JustawayApplication.getApplication().setThemeTextColor(mContext, mImgButton, R.attr.menu_text_color_disabled);
+                    ThemeUtil.setThemeTextColor(mImgButton, R.attr.menu_text_color_disabled);
                     mImgButton.setEnabled(false);
                 } else {
                     if (mImgPath == null) {
-                        JustawayApplication.getApplication().setThemeTextColor(mContext, mImgButton, R.attr.menu_text_color);
+                        ThemeUtil.setThemeTextColor(mImgButton, R.attr.menu_text_color);
                     } else {
-                        JustawayApplication.getApplication().setThemeTextColor(mContext, mImgButton, R.attr.holo_blue);
+                        ThemeUtil.setThemeTextColor(mImgButton, R.attr.holo_blue);
                     }
                     mImgButton.setEnabled(true);
                 }
@@ -312,12 +299,12 @@ public class PostActivity extends FragmentActivity {
                 if (mTextHistory.size() == 0 || !s.toString().equals(mTextHistory.get(mTextHistory.size() - 1))) {
                     mTextHistory.add(s.toString());
                 }
-                mUndoButton.setEnabled(mTextHistory.size() > 0);
+                mActionBarHolder.mUndo.setEnabled(mTextHistory.size() > 0);
             }
         });
     }
 
-    @OnClick(R.id.cancel)
+    @OnClick(R.id.in_reply_to_cancel)
     void closeInReplyToLayout() {
         mInReplyToLayout.setVisibility(View.GONE);
     }
@@ -368,7 +355,7 @@ public class PostActivity extends FragmentActivity {
                 String draft = adapter.getItem(i);
                 mStatusText.setText(draft);
                 mDraftDialog.dismiss();
-                adapter.remove(i);
+                adapter.remove(draft);
                 mPostStockSettings.removeDraft(draft);
             }
         });
@@ -385,61 +372,12 @@ public class PostActivity extends FragmentActivity {
 
     @OnClick(R.id.suddenly_button)
     void setSuddenly() {
+        assert mStatusText.getText() != null;
         String text = mStatusText.getText().toString();
         int selectStart = mStatusText.getSelectionStart();
         int selectEnd = mStatusText.getSelectionEnd();
 
-        // 突然の死対象のテキストを取得
-        String targetText;
-        if (selectStart != selectEnd) {
-            targetText = text.substring(selectStart, selectEnd) + "\n";
-        } else {
-            targetText = text + "\n";
-        }
-
-        String top = "";
-        String under = "";
-        Paint paint = new Paint();
-        float maxTextWidth = 0;
-
-        // 対象のテキストの最大文字列幅を取得
-        String[] lines = targetText.split("\\n");
-        for (String line : lines) {
-            if (paint.measureText(line) > maxTextWidth) {
-                maxTextWidth = paint.measureText(line);
-            }
-        }
-
-        // 上と下を作る
-        int i;
-        for (i = 0; (maxTextWidth / 12) > i; i++) {
-            top += "人";
-        }
-        for (i = 0; (maxTextWidth / 13) > i; i++) {
-            under += "^Y";
-        }
-
-        String suddenly = "";
-        for (String line : lines) {
-            float spaceWidth = maxTextWidth - paint.measureText(line);
-            // maxとくらべて13以上差がある場合はスペースを挿入して調整する
-            if (spaceWidth >= 12) {
-                int spaceNumber = (int) spaceWidth / 12;
-                for (i = 0; i < spaceNumber; i++) {
-                    line += "　";
-                }
-                if ((spaceWidth % 12) >= 6) {
-                    line += "　";
-                }
-            }
-            suddenly = suddenly.concat("＞ " + line + " ＜\n");
-        }
-
-        if (selectStart != selectEnd) {
-            mStatusText.setText(text.substring(0, selectStart) + "＿" + top + "＿\n" + suddenly + "￣" + under + "￣" + text.substring(selectEnd));
-        } else {
-            mStatusText.setText("＿" + top + "＿\n" + suddenly + "￣" + under + "￣");
-        }
+        mStatusText.setText(TwitterUtil.convertSuddenly(text, selectStart, selectEnd));
     }
 
     @OnClick(R.id.img_button)
@@ -449,21 +387,23 @@ public class PostActivity extends FragmentActivity {
 
     @OnClick(R.id.tweet_button)
     void tweet() {
-        JustawayApplication.showProgressDialog(mContext, getString(R.string.progress_sending));
+        MessageUtil.showProgressDialog(mContext, getString(R.string.progress_sending));
         String text = mStatusText.getText().toString();
 
         if (text.startsWith("D ")) {
             SendDirectMessageTask task = new SendDirectMessageTask((AccessToken) mSwitchAccountSpinner.getSelectedItem()) {
                 @Override
                 protected void onPostExecute(TwitterException e) {
-                    JustawayApplication.dismissProgressDialog();
+                    MessageUtil.dismissProgressDialog();
                     if (e == null) {
                         mStatusText.setText("");
                         if (!mWidgetMode) {
                             finish();
                         }
+                    } else if (e.getErrorCode() == ERROR_CODE_NOT_FOLLOW_DM) {
+                        MessageUtil.showToast(getString(R.string.toast_update_status_not_Follow));
                     } else {
-                        JustawayApplication.showToast(R.string.toast_update_status_failure);
+                        MessageUtil.showToast(R.string.toast_update_status_failure);
                     }
                 }
             };
@@ -480,7 +420,7 @@ public class PostActivity extends FragmentActivity {
             UpdateStatusTask task = new UpdateStatusTask((AccessToken) mSwitchAccountSpinner.getSelectedItem()) {
                 @Override
                 protected void onPostExecute(TwitterException e) {
-                    JustawayApplication.dismissProgressDialog();
+                    MessageUtil.dismissProgressDialog();
                     if (e == null) {
                         mStatusText.setText("");
                         if (!mWidgetMode) {
@@ -488,12 +428,12 @@ public class PostActivity extends FragmentActivity {
                         } else {
                             mImgPath = null;
                             mTweetButton.setEnabled(false);
-                            JustawayApplication.getApplication().setThemeTextColor(mContext, mImgButton, R.attr.menu_text_color);
+                            ThemeUtil.setThemeTextColor(mImgButton, R.attr.menu_text_color);
                         }
                     } else if (e.getErrorCode() == ERROR_CODE_DUPLICATE_STATUS) {
-                        JustawayApplication.showToast(getString(R.string.toast_update_status_already));
+                        MessageUtil.showToast(getString(R.string.toast_update_status_already));
                     } else {
-                        JustawayApplication.showToast(R.string.toast_update_status_failure);
+                        MessageUtil.showToast(R.string.toast_update_status_failure);
                     }
                 }
             };
@@ -520,7 +460,7 @@ public class PostActivity extends FragmentActivity {
         mImgPath = (File) imagePath;
 
         if (mImgPath != null && mImgPath.exists()) {
-            JustawayApplication.getApplication().setThemeTextColor(mContext, mImgButton, R.attr.holo_blue);
+            ThemeUtil.setThemeTextColor(mImgButton, R.attr.holo_blue);
             mTweetButton.setEnabled(true);
         }
     }
@@ -582,39 +522,13 @@ public class PostActivity extends FragmentActivity {
     private void setImage(Uri uri) {
         try {
             InputStream inputStream = getContentResolver().openInputStream(uri);
-            this.mImgPath = writeToTempFile(inputStream);
-            JustawayApplication.showToast(R.string.toast_set_image_success);
-            JustawayApplication.getApplication().setThemeTextColor(mContext, mImgButton, R.attr.holo_blue);
+            mImgPath = FileUtil.writeToTempFile(getCacheDir(), inputStream);
+            MessageUtil.showToast(R.string.toast_set_image_success);
+            ThemeUtil.setThemeTextColor(mImgButton, R.attr.holo_blue);
             mTweetButton.setEnabled(true);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-    }
-
-    private File writeToTempFile(InputStream inputStream) {
-        File cacheDir = getCacheDir();
-        if (cacheDir == null) {
-            return null;
-        }
-        if (!cacheDir.exists()) {
-            if (!cacheDir.mkdirs()) {
-                return null;
-            }
-        }
-        File file = new File(cacheDir, "justaway-temp-" + System.currentTimeMillis() + ".jpg");
-        try {
-            OutputStream outputStream = new FileOutputStream(file);
-            byte[] buffer = new byte[4096];
-            int size;
-            while (-1 != (size = inputStream.read(buffer))) {
-                outputStream.write(buffer, 0, size);
-            }
-            inputStream.close();
-            outputStream.close();
-        } catch (Exception e) {
-            return null;
-        }
-        return file;
     }
 
     private void updateCount(String str) {
@@ -625,7 +539,7 @@ public class PostActivity extends FragmentActivity {
         if (length < 0) {
             textColor = Color.RED;
         } else {
-            textColor = JustawayApplication.getApplication().getThemeTextColor(mContext, R.attr.menu_text_color);
+            textColor = ThemeUtil.getThemeTextColor(R.attr.menu_text_color);
         }
         mCount.setTextColor(textColor);
         mCount.setText(String.valueOf(length));
@@ -724,33 +638,8 @@ public class PostActivity extends FragmentActivity {
                 mStatusText.setText("");
                 break;
             case R.id.tweet_battery:
-                Intent batteryIntent = registerReceiver(null,
-                        new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-
-                if (batteryIntent == null) {
-                    break;
-                }
-                int level = batteryIntent.getIntExtra("level", 0);
-                int scale = batteryIntent.getIntExtra("scale", 100);
-                int status = batteryIntent.getIntExtra("status", 0);
-                int battery = level * 100 / scale;
-                String model = Build.MODEL;
-
-                switch (status) {
-                    case BatteryManager.BATTERY_STATUS_FULL:
-                        mStatusText.setText(model + " のバッテリー残量：" + battery + "% (0゜・◡・♥​​)");
-                        break;
-                    case BatteryManager.BATTERY_STATUS_CHARGING:
-                        mStatusText.setText(model + " のバッテリー残量：" + battery + "% 充電なう(・◡・♥​​)");
-                        break;
-                    default:
-                        if (level <= 14) {
-                            mStatusText.setText(model + " のバッテリー残量：" + battery + "% (◞‸◟)");
-                        } else {
-                            mStatusText.setText(model + " のバッテリー残量：" + battery + "% (・◡・♥​​)");
-                        }
-                        break;
-                }
+                // バッテリー情報をセットする
+                mStatusText.setText(TwitterUtil.getBatteryStatus(mContext));
                 break;
         }
         return true;
@@ -758,7 +647,6 @@ public class PostActivity extends FragmentActivity {
 
     public class AccessTokenAdapter extends ArrayAdapter<AccessToken> {
 
-        private ArrayList<AccessToken> mAccessTokenList = new ArrayList<AccessToken>();
         private LayoutInflater mInflater;
         private int mLayout;
 
@@ -771,7 +659,6 @@ public class PostActivity extends FragmentActivity {
         @Override
         public void add(AccessToken accessToken) {
             super.add(accessToken);
-            mAccessTokenList.add(accessToken);
         }
 
         @Override
@@ -783,12 +670,12 @@ public class PostActivity extends FragmentActivity {
                 view = mInflater.inflate(this.mLayout, null);
             }
 
-            AccessToken accessToken = mAccessTokenList.get(position);
+            AccessToken accessToken = getItem(position);
 
             assert view != null;
             view.setPadding(16, 0, 0, 0);
             ImageView icon = (ImageView) view.findViewById(R.id.icon);
-            JustawayApplication.getApplication().displayUserIcon(accessToken.getUserId(), icon);
+            UserIconManager.displayUserIcon(accessToken.getUserId(), icon);
             ((TextView) view.findViewById(R.id.screen_name)).setText(accessToken.getScreenName());
 
             return view;
@@ -803,11 +690,11 @@ public class PostActivity extends FragmentActivity {
                 view = mInflater.inflate(this.mLayout, null);
             }
 
-            AccessToken accessToken = mAccessTokenList.get(position);
+            AccessToken accessToken = getItem(position);
 
             assert view != null;
             ImageView icon = (ImageView) view.findViewById(R.id.icon);
-            JustawayApplication.getApplication().displayUserIcon(accessToken.getUserId(), icon);
+            UserIconManager.displayUserIcon(accessToken.getUserId(), icon);
             ((TextView) view.findViewById(R.id.screen_name)).setText(accessToken.getScreenName());
 
             return view;
@@ -817,7 +704,6 @@ public class PostActivity extends FragmentActivity {
 
     public class DraftAdapter extends ArrayAdapter<String> {
 
-        private ArrayList<String> mDraftLists = new ArrayList<String>();
         private LayoutInflater mInflater;
         private int mLayout;
 
@@ -830,11 +716,11 @@ public class PostActivity extends FragmentActivity {
         @Override
         public void add(String draft) {
             super.add(draft);
-            mDraftLists.add(draft);
         }
 
-        public void remove(int position) {
-            super.remove(mDraftLists.remove(position));
+        @Override
+        public void remove(String draft) {
+            super.remove(draft);
         }
 
         @Override
@@ -847,16 +733,15 @@ public class PostActivity extends FragmentActivity {
                 view = mInflater.inflate(this.mLayout, null);
             }
 
-            final String draft = mDraftLists.get(position);
+            final String draft = getItem(position);
 
             assert view != null;
             ((TextView) view.findViewById(R.id.word)).setText(draft);
-            ((TextView) view.findViewById(R.id.trash)).setTypeface(JustawayApplication.getFontello());
 
             view.findViewById(R.id.trash).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    remove(position);
+                    remove(draft);
                     mPostStockSettings.removeDraft(draft);
                 }
             });
@@ -866,7 +751,6 @@ public class PostActivity extends FragmentActivity {
 
     public class HashtagAdapter extends ArrayAdapter<String> {
 
-        private ArrayList<String> mHashtagLists = new ArrayList<String>();
         private LayoutInflater mInflater;
         private int mLayout;
 
@@ -879,11 +763,11 @@ public class PostActivity extends FragmentActivity {
         @Override
         public void add(String hashtag) {
             super.add(hashtag);
-            mHashtagLists.add(hashtag);
         }
 
-        public void remove(int position) {
-            super.remove(mHashtagLists.remove(position));
+        @Override
+        public void remove(String hashtag) {
+            super.remove(hashtag);
         }
 
         @Override
@@ -896,16 +780,15 @@ public class PostActivity extends FragmentActivity {
                 view = mInflater.inflate(this.mLayout, null);
             }
 
-            final String hashtag = mHashtagLists.get(position);
+            final String hashtag = getItem(position);
 
             assert view != null;
             ((TextView) view.findViewById(R.id.word)).setText(hashtag);
-            ((TextView) view.findViewById(R.id.trash)).setTypeface(JustawayApplication.getFontello());
 
             view.findViewById(R.id.trash).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    remove(position);
+                    remove(hashtag);
                     mPostStockSettings.removeHashtag(hashtag);
                 }
             });

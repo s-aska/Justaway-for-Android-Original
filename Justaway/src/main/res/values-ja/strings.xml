@@ -10,7 +10,7 @@
     <string name="button_destroy">破棄</string>
     <string name="button_destroy_block">ブロック解除</string>
     <string name="button_destroy_retweet">取り消す</string>
-    <string name="button_edit_profile">プロフィールを編集する</string>
+    <string name="button_edit_profile">プロフィール編集</string>
     <string name="button_follow">フォローする</string>
     <string name="button_no">いいえ</string>
     <string name="button_ok">OK</string>
@@ -66,17 +66,17 @@
     <string name="label_created_at">Twitter開始日</string>
     <string name="label_created_by">さんが作成</string>
     <string name="label_description">説明</string>
-    <string name="label_favourites">お気に入り</string>
+    <string name="label_favourites">%1$d\nお気に入り</string>
     <string name="label_followed_by_target">フォローされています</string>
-    <string name="label_followers">フォロワー</string>
-    <string name="label_following">フォロー</string>
-    <string name="label_listed">リスト</string>
+    <string name="label_followers">%1$d\nフォロワー</string>
+    <string name="label_following">%1$d\nフォロー</string>
+    <string name="label_listed">%1$d\nリスト</string>
     <string name="label_location">現在地</string>
     <string name="label_members">人のメンバー</string>
     <string name="label_name">名前</string>
     <string name="label_source">via</string>
     <string name="label_tweet_count">140</string>
-    <string name="label_tweets">ツイート</string>
+    <string name="label_tweets">%1$d\nツイート</string>
     <string name="label_update_profile_image">画像を変更</string>
     <string name="label_user">ユーザー</string>
     <string name="label_user_list_name">リスト名</string>
@@ -121,8 +121,6 @@
     <string name="notification_favorite_ticker">"さんがお気に入りに登録しました: "</string>
     <string name="notification_retweet_ticker">"さんがリツイート: "</string>
     <string name="official_website">http://justaway.info/</string>
-    <string name="profile_pointer">●　○</string>
-    <string name="profile_pointer_right">○　●</string>
     <string name="progress_loading">読み込み中！！１１１１１</string>
     <string name="progress_process">処理中！！１１１１１</string>
     <string name="progress_sending">送信中！！１１１１１</string>
@@ -210,6 +208,13 @@
     <string name="label_search_user">" でユーザー検索"</string>
     <string name="label_display_profile">" のプロフィールを表示"</string>
     <string name="title_user_search">ユーザー検索</string>
-    <string name="hint_search">Twitterで検索</string>
+    <string name="hint_search">探 Twitterで検索</string>
     <string name="title_notification">通知設定</string>
+    <string name="tab_tweets">ツイート</string>
+    <string name="hint_list_name">25文字以内</string>
+    <string name="hint_list_description">100文字以内</string>
+    <string name="label_account_setting">アカウント管理</string>
+    <string name="menu_open_aclog">Aclogで開く</string>
+    <string name="toast_update_status_not_Follow">相手にフォローされていません</string>
+
 </resources>

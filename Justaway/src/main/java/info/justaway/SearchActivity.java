@@ -3,57 +3,61 @@ package info.justaway;
 import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnClick;
 import de.greenrobot.event.EventBus;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.event.AlertDialogEvent;
-import info.justaway.event.model.DestroyStatusEvent;
 import info.justaway.event.action.StatusActionEvent;
+import info.justaway.event.model.StreamingDestroyStatusEvent;
 import info.justaway.listener.StatusClickListener;
 import info.justaway.listener.StatusLongClickListener;
 import info.justaway.model.Row;
+import info.justaway.model.TwitterManager;
+import info.justaway.util.KeyboardUtil;
+import info.justaway.util.MessageUtil;
+import info.justaway.util.ThemeUtil;
+import info.justaway.task.AbstractAsyncTaskLoader;
+import info.justaway.widget.ClearEditText;
+import info.justaway.widget.FontelloButton;
 import twitter4j.Query;
 import twitter4j.QueryResult;
-import twitter4j.ResponseList;
 import twitter4j.SavedSearch;
 
-public class SearchActivity extends FragmentActivity {
+public class SearchActivity extends FragmentActivity implements LoaderManager.LoaderCallbacks<QueryResult> {
 
-    private Context mContext;
-    private EditText mSearchWords;
+
+    @InjectView(R.id.searchWords) ClearEditText mSearchWords;
+    @InjectView(R.id.search_button) FontelloButton mSearchButton;
+    @InjectView(R.id.search_list) ListView mSearchList;
+    @InjectView(R.id.guruguru) ProgressBar mGuruguru;
+
     private TwitterAdapter mAdapter;
-    private SearchWordAdapter mSearchWordAdapter;
-    private ListView mListView;
-    private ProgressBar mProgressBar;
     private Query mNextQuery;
-    private ListView mSearchListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        JustawayApplication.getApplication().setTheme(this);
+        ThemeUtil.setTheme(this);
         setContentView(R.layout.activity_search);
+        ButterKnife.inject(this);
 
         ActionBar actionBar = getActionBar();
         if (actionBar != null) {
@@ -61,51 +65,12 @@ public class SearchActivity extends FragmentActivity {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        mContext = this;
-
-        Button search = (Button) findViewById(R.id.search);
-        Button tweet = (Button) findViewById(R.id.tweet);
-        Typeface fontello = JustawayApplication.getFontello();
-        search.setTypeface(fontello);
-        tweet.setTypeface(fontello);
-
-        mSearchWords = (EditText) findViewById(R.id.searchWords);
-        mProgressBar = (ProgressBar) findViewById(R.id.guruguru);
-        mListView = (ListView) findViewById(R.id.list_view);
-        mListView.setVisibility(View.GONE);
-
-        mSearchListView = (ListView) findViewById(R.id.search_list_view);
-        mSearchListView.setVisibility(View.GONE);
-
-        // 保存された検索をViewに描写するアダプター
-        mSearchWordAdapter = new SearchWordAdapter(mContext, R.layout.row_word);
-        mSearchListView.setAdapter(mSearchWordAdapter);
-        new GetSavedSearchesTask().execute();
-
         // Status(ツイート)をViewに描写するアダプター
-        mAdapter = new TwitterAdapter(mContext, R.layout.row_tweet);
-        mListView.setAdapter(mAdapter);
+        mAdapter = new TwitterAdapter(this, R.layout.row_tweet);
+        mSearchList.setAdapter(mAdapter);
 
-        mListView.setOnItemClickListener(new StatusClickListener(this));
-
-        mListView.setOnItemLongClickListener(new StatusLongClickListener(mAdapter, this));
-
-        search.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                search();
-            }
-        });
-
-        tweet.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mSearchWords.getText() == null) return;
-                Intent intent = new Intent(mContext, PostActivity.class);
-                intent.putExtra("status", " ".concat(mSearchWords.getText().toString()));
-                startActivity(intent);
-            }
-        });
+        mSearchList.setOnItemClickListener(new StatusClickListener(this));
+        mSearchList.setOnItemLongClickListener(new StatusLongClickListener(mAdapter, this));
 
         mSearchWords.setOnKeyListener(new View.OnKeyListener() {
             @Override
@@ -124,12 +89,12 @@ public class SearchActivity extends FragmentActivity {
         String query = intent.getStringExtra("query");
         if (query != null) {
             mSearchWords.setText(query);
-            search.performClick();
+            mSearchButton.performClick();
         } else {
-            JustawayApplication.getApplication().showKeyboard(mSearchWords);
+            KeyboardUtil.showKeyboard(mSearchWords);
         }
 
-        mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+        mSearchList.setOnScrollListener(new AbsListView.OnScrollListener() {
 
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -143,6 +108,19 @@ public class SearchActivity extends FragmentActivity {
                 }
             }
         });
+    }
+
+    @OnClick(R.id.search_button)
+    void onClickSearchButton() {
+        search();
+    }
+
+    @OnClick(R.id.tweet_button)
+    void onClickTweetButton() {
+        if (mSearchWords.getText() == null) return;
+        Intent intent = new Intent(this, PostActivity.class);
+        intent.putExtra("status", " ".concat(mSearchWords.getText().toString()));
+        startActivity(intent);
     }
 
     @Override
@@ -168,7 +146,7 @@ public class SearchActivity extends FragmentActivity {
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public void onEventMainThread(DestroyStatusEvent event) {
+    public void onEventMainThread(StreamingDestroyStatusEvent event) {
         mAdapter.removeStatus(event.getStatusId());
     }
 
@@ -193,79 +171,87 @@ public class SearchActivity extends FragmentActivity {
         return true;
     }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (mSearchListView.getVisibility() != View.VISIBLE) {
-                mListView.setVisibility(View.GONE);
-                mSearchListView.setVisibility(View.VISIBLE);
-            } else {
-                finish();
-            }
-            return true;
-        }
-        return false;
-    }
-
     private void additionalReading() {
         if (mNextQuery != null) {
-            mProgressBar.setVisibility(View.VISIBLE);
-            new SearchTask().execute(mNextQuery);
+            mGuruguru.setVisibility(View.VISIBLE);
+
+            Bundle args = new Bundle(1);
+            args.putSerializable("query", mNextQuery);
+            getSupportLoaderManager().restartLoader(0, args, this);
             mNextQuery = null;
         }
     }
 
     private void search() {
-        mSearchListView.setVisibility(View.GONE);
-        JustawayApplication.getApplication().hideKeyboard(mSearchWords);
+        KeyboardUtil.hideKeyboard(mSearchWords);
         if (mSearchWords.getText() == null) return;
-        Query query = new Query(mSearchWords.getText().toString().concat(" exclude:retweets"));
         mAdapter.clear();
-        mListView.setVisibility(View.GONE);
-        mProgressBar.setVisibility(View.VISIBLE);
+        mSearchList.setVisibility(View.GONE);
+        mGuruguru.setVisibility(View.VISIBLE);
         mNextQuery = null;
-        new SearchTask().execute(query);
+
+        Query query = new Query(mSearchWords.getText().toString().concat(" exclude:retweets"));
+
+        Bundle args = new Bundle(1);
+        args.putSerializable("query", query);
+        getSupportLoaderManager().restartLoader(0, args, this).forceLoad();
     }
 
-    private class SearchTask extends AsyncTask<Query, Void, QueryResult> {
+    @Override
+    public Loader<QueryResult> onCreateLoader(int id, Bundle args) {
+        Query query = (Query) args.getSerializable("query");
+        return new SearchLoader(this, query);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<QueryResult> loader, QueryResult queryResult) {
+        if (queryResult == null) {
+            MessageUtil.showToast(R.string.toast_load_data_failure);
+            return;
+        }
+        if (queryResult.hasNext()) {
+            mNextQuery = queryResult.nextQuery();
+        }
+        int count = mAdapter.getCount();
+        List<twitter4j.Status> statuses = queryResult.getTweets();
+        for (twitter4j.Status status : statuses) {
+            mAdapter.add(Row.newStatus(status));
+        }
+
+        mSearchList.setVisibility(View.VISIBLE);
+        if (count == 0) {
+            mSearchList.setSelection(0);
+        }
+        mGuruguru.setVisibility(View.GONE);
+
+        // インテント経由で検索時にうまく閉じてくれないので入れている
+        InputMethodManager inputMethodManager =
+                (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(mSearchWords.getWindowToken(), 0);
+    }
+
+    @Override
+    public void onLoaderReset(android.support.v4.content.Loader<QueryResult> loader) {
+
+    }
+
+    public static class SearchLoader extends AbstractAsyncTaskLoader<QueryResult> {
+
+        private Query mQuery;
+
+        public SearchLoader(Context context, Query query) {
+            super(context);
+            mQuery = query;
+        }
+
         @Override
-        protected QueryResult doInBackground(Query... params) {
-            Query query = params[0];
+        public QueryResult loadInBackground() {
             try {
-                return JustawayApplication.getApplication().getTwitter().search(query);
+                return TwitterManager.getTwitter().search(mQuery);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
             }
-        }
-
-        @Override
-        protected void onPostExecute(QueryResult queryResult) {
-            if (queryResult == null) {
-                JustawayApplication.showToast(R.string.toast_load_data_failure);
-                return;
-            }
-            if (queryResult.hasNext()) {
-                mNextQuery = queryResult.nextQuery();
-            }
-            int count = mAdapter.getCount();
-            List<twitter4j.Status> statuses = queryResult.getTweets();
-            for (twitter4j.Status status : statuses) {
-                mAdapter.add(Row.newStatus(status));
-            }
-
-            mSearchListView.setVisibility(View.GONE);
-            mListView.setVisibility(View.VISIBLE);
-            if (count == 0) {
-                mListView.setSelection(0);
-                mSearchListView.setVisibility(View.GONE);
-            }
-            mProgressBar.setVisibility(View.GONE);
-
-            // インテント経由で検索時にうまく閉じてくれないので入れている
-            InputMethodManager inputMethodManager =
-                    (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-            inputMethodManager.hideSoftInputFromWindow(mSearchWords.getWindowToken(), 0);
         }
     }
 
@@ -274,7 +260,7 @@ public class SearchActivity extends FragmentActivity {
         protected SavedSearch doInBackground(String... params) {
             String query = params[0];
             try {
-                return JustawayApplication.getApplication().getTwitter().createSavedSearch(query);
+                return TwitterManager.getTwitter().createSavedSearch(query);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -286,115 +272,7 @@ public class SearchActivity extends FragmentActivity {
             if (savedSearch == null) {
                 return;
             }
-            JustawayApplication.showToast(getString(R.string.toast_save_success));
-        }
-    }
-
-    private class DestroySavedSearchTask extends AsyncTask<Integer, Void, SavedSearch> {
-        @Override
-        protected SavedSearch doInBackground(Integer... params) {
-            Integer id = params[0];
-            try {
-                return JustawayApplication.getApplication().getTwitter().destroySavedSearch(id);
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(SavedSearch savedSearch) {
-            if (savedSearch == null) {
-                return;
-            }
-            JustawayApplication.showToast(getString(R.string.toast_destroy_success));
-        }
-    }
-
-    private class GetSavedSearchesTask extends AsyncTask<Void, Void, ResponseList<SavedSearch>> {
-        @Override
-        protected ResponseList<SavedSearch> doInBackground(Void... params) {
-            try {
-                return JustawayApplication.getApplication().getTwitter().getSavedSearches();
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(ResponseList<SavedSearch> savedSearches) {
-            mProgressBar.setVisibility(View.GONE);
-            mSearchListView.setVisibility(View.VISIBLE);
-            if (savedSearches == null) {
-                return;
-            }
-            for (SavedSearch savedSearch : savedSearches) {
-                mSearchWordAdapter.insert(savedSearch, 0);
-            }
-        }
-    }
-
-    public class SearchWordAdapter extends ArrayAdapter<SavedSearch> {
-
-        private ArrayList<SavedSearch> mWordLists = new ArrayList<SavedSearch>();
-        private LayoutInflater mInflater;
-        private int mLayout;
-
-        public SearchWordAdapter(Context context, int textViewResourceId) {
-            super(context, textViewResourceId);
-            this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            this.mLayout = textViewResourceId;
-        }
-
-        @Override
-        public void add(SavedSearch word) {
-            super.add(word);
-            mWordLists.add(word);
-        }
-
-        @Override
-        public void insert(SavedSearch word, int index) {
-            super.insert(word, index);
-            mWordLists.add(index, word);
-        }
-
-        public void remove(int position) {
-            super.remove(mWordLists.remove(position));
-        }
-
-        @Override
-        public View getView(final int position, View convertView, ViewGroup parent) {
-
-            // ビューを受け取る
-            View view = convertView;
-            if (view == null) {
-                // 受け取ったビューがnullなら新しくビューを生成
-                view = mInflater.inflate(this.mLayout, null);
-            }
-
-            final SavedSearch word = mWordLists.get(position);
-
-            assert view != null;
-            ((TextView) view.findViewById(R.id.word)).setText(word.getQuery());
-            ((TextView) view.findViewById(R.id.trash)).setTypeface(JustawayApplication.getFontello());
-
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mSearchWords.setText(word.getQuery());
-                    search();
-                }
-            });
-
-            view.findViewById(R.id.trash).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    remove(position);
-                    new DestroySavedSearchTask().execute(word.getId());
-                }
-            });
-            return view;
+            MessageUtil.showToast(getString(R.string.toast_save_success));
         }
     }
 }

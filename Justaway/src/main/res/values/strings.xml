@@ -67,17 +67,17 @@
     <string name="label_created_at">Beginning</string>
     <string name="label_created_by">\'s creation</string>
     <string name="label_description">Description</string>
-    <string name="label_favourites">FAVORITES</string>
+    <string name="label_favourites">%1$d\nFAVORITES</string>
     <string name="label_followed_by_target">FOLLOWS YOU</string>
-    <string name="label_followers">FOLLOWERS</string>
-    <string name="label_following">FOLLOWING</string>
-    <string name="label_listed">LISTS</string>
+    <string name="label_followers">%1$d\nFOLLOWERS</string>
+    <string name="label_following">%1$d\nFOLLOWING</string>
+    <string name="label_listed">%1$d\nLISTS</string>
     <string name="label_location">Location</string>
     <string name="label_members">members</string>
     <string name="label_name">Name</string>
     <string name="label_source">via</string>
     <string name="label_tweet_count">140</string>
-    <string name="label_tweets">TWEETS</string>
+    <string name="label_tweets">%1$d\nTWEETS</string>
     <string name="label_update_profile_image">Upload profile image</string>
     <string name="label_user">User</string>
     <string name="label_user_list_name">List name</string>
@@ -208,11 +208,17 @@
     <string name="toast_update_status_failure">Failed.</string>
     <string name="twitter_callback_url">justaway://twitter</string>
     <string name="widget_title_post_mode">Post Only Mode</string>
-    <string name="label_search_user">" Tweet Search"</string>
-    <string name="label_search_tweet">" User Search"</string>
+    <string name="label_search_tweet">" Tweet Search"</string>
+    <string name="label_search_user">" User Search"</string>
     <string name="label_display_profile">"'s Profile"</string>
     <string name="title_user_search">User Search</string>
-    <string name="hint_search">Search</string>
+    <string name="hint_search">探 Search</string>
     <string name="title_notification">Notification Settings</string>
+    <string name="tab_tweets">Tweets</string>
+    <string name="hint_list_name">25 characters or less</string>
+    <string name="hint_list_description">100 characters or less</string>
+    <string name="label_account_setting">Account Setting</string>
+    <string name="menu_open_aclog">Open Aclog</string>
+    <string name="toast_update_status_not_Follow">you cannot send messages to users who are not following you.</string>
 
 </resources>

@@ -1,13 +1,10 @@
 package info.justaway;
 
 import android.app.ActionBar;
-import android.content.ContentResolver;
 import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -16,33 +13,34 @@ import android.widget.EditText;
 import android.widget.ImageView;
 
 import java.io.File;
+import java.io.InputStream;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import butterknife.OnClick;
 import info.justaway.fragment.profile.UpdateProfileImageFragment;
+import info.justaway.model.TwitterManager;
 import info.justaway.task.VerifyCredentialsLoader;
+import info.justaway.util.FileUtil;
+import info.justaway.util.ImageUtil;
+import info.justaway.util.MessageUtil;
+import info.justaway.util.ThemeUtil;
 import twitter4j.User;
 
 public class EditProfileActivity extends FragmentActivity implements LoaderManager.LoaderCallbacks<User> {
 
     private static final int REQ_PICK_PROFILE_IMAGE = 1;
 
-    @InjectView(R.id.icon)
-    ImageView mIcon;
-    @InjectView(R.id.name)
-    EditText mName;
-    @InjectView(R.id.location)
-    EditText mLocation;
-    @InjectView(R.id.url)
-    EditText mUrl;
-    @InjectView(R.id.description)
-    EditText mDescription;
+    @InjectView(R.id.icon) ImageView mIcon;
+    @InjectView(R.id.name) EditText mName;
+    @InjectView(R.id.location) EditText mLocation;
+    @InjectView(R.id.url) EditText mUrl;
+    @InjectView(R.id.description) EditText mDescription;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        JustawayApplication.getApplication().setTheme(this);
+        ThemeUtil.setTheme(this);
         setContentView(R.layout.activity_edit_profile);
         ButterKnife.inject(this);
 
@@ -59,7 +57,7 @@ public class EditProfileActivity extends FragmentActivity implements LoaderManag
 
     }
 
-    @OnClick(R.id.update_profile_image_button)
+    @OnClick(R.id.icon)
     void updateProfileImage() {
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
@@ -68,7 +66,7 @@ public class EditProfileActivity extends FragmentActivity implements LoaderManag
 
     @OnClick(R.id.save_button)
     void saveProfile() {
-        JustawayApplication.showProgressDialog(this, getString(R.string.progress_process));
+        MessageUtil.showProgressDialog(this, getString(R.string.progress_process));
         new UpdateProfileTask().execute();
     }
 
@@ -89,7 +87,6 @@ public class EditProfileActivity extends FragmentActivity implements LoaderManag
 
     @Override
     public void onLoadFinished(Loader<User> loader, User user) {
-        JustawayApplication application = JustawayApplication.getApplication();
         if (user == null) {
             Intent intent = new Intent(this, SignInActivity.class);
             startActivity(intent);
@@ -99,7 +96,7 @@ public class EditProfileActivity extends FragmentActivity implements LoaderManag
             mLocation.setText(user.getLocation());
             mUrl.setText(user.getURLEntity().getExpandedURL());
             mDescription.setText(user.getDescription());
-            application.displayRoundedImage(user.getOriginalProfileImageURL(), mIcon);
+            ImageUtil.displayRoundedImage(user.getOriginalProfileImageURL(), mIcon);
         }
     }
 
@@ -113,7 +110,7 @@ public class EditProfileActivity extends FragmentActivity implements LoaderManag
         protected User doInBackground(Void... params) {
             try {
                 //noinspection ConstantConditions
-                return JustawayApplication.getApplication().getTwitter().updateProfile(
+                return TwitterManager.getTwitter().updateProfile(
                         mName.getText().toString(),
                         mUrl.getText().toString(),
                         mLocation.getText().toString(),
@@ -126,34 +123,14 @@ public class EditProfileActivity extends FragmentActivity implements LoaderManag
 
         @Override
         protected void onPostExecute(User user) {
-            JustawayApplication.dismissProgressDialog();
+            MessageUtil.dismissProgressDialog();
             if (user != null) {
-                JustawayApplication.showToast(R.string.toast_update_profile_success);
+                MessageUtil.showToast(R.string.toast_update_profile_success);
                 finish();
             } else {
-                JustawayApplication.showToast(R.string.toast_update_profile_failure);
+                MessageUtil.showToast(R.string.toast_update_profile_failure);
             }
         }
-    }
-
-    private File uriToFile(Uri uri) {
-        ContentResolver cr = getContentResolver();
-        String[] columns = {MediaStore.Images.Media.DATA};
-        Cursor c = cr.query(uri, columns, null, null, null);
-        assert c != null;
-        c.moveToFirst();
-        String fileName = c.getString(0);
-        if (fileName == null) {
-            JustawayApplication.showToast(getString(R.string.toast_set_image_failure));
-            return null;
-        }
-        File path = new File(fileName);
-
-        if (!path.exists()) {
-            return null;
-        }
-
-        return path;
     }
 
     @Override
@@ -162,11 +139,19 @@ public class EditProfileActivity extends FragmentActivity implements LoaderManag
         switch (requestCode) {
             case REQ_PICK_PROFILE_IMAGE:
                 if (resultCode == RESULT_OK) {
-                    Uri uri = data.getData();
-                    File file = uriToFile(uri);
-                    if (file != null) {
-                        UpdateProfileImageFragment dialog = UpdateProfileImageFragment.newInstance(file, uri);
-                        dialog.show(getSupportFragmentManager(), "dialog");
+                    try {
+                        Uri uri = data.getData();
+                        if (uri == null) {
+                            return;
+                        }
+                        InputStream inputStream = getContentResolver().openInputStream(uri);
+                        File file = FileUtil.writeToTempFile(getCacheDir(), inputStream);
+                        if (file != null) {
+                            UpdateProfileImageFragment dialog = UpdateProfileImageFragment.newInstance(file, uri);
+                            dialog.show(getSupportFragmentManager(), "dialog");
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
                 break;

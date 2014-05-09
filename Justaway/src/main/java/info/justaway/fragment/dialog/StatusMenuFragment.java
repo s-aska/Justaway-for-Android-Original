@@ -24,18 +24,21 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-import info.justaway.JustawayApplication;
-import info.justaway.MainActivity;
 import info.justaway.ProfileActivity;
 import info.justaway.R;
 import info.justaway.SearchActivity;
+import info.justaway.util.ActionUtil;
 import info.justaway.fragment.AroundFragment;
 import info.justaway.fragment.RetweetersFragment;
 import info.justaway.fragment.TalkFragment;
+import info.justaway.model.AccessTokenManager;
+import info.justaway.model.FavRetweetManager;
 import info.justaway.model.Row;
 import info.justaway.plugin.TwiccaPlugin;
 import info.justaway.settings.MuteSettings;
-import info.justaway.task.DestroyStatusTask;
+import info.justaway.util.MessageUtil;
+import info.justaway.util.StatusUtil;
+import info.justaway.util.ThemeUtil;
 import twitter4j.DirectMessage;
 import twitter4j.HashtagEntity;
 import twitter4j.Status;
@@ -46,7 +49,6 @@ import twitter4j.UserMentionEntity;
 public class StatusMenuFragment extends DialogFragment {
 
     private FragmentActivity mActivity;
-    private JustawayApplication mApplication;
 
     private List<ResolveInfo> mTwiccaPlugins;
 
@@ -74,8 +76,7 @@ public class StatusMenuFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         mActivity = getActivity();
-        mApplication = JustawayApplication.getApplication();
-        mApplication.setTheme(mActivity);
+        ThemeUtil.setTheme(mActivity);
 
         final MenuAdapter adapter = new MenuAdapter(getActivity(), R.layout.row_menu);
         ListView listView = new ListView(mActivity);
@@ -104,7 +105,7 @@ public class StatusMenuFragment extends DialogFragment {
             adapter.add(new Menu(R.string.context_menu_reply_direct_message, new Runnable() {
                 @Override
                 public void run() {
-                    mApplication.doReplyDirectMessage(directMessage, mActivity);
+                    ActionUtil.doReplyDirectMessage(directMessage, mActivity);
                     dismiss();
                 }
             }));
@@ -115,8 +116,7 @@ public class StatusMenuFragment extends DialogFragment {
             adapter.add(new Menu(R.string.context_menu_destroy_direct_message, new Runnable() {
                 @Override
                 public void run() {
-                    MainActivity mainActivity = (MainActivity) mActivity;
-                    mainActivity.doDestroyDirectMessage(directMessage.getId());
+                    ActionUtil.doDestroyDirectMessage(directMessage.getId());
                     dismiss();
                 }
             }));
@@ -173,7 +173,7 @@ public class StatusMenuFragment extends DialogFragment {
         adapter.add(new Menu(R.string.context_menu_reply, new Runnable() {
             @Override
             public void run() {
-                mApplication.doReply(source, mActivity);
+                ActionUtil.doReply(source, mActivity);
                 dismiss();
             }
         }));
@@ -181,11 +181,11 @@ public class StatusMenuFragment extends DialogFragment {
         /**
          * 全員にリプ
          */
-        if (mentions.length > 1 || (mentions.length == 1 && !mentions[0].getScreenName().equals(mApplication.getScreenName()))) {
+        if (mentions.length > 1 || (mentions.length == 1 && !mentions[0].getScreenName().equals(AccessTokenManager.getScreenName()))) {
             adapter.add(new Menu(R.string.context_menu_reply_all, new Runnable() {
                 @Override
                 public void run() {
-                    mApplication.doReplyAll(source, mActivity);
+                    ActionUtil.doReplyAll(source, mActivity);
                     dismiss();
                 }
             }));
@@ -198,7 +198,7 @@ public class StatusMenuFragment extends DialogFragment {
             adapter.add(new Menu(R.string.context_menu_qt, new Runnable() {
                 @Override
                 public void run() {
-                    mApplication.doQuote(source, mActivity);
+                    ActionUtil.doQuote(source, mActivity);
                     dismiss();
                 }
             }));
@@ -207,11 +207,11 @@ public class StatusMenuFragment extends DialogFragment {
         /**
          * ふぁぼ / あんふぁぼ
          */
-        if (mApplication.isFav(status)) {
+        if (FavRetweetManager.isFav(status)) {
             adapter.add(new Menu(R.string.context_menu_destroy_favorite, new Runnable() {
                 @Override
                 public void run() {
-                    mApplication.doDestroyFavorite(status.getId());
+                    ActionUtil.doDestroyFavorite(status.getId());
                     dismiss();
                 }
             }));
@@ -219,7 +219,7 @@ public class StatusMenuFragment extends DialogFragment {
             adapter.add(new Menu(R.string.context_menu_create_favorite, new Runnable() {
                 @Override
                 public void run() {
-                    mApplication.doFavorite(status.getId());
+                    ActionUtil.doFavorite(status.getId());
                     dismiss();
                 }
             }));
@@ -228,7 +228,7 @@ public class StatusMenuFragment extends DialogFragment {
         /**
          * 自分のツイートまたはRT
          */
-        if (status.getUser().getId() == mApplication.getUserId()) {
+        if (status.getUser().getId() == AccessTokenManager.getUserId()) {
 
             /**
              * 自分のRT
@@ -241,7 +241,7 @@ public class StatusMenuFragment extends DialogFragment {
                 adapter.add(new Menu(R.string.context_menu_destroy_retweet, new Runnable() {
                     @Override
                     public void run() {
-                        mApplication.doDestroyRetweet(status);
+                        ActionUtil.doDestroyRetweet(status);
                         dismiss();
                     }
                 }));
@@ -258,7 +258,7 @@ public class StatusMenuFragment extends DialogFragment {
                 adapter.add(new Menu(R.string.context_menu_destroy_status, new Runnable() {
                     @Override
                     public void run() {
-                        new DestroyStatusTask(status.getId()).execute();
+                        ActionUtil.doDestroyStatus(status.getId());
                         dismiss();
                     }
                 }));
@@ -268,7 +268,7 @@ public class StatusMenuFragment extends DialogFragment {
         /**
          * 自分がRTした事があるツイート
          */
-        else if (mApplication.getRtId(status) != null) {
+        else if (FavRetweetManager.getRtId(status) != null) {
 
             /**
              * RT解除
@@ -276,7 +276,7 @@ public class StatusMenuFragment extends DialogFragment {
             adapter.add(new Menu(R.string.context_menu_destroy_retweet, new Runnable() {
                 @Override
                 public void run() {
-                    mApplication.doDestroyRetweet(status);
+                    ActionUtil.doDestroyRetweet(status);
                     dismiss();
                 }
             }));
@@ -290,7 +290,7 @@ public class StatusMenuFragment extends DialogFragment {
                 /**
                  * 未ふぁぼ
                  */
-                if (!mApplication.isFav(status)) {
+                if (!FavRetweetManager.isFav(status)) {
 
                     /**
                      * ふぁぼ＆RT
@@ -298,8 +298,8 @@ public class StatusMenuFragment extends DialogFragment {
                     adapter.add(new Menu(R.string.context_menu_favorite_and_retweet, new Runnable() {
                         @Override
                         public void run() {
-                            mApplication.doFavorite(status.getId());
-                            mApplication.doRetweet(status.getId());
+                            ActionUtil.doFavorite(status.getId());
+                            ActionUtil.doRetweet(status.getId());
                             dismiss();
                         }
                     }));
@@ -311,7 +311,7 @@ public class StatusMenuFragment extends DialogFragment {
                 adapter.add(new Menu(R.string.context_menu_retweet, new Runnable() {
                     @Override
                     public void run() {
-                        mApplication.doRetweet(status.getId());
+                        ActionUtil.doRetweet(status.getId());
                         dismiss();
                     }
                 }));
@@ -534,18 +534,17 @@ public class StatusMenuFragment extends DialogFragment {
         /**
          * viaをミュート
          */
-        adapter.add(new Menu(String.format(mActivity.getString(R.string.context_menu_mute), mApplication.getClientName(source.getSource())), new Runnable() {
+        adapter.add(new Menu(String.format(mActivity.getString(R.string.context_menu_mute), StatusUtil.getClientName(source.getSource())), new Runnable() {
             @Override
             public void run() {
                 new AlertDialog.Builder(getActivity())
-                        .setTitle(String.format(getString(R.string.context_create_mute), mApplication.getClientName(source.getSource())))
+                        .setTitle(String.format(getString(R.string.context_create_mute), StatusUtil.getClientName(source.getSource())))
                         .setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                MuteSettings muteSettings = mApplication.getMuteSettings();
-                                muteSettings.addSource(mApplication.getClientName(source.getSource()));
-                                muteSettings.saveMuteSettings();
-                                JustawayApplication.showToast(R.string.toast_create_mute);
+                                MuteSettings.addSource(StatusUtil.getClientName(source.getSource()));
+                                MuteSettings.saveMuteSettings();
+                                MessageUtil.showToast(R.string.toast_create_mute);
                                 dismiss();
                             }
                         })
@@ -570,10 +569,9 @@ public class StatusMenuFragment extends DialogFragment {
                             .setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                    MuteSettings muteSettings = mApplication.getMuteSettings();
-                                    muteSettings.addWord("#" + hashtag.getText());
-                                    muteSettings.saveMuteSettings();
-                                    JustawayApplication.showToast(R.string.toast_create_mute);
+                                    MuteSettings.addWord("#" + hashtag.getText());
+                                    MuteSettings.saveMuteSettings();
+                                    MessageUtil.showToast(R.string.toast_create_mute);
                                     dismiss();
                                 }
                             })
@@ -598,10 +596,9 @@ public class StatusMenuFragment extends DialogFragment {
                         .setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                MuteSettings muteSettings = mApplication.getMuteSettings();
-                                muteSettings.addUser(source.getUser().getId(), source.getUser().getScreenName());
-                                muteSettings.saveMuteSettings();
-                                JustawayApplication.showToast(R.string.toast_create_mute);
+                                MuteSettings.addUser(source.getUser().getId(), source.getUser().getScreenName());
+                                MuteSettings.saveMuteSettings();
+                                MessageUtil.showToast(R.string.toast_create_mute);
                                 dismiss();
                             }
                         })

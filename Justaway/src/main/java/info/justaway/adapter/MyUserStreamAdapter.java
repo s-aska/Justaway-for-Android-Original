@@ -7,13 +7,17 @@ import java.util.ArrayList;
 
 import de.greenrobot.event.EventBus;
 import info.justaway.JustawayApplication;
-import info.justaway.event.model.CreateFavoriteEvent;
-import info.justaway.event.model.CreateStatusEvent;
-import info.justaway.event.model.DestroyDirectMessageEvent;
-import info.justaway.event.model.DestroyStatusEvent;
+import info.justaway.event.model.StreamingCreateFavoriteEvent;
+import info.justaway.event.model.StreamingCreateStatusEvent;
+import info.justaway.event.model.StreamingDestroyMessageEvent;
+import info.justaway.event.model.StreamingDestroyStatusEvent;
 import info.justaway.event.model.NotificationEvent;
-import info.justaway.event.model.UnFavoriteEvent;
+import info.justaway.event.model.StreamingUnFavoriteEvent;
+import info.justaway.model.AccessTokenManager;
+import info.justaway.model.FavRetweetManager;
 import info.justaway.model.Row;
+import info.justaway.model.TwitterManager;
+import info.justaway.settings.MuteSettings;
 import twitter4j.DirectMessage;
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
@@ -24,11 +28,11 @@ public class MyUserStreamAdapter extends UserStreamAdapter {
 
     private boolean mStopped;
     private boolean mPause;
-    private ArrayList<CreateStatusEvent> mCreateStatusEvents = new ArrayList<CreateStatusEvent>();
-    private ArrayList<DestroyStatusEvent> mDestroyStatusEvents = new ArrayList<DestroyStatusEvent>();
-    private ArrayList<CreateFavoriteEvent> mCreateFavoriteEvents = new ArrayList<CreateFavoriteEvent>();
-    private ArrayList<UnFavoriteEvent> mUnFavoriteEvents = new ArrayList<UnFavoriteEvent>();
-    private ArrayList<DestroyDirectMessageEvent> mDestroyDirectMessageEvents = new ArrayList<DestroyDirectMessageEvent>();
+    private ArrayList<StreamingCreateStatusEvent> mStreamingCreateStatusEvents = new ArrayList<StreamingCreateStatusEvent>();
+    private ArrayList<StreamingDestroyStatusEvent> mStreamingDestroyStatusEvents = new ArrayList<StreamingDestroyStatusEvent>();
+    private ArrayList<StreamingCreateFavoriteEvent> mStreamingCreateFavoriteEvents = new ArrayList<StreamingCreateFavoriteEvent>();
+    private ArrayList<StreamingUnFavoriteEvent> mStreamingUnFavoriteEvents = new ArrayList<StreamingUnFavoriteEvent>();
+    private ArrayList<StreamingDestroyMessageEvent> mStreamingDestroyMessageEvents = new ArrayList<StreamingDestroyMessageEvent>();
 
     public void stop() {
         mStopped = true;
@@ -47,26 +51,26 @@ public class MyUserStreamAdapter extends UserStreamAdapter {
         new Handler().post(new Runnable() {
             @Override
             public void run() {
-                for (CreateStatusEvent event : mCreateStatusEvents) {
+                for (StreamingCreateStatusEvent event : mStreamingCreateStatusEvents) {
                     EventBus.getDefault().post(event);
                 }
-                for (DestroyStatusEvent event : mDestroyStatusEvents) {
+                for (StreamingDestroyStatusEvent event : mStreamingDestroyStatusEvents) {
                     EventBus.getDefault().post(event);
                 }
-                for (CreateFavoriteEvent event : mCreateFavoriteEvents) {
+                for (StreamingCreateFavoriteEvent event : mStreamingCreateFavoriteEvents) {
                     EventBus.getDefault().post(event);
                 }
-                for (UnFavoriteEvent event : mUnFavoriteEvents) {
+                for (StreamingUnFavoriteEvent event : mStreamingUnFavoriteEvents) {
                     EventBus.getDefault().post(event);
                 }
-                for (DestroyDirectMessageEvent event : mDestroyDirectMessageEvents) {
+                for (StreamingDestroyMessageEvent event : mStreamingDestroyMessageEvents) {
                     EventBus.getDefault().post(event);
                 }
-                mCreateStatusEvents.clear();
-                mDestroyStatusEvents.clear();
-                mCreateFavoriteEvents.clear();
-                mUnFavoriteEvents.clear();
-                mDestroyDirectMessageEvents.clear();
+                mStreamingCreateStatusEvents.clear();
+                mStreamingDestroyStatusEvents.clear();
+                mStreamingCreateFavoriteEvents.clear();
+                mStreamingUnFavoriteEvents.clear();
+                mStreamingDestroyMessageEvents.clear();
             }
         });
     }
@@ -77,18 +81,18 @@ public class MyUserStreamAdapter extends UserStreamAdapter {
             return;
         }
         Row row = Row.newStatus(status);
-        if (JustawayApplication.isMute(row)) {
+        if (MuteSettings.isMute(row)) {
             return;
         }
-        long userId = JustawayApplication.getApplication().getUserId();
+        long userId = AccessTokenManager.getUserId();
         Status retweet = status.getRetweetedStatus();
         if (status.getInReplyToUserId() == userId || (retweet != null && retweet.getUser().getId() == userId)) {
             EventBus.getDefault().post(new NotificationEvent(row));
         }
         if (mPause) {
-            mCreateStatusEvents.add(new CreateStatusEvent(row));
+            mStreamingCreateStatusEvents.add(new StreamingCreateStatusEvent(row));
         } else {
-            EventBus.getDefault().post(new CreateStatusEvent(row));
+            EventBus.getDefault().post(new StreamingCreateStatusEvent(row));
         }
     }
 
@@ -98,9 +102,9 @@ public class MyUserStreamAdapter extends UserStreamAdapter {
             return;
         }
         if (mPause) {
-            mDestroyStatusEvents.add(new DestroyStatusEvent(statusDeletionNotice.getStatusId()));
+            mStreamingDestroyStatusEvents.add(new StreamingDestroyStatusEvent(statusDeletionNotice.getStatusId()));
         } else {
-            EventBus.getDefault().post(new DestroyStatusEvent(statusDeletionNotice.getStatusId()));
+            EventBus.getDefault().post(new StreamingDestroyStatusEvent(statusDeletionNotice.getStatusId()));
         }
     }
 
@@ -110,9 +114,8 @@ public class MyUserStreamAdapter extends UserStreamAdapter {
             return;
         }
         // 自分の fav を反映
-        JustawayApplication application = JustawayApplication.getApplication();
-        if (source.getId() == application.getUserId()) {
-            application.setFav(status.getId());
+        if (source.getId() == AccessTokenManager.getUserId()) {
+            FavRetweetManager.setFav(status.getId());
             return;
         }
         Row row = Row.newFavorite(source, target, status);
@@ -123,7 +126,7 @@ public class MyUserStreamAdapter extends UserStreamAdapter {
             protected twitter4j.Status doInBackground(Row... params) {
                 mRow = params[0];
                 try {
-                    return JustawayApplication.getApplication().getTwitter().showStatus(mRow.getStatus().getId());
+                    return TwitterManager.getTwitter().showStatus(mRow.getStatus().getId());
                 } catch (Exception e) {
                     e.printStackTrace();
                     return null;
@@ -136,9 +139,9 @@ public class MyUserStreamAdapter extends UserStreamAdapter {
                     mRow.setStatus(status);
                 }
                 if (mPause) {
-                    mCreateFavoriteEvents.add(new CreateFavoriteEvent(mRow));
+                    mStreamingCreateFavoriteEvents.add(new StreamingCreateFavoriteEvent(mRow));
                 } else {
-                    EventBus.getDefault().post(new CreateFavoriteEvent(mRow));
+                    EventBus.getDefault().post(new StreamingCreateFavoriteEvent(mRow));
                 }
             }
         }.execute(row);
@@ -150,15 +153,14 @@ public class MyUserStreamAdapter extends UserStreamAdapter {
             return;
         }
         // 自分の unfav を反映
-        JustawayApplication application = JustawayApplication.getApplication();
-        if (arg0.getId() == application.getUserId()) {
-            application.removeFav(arg2.getId());
+        if (arg0.getId() == AccessTokenManager.getUserId()) {
+            FavRetweetManager.removeFav(arg2.getId());
             return;
         }
         if (mPause) {
-            mUnFavoriteEvents.add(new UnFavoriteEvent(arg0, arg2));
+            mStreamingUnFavoriteEvents.add(new StreamingUnFavoriteEvent(arg0, arg2));
         } else {
-            EventBus.getDefault().post(new UnFavoriteEvent(arg0, arg2));
+            EventBus.getDefault().post(new StreamingUnFavoriteEvent(arg0, arg2));
         }
     }
 
@@ -168,14 +170,14 @@ public class MyUserStreamAdapter extends UserStreamAdapter {
             return;
         }
         Row row = Row.newDirectMessage(directMessage);
-        if (JustawayApplication.isMute(row)) {
+        if (MuteSettings.isMute(row)) {
             return;
         }
         EventBus.getDefault().post(new NotificationEvent(row));
         if (mPause) {
-            mCreateStatusEvents.add(new CreateStatusEvent(row));
+            mStreamingCreateStatusEvents.add(new StreamingCreateStatusEvent(row));
         } else {
-            EventBus.getDefault().post(new CreateStatusEvent(row));
+            EventBus.getDefault().post(new StreamingCreateStatusEvent(row));
         }
     }
 
@@ -185,9 +187,9 @@ public class MyUserStreamAdapter extends UserStreamAdapter {
             return;
         }
         if (mPause) {
-            mDestroyDirectMessageEvents.add(new DestroyDirectMessageEvent(directMessageId));
+            mStreamingDestroyMessageEvents.add(new StreamingDestroyMessageEvent(directMessageId));
         } else {
-            EventBus.getDefault().post(new DestroyDirectMessageEvent(directMessageId));
+            EventBus.getDefault().post(new StreamingDestroyMessageEvent(directMessageId));
         }
     }
 }

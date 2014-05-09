@@ -3,11 +3,9 @@ package info.justaway;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,15 +18,12 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.TypedValue;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -38,84 +33,155 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnClick;
+import butterknife.OnItemClick;
+import butterknife.OnLongClick;
 import de.greenrobot.event.EventBus;
-import info.justaway.adapter.main.MainPagerAdapter;
-import info.justaway.adapter.UserSearchAdapter;
+import info.justaway.adapter.SearchAdapter;
 import info.justaway.adapter.main.AccessTokenAdapter;
+import info.justaway.adapter.main.MainPagerAdapter;
 import info.justaway.event.AlertDialogEvent;
 import info.justaway.event.NewRecordEvent;
 import info.justaway.event.action.AccountChangeEvent;
-import info.justaway.event.action.AccountChangePostEvent;
-import info.justaway.event.action.EditorEvent;
-import info.justaway.event.action.SeenTopEvent;
-import info.justaway.event.connection.CleanupEvent;
-import info.justaway.event.connection.ConnectEvent;
-import info.justaway.event.connection.DisconnectEvent;
+import info.justaway.event.action.GoToTopEvent;
+import info.justaway.event.action.OpenEditorEvent;
+import info.justaway.event.action.PostAccountChangeEvent;
+import info.justaway.event.connection.StreamingConnectionEvent;
 import info.justaway.fragment.main.StreamingSwitchDialogFragment;
 import info.justaway.fragment.main.tab.BaseFragment;
 import info.justaway.fragment.main.tab.DirectMessagesFragment;
 import info.justaway.fragment.main.tab.InteractionsFragment;
 import info.justaway.fragment.main.tab.TimelineFragment;
 import info.justaway.fragment.main.tab.UserListFragment;
-import info.justaway.task.DestroyDirectMessageTask;
+import info.justaway.model.AccessTokenManager;
+import info.justaway.model.TabManager;
+import info.justaway.model.TwitterManager;
+import info.justaway.settings.BasicSettings;
 import info.justaway.task.SendDirectMessageTask;
 import info.justaway.task.UpdateStatusTask;
+import info.justaway.util.KeyboardUtil;
+import info.justaway.util.MessageUtil;
+import info.justaway.util.ThemeUtil;
 import info.justaway.util.TwitterUtil;
 import info.justaway.widget.AutoCompleteEditText;
+import info.justaway.widget.ClearEditText;
+import info.justaway.widget.FontelloButton;
 import twitter4j.Status;
 import twitter4j.StatusUpdate;
 import twitter4j.TwitterException;
 import twitter4j.auth.AccessToken;
 
+@SuppressLint("InflateParams")
+@SuppressWarnings("MagicConstant")
 public class MainActivity extends FragmentActivity {
 
     private static final int REQUEST_ACCOUNT_SETTING = 200;
     private static final int REQUEST_SETTINGS = 300;
     private static final int REQUEST_TAB_SETTINGS = 400;
+    private static final int REQUEST_SEARCH = 500;
     private static final int ERROR_CODE_DUPLICATE_STATUS = 187;
-    private static final long TAB_ID_TIMELINE = -1L;
-    private static final long TAB_ID_INTERACTIONS = -2L;
-    private static final long TAB_ID_DIRECT_MESSAGE = -3L;
     private static final Pattern USER_LIST_PATTERN = Pattern.compile("^(@[a-zA-Z0-9_]+)/(.*)$");
-    private JustawayApplication mApplication;
     private MainPagerAdapter mMainPagerAdapter;
     private ViewPager mViewPager;
-    private ProgressDialog mProgressDialog;
-    private TextView mTitle;
-    private TextView mSubTitle;
-    private TextView mSignalButton;
-    private LinearLayout mNormalLayout;
-    private FrameLayout mSearchLayout;
-    private AutoCompleteEditText mSearchText;
     private Status mInReplyToStatus;
     private ActionBarDrawerToggle mDrawerToggle;
     private Activity mActivity;
     private AccessTokenAdapter mAccessTokenAdapter;
     private AccessToken mSwitchAccessToken;
     private boolean mFirstBoot = true;
+    private SearchAdapter mSearchAdapter;
+    private int mDefaultTextColor;
+    private int mDisabledTextColor;
+    private ActionBarHolder mActionBarHolder;
 
-    @SuppressWarnings("MagicConstant")
+    @InjectView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
+    @InjectView(R.id.quick_tweet_layout) LinearLayout mQuickTweetLayout;
+    @InjectView(R.id.tab_menus) LinearLayout mTabMenus;
+    @InjectView(R.id.account_list) ListView mDrawerList;
+    @InjectView(R.id.send_button) TextView mSendButton;
+    @InjectView(R.id.post_button) Button mPostButton;
+    @InjectView(R.id.quick_tweet_edit) ClearEditText mQuickTweetEdit;
+
+    /**
+     * ButterKnife for ActionBar
+     */
+    class ActionBarHolder {
+        @InjectView(R.id.action_bar_title) TextView title;
+        @InjectView(R.id.action_bar_sub_title) TextView subTitle;
+        @InjectView(R.id.action_bar_normal_layout) LinearLayout normalLayout;
+        @InjectView(R.id.action_bar_search_layout) FrameLayout searchLayout;
+        @InjectView(R.id.action_bar_search_text) AutoCompleteEditText searchText;
+        @InjectView(R.id.action_bar_search_button) TextView searchButton;
+        @InjectView(R.id.action_bar_search_cancel) TextView cancelButton;
+        @InjectView(R.id.action_bar_streaming_button) TextView streamingButton;
+
+        @OnClick(R.id.action_bar_search_button)
+        void actionBarSearchButton() {
+            startSearch();
+        }
+
+        @OnClick(R.id.action_bar_search_cancel)
+        void actionBarCancelButton() {
+            cancelSearch();
+        }
+
+        @OnClick(R.id.action_bar_streaming_button)
+        void actionBarToggleStreaming() {
+            final boolean turnOn = !BasicSettings.getStreamingMode();
+            DialogFragment dialog = StreamingSwitchDialogFragment.newInstance(turnOn);
+            dialog.show(getSupportFragmentManager(), "dialog");
+        }
+
+        public ActionBarHolder(View view) {
+            ButterKnife.inject(this, view);
+        }
+    }
+
+    /**
+     * ButterKnife for Drawer
+     */
+    class DrawerHolder {
+        @OnClick(R.id.account_settings)
+        void openAccountSettings() {
+            Intent intent = new Intent(MainActivity.this, AccountSettingActivity.class);
+            startActivityForResult(intent, REQUEST_ACCOUNT_SETTING);
+        }
+
+        public DrawerHolder(View view) {
+            ButterKnife.inject(this, view);
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mApplication = JustawayApplication.getApplication();
-        mApplication.setTheme(this);
+        ThemeUtil.setTheme(this);
         mActivity = this;
 
-        // アクセストークンがない場合に認証用のアクティビティを起動する
-        if (!mApplication.hasAccessToken()) {
+        /**
+         * アクセストークンがない場合に認証用のアクティビティを起動する
+         */
+        if (!AccessTokenManager.hasAccessToken()) {
             Intent intent = new Intent(this, SignInActivity.class);
             startActivity(intent);
             finish();
             return;
         }
 
-        // クイックモード時に起動と同時にキーボードが出現するのを抑止
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
+        /**
+         * ビューで使う変数の初期化処理
+         */
+        mDefaultTextColor = ThemeUtil.getThemeTextColor(R.attr.menu_text_color);
+        mDisabledTextColor = ThemeUtil.getThemeTextColor(R.attr.menu_text_color_disabled);
+
+        /**
+         * ActionBarの初期化処理
+         */
         ActionBar actionBar = getActionBar();
         if (actionBar != null) {
-            // アプリアイコンのクリックを有効化
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeButtonEnabled(true);
 
@@ -126,287 +192,48 @@ public class MainActivity extends FragmentActivity {
                 actionBar.setDisplayOptions(options | ActionBar.DISPLAY_SHOW_CUSTOM);
                 if (actionBar.getCustomView() == null) {
                     actionBar.setCustomView(R.layout.action_bar_main);
-                    ViewGroup group = (ViewGroup) actionBar.getCustomView();
-                    mTitle = (TextView) group.findViewById(R.id.title);
-                    mSubTitle = (TextView) group.findViewById(R.id.sub_title);
-
-                    final UserSearchAdapter adapter = new UserSearchAdapter(this, R.layout.row_auto_complete);
-                    mNormalLayout = (LinearLayout) group.findViewById(R.id.normal_layout);
-                    mSearchLayout = (FrameLayout) group.findViewById(R.id.search_layout);
-                    mSearchText = (AutoCompleteEditText) findViewById(R.id.search_text);
-                    mSearchText.setThreshold(0);
-                    mSearchText.setAdapter(adapter);
-                    mSearchText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                            if (mSearchText.getText() == null) {
-                                return;
-                            }
-                            Intent intent = null;
-                            String searchWord = mSearchText.getText().toString();
-                            mApplication.hideKeyboard(mSearchText);
-                            if (adapter.isSavedMode()) {
-                                intent = new Intent(mActivity, SearchActivity.class);
-                                intent.putExtra("query", searchWord);
-                                startActivity(intent);
-                                return;
-                            }
-                            switch (i) {
-                                case 0:
-                                    intent = new Intent(mActivity, SearchActivity.class);
-                                    intent.putExtra("query", searchWord);
-                                    break;
-                                case 1:
-                                    intent = new Intent(mActivity, UserSearchActivity.class);
-                                    intent.putExtra("query", searchWord);
-                                    break;
-                                case 2:
-                                    intent = new Intent(mActivity, ProfileActivity.class);
-                                    intent.putExtra("screenName", searchWord);
-                                    break;
-                            }
-                            startActivity(intent);
-                        }
-                    });
-
-                    TextView searchButton = (TextView) group.findViewById(R.id.search);
-                    searchButton.setTypeface(JustawayApplication.getFontello());
-                    searchButton.setOnClickListener(
-                            new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    mDrawerToggle.setDrawerIndicatorEnabled(false);
-                                    mNormalLayout.setVisibility(View.GONE);
-                                    mSearchLayout.setVisibility(View.VISIBLE);
-                                    mSearchText.showDropDown();
-                                    mSearchText.setText("");
-                                    mApplication.showKeyboard(mSearchText);
-                                }
-                            }
-                    );
-
-                    TextView cancelButton = (TextView) group.findViewById(R.id.cancel);
-                    cancelButton.setTypeface(JustawayApplication.getFontello());
-                    cancelButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            cancelSearch();
-                        }
-                    });
-
-                    mSignalButton = (TextView) group.findViewById(R.id.signal);
-                    mSignalButton.setTypeface(JustawayApplication.getFontello());
-                    mSignalButton.setOnClickListener(
-                            new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    final boolean turnOn = !mApplication.getStreamingMode();
-                                    DialogFragment dialog = StreamingSwitchDialogFragment.newInstance(turnOn);
-                                    dialog.show(getSupportFragmentManager(), "dialog");
-                                }
-                            }
-                    );
+                    mActionBarHolder = new ActionBarHolder(actionBar.getCustomView());
+                    mSearchAdapter = new SearchAdapter(this, R.layout.row_auto_complete);
+                    mActionBarHolder.searchText.setTypeface(JustawayApplication.getFontello());
+                    mActionBarHolder.searchText.setThreshold(0);
+                    mActionBarHolder.searchText.setAdapter(mSearchAdapter);
+                    mActionBarHolder.searchText.setOnItemClickListener(getActionBarAutoCompleteOnClickListener());
+                    mActionBarHolder.searchText.setOnKeyListener(getOnKeyListener());
                 }
             }
         }
-
-        setContentView(R.layout.activity_main);
-        int drawer = mApplication.getThemeName().equals("black") ? R.drawable.ic_dark_drawer : R.drawable.ic_dark_drawer;
-
-        // DrawerLayout
-        final DrawerLayout mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout,
-                drawer, R.string.open, R.string.close) {
-
-            public void onDrawerClosed(View view) {
-                invalidateOptionsMenu();
-            }
-
-            public void onDrawerOpened(View drawerView) {
-                invalidateOptionsMenu(); //
-            }
-        };
-
-        // アカウント切り替え
-        ListView drawerList = (ListView) findViewById(R.id.account_list);
-        mAccessTokenAdapter = new AccessTokenAdapter(this,
-                R.layout.row_switch_account,
-                mApplication.getThemeTextColor(mActivity, R.attr.holo_blue),
-                mApplication.getThemeTextColor(mActivity, R.attr.text_color));
-        ArrayList<AccessToken> accessTokens = mApplication.getAccessTokens();
-        if (accessTokens != null) {
-            for (AccessToken accessToken : accessTokens) {
-                mAccessTokenAdapter.add(accessToken);
-            }
-        }
-
-        LayoutInflater inflater = getLayoutInflater();
-        @SuppressLint("InflateParams")
-        View footer = inflater.inflate(R.layout.drawer_menu, null, false);
-        assert footer != null;
-        footer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, AccountSettingActivity.class);
-                startActivityForResult(intent, REQUEST_ACCOUNT_SETTING);
-            }
-        });
-        drawerList.addFooterView(footer, null, true);
-
-        drawerList.setAdapter(mAccessTokenAdapter);
-        drawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                AccessToken accessToken = mAccessTokenAdapter.getItem(i);
-                if (mApplication.getUserId() != accessToken.getUserId()) {
-                    mApplication.switchAccessToken(accessToken);
-                    mAccessTokenAdapter.notifyDataSetChanged();
-                }
-                mDrawerLayout.closeDrawer(findViewById(R.id.left_drawer));
-            }
-        });
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
-
-        // クイックモード時に起動と同時に入力エリアにフォーカスするのを抑止
-        findViewById(R.id.main).requestFocus();
-
-        setup();
 
         /**
-         * 違うタブだったら移動、同じタブだったら最上部にスクロールという美しい実装
-         * ActionBarのタブに頼っていない為、自力でsetCurrentItemでタブを動かしている
-         * タブの切替がスワイプだけで良い場合はこの処理すら不要
+         * 本体の初期化処理
          */
-        Typeface fontello = JustawayApplication.getFontello();
-        Button tweet = (Button) findViewById(R.id.action_tweet);
-        final Button send = (Button) findViewById(R.id.send);
-        tweet.setTypeface(fontello);
-        send.setTypeface(fontello);
-        tweet.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(v.getContext(), PostActivity.class);
-                if (findViewById(R.id.quick_tweet_layout).getVisibility() == View.VISIBLE) {
-                    EditText status = (EditText) findViewById(R.id.quick_tweet_edit);
-                    if (status == null) {
-                        return;
-                    }
-                    String msg = status.getText() != null ? status.getText().toString() : null;
-                    if (msg != null && msg.length() > 0) {
-                        intent.putExtra("status", msg);
-                        intent.putExtra("selection", msg.length());
-                        if (mInReplyToStatus != null) {
-                            intent.putExtra("inReplyToStatus", mInReplyToStatus);
-                        }
-                        status.setText("");
-                        status.clearFocus();
-                    }
-                }
-                startActivity(intent);
-            }
-        });
+        setContentView(R.layout.activity_main);
 
-        final int defaultTextColor = JustawayApplication.getApplication().getThemeTextColor(this, R.attr.menu_text_color);
-        final int disabledTextColor = JustawayApplication.getApplication().getThemeTextColor(this, R.attr.menu_text_color_disabled);
-        ((EditText) findViewById(R.id.quick_tweet_edit)).addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+        ButterKnife.inject(this);
 
-            }
+        /**
+         * 起動と同時にキーボードが出現するのを抑止、クイックモード時に起きる
+         */
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
-                int textColor;
-                int length = TwitterUtil.count(charSequence.toString());
-                // 140文字をオーバーした時は文字数を赤色に
-                if (length < 0) {
-                    textColor = Color.RED;
-                } else if (length == 140) {
-                    textColor = disabledTextColor;
-                } else {
-                    textColor = defaultTextColor;
-                }
-                TextView count = ((TextView) findViewById(R.id.count));
-                count.setTextColor(textColor);
-                count.setText(String.valueOf(length));
+        mDrawerLayout.requestFocus();
 
-                if (length < 0 || length == 140) {
-                    // 文字数が0文字または140文字以上の時はボタンを無効
-                    send.setEnabled(false);
-                } else {
-                    send.setEnabled(true);
-                }
-            }
+        /**
+         * ナビゲーションドロワーの初期化処理
+         */
+        mAccessTokenAdapter = new AccessTokenAdapter(this,
+                R.layout.row_switch_account,
+                ThemeUtil.getThemeTextColor(R.attr.holo_blue),
+                ThemeUtil.getThemeTextColor(R.attr.text_color));
 
-            @Override
-            public void afterTextChanged(Editable editable) {
+        View drawerFooterView = getLayoutInflater().inflate(R.layout.drawer_menu, null, false);
+        new DrawerHolder(drawerFooterView);
+        mDrawerList.addFooterView(drawerFooterView, null, true);
+        mDrawerList.setAdapter(mAccessTokenAdapter);
+        mDrawerToggle = getActionBarDrawerToggle();
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-            }
-        });
-
-        tweet.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                if (findViewById(R.id.quick_tweet_layout).getVisibility() == View.VISIBLE) {
-                    hideQuickPanel();
-                } else {
-                    showQuickPanel();
-                }
-                return true;
-            }
-        });
-        send.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                EditText status = (EditText) findViewById(R.id.quick_tweet_edit);
-                String msg = status.getText() != null ? status.getText().toString() : null;
-                if (msg != null && msg.length() > 0) {
-                    showProgressDialog(getString(R.string.progress_sending));
-
-                    if (msg.startsWith("D ")) {
-                        SendDirectMessageTask task = new SendDirectMessageTask(null) {
-                            @Override
-                            protected void onPostExecute(TwitterException e) {
-                                dismissProgressDialog();
-                                if (e == null) {
-                                    EditText status = (EditText) findViewById(R.id.quick_tweet_edit);
-                                    status.setText("");
-                                } else {
-                                    JustawayApplication.showToast(R.string.toast_update_status_failure);
-                                }
-                            }
-                        };
-                        task.execute(msg);
-                    } else {
-                        StatusUpdate statusUpdate = new StatusUpdate(msg);
-                        if (mInReplyToStatus != null) {
-                            statusUpdate.setInReplyToStatusId(mInReplyToStatus.getId());
-                            setInReplyToStatus(null);
-                        }
-
-                        UpdateStatusTask task = new UpdateStatusTask(null) {
-                            @Override
-                            protected void onPostExecute(TwitterException e) {
-                                dismissProgressDialog();
-                                if (e == null) {
-                                    EditText status = (EditText) findViewById(R.id.quick_tweet_edit);
-                                    status.setText("");
-                                } else if (e.getErrorCode() == ERROR_CODE_DUPLICATE_STATUS) {
-                                    JustawayApplication.showToast(getString(R.string.toast_update_status_already));
-                                } else {
-                                    JustawayApplication.showToast(R.string.toast_update_status_failure);
-                                }
-                            }
-                        };
-                        task.execute(statusUpdate);
-                    }
-                }
-            }
-        });
-
-        if (mApplication.getStreamingMode()) {
-            mApplication.startStreaming();
-        }
+        // タブとかの初期化処理へ続く..
+        setup();
     }
 
     @Override
@@ -415,16 +242,13 @@ public class MainActivity extends FragmentActivity {
         mDrawerToggle.syncState();
     }
 
-
     @Override
     protected void onStart() {
         super.onStart();
 
-        // 前回バグで強制終了した場合はダイアログ表示、Yesでレポート送信
         MyUncaughtExceptionHandler.showBugReportDialogIfExist(this);
 
-        // スリープさせない指定
-        if (JustawayApplication.getApplication().getKeepScreenOn()) {
+        if (BasicSettings.getKeepScreenOn()) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         } else {
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -446,16 +270,20 @@ public class MainActivity extends FragmentActivity {
                 }
                 if (mAccessTokenAdapter != null) {
                     mAccessTokenAdapter.clear();
-                    for (AccessToken accessToken : mApplication.getAccessTokens()) {
+                    for (AccessToken accessToken : AccessTokenManager.getAccessTokens()) {
                         mAccessTokenAdapter.add(accessToken);
                     }
                 }
                 break;
             case REQUEST_SETTINGS:
                 if (resultCode == RESULT_OK) {
-                    mApplication.resetDisplaySettings();
+                    BasicSettings.init();
                     finish();
+                    startActivity(new Intent(this, this.getClass()));
                 }
+                break;
+            case REQUEST_SEARCH:
+                cancelSearch();
                 break;
             default:
                 break;
@@ -477,8 +305,8 @@ public class MainActivity extends FragmentActivity {
             return;
         }
 
-        mApplication.resetDisplaySettings();
-        mApplication.resetNotification();
+        BasicSettings.init();
+        BasicSettings.resetNotification();
 
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -493,24 +321,24 @@ public class MainActivity extends FragmentActivity {
         }, 1000);
 
         if (mSwitchAccessToken != null) {
-            mApplication.switchAccessToken(mSwitchAccessToken);
+            TwitterManager.switchAccessToken(mSwitchAccessToken);
             mSwitchAccessToken = null;
         }
-        mApplication.resumeStreaming();
-        if (mApplication.getTwitterStreamConnected()) {
-            mApplication.setThemeTextColor(this, mSignalButton, R.attr.holo_green);
+        TwitterManager.resumeStreaming();
+        if (TwitterManager.getTwitterStreamConnected()) {
+            ThemeUtil.setThemeTextColor(mActionBarHolder.streamingButton, R.attr.holo_green);
         } else {
-            if (mApplication.getStreamingMode()) {
-                mApplication.setThemeTextColor(this, mSignalButton, R.attr.holo_red);
+            if (BasicSettings.getStreamingMode()) {
+                ThemeUtil.setThemeTextColor(mActionBarHolder.streamingButton, R.attr.holo_red);
             } else {
-                mSignalButton.setTextColor(Color.WHITE);
+                mActionBarHolder.streamingButton.setTextColor(Color.WHITE);
             }
         }
     }
 
     @Override
     protected void onPause() {
-        mApplication.pauseStreaming();
+        TwitterManager.pauseStreaming();
         EventBus.getDefault().unregister(this);
         super.onPause();
     }
@@ -527,10 +355,9 @@ public class MainActivity extends FragmentActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            EditText editText = (EditText) findViewById(R.id.quick_tweet_edit);
-            if (editText != null && editText.getText() != null && editText.getText().length() > 0) {
-                editText.setText("");
-                setInReplyToStatus(null);
+            if (mQuickTweetEdit.getText() != null && mQuickTweetEdit.getText().length() > 0) {
+                mQuickTweetEdit.setText("");
+                mInReplyToStatus = null;
                 return false;
             }
             finish();
@@ -547,41 +374,39 @@ public class MainActivity extends FragmentActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
-        if (itemId == R.id.profile) {
-            /**
-             * screenNameは変更可能なのでuserIdを使う
-             */
-            Intent intent = new Intent(this, ProfileActivity.class);
-            intent.putExtra("userId", mApplication.getUserId());
-            startActivity(intent);
-        } else if (itemId == R.id.tab_settings) {
-            Intent intent = new Intent(this, TabSettingsActivity.class);
-            startActivityForResult(intent, REQUEST_TAB_SETTINGS);
-        } else if (itemId == R.id.search) {
-            Intent intent = new Intent(this, SearchActivity.class);
-            startActivity(intent);
-        } else if (itemId == R.id.settings) {
-            Intent intent = new Intent(this, SettingsActivity.class);
-            startActivityForResult(intent, REQUEST_SETTINGS);
-        } else if (itemId == R.id.official_website) {
-            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.official_website)));
-            startActivity(intent);
-        } else if (itemId == R.id.feedback) {
-            View singleLineTweet = findViewById(R.id.quick_tweet_layout);
-            if (singleLineTweet != null && singleLineTweet.getVisibility() == View.VISIBLE) {
-                EditText editStatus = (EditText) findViewById(R.id.quick_tweet_edit);
-                editStatus.setText(" #justaway");
-                editStatus.requestFocus();
-                mApplication.showKeyboard(editStatus);
-                return true;
-            }
-            Intent intent = new Intent(this, PostActivity.class);
-            intent.putExtra("status", " #justaway");
-            startActivity(intent);
-        } else if (mDrawerToggle.onOptionsItemSelected(item)) {
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
-        } else if (itemId == android.R.id.home) {
-            cancelSearch();
+        }
+
+        Intent intent;
+        switch (itemId) {
+            case android.R.id.home:
+                cancelSearch();
+                break;
+            case R.id.profile:
+                intent = new Intent(this, ProfileActivity.class);
+                intent.putExtra("userId", AccessTokenManager.getUserId());
+                startActivity(intent);
+                break;
+            case R.id.tab_settings:
+                intent = new Intent(this, TabSettingsActivity.class);
+                startActivityForResult(intent, REQUEST_TAB_SETTINGS);
+                break;
+            case R.id.action_bar_search_button:
+                intent = new Intent(this, SearchActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.settings:
+                intent = new Intent(this, SettingsActivity.class);
+                startActivityForResult(intent, REQUEST_SETTINGS);
+                break;
+            case R.id.official_website:
+                intent = new Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.official_website)));
+                startActivity(intent);
+                break;
+            case R.id.feedback:
+                EventBus.getDefault().post(new OpenEditorEvent(" #justaway", null, null, null));
+                break;
         }
         return true;
     }
@@ -590,7 +415,7 @@ public class MainActivity extends FragmentActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putInt("signalButtonColor", mSignalButton.getCurrentTextColor());
+        outState.putInt("signalButtonColor", mActionBarHolder.streamingButton.getCurrentTextColor());
 
         LinearLayout tab_menus = (LinearLayout) findViewById(R.id.tab_menus);
         int count = tab_menus.getChildCount();
@@ -611,7 +436,7 @@ public class MainActivity extends FragmentActivity {
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
 
-        mSignalButton.setTextColor(savedInstanceState.getInt("signalButtonColor"));
+        mActionBarHolder.streamingButton.setTextColor(savedInstanceState.getInt("signalButtonColor"));
 
         final int[] tabColors = savedInstanceState.getIntArray("tabColors");
         assert tabColors != null;
@@ -626,114 +451,19 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
-    @SuppressWarnings("UnusedDeclaration")
-    public void onEventMainThread(AlertDialogEvent event) {
-        event.getDialogFragment().show(getSupportFragmentManager(), "dialog");
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    public void onEventMainThread(SeenTopEvent event) {
-        showTopView();
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    public void onEventMainThread(EditorEvent event) {
-        View singleLineTweet = findViewById(R.id.quick_tweet_layout);
-        if (singleLineTweet != null && singleLineTweet.getVisibility() == View.VISIBLE) {
-            EditText editStatus = (EditText) findViewById(R.id.quick_tweet_edit);
-            editStatus.setText(event.getText());
-            if (event.getSelectionStart() != null) {
-                if (event.getSelectionStop() != null) {
-                    editStatus.setSelection(event.getSelectionStart(), event.getSelectionStop());
-                } else {
-                    editStatus.setSelection(event.getSelectionStart());
-                }
-            }
-            setInReplyToStatus(event.getInReplyToStatus());
-            mApplication.showKeyboard(editStatus);
-        } else {
-            Intent intent = new Intent(this, PostActivity.class);
-            intent.putExtra("status", event.getText());
-            if (event.getSelectionStart() != null) {
-                intent.putExtra("selection", event.getSelectionStart());
-            }
-            if (event.getSelectionStop() != null) {
-                intent.putExtra("selection_stop", event.getSelectionStop());
-            }
-            if (event.getInReplyToStatus() != null) {
-                intent.putExtra("inReplyToStatus", event.getInReplyToStatus());
-            }
-            startActivity(intent);
-        }
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    public void onEventMainThread(ConnectEvent event) {
-        mApplication.setThemeTextColor(this, mSignalButton, R.attr.holo_green);
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    public void onEventMainThread(DisconnectEvent event) {
-        if (mApplication.getStreamingMode()) {
-            mApplication.setThemeTextColor(this, mSignalButton, R.attr.holo_red);
-        } else {
-            mSignalButton.setTextColor(Color.WHITE);
-        }
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    public void onEventMainThread(CleanupEvent event) {
-        if (mApplication.getStreamingMode()) {
-            mApplication.setThemeTextColor(this, mSignalButton, R.attr.holo_orange);
-        } else {
-            mSignalButton.setTextColor(Color.WHITE);
-        }
-    }
-
-    @SuppressWarnings("UnusedDeclaration")
-    public void onEventMainThread(AccountChangeEvent event) {
-        if (mAccessTokenAdapter != null) {
-            mAccessTokenAdapter.notifyDataSetChanged();
-        }
-        setupTab();
-        mViewPager.setCurrentItem(0);
-        EventBus.getDefault().post(new AccountChangePostEvent(mMainPagerAdapter.getItemId(mViewPager.getCurrentItem())));
-    }
-
-    public void onEventMainThread(NewRecordEvent event) {
-        int position = mMainPagerAdapter.findPositionById(event.getTabId());
-        if (position < 0) {
-            return;
-        }
-        LinearLayout tabMenus = (LinearLayout) findViewById(R.id.tab_menus);
-        Button button = (Button) tabMenus.getChildAt(position);
-        if (button == null) {
-            return;
-        }
-        if (mViewPager.getCurrentItem() == position && event.getAutoScroll()) {
-            mApplication.setThemeTextColor(this, button, R.attr.menu_text_color);
-        } else  {
-            mApplication.setThemeTextColor(this, button, R.attr.holo_blue);
-        }
-    }
-
-    public void setInReplyToStatus(Status inReplyToStatus) {
-        this.mInReplyToStatus = inReplyToStatus;
-    }
-
     /**
      * ActionBarでCustomView使ってるので自分で再実装
      */
     @Override
     public void setTitle(CharSequence title) {
-        if (mTitle != null) {
+        if (mActionBarHolder.title != null) {
             Matcher matcher = USER_LIST_PATTERN.matcher(title);
             if (matcher.find()) {
-                mTitle.setText(matcher.group(2));
-                mSubTitle.setText(matcher.group(1));
+                mActionBarHolder.title.setText(matcher.group(2));
+                mActionBarHolder.subTitle.setText(matcher.group(1));
             } else {
-                mTitle.setText(title);
-                mSubTitle.setText("@" + mApplication.getScreenName());
+                mActionBarHolder.title.setText(title);
+                mActionBarHolder.subTitle.setText("@" + AccessTokenManager.getScreenName());
             }
         }
     }
@@ -744,60 +474,57 @@ public class MainActivity extends FragmentActivity {
     }
 
     public void showQuickPanel() {
-        findViewById(R.id.quick_tweet_layout).setVisibility(View.VISIBLE);
-        EditText editStatus = (EditText) findViewById(R.id.quick_tweet_edit);
-        editStatus.setFocusable(true);
-        editStatus.setFocusableInTouchMode(true);
-        editStatus.setEnabled(true);
-        mApplication.setQuickMod(true);
+        mQuickTweetLayout.setVisibility(View.VISIBLE);
+        mQuickTweetEdit.setFocusable(true);
+        mQuickTweetEdit.setFocusableInTouchMode(true);
+        mQuickTweetEdit.setEnabled(true);
+        BasicSettings.setQuickMod(true);
     }
 
     public void hideQuickPanel() {
-        EditText editStatus = (EditText) findViewById(R.id.quick_tweet_edit);
-        editStatus.setFocusable(false);
-        editStatus.setFocusableInTouchMode(false);
-        editStatus.setEnabled(false);
-        editStatus.clearFocus();
-        findViewById(R.id.quick_tweet_layout).setVisibility(View.GONE);
-        setInReplyToStatus(null);
-        mApplication.setQuickMod(false);
+        mQuickTweetEdit.setFocusable(false);
+        mQuickTweetEdit.setFocusableInTouchMode(false);
+        mQuickTweetEdit.setEnabled(false);
+        mQuickTweetEdit.clearFocus();
+        mQuickTweetLayout.setVisibility(View.GONE);
+        mInReplyToStatus = null;
+        BasicSettings.setQuickMod(false);
     }
 
     public void setupTab() {
-        ArrayList<JustawayApplication.Tab> tabs = mApplication.loadTabs();
+        ArrayList<TabManager.Tab> tabs = TabManager.loadTabs();
         if (tabs.size() > 0) {
-            Typeface fontello = JustawayApplication.getFontello();
-            TypedValue outValueBackground = new TypedValue();
             TypedValue outValueTextColor = new TypedValue();
+            TypedValue outValueBackground = new TypedValue();
             Resources.Theme theme = getTheme();
             if (theme != null) {
-                theme.resolveAttribute(R.attr.button_stateful, outValueBackground, true);
                 theme.resolveAttribute(R.attr.menu_text_color, outValueTextColor, true);
+                theme.resolveAttribute(R.attr.button_stateful, outValueBackground, true);
             }
-            LinearLayout tabMenus = (LinearLayout) findViewById(R.id.tab_menus);
-            tabMenus.removeAllViews();
+            mTabMenus.removeAllViews();
             mMainPagerAdapter.clearTab();
+
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                    (int) (60 * getResources().getDisplayMetrics().density + 0.5f),
+                    LinearLayout.LayoutParams.WRAP_CONTENT);
+
             int position = 0;
-            float density = getResources().getDisplayMetrics().density;
-            int width = (int) (60 * density + 0.5f);
-            LinearLayout.LayoutParams layoutParams =
-                    new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.WRAP_CONTENT);
-            for (JustawayApplication.Tab tab : tabs) {
-                // 標準のタブを動的に生成する時に実装する
-                Button button = new Button(this);
-                button.setTypeface(fontello);
+            for (TabManager.Tab tab : tabs) {
+                Button button = new FontelloButton(this);
                 button.setLayoutParams(layoutParams);
-                button.setTextSize(22);
                 button.setText(tab.getIcon());
+                button.setTextSize(22);
                 button.setTextColor(outValueTextColor.data);
                 button.setBackgroundResource(outValueBackground.resourceId);
-                bindTabListener(button, position++);
-                tabMenus.addView(button);
-                if (tab.id == TAB_ID_TIMELINE) {
+                button.setTag(position++);
+                button.setOnClickListener(mMenuOnClickListener);
+                button.setOnLongClickListener(mMenuOnLongClickListener);
+                mTabMenus.addView(button);
+                if (tab.id == TabManager.TIMELINE_TAB_ID) {
                     mMainPagerAdapter.addTab(TimelineFragment.class, null, tab.getName(), tab.id);
-                } else if (tab.id == TAB_ID_INTERACTIONS) {
+                } else if (tab.id == TabManager.INTERACTIONS_TAB_ID) {
                     mMainPagerAdapter.addTab(InteractionsFragment.class, null, tab.getName(), tab.id);
-                } else if (tab.id == TAB_ID_DIRECT_MESSAGE) {
+                } else if (tab.id == TabManager.DIRECT_MESSAGES_TAB_ID) {
                     mMainPagerAdapter.addTab(DirectMessagesFragment.class, null, tab.getName(), tab.id);
                 } else {
                     Bundle args = new Bundle();
@@ -807,9 +534,11 @@ public class MainActivity extends FragmentActivity {
             }
             mMainPagerAdapter.notifyDataSetChanged();
 
-            // 起動時やタブ設定後にちゃんとタイトルとボタンのフォーカスを合わせる
+            /**
+             * 起動時やタブ設定後にちゃんとタイトルとボタンのフォーカスを合わせる
+             */
             int currentPosition = mViewPager.getCurrentItem();
-            Button button = (Button) tabMenus.getChildAt(currentPosition);
+            Button button = (Button) mTabMenus.getChildAt(currentPosition);
             if (button != null) {
                 button.setSelected(true);
             }
@@ -817,39 +546,46 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
-    private void bindTabListener(TextView textView, final int position) {
-        textView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                BaseFragment f = mMainPagerAdapter.findFragmentByPosition(position);
-                if (f == null) {
-                    return;
+    /**
+     * メニューをタップしたらページ移動（見ているページのメニューだったら一番上へスクロール）
+     */
+    private View.OnClickListener mMenuOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            int position = (Integer) view.getTag();
+            BaseFragment f = mMainPagerAdapter.findFragmentByPosition(position);
+            if (f == null) {
+                return;
+            }
+            int id = mViewPager.getCurrentItem();
+            if (id != position) {
+                mViewPager.setCurrentItem(position); // 自動スワイプ
+                if (f.isTop()) {
+                    showTopView(); // 移動先のページが先頭のツイートを表示していたらボタン色を白に
                 }
-                int id = mViewPager.getCurrentItem();
-                if (id != position) {
-                    mViewPager.setCurrentItem(position);
-                    if (f.isTop()) {
-                        showTopView();
-                    }
-                } else {
-                    if (f.goToTop()) {
-                        showTopView();
-                    }
+            } else {
+                if (f.goToTop()) {
+                    showTopView();
                 }
             }
-        });
-        textView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                BaseFragment f = mMainPagerAdapter.findFragmentByPosition(position);
-                if (f == null) {
-                    return false;
-                }
-                f.reload();
-                return true;
+        }
+    };
+
+    /**
+     * メニューをロングタップしたらリロード
+     */
+    private View.OnLongClickListener mMenuOnLongClickListener = new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View view) {
+            int position = (Integer) view.getTag();
+            BaseFragment f = mMainPagerAdapter.findFragmentByPosition(position);
+            if (f == null) {
+                return false;
             }
-        });
-    }
+            f.reload();
+            return true;
+        }
+    };
 
     private void setup() {
 
@@ -897,8 +633,17 @@ public class MainActivity extends FragmentActivity {
             }
         });
 
-        if (mApplication.getQuickMode()) {
+        /**
+         * これはバターナイフで設定できなかった
+         */
+        mQuickTweetEdit.addTextChangedListener(mQuickTweetTextWatcher);
+
+        if (BasicSettings.getQuickMode()) {
             showQuickPanel();
+        }
+
+        if (BasicSettings.getStreamingMode()) {
+            TwitterManager.startStreaming();
         }
     }
 
@@ -909,36 +654,324 @@ public class MainActivity extends FragmentActivity {
         LinearLayout tab_menus = (LinearLayout) findViewById(R.id.tab_menus);
         Button button = (Button) tab_menus.getChildAt(mViewPager.getCurrentItem());
         if (button != null) {
-            mApplication.setThemeTextColor(this, button, R.attr.menu_text_color);
+            ThemeUtil.setThemeTextColor(button, R.attr.menu_text_color);
         }
     }
 
+    private void startSearch() {
+        mDrawerToggle.setDrawerIndicatorEnabled(false);
+        mActionBarHolder.normalLayout.setVisibility(View.GONE);
+        mActionBarHolder.searchLayout.setVisibility(View.VISIBLE);
+        mActionBarHolder.searchText.showDropDown();
+        mActionBarHolder.searchText.setText("");
+        KeyboardUtil.showKeyboard(mActionBarHolder.searchText);
+    }
+
     private void cancelSearch() {
-        mSearchText.setText("");
-        mApplication.hideKeyboard(mSearchText);
-        mSearchLayout.setVisibility(View.GONE);
-        mNormalLayout.setVisibility(View.VISIBLE);
+        mActionBarHolder.searchText.setText("");
+        KeyboardUtil.hideKeyboard(mActionBarHolder.searchText);
+        mActionBarHolder.searchLayout.setVisibility(View.GONE);
+        mActionBarHolder.normalLayout.setVisibility(View.VISIBLE);
         mDrawerToggle.setDrawerIndicatorEnabled(true);
     }
 
-    private void showProgressDialog(String message) {
-        mProgressDialog = new ProgressDialog(this);
-        mProgressDialog.setMessage(message);
-        mProgressDialog.show();
+    @OnItemClick(R.id.account_list)
+    void selectAccount(int position) {
+        if (mAccessTokenAdapter.getCount() <= position) {
+            return;
+        }
+        AccessToken accessToken = mAccessTokenAdapter.getItem(position);
+        if (AccessTokenManager.getUserId() != accessToken.getUserId()) {
+            TwitterManager.switchAccessToken(accessToken);
+            mAccessTokenAdapter.notifyDataSetChanged();
+        }
+        mDrawerLayout.closeDrawer(findViewById(R.id.left_drawer));
     }
 
-    private void dismissProgressDialog() {
-        if (mProgressDialog != null)
-            mProgressDialog.dismiss();
+    @OnClick(R.id.send_button)
+    void send() {
+        String msg = mQuickTweetEdit.getString();
+        if (msg.length() > 0) {
+            MessageUtil.showProgressDialog(this, getString(R.string.progress_sending));
+
+            if (msg.startsWith("D ")) {
+                SendDirectMessageTask task = new SendDirectMessageTask(null) {
+                    @Override
+                    protected void onPostExecute(TwitterException e) {
+                        MessageUtil.dismissProgressDialog();
+                        if (e == null) {
+                            mQuickTweetEdit.setText("");
+                        } else {
+                            MessageUtil.showToast(R.string.toast_update_status_failure);
+                        }
+                    }
+                };
+                task.execute(msg);
+            } else {
+                StatusUpdate statusUpdate = new StatusUpdate(msg);
+                if (mInReplyToStatus != null) {
+                    statusUpdate.setInReplyToStatusId(mInReplyToStatus.getId());
+                    mInReplyToStatus = null;
+                }
+
+                UpdateStatusTask task = new UpdateStatusTask(null) {
+                    @Override
+                    protected void onPostExecute(TwitterException e) {
+                        MessageUtil.dismissProgressDialog();
+                        if (e == null) {
+                            mQuickTweetEdit.setText("");
+                        } else if (e.getErrorCode() == ERROR_CODE_DUPLICATE_STATUS) {
+                            MessageUtil.showToast(getString(R.string.toast_update_status_already));
+                        } else {
+                            MessageUtil.showToast(R.string.toast_update_status_failure);
+                        }
+                    }
+                };
+                task.execute(statusUpdate);
+            }
+        }
     }
 
-    public void doDestroyDirectMessage(Long id) {
-        new DestroyDirectMessageTask().execute(id);
-        // 自分宛のDMを消してもStreaming APIで拾えないで自力で消す
-        DirectMessagesFragment fragment = (DirectMessagesFragment) mMainPagerAdapter
-                .findFragmentById(TAB_ID_DIRECT_MESSAGE);
-        if (fragment != null) {
-            fragment.remove(id);
+    @OnClick(R.id.post_button)
+    void openPost() {
+        Intent intent = new Intent(this, PostActivity.class);
+        if (mQuickTweetLayout.getVisibility() == View.VISIBLE) {
+            String msg = mQuickTweetEdit.getString();
+            if (msg.length() > 0) {
+                intent.putExtra("status", msg);
+                intent.putExtra("selection", msg.length());
+                if (mInReplyToStatus != null) {
+                    intent.putExtra("inReplyToStatus", mInReplyToStatus);
+                }
+                mQuickTweetEdit.setText("");
+                mQuickTweetEdit.clearFocus();
+            }
+        }
+        startActivity(intent);
+    }
+
+    @OnLongClick(R.id.post_button)
+    boolean toggleQuickTweet() {
+        if (mQuickTweetLayout.getVisibility() == View.VISIBLE) {
+            hideQuickPanel();
+        } else {
+            showQuickPanel();
+        }
+        return true;
+    }
+
+    private TextWatcher mQuickTweetTextWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+            int textColor;
+            int length = TwitterUtil.count(charSequence.toString());
+            // 140文字をオーバーした時は文字数を赤色に
+            if (length < 0) {
+                textColor = Color.RED;
+            } else if (length == 140) {
+                textColor = mDisabledTextColor;
+            } else {
+                textColor = mDefaultTextColor;
+            }
+            TextView count = ((TextView) findViewById(R.id.count));
+            count.setTextColor(textColor);
+            count.setText(String.valueOf(length));
+
+            if (length < 0 || length == 140) {
+                // 文字数が0文字または140文字以上の時はボタンを無効
+                mSendButton.setEnabled(false);
+            } else {
+                mSendButton.setEnabled(true);
+            }
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {
+
+        }
+    };
+
+    private ActionBarDrawerToggle getActionBarDrawerToggle() {
+        int drawer = BasicSettings.getThemeName().equals("black") ?
+                R.drawable.ic_dark_drawer :
+                R.drawable.ic_dark_drawer;
+
+        return new ActionBarDrawerToggle(
+                this, mDrawerLayout, drawer, R.string.open, R.string.close) {
+
+            public void onDrawerClosed(View view) {
+                invalidateOptionsMenu();
+            }
+
+            public void onDrawerOpened(View drawerView) {
+                invalidateOptionsMenu();
+            }
+        };
+    }
+
+    private AdapterView.OnItemClickListener getActionBarAutoCompleteOnClickListener() {
+        return new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if (mActionBarHolder.searchText.getText() == null) {
+                    return;
+                }
+                Intent intent;
+                String searchWord = mActionBarHolder.searchText.getString();
+                KeyboardUtil.hideKeyboard(mActionBarHolder.searchText);
+                if (mSearchAdapter.isSavedMode()) {
+                    intent = new Intent(mActivity, SearchActivity.class);
+                    intent.putExtra("query", searchWord);
+                    startActivityForResult(intent, REQUEST_SEARCH);
+                    return;
+                }
+                switch (i) {
+                    case 0:
+                        intent = new Intent(mActivity, SearchActivity.class);
+                        intent.putExtra("query", searchWord);
+                        startActivityForResult(intent, REQUEST_SEARCH);
+                        break;
+                    case 1:
+                        intent = new Intent(mActivity, UserSearchActivity.class);
+                        intent.putExtra("query", searchWord);
+                        startActivityForResult(intent, REQUEST_SEARCH);
+                        break;
+                    case 2:
+                        intent = new Intent(mActivity, ProfileActivity.class);
+                        intent.putExtra("screenName", searchWord);
+                        startActivity(intent);
+                        break;
+                }
+            }
+        };
+    }
+
+    // エンターキーで検索する
+    private View.OnKeyListener getOnKeyListener() {
+        return new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (event.getAction() == KeyEvent.ACTION_DOWN
+                        && keyCode == KeyEvent.KEYCODE_ENTER) {
+                    if (mActionBarHolder.searchText.getText() == null) {
+                        return false;
+                    }
+                    Intent intent;
+                    String searchWord = mActionBarHolder.searchText.getString();
+                    KeyboardUtil.hideKeyboard(mActionBarHolder.searchText);
+                    intent = new Intent(mActivity, SearchActivity.class);
+                    intent.putExtra("query", searchWord);
+                    startActivityForResult(intent, REQUEST_SEARCH);
+                    return true;
+                }
+                return false;
+            }
+        };
+    }
+
+    /**
+     * ダイアログ表示要求
+     */
+    public void onEventMainThread(AlertDialogEvent event) {
+        event.getDialogFragment().show(getSupportFragmentManager(), "dialog");
+    }
+
+    /**
+     * タイムラインなど一番上まで見たという合図
+     */
+    @SuppressWarnings("UnusedDeclaration")
+    public void onEventMainThread(GoToTopEvent event) {
+        showTopView();
+    }
+
+    /**
+     * リプや引用などのツイート要求、クイックモードでない場合はPostActivityへ
+     */
+    public void onEventMainThread(OpenEditorEvent event) {
+        View singleLineTweet = findViewById(R.id.quick_tweet_layout);
+        if (singleLineTweet != null && singleLineTweet.getVisibility() == View.VISIBLE) {
+            mQuickTweetEdit.setText(event.getText());
+            if (event.getSelectionStart() != null) {
+                if (event.getSelectionStop() != null) {
+                    mQuickTweetEdit.setSelection(event.getSelectionStart(), event.getSelectionStop());
+                } else {
+                    mQuickTweetEdit.setSelection(event.getSelectionStart());
+                }
+            }
+            mInReplyToStatus = event.getInReplyToStatus();
+            KeyboardUtil.showKeyboard(mQuickTweetEdit);
+        } else {
+            Intent intent = new Intent(this, PostActivity.class);
+            intent.putExtra("status", event.getText());
+            if (event.getSelectionStart() != null) {
+                intent.putExtra("selection", event.getSelectionStart());
+            }
+            if (event.getSelectionStop() != null) {
+                intent.putExtra("selection_stop", event.getSelectionStop());
+            }
+            if (event.getInReplyToStatus() != null) {
+                intent.putExtra("inReplyToStatus", event.getInReplyToStatus());
+            }
+            startActivity(intent);
+        }
+    }
+
+    /**
+     * ストリーミングAPI接続
+     */
+    public void onEventMainThread(StreamingConnectionEvent event) {
+        if (BasicSettings.getStreamingMode()) {
+            switch (event.getStatus()) {
+                case STREAMING_CONNECT:
+                    ThemeUtil.setThemeTextColor(mActionBarHolder.streamingButton, R.attr.holo_green);
+                    break;
+                case STREAMING_CLEANUP:
+                    ThemeUtil.setThemeTextColor(mActionBarHolder.streamingButton, R.attr.holo_orange);
+                    break;
+                case STREAMING_DISCONNECT:
+                    ThemeUtil.setThemeTextColor(mActionBarHolder.streamingButton, R.attr.holo_red);
+                    break;
+            }
+        } else {
+            mActionBarHolder.streamingButton.setTextColor(Color.WHITE);
+        }
+    }
+
+    /**
+     * アカウント変更
+     */
+    @SuppressWarnings("UnusedDeclaration")
+    public void onEventMainThread(AccountChangeEvent event) {
+        if (mAccessTokenAdapter != null) {
+            mAccessTokenAdapter.notifyDataSetChanged();
+        }
+        setupTab();
+        mViewPager.setCurrentItem(0);
+        EventBus.getDefault().post(new PostAccountChangeEvent(mMainPagerAdapter.getItemId(mViewPager.getCurrentItem())));
+    }
+
+    /**
+     * ストリーミングで新しいツイートを受信
+     * オートスクロールじゃない場合は対応するタブを青くする
+     */
+    public void onEventMainThread(NewRecordEvent event) {
+        int position = mMainPagerAdapter.findPositionById(event.getTabId());
+        if (position < 0) {
+            return;
+        }
+        Button button = (Button) mTabMenus.getChildAt(position);
+        if (button == null) {
+            return;
+        }
+        if (mViewPager.getCurrentItem() == position && event.getAutoScroll()) {
+            ThemeUtil.setThemeTextColor(button, R.attr.menu_text_color);
+        } else {
+            ThemeUtil.setThemeTextColor(button, R.attr.holo_blue);
         }
     }
 }

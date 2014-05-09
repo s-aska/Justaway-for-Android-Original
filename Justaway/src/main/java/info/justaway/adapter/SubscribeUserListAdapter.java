@@ -12,47 +12,42 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.TextView;
 
-import java.util.ArrayList;
-
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import de.greenrobot.event.EventBus;
-import info.justaway.JustawayApplication;
 import info.justaway.R;
 import info.justaway.event.AlertDialogEvent;
+import info.justaway.model.AccessTokenManager;
 import info.justaway.model.UserListWithRegistered;
 import info.justaway.task.DestroyUserListSubscriptionTask;
 import info.justaway.task.DestroyUserListTask;
+import info.justaway.widget.FontelloTextView;
 import twitter4j.UserList;
 
 public class SubscribeUserListAdapter extends ArrayAdapter<UserListWithRegistered> {
 
-    private ArrayList<UserListWithRegistered> mUserLists = new ArrayList<UserListWithRegistered>();
     private LayoutInflater mInflater;
-    private JustawayApplication mApplication;
     private int mLayout;
+
+    static class ViewHolder {
+        @InjectView(R.id.checkbox) CheckBox mCheckBox;
+        @InjectView(R.id.trash) FontelloTextView mTrash;
+
+        ViewHolder(View view) {
+            ButterKnife.inject(this, view);
+        }
+    }
 
     public SubscribeUserListAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId);
-        this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        this.mLayout = textViewResourceId;
-        this.mApplication = JustawayApplication.getApplication();
-    }
-
-    @Override
-    public void add(UserListWithRegistered userListWithRegistered) {
-        super.add(userListWithRegistered);
-        mUserLists.add(userListWithRegistered);
-    }
-
-    @Override
-    public void remove(UserListWithRegistered userListWithRegistered) {
-        super.remove(userListWithRegistered);
-        mUserLists.remove(userListWithRegistered);
+        mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mLayout = textViewResourceId;
     }
 
     public UserListWithRegistered findByUserListId(Long userListId) {
-        for (UserListWithRegistered userListWithRegistered : mUserLists) {
+        for (int i = 0; i < getCount(); i++) {
+            UserListWithRegistered userListWithRegistered = getItem(i);
             if (userListWithRegistered.getUserList().getId() == userListId) {
                 return userListWithRegistered;
             }
@@ -62,6 +57,7 @@ public class SubscribeUserListAdapter extends ArrayAdapter<UserListWithRegistere
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        ViewHolder viewHolder;
 
         // ビューを受け取る
         View view = convertView;
@@ -71,18 +67,19 @@ public class SubscribeUserListAdapter extends ArrayAdapter<UserListWithRegistere
             if (view == null) {
                 return null;
             }
+            viewHolder = new ViewHolder(view);
+            view.setTag(viewHolder);
+        } else {
+            viewHolder = (ViewHolder) view.getTag();
         }
 
-        final UserListWithRegistered userListWithRegistered = mUserLists.get(position);
+        final UserListWithRegistered userListWithRegistered = getItem(position);
         final UserList userList = userListWithRegistered.getUserList();
 
-        TextView trash = (TextView) view.findViewById(R.id.trash);
-        trash.setTypeface(JustawayApplication.getFontello());
-        trash.setOnClickListener(new View.OnClickListener() {
+        viewHolder.mTrash.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                if (mApplication.getUserId() == userList.getUser().getId()) {
+                if (AccessTokenManager.getUserId() == userList.getUser().getId()) {
                     // 自分のリストの場合はリスト削除
                     DialogFragment dialog = new DestroyUserListDialogFragment();
                     Bundle args = new Bundle(1);
@@ -100,22 +97,19 @@ public class SubscribeUserListAdapter extends ArrayAdapter<UserListWithRegistere
             }
         });
 
-        CheckBox checkbox = (CheckBox) view.findViewById(R.id.checkbox);
-        if (checkbox != null) {
-            if (mApplication.getUserId() == userList.getUser().getId()) {
-                checkbox.setText(userList.getName());
-            } else {
-                checkbox.setText(userList.getFullName());
-            }
-            checkbox.setOnCheckedChangeListener(null);
-            checkbox.setChecked(userListWithRegistered.isRegistered());
-            checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                    userListWithRegistered.setRegistered(b);
-                }
-            });
+        if (AccessTokenManager.getUserId() == userList.getUser().getId()) {
+            viewHolder.mCheckBox.setText(userList.getName());
+        } else {
+            viewHolder.mCheckBox.setText(userList.getFullName());
         }
+        viewHolder.mCheckBox.setOnCheckedChangeListener(null);
+        viewHolder.mCheckBox.setChecked(userListWithRegistered.isRegistered());
+        viewHolder.mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                userListWithRegistered.setRegistered(b);
+            }
+        });
 
         return view;
     }

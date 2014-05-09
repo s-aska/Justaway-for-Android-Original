@@ -10,14 +10,14 @@ import android.view.WindowManager;
 import android.widget.ListView;
 
 import de.greenrobot.event.EventBus;
-import info.justaway.JustawayApplication;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
-import info.justaway.event.model.DestroyStatusEvent;
+import info.justaway.event.model.StreamingDestroyStatusEvent;
 import info.justaway.event.action.StatusActionEvent;
 import info.justaway.listener.StatusClickListener;
 import info.justaway.listener.StatusLongClickListener;
 import info.justaway.model.Row;
+import info.justaway.model.TwitterManager;
 import twitter4j.Status;
 import twitter4j.Twitter;
 
@@ -54,7 +54,7 @@ public class TalkFragment extends DialogFragment {
 
         Status status = (Status) getArguments().getSerializable("status");
         if (status != null) {
-            mTwitter = JustawayApplication.getApplication().getTwitter();
+            mTwitter = TwitterManager.getTwitter();
             mAdapter.add(Row.newStatus(status));
             mAdapter.notifyDataSetChanged();
             new LoadTalk().execute(status.getInReplyToStatusId());
@@ -81,7 +81,7 @@ public class TalkFragment extends DialogFragment {
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public void onEventMainThread(DestroyStatusEvent event) {
+    public void onEventMainThread(StreamingDestroyStatusEvent event) {
         mAdapter.removeStatus(event.getStatusId());
     }
 

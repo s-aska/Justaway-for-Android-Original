@@ -2,8 +2,7 @@ package info.justaway.task;
 
 import android.content.Context;
 
-import info.justaway.JustawayApplication;
-import twitter4j.Twitter;
+import info.justaway.model.TwitterManager;
 import twitter4j.TwitterException;
 import twitter4j.User;
 
@@ -16,9 +15,7 @@ public class VerifyCredentialsLoader extends AbstractAsyncTaskLoader<User> {
     @Override
     public User loadInBackground() {
         try {
-            JustawayApplication application = JustawayApplication.getApplication();
-            Twitter twitter = application.getTwitter();
-            return twitter.verifyCredentials();
+            return TwitterManager.getTwitter().verifyCredentials();
         } catch (TwitterException e) {
             e.printStackTrace();
             return null;

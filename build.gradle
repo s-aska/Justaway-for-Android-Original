@@ -12,12 +12,15 @@ buildscript {
 
 subprojects {
     repositories {
-        mavenCentral()
 //https://plus.google.com/109385828142935151413/posts/hF7W59uZ7rX
 //        mavenLocal()
         maven {
-            url "${System.env.HOME}/.m2/repository"
+            // url "${System.env.HOME}/.m2/repository"
+            // viewpagerindicator の為
+            // http://stackoverflow.com/questions/22126576/viewpagerindicator-dependency-with-gradle-and-android-studio
+            url "http://dl.bintray.com/populov/maven"
         }
+        mavenCentral()
     }
 
     project.plugins.whenPluginAdded { plugin ->
@@ -40,6 +43,7 @@ project.ext {
 
     twitter4jVersion = "4.0.1"
     butterKnifeVersion = '4.0.1'
+    viewpagerIndicatorVersion = '2.4.1@aar'
 }
 
 task wrapper(type: Wrapper) {

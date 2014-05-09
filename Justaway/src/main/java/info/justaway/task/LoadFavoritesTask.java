@@ -3,6 +3,9 @@ package info.justaway.task;
 import android.os.AsyncTask;
 
 import info.justaway.JustawayApplication;
+import info.justaway.model.AccessTokenManager;
+import info.justaway.model.FavRetweetManager;
+import info.justaway.model.TwitterManager;
 import twitter4j.ResponseList;
 
 public class LoadFavoritesTask extends AsyncTask<Long, Void, Boolean> {
@@ -10,10 +13,9 @@ public class LoadFavoritesTask extends AsyncTask<Long, Void, Boolean> {
     @Override
     protected Boolean doInBackground(Long... params) {
         try {
-            JustawayApplication application = JustawayApplication.getApplication();
-            ResponseList<twitter4j.Status> favorites = application.getTwitter().getFavorites(application.getUserId());
+            ResponseList<twitter4j.Status> favorites = TwitterManager.getTwitter().getFavorites(AccessTokenManager.getUserId());
             for (twitter4j.Status status : favorites) {
-                application.setFav(status.getId());
+                FavRetweetManager.setFav(status.getId());
             }
             return true;
         } catch (Exception e) {

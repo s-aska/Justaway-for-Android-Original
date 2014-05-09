@@ -1,6 +1,7 @@
 package info.justaway.widget;
 
 import android.content.Context;
+import android.text.Editable;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.widget.EditText;
@@ -26,5 +27,17 @@ public class ClearEditText extends EditText {
             clearFocus();
         }
         return super.onKeyPreIme(keyCode, event);
+    }
+
+    public String getString() {
+        Editable editable = getText();
+        if (editable == null) {
+            return "";
+        }
+        String string = editable.toString();
+        if (string == null) {
+            return "";
+        }
+        return string;
     }
 }

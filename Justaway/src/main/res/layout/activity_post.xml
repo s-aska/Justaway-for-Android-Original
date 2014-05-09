@@ -3,6 +3,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="?attr/background"
+                tools:background="@android:color/background_dark"
                 tools:context=".MainActivity">
 
     <LinearLayout
@@ -18,12 +19,13 @@
             android:paddingLeft="8dp"
             android:paddingTop="8dp"
             android:paddingBottom="8dp"
+            tools:background="@android:color/background_dark"
             android:background="?attr/menu_background">
 
             <ImageView
                 android:id="@+id/in_reply_to_user_icon"
-                android:layout_width="18dip"
-                android:layout_height="18dip"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
                 android:layout_marginRight="8dp"
                 android:contentDescription="@string/description_icon"
                 tools:src="@drawable/ic_launcher"/>
@@ -44,16 +46,16 @@
                 android:scrollbars="vertical"
                 android:fadeScrollbars="false"
                 android:textSize="12sp"
+                tools:textColor="@android:color/white"
                 android:textColor="?attr/text_color"
                 tools:text="New Version."/>
 
-            <TextView
-                android:id="@+id/cancel"
+            <info.justaway.widget.FontelloTextView
+                android:id="@+id/in_reply_to_cancel"
                 android:layout_width="22dp"
                 android:layout_height="22dp"
                 android:layout_alignBaseline="@id/in_reply_to_user_icon"
                 android:layout_alignParentRight="true"
-                android:background="?attr/button_stateful"
                 android:text="@string/fontello_cancel"
                 android:textSize="18sp"/>
 
@@ -63,8 +65,8 @@
             android:id="@+id/switch_account_spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="8dip"
-            android:paddingBottom="12dip"/>
+            android:layout_marginLeft="8dp"
+            android:paddingBottom="12dp"/>
 
         <EditText
             android:id="@+id/status_text"
@@ -77,6 +79,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            tools:background="@android:color/background_dark"
             android:background="?attr/menu_background">
 
             <LinearLayout
@@ -85,34 +88,38 @@
                 android:layout_gravity="left"
                 android:gravity="left">
 
-                <Button
+                <info.justaway.widget.FontelloButton
                     android:id="@+id/suddenly_button"
-                    android:layout_width="58dip"
+                    android:layout_width="58dp"
                     android:layout_height="wrap_content"
+                    tools:background="@android:color/background_dark"
                     android:background="?attr/button_stateful"
                     android:text="@string/fontello_uni"
                     android:textSize="22sp"/>
 
-                <Button
+                <info.justaway.widget.FontelloButton
                     android:id="@+id/img_button"
-                    android:layout_width="58dip"
+                    android:layout_width="58dp"
                     android:layout_height="wrap_content"
+                    tools:background="@android:color/background_dark"
                     android:background="?attr/button_stateful"
                     android:text="@string/fontello_picture"
                     android:textSize="22sp"/>
 
-                <Button
+                <info.justaway.widget.FontelloButton
                     android:id="@+id/draft_button"
-                    android:layout_width="58dip"
+                    android:layout_width="58dp"
                     android:layout_height="wrap_content"
+                    tools:background="@android:color/background_dark"
                     android:background="?attr/button_stateful"
                     android:text="@string/fontello_archive"
                     android:textSize="22sp"/>
 
-                <Button
+                <info.justaway.widget.FontelloButton
                     android:id="@+id/hashtag_button"
-                    android:layout_width="58dip"
+                    android:layout_width="58dp"
                     android:layout_height="wrap_content"
+                    tools:background="@android:color/background_dark"
                     android:background="?attr/button_stateful"
                     android:text="@string/fontello_tag"
                     android:textSize="22sp"/>
@@ -127,15 +134,15 @@
                     android:id="@+id/count"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_marginRight="8dip"
+                    android:layout_marginRight="8dp"
                     android:gravity="center"
                     android:text="@string/label_tweet_count"/>
 
-                <Button
+                <info.justaway.widget.FontelloButton
                     android:id="@+id/tweet_button"
-                    android:layout_width="42dip"
+                    android:layout_width="42dp"
                     android:layout_height="wrap_content"
-                    android:paddingRight="8dip"
+                    tools:background="@android:color/background_dark"
                     android:background="?attr/button_stateful"
                     android:text="@string/fontello_paper"
                     android:textSize="22sp"/>

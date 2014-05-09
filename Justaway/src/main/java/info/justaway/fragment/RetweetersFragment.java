@@ -11,9 +11,10 @@ import android.view.WindowManager;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
-import info.justaway.JustawayApplication;
 import info.justaway.R;
 import info.justaway.adapter.UserAdapter;
+import info.justaway.model.TwitterManager;
+import info.justaway.util.MessageUtil;
 import twitter4j.ResponseList;
 import twitter4j.Status;
 import twitter4j.Twitter;
@@ -62,7 +63,7 @@ public class RetweetersFragment extends DialogFragment {
         @Override
         protected ResponseList<twitter4j.Status> doInBackground(Long... params) {
             try {
-                Twitter twitter = JustawayApplication.getApplication().getTwitter();
+                Twitter twitter = TwitterManager.getTwitter();
                 return twitter.getRetweets(params[0]);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -79,7 +80,7 @@ public class RetweetersFragment extends DialogFragment {
                 }
                 mAdapter.notifyDataSetChanged();
             } else {
-                JustawayApplication.showToast(R.string.toast_load_data_failure);
+                MessageUtil.showToast(R.string.toast_load_data_failure);
             }
         }
     }

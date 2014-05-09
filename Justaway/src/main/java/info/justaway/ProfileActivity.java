@@ -4,7 +4,7 @@ import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Typeface;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -15,10 +15,15 @@ import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.viewpagerindicator.CirclePageIndicator;
+
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnClick;
 import de.greenrobot.event.EventBus;
 import info.justaway.adapter.SimplePagerAdapter;
 import info.justaway.event.AlertDialogEvent;
@@ -30,32 +35,44 @@ import info.justaway.fragment.profile.SummaryFragment;
 import info.justaway.fragment.profile.UserListMembershipsFragment;
 import info.justaway.fragment.profile.UserTimelineFragment;
 import info.justaway.model.Profile;
+import info.justaway.model.TwitterManager;
 import info.justaway.task.ShowUserLoader;
+import info.justaway.util.ImageUtil;
+import info.justaway.util.MessageUtil;
+import info.justaway.util.ThemeUtil;
+import info.justaway.widget.FontelloTextView;
 import twitter4j.Relationship;
 import twitter4j.User;
 
 public class ProfileActivity extends FragmentActivity implements
         LoaderManager.LoaderCallbacks<Profile> {
 
-    private ImageView mBanner;
+    @InjectView(R.id.banner) ImageView mBanner;
+    @InjectView(R.id.pager) ViewPager mPager;
+    @InjectView(R.id.symbol) CirclePageIndicator mSymbol;
+    @InjectView(R.id.frame) FrameLayout mFrame;
+    @InjectView(R.id.statuses_count) TextView mStatusesCount;
+    @InjectView(R.id.friends_count) TextView mFriendsCount;
+    @InjectView(R.id.followers_count) TextView mFollowersCount;
+    @InjectView(R.id.listed_count) TextView mListedCount;
+    @InjectView(R.id.favourites_count) TextView mFavouritesCount;
+    @InjectView(R.id.collapse_label) FontelloTextView mCollapseLabel;
+    @InjectView(R.id.list_pager) ViewPager mListPager;
+
     private User mUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        JustawayApplication.getApplication().setTheme(this);
+        ThemeUtil.setTheme(this);
         setContentView(R.layout.activity_profile);
+        ButterKnife.inject(this);
 
         ActionBar actionBar = getActionBar();
         if (actionBar != null) {
             actionBar.setHomeButtonEnabled(true);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-
-        mBanner = (ImageView) findViewById(R.id.banner);
-
-        Typeface fontello = JustawayApplication.getFontello();
-        ((TextView) findViewById(R.id.collapse_label)).setTypeface(fontello);
 
         // インテント経由での起動をサポート
         Intent intent = getIntent();
@@ -70,7 +87,7 @@ public class ProfileActivity extends FragmentActivity implements
                 args.putLong("userId", intent.getLongExtra("userId", 0));
             }
         }
-        JustawayApplication.showProgressDialog(this, getString(R.string.progress_loading));
+        MessageUtil.showProgressDialog(this, getString(R.string.progress_loading));
         getSupportLoaderManager().initLoader(0, args, this);
     }
 
@@ -134,6 +151,11 @@ public class ProfileActivity extends FragmentActivity implements
                         + mUser.getScreenName() + "/recent"));
                 startActivity(intent);
                 break;
+            case R.id.open_aclog:
+                intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://aclog.koba789.com/"
+                        + mUser.getScreenName() + "/timeline"));
+                startActivity(intent);
+                break;
             case R.id.open_twilog:
                 intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://twilog.org/"
                         + mUser.getScreenName()));
@@ -147,7 +169,7 @@ public class ProfileActivity extends FragmentActivity implements
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        JustawayApplication.showProgressDialog(ProfileActivity.this, getString(R.string.progress_process));
+                                        MessageUtil.showProgressDialog(ProfileActivity.this, getString(R.string.progress_process));
                                         new ReportSpamTask().execute(mUser.getId());
                                     }
                                 }
@@ -171,7 +193,7 @@ public class ProfileActivity extends FragmentActivity implements
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        JustawayApplication.showProgressDialog(ProfileActivity.this, getString(R.string.progress_process));
+                                        MessageUtil.showProgressDialog(ProfileActivity.this, getString(R.string.progress_process));
                                         new CreateBlockTask().execute(mUser.getId());
                                     }
                                 }
@@ -203,30 +225,25 @@ public class ProfileActivity extends FragmentActivity implements
 
     @Override
     public void onLoadFinished(Loader<Profile> arg0, Profile profile) {
-        JustawayApplication.dismissProgressDialog();
+        MessageUtil.dismissProgressDialog();
         if (profile == null) {
-            JustawayApplication.showToast(R.string.toast_load_data_failure);
+            MessageUtil.showToast(R.string.toast_load_data_failure);
             return;
         }
         mUser = profile.getUser();
         if (mUser == null) {
-            JustawayApplication.showToast(R.string.toast_load_data_failure);
+            MessageUtil.showToast(R.string.toast_load_data_failure);
             return;
         }
-        ((TextView) findViewById(R.id.favourites_count)).setText(String.valueOf(mUser
-                .getFavouritesCount()));
-        ((TextView) findViewById(R.id.statuses_count)).setText(String.valueOf(mUser
-                .getStatusesCount()));
-        ((TextView) findViewById(R.id.friends_count)).setText(String.valueOf(mUser
-                .getFriendsCount()));
-        ((TextView) findViewById(R.id.followers_count)).setText(String.valueOf(mUser
-                .getFollowersCount()));
-        ((TextView) findViewById(R.id.listed_count)).setText(String.valueOf(mUser
-                .getListedCount()));
+        mFavouritesCount.setText(getString(R.string.label_favourites, mUser.getFavouritesCount()));
+        mStatusesCount.setText(getString(R.string.label_tweets, mUser.getStatusesCount()));
+        mFriendsCount.setText(getString(R.string.label_following, mUser.getFriendsCount()));
+        mFollowersCount.setText(getString(R.string.label_followers, mUser.getFollowersCount()));
+        mListedCount.setText(getString(R.string.label_listed, mUser.getListedCount()));
 
         String bannerUrl = mUser.getProfileBannerMobileRetinaURL();
         if (bannerUrl != null) {
-            JustawayApplication.getApplication().displayImage(bannerUrl, mBanner);
+            ImageUtil.displayImage(bannerUrl, mBanner);
         }
 
         Relationship relationship = profile.getRelationship();
@@ -234,8 +251,7 @@ public class ProfileActivity extends FragmentActivity implements
         /**
          * スワイプで動かせるタブを実装するのに最低限必要な実装
          */
-        final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-        SimplePagerAdapter simplePagerAdapter = new SimplePagerAdapter(this, viewPager);
+        SimplePagerAdapter simplePagerAdapter = new SimplePagerAdapter(this, mPager);
 
         Bundle args = new Bundle();
         args.putSerializable("user", mUser);
@@ -243,20 +259,50 @@ public class ProfileActivity extends FragmentActivity implements
         simplePagerAdapter.addTab(SummaryFragment.class, args);
         simplePagerAdapter.addTab(DescriptionFragment.class, args);
         simplePagerAdapter.notifyDataSetChanged();
-        viewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+        mSymbol.setViewPager(mPager);
+
+        /**
+         * スワイプの度合いに応じて背景色を暗くする
+         * これは透明度＆背景色黒で実現している、背景色黒だけだと背景画像が見えないが、
+         * 透明度を指定することで背景画像の表示と白色のテキストの視認性を両立している
+         */
+        mPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+                /**
+                 * 背景色の透過度の範囲は00〜99とする（FFは真っ黒で背景画像が見えない）
+                 * 99は10進数で153
+                 * positionは0が1ページ目（スワイプ中含む）で1だと完全に2ページ目に遷移した状態
+                 * positionOffsetには0.0〜1.0のスクロール率がかえってくる、真ん中だと0.5
+                 * hexにはpositionOffsetに応じて00〜99（153）の値が入るように演算を行う
+                 * 例えばpositionOffsetが0.5の場合はhexは4dになる
+                 * positionが1の場合は最大値（99）を無条件で設定している
+                 */
+
+                final int maxHex = 153; // 0x99
+                String hex = position == 1 ? "99" : String.format("%02X", (int) (maxHex * positionOffset));
+                mPager.setBackgroundColor(Color.parseColor("#" + hex + "000000"));
+
+                // OnPageChangeListenerは1つしかセットできないのでCirclePageIndicatorの奴も呼んであげる
+                mSymbol.onPageScrolled(position, positionOffset, positionOffsetPixels);
+            }
+
             @Override
             public void onPageSelected(int position) {
-                if (position == 0) {
-                    ((TextView) findViewById(R.id.symbol)).setText(getString(R.string.profile_pointer));
-                } else {
-                    ((TextView) findViewById(R.id.symbol)).setText(getString(R.string.profile_pointer_right));
-                }
+                // OnPageChangeListenerは1つしかセットできないのでCirclePageIndicatorの奴も呼んであげる
+                mSymbol.onPageSelected(position);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                // OnPageChangeListenerは1つしかセットできないのでCirclePageIndicatorの奴も呼んであげる
+                mSymbol.onPageScrollStateChanged(state);
             }
         });
 
         // ユーザリスト用のタブ
-        final ViewPager listViewPager = (ViewPager) findViewById(R.id.list_pager);
-        SimplePagerAdapter listPagerAdapter = new SimplePagerAdapter(this, listViewPager);
+        SimplePagerAdapter listPagerAdapter = new SimplePagerAdapter(this, mListPager);
 
         Bundle listArgs = new Bundle();
         listArgs.putSerializable("user", mUser);
@@ -266,50 +312,33 @@ public class ProfileActivity extends FragmentActivity implements
         listPagerAdapter.addTab(UserListMembershipsFragment.class, listArgs);
         listPagerAdapter.addTab(FavoritesListFragment.class, listArgs);
         listPagerAdapter.notifyDataSetChanged();
-        listViewPager.setOffscreenPageLimit(5);
+        mListPager.setOffscreenPageLimit(5);
 
         /**
          * タブのラベル情報を配列に入れておく
          */
-        final TextView[] countTexts = {
-                (TextView) findViewById(R.id.statuses_count),
-                (TextView) findViewById(R.id.friends_count),
-                (TextView) findViewById(R.id.followers_count),
-                (TextView) findViewById(R.id.listed_count),
-                (TextView) findViewById(R.id.favourites_count),
+        final TextView[] tabs = {
+                mStatusesCount,
+                mFriendsCount,
+                mFollowersCount,
+                mListedCount,
+                mFavouritesCount,
         };
 
-        final TextView[] labelTexts = {
-                (TextView) findViewById(R.id.statuses_count_label),
-                (TextView) findViewById(R.id.friends_count_label),
-                (TextView) findViewById(R.id.followers_count_label),
-                (TextView) findViewById(R.id.listed_count_label),
-                (TextView) findViewById(R.id.favourites_count_label),
-        };
 
-        final LinearLayout[] tabs = {
-                (LinearLayout) findViewById(R.id.statuses),
-                (LinearLayout) findViewById(R.id.friends),
-                (LinearLayout) findViewById(R.id.followers),
-                (LinearLayout) findViewById(R.id.listed),
-                (LinearLayout) findViewById(R.id.favourites),
-        };
+        final int colorBlue = ThemeUtil.getThemeTextColor(R.attr.holo_blue);
+        final int colorWhite = ThemeUtil.getThemeTextColor(R.attr.text_color);
 
-        final int colorBlue = JustawayApplication.getApplication().getThemeTextColor(this, R.attr.holo_blue);
-        final int colorWhite = JustawayApplication.getApplication().getThemeTextColor(this, R.attr.text_color);
+        tabs[0].setTextColor(colorBlue);
 
-        countTexts[0].setTextColor(colorBlue);
-        labelTexts[0].setTextColor(colorBlue);
-
-        listViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+        mListPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
                 /**
                  * タブのindexと選択されたpositionを比較して色を設定
                  */
-                for (int i = 0; i < countTexts.length; i++) {
-                    countTexts[i].setTextColor(i == position ? colorBlue : colorWhite);
-                    labelTexts[i].setTextColor(i == position ? colorBlue : colorWhite);
+                for (int i = 0; i < tabs.length; i++) {
+                    tabs[i].setTextColor(i == position ? colorBlue : colorWhite);
                 }
             }
         });
@@ -319,24 +348,23 @@ public class ProfileActivity extends FragmentActivity implements
             tabs[i].setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    listViewPager.setCurrentItem(finalI);
+                    mListPager.setCurrentItem(finalI);
                 }
             });
         }
 
-        findViewById(R.id.collapse).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                View frame = findViewById(R.id.frame);
-                if (frame.getVisibility() == View.VISIBLE) {
-                    findViewById(R.id.frame).setVisibility(View.GONE);
-                    ((TextView) findViewById(R.id.collapse_label)).setText(R.string.fontello_down);
-                } else {
-                    findViewById(R.id.frame).setVisibility(View.VISIBLE);
-                    ((TextView) findViewById(R.id.collapse_label)).setText(R.string.fontello_up);
-                }
-            }
-        });
+    }
+
+    @OnClick(R.id.collapse_label)
+    void onClickCollapse() {
+        View frame = findViewById(R.id.frame);
+        if (frame.getVisibility() == View.VISIBLE) {
+            mFrame.setVisibility(View.GONE);
+            mCollapseLabel.setText(R.string.fontello_down);
+        } else {
+            mFrame.setVisibility(View.VISIBLE);
+            mCollapseLabel.setText(R.string.fontello_up);
+        }
     }
 
     @Override
@@ -356,7 +384,7 @@ public class ProfileActivity extends FragmentActivity implements
         protected Boolean doInBackground(Long... params) {
             Long userId = params[0];
             try {
-                JustawayApplication.getApplication().getTwitter().reportSpam(userId);
+                TwitterManager.getTwitter().reportSpam(userId);
                 return true;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -366,12 +394,12 @@ public class ProfileActivity extends FragmentActivity implements
 
         @Override
         protected void onPostExecute(Boolean success) {
-            JustawayApplication.dismissProgressDialog();
+            MessageUtil.dismissProgressDialog();
             if (success) {
-                JustawayApplication.showToast(R.string.toast_report_spam_success);
+                MessageUtil.showToast(R.string.toast_report_spam_success);
                 restart();
             } else {
-                JustawayApplication.showToast(R.string.toast_report_spam_failure);
+                MessageUtil.showToast(R.string.toast_report_spam_failure);
             }
 
         }
@@ -382,7 +410,7 @@ public class ProfileActivity extends FragmentActivity implements
         protected Boolean doInBackground(Long... params) {
             Long userId = params[0];
             try {
-                JustawayApplication.getApplication().getTwitter().createBlock(userId);
+                TwitterManager.getTwitter().createBlock(userId);
                 return true;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -392,12 +420,12 @@ public class ProfileActivity extends FragmentActivity implements
 
         @Override
         protected void onPostExecute(Boolean success) {
-            JustawayApplication.dismissProgressDialog();
+            MessageUtil.dismissProgressDialog();
             if (success) {
-                JustawayApplication.showToast(R.string.toast_create_block_success);
+                MessageUtil.showToast(R.string.toast_create_block_success);
                 restart();
             } else {
-                JustawayApplication.showToast(R.string.toast_create_block_failure);
+                MessageUtil.showToast(R.string.toast_create_block_failure);
             }
 
         }

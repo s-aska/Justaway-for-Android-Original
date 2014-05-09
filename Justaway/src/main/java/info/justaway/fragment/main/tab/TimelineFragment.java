@@ -1,16 +1,13 @@
 package info.justaway.fragment.main.tab;
 
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ProgressBar;
 
-import info.justaway.JustawayApplication;
-import info.justaway.R;
-import info.justaway.adapter.TwitterAdapter;
+import info.justaway.model.AccessTokenManager;
 import info.justaway.model.Row;
+import info.justaway.model.TabManager;
+import info.justaway.model.TwitterManager;
+import info.justaway.settings.BasicSettings;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
 import twitter4j.Status;
@@ -20,80 +17,45 @@ import twitter4j.Status;
  */
 public class TimelineFragment extends BaseFragment {
 
-    private Boolean mAutoLoader = false;
-    private Boolean mReload = false;
-    private long mMaxId = 0L;
-    private ProgressBar mFooter;
-
+    /**
+     * このタブを表す固有のID、ユーザーリストで正数を使うため負数を使う
+     */
     public long getTabId() {
-        return -1L;
+        return TabManager.TIMELINE_TAB_ID;
     }
 
+    /**
+     * このタブに表示するツイートの定義
+     * @param row ストリーミングAPIから受け取った情報（ツイート）
+     * @return trueは表示しない、falseは表示する
+     */
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = super.onCreateView(inflater, container, savedInstanceState);
-        mFooter = (ProgressBar) v.findViewById(R.id.guruguru);
-        return v;
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        if (mMaxId == 0L) {
-            mMaxId = -1L;
-            new HomeTimelineTask().execute();
+    protected boolean isSkip(Row row) {
+        if (row.isStatus()) {
+            Status retweet = row.getStatus().getRetweetedStatus();
+            return retweet != null && retweet.getUser().getId() == AccessTokenManager.getUserId();
+        } else {
+            return true;
         }
     }
 
     @Override
-    public void reload() {
-        mReload = true;
-        clear();
-        getPullToRefreshLayout().setRefreshing(true);
+    protected void taskExecute() {
         new HomeTimelineTask().execute();
-    }
-
-    @Override
-    public void clear() {
-        mMaxId = 0L;
-        TwitterAdapter adapter = getListAdapter();
-        if (adapter != null) {
-            adapter.clear();
-        }
-    }
-
-    @Override
-    public void onRefreshStarted(View view) {
-        reload();
-    }
-
-    @Override
-    protected void additionalReading() {
-        if (!mAutoLoader || mReload) {
-            return;
-        }
-        mFooter.setVisibility(View.VISIBLE);
-        mAutoLoader = false;
-        new HomeTimelineTask().execute();
-    }
-
-    @Override
-    protected boolean skip(Row row) {
-        Status retweet = row.getStatus().getRetweetedStatus();
-        return retweet != null && retweet.getUser().getId() == JustawayApplication.getApplication().getUserId();
     }
 
     private class HomeTimelineTask extends AsyncTask<Void, Void, ResponseList<Status>> {
         @Override
         protected ResponseList<twitter4j.Status> doInBackground(Void... params) {
             try {
-                JustawayApplication application = JustawayApplication.getApplication();
                 Paging paging = new Paging();
-                if (mMaxId > 0) {
+                if (mMaxId > 0 && !mReloading) {
                     paging.setMaxId(mMaxId - 1);
-                    paging.setCount(application.getPageCount());
+                    paging.setCount(BasicSettings.getPageCount());
                 }
-                return application.getTwitter().getHomeTimeline(paging);
+                return TwitterManager.getTwitter().getHomeTimeline(paging);
+            } catch (OutOfMemoryError e) {
+                return null;
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -104,31 +66,30 @@ public class TimelineFragment extends BaseFragment {
         protected void onPostExecute(ResponseList<twitter4j.Status> statuses) {
             mFooter.setVisibility(View.GONE);
             if (statuses == null || statuses.size() == 0) {
-                mReload = false;
-                getPullToRefreshLayout().setRefreshComplete();
-                getListView().setVisibility(View.VISIBLE);
+                mReloading = false;
+                mPullToRefreshLayout.setRefreshComplete();
+                mListView.setVisibility(View.VISIBLE);
                 return;
             }
-            TwitterAdapter adapter = getListAdapter();
-            if (mReload) {
-                adapter.clear();
+            if (mReloading) {
+                clear();
                 for (twitter4j.Status status : statuses) {
                     if (mMaxId <= 0L || mMaxId > status.getId()) {
                         mMaxId = status.getId();
                     }
-                    adapter.add(Row.newStatus(status));
+                    mAdapter.add(Row.newStatus(status));
                 }
-                mReload = false;
-                getPullToRefreshLayout().setRefreshComplete();
+                mReloading = false;
+                mPullToRefreshLayout.setRefreshComplete();
             } else {
                 for (twitter4j.Status status : statuses) {
                     if (mMaxId <= 0L || mMaxId > status.getId()) {
                         mMaxId = status.getId();
                     }
-                    adapter.extensionAdd(Row.newStatus(status));
+                    mAdapter.extensionAdd(Row.newStatus(status));
                 }
                 mAutoLoader = true;
-                getListView().setVisibility(View.VISIBLE);
+                mListView.setVisibility(View.VISIBLE);
             }
         }
     }

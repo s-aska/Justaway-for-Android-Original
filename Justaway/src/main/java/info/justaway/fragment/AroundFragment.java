@@ -14,14 +14,15 @@ import android.widget.ProgressBar;
 import java.util.List;
 
 import de.greenrobot.event.EventBus;
-import info.justaway.JustawayApplication;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
-import info.justaway.event.model.DestroyStatusEvent;
+import info.justaway.event.model.StreamingDestroyStatusEvent;
 import info.justaway.event.action.StatusActionEvent;
 import info.justaway.listener.StatusClickListener;
 import info.justaway.listener.StatusLongClickListener;
 import info.justaway.model.Row;
+import info.justaway.model.TwitterManager;
+import info.justaway.util.MessageUtil;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
 import twitter4j.Status;
@@ -90,7 +91,7 @@ public class AroundFragment extends DialogFragment {
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public void onEventMainThread(DestroyStatusEvent event) {
+    public void onEventMainThread(StreamingDestroyStatusEvent event) {
         mAdapter.removeStatus(event.getStatusId());
     }
 
@@ -103,7 +104,7 @@ public class AroundFragment extends DialogFragment {
         @Override
         protected ResponseList<twitter4j.Status> doInBackground(twitter4j.Status... params) {
             try {
-                Twitter twitter = JustawayApplication.getApplication().getTwitter();
+                Twitter twitter = TwitterManager.getTwitter();
                 twitter4j.Status status = params[0];
                 Paging paging = new Paging();
                 paging.setCount(3);
@@ -127,7 +128,7 @@ public class AroundFragment extends DialogFragment {
                     new AfterStatusTask().execute(statuses.get(0));
                 }
             } else {
-                JustawayApplication.showToast(R.string.toast_load_data_failure);
+                MessageUtil.showToast(R.string.toast_load_data_failure);
             }
         }
     }
@@ -141,7 +142,7 @@ public class AroundFragment extends DialogFragment {
         @Override
         protected List<twitter4j.Status> doInBackground(twitter4j.Status... params) {
             try {
-                Twitter twitter = JustawayApplication.getApplication().getTwitter();
+                Twitter twitter = TwitterManager.getTwitter();
                 twitter4j.Status status = params[0];
                 Paging paging = new Paging();
                 paging.setCount(200);

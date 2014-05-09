@@ -1,9 +1,9 @@
 package info.justaway.event.action;
 
-public class AccountChangePostEvent {
+public class PostAccountChangeEvent {
     private final long mTabId;
 
-    public AccountChangePostEvent(long tabId) {
+    public PostAccountChangeEvent(long tabId) {
         mTabId = tabId;
     }
 

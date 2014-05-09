@@ -5,43 +5,44 @@ import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 
+import info.justaway.model.TwitterManager;
+import info.justaway.util.MessageUtil;
+import info.justaway.util.ThemeUtil;
+import butterknife.InjectView;
+import butterknife.OnClick;
+
 public class CreateUserListActivity extends Activity {
 
-    private EditText mListName;
-    private EditText mDescription;
+    @InjectView(R.id.list_name) EditText mListName;
+    @InjectView(R.id.list_description) EditText mListDescription;
+    @InjectView(R.id.privacy_radio_group) RadioGroup mPrivacyRadioGroup;
+
     private boolean mPrivacy;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        JustawayApplication.getApplication().setTheme(this);
+        ThemeUtil.setTheme(this);
         setContentView(R.layout.activity_create_user_list);
 
-        final Activity activity = this;
         ActionBar actionBar = getActionBar();
         if (actionBar != null) {
             actionBar.setHomeButtonEnabled(true);
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
-        mListName = ((EditText) findViewById(R.id.list_name));
-        mDescription = ((EditText) findViewById(R.id.list_description));
-        final RadioGroup rg = ((RadioGroup) findViewById(R.id.privacy_radio_group));
+    }
 
-        findViewById(R.id.save).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                JustawayApplication.showProgressDialog(activity, getString(R.string.progress_process));
-                if (rg.getCheckedRadioButtonId() == R.id.public_radio) {
-                    mPrivacy = true;
-                }
-                new CreateUserListTask().execute();
-            }
-        });
+    @OnClick(R.id.save)
+    void Save() {
+        MessageUtil.showProgressDialog(this, getString(R.string.progress_process));
+        if (mPrivacyRadioGroup.getCheckedRadioButtonId() == R.id.public_radio) {
+            mPrivacy = true;
+        }
+        new CreateUserListTask().execute();
     }
 
     @Override
@@ -59,10 +60,10 @@ public class CreateUserListActivity extends Activity {
         protected Boolean doInBackground(Void... params) {
             try {
                 // noinspection ConstantConditions
-                JustawayApplication.getApplication().getTwitter().createUserList(
+                TwitterManager.getTwitter().createUserList(
                         mListName.getText().toString(),
                         mPrivacy,
-                        mDescription.getText().toString());
+                        mListDescription.getText().toString());
                 return true;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -72,12 +73,12 @@ public class CreateUserListActivity extends Activity {
 
         @Override
         protected void onPostExecute(Boolean success) {
-            JustawayApplication.dismissProgressDialog();
+            MessageUtil.dismissProgressDialog();
             if (success) {
-                JustawayApplication.showToast(R.string.toast_create_user_list_success);
+                MessageUtil.showToast(R.string.toast_create_user_list_success);
                 finish();
             } else {
-                JustawayApplication.showToast(R.string.toast_create_user_list_failure);
+                MessageUtil.showToast(R.string.toast_create_user_list_failure);
             }
         }
     }

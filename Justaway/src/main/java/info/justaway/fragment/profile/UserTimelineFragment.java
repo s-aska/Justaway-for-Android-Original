@@ -11,14 +11,15 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import de.greenrobot.event.EventBus;
-import info.justaway.JustawayApplication;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
-import info.justaway.event.model.DestroyStatusEvent;
+import info.justaway.event.model.StreamingDestroyStatusEvent;
 import info.justaway.event.action.StatusActionEvent;
 import info.justaway.listener.StatusClickListener;
 import info.justaway.listener.StatusLongClickListener;
 import info.justaway.model.Row;
+import info.justaway.model.TwitterManager;
+import info.justaway.settings.BasicSettings;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
 import twitter4j.Status;
@@ -110,7 +111,7 @@ public class UserTimelineFragment extends Fragment implements OnRefreshListener 
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public void onEventMainThread(DestroyStatusEvent event) {
+    public void onEventMainThread(StreamingDestroyStatusEvent event) {
         mAdapter.removeStatus(event.getStatusId());
     }
 
@@ -134,13 +135,12 @@ public class UserTimelineFragment extends Fragment implements OnRefreshListener 
         @Override
         protected ResponseList<twitter4j.Status> doInBackground(String... params) {
             try {
-                JustawayApplication application = JustawayApplication.getApplication();
                 Paging paging = new Paging();
                 if (mMaxId > 0) {
                     paging.setMaxId(mMaxId - 1);
-                    paging.setCount(application.getPageCount());
+                    paging.setCount(BasicSettings.getPageCount());
                 }
-                return application.getTwitter().getUserTimeline(params[0], paging);
+                return TwitterManager.getTwitter().getUserTimeline(params[0], paging);
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;

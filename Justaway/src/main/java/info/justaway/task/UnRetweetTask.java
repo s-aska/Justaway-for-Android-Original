@@ -3,24 +3,24 @@ package info.justaway.task;
 import android.os.AsyncTask;
 
 import de.greenrobot.event.EventBus;
-import info.justaway.JustawayApplication;
 import info.justaway.R;
 import info.justaway.event.action.StatusActionEvent;
+import info.justaway.model.FavRetweetManager;
+import info.justaway.model.TwitterManager;
+import info.justaway.util.MessageUtil;
 import twitter4j.TwitterException;
 
 public class UnRetweetTask extends AsyncTask<Void, Void, TwitterException> {
 
     private long mRetweetedStatusId;
     private long mStatusId;
-    private JustawayApplication mApplication;
     private static final int ERROR_CODE_DUPLICATE = 34;
 
     public UnRetweetTask(long retweetedStatusId, long statusId) {
         mRetweetedStatusId = retweetedStatusId;
         mStatusId = statusId;
-        mApplication = JustawayApplication.getApplication();
         if (mRetweetedStatusId > 0) {
-            mApplication.setRtId(mRetweetedStatusId, null);
+            FavRetweetManager.setRtId(mRetweetedStatusId, null);
             EventBus.getDefault().post(new StatusActionEvent());
         }
     }
@@ -28,7 +28,7 @@ public class UnRetweetTask extends AsyncTask<Void, Void, TwitterException> {
     @Override
     protected TwitterException doInBackground(Void... params) {
         try {
-            JustawayApplication.getApplication().getTwitter().destroyStatus(mStatusId);
+            TwitterManager.getTwitter().destroyStatus(mStatusId);
             return null;
         } catch (TwitterException e) {
             e.printStackTrace();
@@ -39,15 +39,15 @@ public class UnRetweetTask extends AsyncTask<Void, Void, TwitterException> {
     @Override
     protected void onPostExecute(TwitterException e) {
         if (e == null) {
-            JustawayApplication.showToast(R.string.toast_destroy_retweet_success);
+            MessageUtil.showToast(R.string.toast_destroy_retweet_success);
         } else if (e.getErrorCode() == ERROR_CODE_DUPLICATE) {
-            JustawayApplication.showToast(R.string.toast_destroy_retweet_already);
+            MessageUtil.showToast(R.string.toast_destroy_retweet_already);
         } else {
             if (mRetweetedStatusId > 0) {
-                mApplication.setRtId(mRetweetedStatusId, mStatusId);
+                FavRetweetManager.setRtId(mRetweetedStatusId, mStatusId);
                 EventBus.getDefault().post(new StatusActionEvent());
             }
-            JustawayApplication.showToast(R.string.toast_destroy_retweet_failure);
+            MessageUtil.showToast(R.string.toast_destroy_retweet_failure);
         }
     }
 }

@@ -2,7 +2,7 @@ package info.justaway.task;
 
 import android.os.AsyncTask;
 
-import info.justaway.JustawayApplication;
+import info.justaway.model.TwitterManager;
 import info.justaway.settings.PostStockSettings;
 import twitter4j.HashtagEntity;
 import twitter4j.StatusUpdate;
@@ -12,12 +12,10 @@ import twitter4j.auth.AccessToken;
 
 public class UpdateStatusTask extends AsyncTask<StatusUpdate, Void, TwitterException> {
 
-    private JustawayApplication mApplication;
     private AccessToken mAccessToken;
 
     public UpdateStatusTask(AccessToken accessToken) {
         mAccessToken = accessToken;
-        mApplication = JustawayApplication.getApplication();
     }
 
     @Override
@@ -26,10 +24,10 @@ public class UpdateStatusTask extends AsyncTask<StatusUpdate, Void, TwitterExcep
         try {
             twitter4j.Status status;
             if (mAccessToken == null) {
-                status = mApplication.getTwitter().updateStatus(statusUpdate);
+                status = TwitterManager.getTwitter().updateStatus(statusUpdate);
             } else {
                 // ツイート画面から来たとき
-                Twitter twitter = mApplication.getTwitterInstance();
+                Twitter twitter = TwitterManager.getTwitterInstance();
                 twitter.setOAuthAccessToken(mAccessToken);
                 status = twitter.updateStatus(statusUpdate);
             }

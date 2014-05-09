@@ -7,10 +7,11 @@ import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.AdapterView;
 
-import info.justaway.JustawayApplication;
+import info.justaway.util.ActionUtil;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.fragment.AroundFragment;
 import info.justaway.fragment.TalkFragment;
+import info.justaway.settings.BasicSettings;
 import twitter4j.Status;
 
 public class StatusLongClickListener implements AdapterView.OnItemLongClickListener {
@@ -26,8 +27,7 @@ public class StatusLongClickListener implements AdapterView.OnItemLongClickListe
     @Override
     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
         Bundle args = new Bundle();
-        JustawayApplication application = JustawayApplication.getApplication();
-        String action = application.getLongTapAction();
+        String action = BasicSettings.getLongTapAction();
 
         if (mAdapter.getItem(position).isDirectMessage()) {
             return false;
@@ -38,7 +38,7 @@ public class StatusLongClickListener implements AdapterView.OnItemLongClickListe
         final Status source = retweet != null ? retweet : status;
 
         if (action.equals("quote")) {
-            application.doQuote(source, mActivity);
+            ActionUtil.doQuote(source, mActivity);
         } else if (action.equals("talk")) {
             if (source.getInReplyToStatusId() > 0) {
                 TalkFragment dialog = new TalkFragment();
@@ -62,7 +62,7 @@ public class StatusLongClickListener implements AdapterView.OnItemLongClickListe
                     + "/status/" + String.valueOf(status.getId()));
             mActivity.startActivity(intent);
         } else if (action.equals("reply_all")) {
-            application.doReplyAll(source, mActivity);
+            ActionUtil.doReplyAll(source, mActivity);
         } else {
             return false;
         }

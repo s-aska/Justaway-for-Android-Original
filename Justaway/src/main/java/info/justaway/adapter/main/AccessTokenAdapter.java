@@ -12,25 +12,22 @@ import java.util.ArrayList;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
-import info.justaway.JustawayApplication;
 import info.justaway.R;
+import info.justaway.model.AccessTokenManager;
+import info.justaway.model.UserIconManager;
 import twitter4j.auth.AccessToken;
 
 public class AccessTokenAdapter extends ArrayAdapter<AccessToken> {
 
     static class ViewHolder {
-
-        @InjectView(R.id.icon)
-        ImageView mIcon;
-        @InjectView(R.id.screen_name)
-        TextView mScreenName;
+        @InjectView(R.id.icon) ImageView mIcon;
+        @InjectView(R.id.screen_name) TextView mScreenName;
 
         public ViewHolder(View view) {
             ButterKnife.inject(this, view);
         }
     }
 
-    private ArrayList<AccessToken> mAccessTokenList = new ArrayList<AccessToken>();
     private LayoutInflater mInflater;
     private int mLayout;
     private int mHighlightColor;
@@ -42,18 +39,13 @@ public class AccessTokenAdapter extends ArrayAdapter<AccessToken> {
         mLayout = textViewResourceId;
         mHighlightColor = highlightColor;
         mDefaultColor = defaultColor;
-    }
 
-    @Override
-    public void add(AccessToken accessToken) {
-        super.add(accessToken);
-        mAccessTokenList.add(accessToken);
-    }
-
-    @Override
-    public void clear() {
-        super.clear();
-        mAccessTokenList.clear();
+        ArrayList<AccessToken> accessTokens = AccessTokenManager.getAccessTokens();
+        if (accessTokens != null) {
+            for (AccessToken accessToken : accessTokens) {
+                add(accessToken);
+            }
+        }
     }
 
     @Override
@@ -74,16 +66,16 @@ public class AccessTokenAdapter extends ArrayAdapter<AccessToken> {
             holder = (ViewHolder) view.getTag();
         }
 
-        AccessToken accessToken = mAccessTokenList.get(position);
+        AccessToken accessToken = getItem(position);
 
-        JustawayApplication.getApplication().displayUserIcon(accessToken.getUserId(), holder.mIcon);
+        UserIconManager.displayUserIcon(accessToken.getUserId(), holder.mIcon);
 
         holder.mScreenName.setText(accessToken.getScreenName());
 
         /**
          * 使用中のアカウントはハイライト表示
          */
-        if (JustawayApplication.getApplication().getUserId() == accessToken.getUserId()) {
+        if (AccessTokenManager.getUserId() == accessToken.getUserId()) {
             holder.mScreenName.setTextColor(mHighlightColor);
         } else {
             holder.mScreenName.setTextColor(mDefaultColor);

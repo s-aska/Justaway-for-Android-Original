@@ -7,7 +7,7 @@
               android:layout_height="match_parent">
 
     <LinearLayout
-        android:id="@+id/normal_layout"
+        android:id="@+id/action_bar_normal_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -19,66 +19,75 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/title"
+                android:id="@+id/action_bar_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="16dp"
                 android:textColor="?attr/text_color"
                 tools:text="Home"
+                tools:textColor="@android:color/white"
                 tools:ignore="SpUsage"/>
 
             <TextView
-                android:id="@+id/sub_title"
+                android:id="@+id/action_bar_sub_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="12dp"
                 android:textColor="?attr/text_color"
                 tools:text="\@justawayfactory"
+                tools:textColor="@android:color/white"
                 tools:ignore="SpUsage"/>
         </LinearLayout>
 
-        <Button
-            android:id="@+id/search"
-            android:minWidth="0dip"
-            android:layout_width="48dip"
+        <info.justaway.widget.FontelloButton
+            android:id="@+id/action_bar_search_button"
+            android:minWidth="0dp"
+            android:layout_width="48dp"
             android:layout_height="wrap_content"
             android:background="@drawable/action_bar_stateful"
             android:text="@string/fontello_search"
             android:textColor="?attr/menu_action_bar"
-            tools:paddingBottom="0dip"/>
+            android:textSize="18sp"
+            tools:paddingBottom="0dp"
+            tools:textColor="@android:color/white"/>
 
-        <Button
-            android:id="@+id/signal"
-            android:minWidth="0dip"
-            android:layout_width="48dip"
+        <info.justaway.widget.FontelloButton
+            android:id="@+id/action_bar_streaming_button"
+            android:minWidth="0dp"
+            android:layout_width="48dp"
             android:layout_height="wrap_content"
             android:background="@drawable/action_bar_stateful"
             android:text="@string/fontello_flash"
-            tools:paddingBottom="0dip"/>
+            android:textSize="18sp"
+            tools:paddingBottom="0dp"
+            tools:textColor="@android:color/white"/>
     </LinearLayout>
 
     <FrameLayout
-        android:id="@+id/search_layout"
+        android:id="@+id/action_bar_search_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginBottom="2dp"
         android:visibility="gone">
 
         <info.justaway.widget.AutoCompleteEditText
-            android:id="@+id/search_text"
+            android:id="@+id/action_bar_search_text"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:hint="@string/hint_search"
             android:singleLine="true"/>
 
-        <Button
-            android:id="@+id/cancel"
-            android:minWidth="0dip"
-            android:layout_width="48dip"
+        <info.justaway.widget.FontelloButton
+            android:id="@+id/action_bar_search_cancel"
+            android:minWidth="0dp"
+            android:layout_width="48dp"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
             android:background="@drawable/action_bar_stateful"
             android:text="@string/fontello_cancel"
-            android:textColor="?attr/menu_action_bar"/>
+            android:textColor="?attr/menu_action_bar"
+            android:textSize="18sp"
+            tools:textColor="@android:color/white"/>
     </FrameLayout>
 
 </LinearLayout>

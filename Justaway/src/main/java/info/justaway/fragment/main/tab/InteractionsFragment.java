@@ -1,146 +1,81 @@
 package info.justaway.fragment.main.tab;
 
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ProgressBar;
 
-import info.justaway.JustawayApplication;
-import info.justaway.R;
-import info.justaway.adapter.TwitterAdapter;
-import info.justaway.event.model.CreateFavoriteEvent;
-import info.justaway.event.model.CreateStatusEvent;
+import info.justaway.event.model.StreamingCreateFavoriteEvent;
+import info.justaway.model.AccessTokenManager;
 import info.justaway.model.Row;
+import info.justaway.model.TabManager;
+import info.justaway.model.TwitterManager;
+import info.justaway.settings.BasicSettings;
+import info.justaway.util.StatusUtil;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
 import twitter4j.Status;
-import twitter4j.UserMentionEntity;
 
 /**
  * 将来「つながり」タブ予定のタブ、現在はリプしか表示されない
  */
 public class InteractionsFragment extends BaseFragment {
 
-    private Boolean mAutoLoader = false;
-    private Boolean mReload = false;
-    private long mMaxId = 0L;
-    private ProgressBar mFooter;
-
+    /**
+     * このタブを表す固有のID、ユーザーリストで正数を使うため負数を使う
+     */
     public long getTabId() {
-        return -2L;
+        return TabManager.INTERACTIONS_TAB_ID;
     }
 
+    /**
+     * このタブに表示するツイートの定義
+     * @param row ストリーミングAPIから受け取った情報（ツイート＋ふぁぼ）
+     *            CreateFavoriteEventをキャッチしている為、ふぁぼイベントを受け取ることが出来る
+     * @return trueは表示しない、falseは表示する
+     */
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = super.onCreateView(inflater, container, savedInstanceState);
-        mFooter = (ProgressBar) v.findViewById(R.id.guruguru);
-        return v;
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        if (mMaxId == 0L) {
-            mMaxId = -1L;
-            new MentionsTimelineTask().execute();
-        }
-    }
-
-    @Override
-    public void reload() {
-        mReload = true;
-        clear();
-        getPullToRefreshLayout().setRefreshing(true);
-        new MentionsTimelineTask().execute();
-    }
-
-    @Override
-    public void clear() {
-        mMaxId = 0L;
-        TwitterAdapter adapter = getListAdapter();
-        if (adapter != null) {
-            adapter.clear();
-        }
-    }
-
-    @Override
-    public void onRefreshStarted(View view) {
-        reload();
-    }
-
-    @Override
-    protected void additionalReading() {
-        if (!mAutoLoader || mReload) {
-            return;
-        }
-        mFooter.setVisibility(View.VISIBLE);
-        mAutoLoader = false;
-        new MentionsTimelineTask().execute();
-    }
-
-    @Override
-    protected boolean skip(Row row) {
+    protected boolean isSkip(Row row) {
         if (row.isFavorite()) {
             return false;
         }
         if (row.isStatus()) {
 
-            JustawayApplication application = JustawayApplication.getApplication();
-
             Status status = row.getStatus();
-
-            long userId = application.getUserId();
             Status retweet = status.getRetweetedStatus();
-            if (retweet != null) {
 
-                // retweeted for me
-                if (retweet.getUser().getId() == userId) {
-                    return false;
-                }
-            } else {
+            /**
+             * 自分のツイートがRTされた時
+             */
+            if (retweet != null && retweet.getUser().getId() == AccessTokenManager.getUserId()) {
+                return false;
+            }
 
-                /**
-                 * 自分を@に含むRTが通知欄を破壊するのを防ぐ為、mentioned判定は非RT時のみ行う
-                 */
-
-                // mentioned for me
-                if (status.getInReplyToUserId() == userId) {
-                    return false;
-                }
-
-                // mentioned for me
-                UserMentionEntity[] mentions = status.getUserMentionEntities();
-                for (UserMentionEntity mention : mentions) {
-                    if (mention.getId() == userId) {
-                        return false;
-                    }
-                }
+            /**
+             * 自分宛のメンション（但し「自分をメンションに含むツイートがRTされた時」はうざいので除く）
+             */
+            if (retweet == null && StatusUtil.isMentionForMe(status)) {
+                return false;
             }
         }
         return true;
     }
 
-    public void onEventMainThread(CreateStatusEvent event) {
-        add(event.getRow());
-    }
-
-    public void onEventMainThread(CreateFavoriteEvent event) {
-        add(event.getRow());
+    @Override
+    protected void taskExecute() {
+        new MentionsTimelineTask().execute();
     }
 
     private class MentionsTimelineTask extends AsyncTask<Void, Void, ResponseList<Status>> {
         @Override
         protected ResponseList<twitter4j.Status> doInBackground(Void... params) {
             try {
-                JustawayApplication application = JustawayApplication.getApplication();
                 Paging paging = new Paging();
-                if (mMaxId > 0) {
+                if (mMaxId > 0 && !mReloading) {
                     paging.setMaxId(mMaxId - 1);
-                    paging.setCount(application.getPageCount());
+                    paging.setCount(BasicSettings.getPageCount());
                 }
-                return application.getTwitter().getMentionsTimeline(paging);
+                return TwitterManager.getTwitter().getMentionsTimeline(paging);
+            } catch (OutOfMemoryError e) {
+                return null;
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -151,32 +86,39 @@ public class InteractionsFragment extends BaseFragment {
         protected void onPostExecute(ResponseList<twitter4j.Status> statuses) {
             mFooter.setVisibility(View.GONE);
             if (statuses == null || statuses.size() == 0) {
-                mReload = false;
-                getPullToRefreshLayout().setRefreshComplete();
-                getListView().setVisibility(View.VISIBLE);
+                mReloading = false;
+                mPullToRefreshLayout.setRefreshComplete();
+                mListView.setVisibility(View.VISIBLE);
                 return;
             }
-            TwitterAdapter adapter = getListAdapter();
-            if (mReload) {
-                adapter.clear();
+            if (mReloading) {
+                clear();
                 for (twitter4j.Status status : statuses) {
                     if (mMaxId <= 0L || mMaxId > status.getId()) {
                         mMaxId = status.getId();
                     }
-                    adapter.add(Row.newStatus(status));
+                    mAdapter.add(Row.newStatus(status));
                 }
-                mReload = false;
-                getPullToRefreshLayout().setRefreshComplete();
+                mReloading = false;
+                mPullToRefreshLayout.setRefreshComplete();
             } else {
                 for (twitter4j.Status status : statuses) {
                     if (mMaxId <= 0L || mMaxId > status.getId()) {
                         mMaxId = status.getId();
                     }
-                    adapter.extensionAdd(Row.newStatus(status));
+                    mAdapter.extensionAdd(Row.newStatus(status));
                 }
                 mAutoLoader = true;
-                getListView().setVisibility(View.VISIBLE);
+                mListView.setVisibility(View.VISIBLE);
             }
         }
+    }
+
+    /**
+     * ストリーミングAPIからふぁぼを受け取った時のイベント
+     * @param event ふぁぼイベント
+     */
+    public void onEventMainThread(StreamingCreateFavoriteEvent event) {
+        addStack(event.getRow());
     }
 }

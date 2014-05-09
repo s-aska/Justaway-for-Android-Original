@@ -16,11 +16,33 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 
 import de.greenrobot.event.EventBus;
 import info.justaway.event.model.NotificationEvent;
+import info.justaway.model.AccessTokenManager;
 import info.justaway.model.Row;
 import twitter4j.Status;
 
 public class NotificationService extends Service {
-    public NotificationService() {
+
+    public static boolean mStarted;
+    public static void start() {
+        if (mStarted) {
+            return;
+        }
+        JustawayApplication application = JustawayApplication.getApplication();
+        Intent intent = new Intent();
+        intent.setClass(application, NotificationService.class);
+        application.startService(intent);
+        mStarted = true;
+    }
+
+    public static void stop() {
+        if (!mStarted) {
+            return;
+        }
+        JustawayApplication application = JustawayApplication.getApplication();
+        Intent intent = new Intent();
+        intent.setClass(application, NotificationService.class);
+        application.stopService(intent);
+        mStarted = false;
     }
 
     @Override
@@ -70,18 +92,27 @@ public class NotificationService extends Service {
         SharedPreferences preferences = getSharedPreferences("settings", Context.MODE_PRIVATE);
         JustawayApplication application = JustawayApplication.getApplication();
 
-        long userId = application.getUserId();
+        long userId = AccessTokenManager.getUserId();
 
         Row row = event.getRow();
         Status status = row.getStatus();
-        Status retweet = status.getRetweetedStatus();
+        Status retweet = status != null ? status.getRetweetedStatus() : null;
 
         String url;
         String title;
         String text;
         String ticker;
         int smallIcon;
-        if (row.isFavorite()) {
+        if (row.isDirectMessage()) {
+            if (!preferences.getBoolean("notification_message_on", true)) {
+                return;
+            }
+            url = row.getMessage().getSender().getBiggerProfileImageURL();
+            title = row.getMessage().getSender().getScreenName();
+            text = row.getMessage().getText();
+            ticker = text;
+            smallIcon = R.drawable.ic_notification_mail;
+        } else if (status != null && row.isFavorite()) {
             if (!preferences.getBoolean("notification_favorite_on", true)) {
                 return;
             }
@@ -90,7 +121,7 @@ public class NotificationService extends Service {
             text = getString(R.string.notification_favorite) + status.getText();
             ticker = title + getString(R.string.notification_favorite_ticker) + status.getText();
             smallIcon = R.drawable.ic_notification_star;
-        } else if (status.getInReplyToUserId() == userId) {
+        } else if (status != null && status.getInReplyToUserId() == userId) {
             if (!preferences.getBoolean("notification_reply_on", true)) {
                 return;
             }
@@ -141,7 +172,7 @@ public class NotificationService extends Service {
             builder.setDefaults(Notification.DEFAULT_SOUND);
         }
 
-        if (status.getInReplyToUserId() == userId) {
+        if (status != null && status.getInReplyToUserId() == userId) {
             Intent statusIntent = new Intent(this, StatusActivity.class);
             statusIntent.putExtra("status", status);
             statusIntent.putExtra("notification", true);

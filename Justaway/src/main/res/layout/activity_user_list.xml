@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -8,40 +10,28 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="8dip"
-        android:paddingBottom="8dip"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        tools:background="@android:color/background_dark"
         android:background="?attr/menu_background"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:baselineAligned="false">
 
-        <LinearLayout
-            android:id="@+id/users"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/users_label"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical">
+            android:gravity="center"
+            android:text="@string/tab_users"/>
 
-            <TextView
-                android:id="@+id/users_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="@string/tab_users"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/tweets"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/tweets_label"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/tweets_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="@string/label_tweets"/>
-        </LinearLayout>
+            android:gravity="center"
+            android:text="@string/tab_tweets"/>
     </LinearLayout>
 
     <android.support.v4.view.ViewPager

@@ -12,12 +12,12 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import info.justaway.JustawayApplication;
 import info.justaway.R;
+import info.justaway.model.TwitterManager;
 import twitter4j.ResponseList;
 import twitter4j.SavedSearch;
 
-public class UserSearchAdapter extends ArrayAdapter<String> implements Filterable {
+public class SearchAdapter extends ArrayAdapter<String> implements Filterable {
 
     private ArrayList<String> mStrings = new ArrayList<String>();
     private ArrayList<String> mSavedSearches = new ArrayList<String>();
@@ -27,17 +27,18 @@ public class UserSearchAdapter extends ArrayAdapter<String> implements Filterabl
     private Context mContext;
     private boolean mSavedMode = false;
 
-    public UserSearchAdapter(Context context, int textViewResourceId) {
+    public SearchAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId);
-        this.mContext = context;
-        this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        this.mLayout = textViewResourceId;
+        mContext = context;
+        mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mLayout = textViewResourceId;
         new SavedSearchesTask().execute();
     }
 
     public boolean isSavedMode() {
         return mSavedMode;
     }
+
     @Override
     public String getItem(int position) {
         return mStrings.get(position);
@@ -67,7 +68,7 @@ public class UserSearchAdapter extends ArrayAdapter<String> implements Filterabl
 
     @Override
     public Filter getFilter() {
-        Filter filter = new Filter() {
+        return new Filter() {
             @Override
             protected FilterResults performFiltering(CharSequence constraint) {
                 FilterResults filterResults = new FilterResults();
@@ -105,14 +106,13 @@ public class UserSearchAdapter extends ArrayAdapter<String> implements Filterabl
                 }
             }
         };
-        return filter;
     }
 
     public class SavedSearchesTask extends AsyncTask<Void, Void, ResponseList<SavedSearch>> {
         @Override
         protected ResponseList<SavedSearch> doInBackground(Void... params) {
             try {
-                return JustawayApplication.getApplication().getTwitter().getSavedSearches();
+                return TwitterManager.getTwitter().getSavedSearches();
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;

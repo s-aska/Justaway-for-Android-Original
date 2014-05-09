@@ -2,28 +2,32 @@ package info.justaway.task;
 
 import android.os.AsyncTask;
 
-import info.justaway.JustawayApplication;
+import de.greenrobot.event.EventBus;
 import info.justaway.R;
+import info.justaway.event.model.StreamingDestroyMessageEvent;
+import info.justaway.model.TwitterManager;
+import info.justaway.util.MessageUtil;
+import twitter4j.DirectMessage;
 
-public class DestroyDirectMessageTask extends AsyncTask<Long, Void, Boolean> {
+public class DestroyDirectMessageTask extends AsyncTask<Long, Void, DirectMessage> {
 
     @Override
-    protected Boolean doInBackground(Long... params) {
+    protected DirectMessage doInBackground(Long... params) {
         try {
-            JustawayApplication.getApplication().getTwitter().destroyDirectMessage(params[0]);
-            return true;
+            return TwitterManager.getTwitter().destroyDirectMessage(params[0]);
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
+            return null;
         }
     }
 
     @Override
-    protected void onPostExecute(Boolean success) {
-        if (success) {
-            JustawayApplication.showToast(R.string.toast_destroy_direct_message_success);
+    protected void onPostExecute(DirectMessage directMessage) {
+        if (directMessage != null) {
+            MessageUtil.showToast(R.string.toast_destroy_direct_message_success);
+            EventBus.getDefault().post(new StreamingDestroyMessageEvent(directMessage.getId()));
         } else {
-            JustawayApplication.showToast(R.string.toast_destroy_direct_message_failure);
+            MessageUtil.showToast(R.string.toast_destroy_direct_message_failure);
         }
     }
 }
