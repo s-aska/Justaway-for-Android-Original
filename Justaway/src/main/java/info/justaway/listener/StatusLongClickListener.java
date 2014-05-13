@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.AdapterView;
 
+import info.justaway.model.Row;
 import info.justaway.util.ActionUtil;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.fragment.AroundFragment;
@@ -16,27 +17,29 @@ import twitter4j.Status;
 
 public class StatusLongClickListener implements AdapterView.OnItemLongClickListener {
 
-    private TwitterAdapter mAdapter;
     private FragmentActivity mActivity;
 
-    public StatusLongClickListener(TwitterAdapter adapter, Activity activity) {
-        mAdapter = adapter;
+    public StatusLongClickListener(Activity activity) {
         mActivity = (FragmentActivity) activity;
     }
 
     @Override
     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
-        Bundle args = new Bundle();
-        String action = BasicSettings.getLongTapAction();
-
-        if (mAdapter.getItem(position).isDirectMessage()) {
+        TwitterAdapter adapter = (TwitterAdapter) adapterView.getAdapter();
+        Row row = adapter.getItem(position);
+        if (row == null) {
+            return false;
+        }
+        if (row.isDirectMessage()) {
             return false;
         }
 
-        Status status = mAdapter.getItem(position).getStatus();
+        Status status = row.getStatus();
         final Status retweet = status.getRetweetedStatus();
         final Status source = retweet != null ? retweet : status;
 
+        Bundle args = new Bundle();
+        String action = BasicSettings.getLongTapAction();
         if (action.equals("quote")) {
             ActionUtil.doQuote(source, mActivity);
         } else if (action.equals("talk")) {
