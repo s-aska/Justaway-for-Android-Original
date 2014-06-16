@@ -70,7 +70,7 @@ public class SearchActivity extends FragmentActivity implements LoaderManager.Lo
         mSearchList.setAdapter(mAdapter);
 
         mSearchList.setOnItemClickListener(new StatusClickListener(this));
-        mSearchList.setOnItemLongClickListener(new StatusLongClickListener(mAdapter, this));
+        mSearchList.setOnItemLongClickListener(new StatusLongClickListener(this));
 
         mSearchWords.setOnKeyListener(new View.OnKeyListener() {
             @Override

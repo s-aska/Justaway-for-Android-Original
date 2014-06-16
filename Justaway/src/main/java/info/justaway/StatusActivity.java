@@ -78,7 +78,7 @@ public class StatusActivity extends FragmentActivity {
 
         listView.setOnItemClickListener(new StatusClickListener(this));
 
-        listView.setOnItemLongClickListener(new StatusLongClickListener(mAdapter, this));
+        listView.setOnItemLongClickListener(new StatusLongClickListener(this));
 
         if (statusId > 0) {
             showProgressDialog(getString(R.string.progress_loading));

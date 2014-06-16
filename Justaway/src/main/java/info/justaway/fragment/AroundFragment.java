@@ -62,7 +62,7 @@ public class AroundFragment extends DialogFragment {
 
         listView.setOnItemClickListener(new StatusClickListener(activity));
 
-        listView.setOnItemLongClickListener(new StatusLongClickListener(mAdapter, getActivity()));
+        listView.setOnItemLongClickListener(new StatusLongClickListener(getActivity()));
 
         Status status = (Status) getArguments().getSerializable("status");
         if (status != null) {

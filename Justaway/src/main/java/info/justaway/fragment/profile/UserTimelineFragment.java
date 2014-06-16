@@ -72,7 +72,7 @@ public class UserTimelineFragment extends Fragment implements OnRefreshListener 
 
         mListView.setOnItemClickListener(new StatusClickListener(getActivity()));
 
-        mListView.setOnItemLongClickListener(new StatusLongClickListener(mAdapter, getActivity()));
+        mListView.setOnItemLongClickListener(new StatusLongClickListener(getActivity()));
 
         new UserTimelineTask().execute(mUser.getScreenName());
 

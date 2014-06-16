@@ -55,7 +55,7 @@ public class FavoritesListFragment extends Fragment {
 
         mListView.setOnItemClickListener(new StatusClickListener(getActivity()));
 
-        mListView.setOnItemLongClickListener(new StatusLongClickListener(mAdapter, getActivity()));
+        mListView.setOnItemLongClickListener(new StatusLongClickListener(getActivity()));
 
         new FavoritesListTask().execute(mUser.getScreenName());
 
