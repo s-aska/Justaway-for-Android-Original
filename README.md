@@ -1,3 +1,3 @@
 # Justaway
 
-moved project.
+moved to https://github.com/s-aska/Justaway-for-Android
