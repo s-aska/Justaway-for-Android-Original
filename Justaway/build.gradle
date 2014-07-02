@@ -2,7 +2,7 @@ apply plugin: 'android'
 apply plugin: 'android-apt'
 
 dependencies {
-    compile "com.android.support:support-v4:19.+"
+    compile "com.android.support:support-v4:20.+"
     compile "com.google.code.gson:gson:2.2.4"
     compile "de.greenrobot:eventbus:2.2.0"
 

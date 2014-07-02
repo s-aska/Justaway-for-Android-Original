@@ -17,6 +17,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.RemoteInput;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.ScrollingMovementMethod;
@@ -136,6 +137,25 @@ public class PostActivity extends FragmentActivity {
         ButterKnife.inject(this);
         mContext = this;
 
+        // Wear からリプライを返す
+        Intent intent = getIntent();
+        Bundle remoteInput = RemoteInput.getResultsFromIntent(intent);
+        if (remoteInput != null) {
+            CharSequence charSequence = remoteInput.getCharSequence(NotificationService.EXTRA_VOICE_REPLY);
+            Status inReplyToStatus = (Status) intent.getSerializableExtra("inReplyToStatus");
+            mInReplyToStatusId = inReplyToStatus.getId();
+            String inReplyToUserScreenName = inReplyToStatus.getUser().getScreenName();
+            if (inReplyToStatus.getRetweetedStatus() != null) {
+                inReplyToStatus = inReplyToStatus.getRetweetedStatus();
+                inReplyToUserScreenName = inReplyToStatus.getUser().getScreenName();
+            }
+            mInReplyToStatusId = inReplyToStatus.getId();
+            mStatusText.setText("@" + inReplyToUserScreenName + " " + charSequence.toString());
+
+            tweet();
+            return;
+        }
+
         ActionBar actionBar = getActionBar();
         if (actionBar != null) {
             int options = actionBar.getDisplayOptions();
@@ -172,7 +192,6 @@ public class PostActivity extends FragmentActivity {
             }
         }
 
-        Intent intent = getIntent();
         if (intent.getBooleanExtra("notification", false)) {
             NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             manager.cancelAll();
