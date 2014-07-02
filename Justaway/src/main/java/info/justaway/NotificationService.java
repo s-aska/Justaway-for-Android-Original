@@ -11,6 +11,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.RemoteInput;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -22,6 +23,7 @@ import twitter4j.Status;
 
 public class NotificationService extends Service {
 
+    public static final String EXTRA_VOICE_REPLY = "extra_voice_reply";
     public static boolean mStarted;
     public static void start() {
         if (mStarted) {
@@ -183,9 +185,17 @@ public class NotificationService extends Service {
             replyIntent.putExtra("inReplyToStatus", status);
             replyIntent.putExtra("notification", true);
             replyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            builder.addAction(R.drawable.ic_notification_at,
+
+            RemoteInput remoteInput = new RemoteInput.Builder(EXTRA_VOICE_REPLY)
+                    .setLabel(getResources().getString(R.string.context_menu_reply))
+                    .build();
+
+            NotificationCompat.Action action = new NotificationCompat.Action.Builder(R.drawable.ic_notification_at,
                     getString(R.string.context_menu_reply),
-                    PendingIntent.getActivity(this, 1, replyIntent, PendingIntent.FLAG_CANCEL_CURRENT));
+                    PendingIntent.getActivity(this, 1, replyIntent, PendingIntent.FLAG_CANCEL_CURRENT))
+                    .addRemoteInput(remoteInput)
+                    .build();
+            builder.extend(new NotificationCompat.WearableExtender().addAction(action));
             Intent favoriteIntent = new Intent(this, FavoriteActivity.class);
             favoriteIntent.putExtra("statusId", status.getId());
             favoriteIntent.putExtra("notification", true);
