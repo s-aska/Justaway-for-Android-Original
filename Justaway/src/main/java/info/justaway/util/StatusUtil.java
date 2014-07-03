@@ -130,7 +130,7 @@ public class StatusUtil {
                 imageUrls.add(url.getExpandedURL());
             }
         }
-        for (MediaEntity media : status.getMediaEntities()) {
+        for (MediaEntity media : status.getExtendedMediaEntities()) {
             imageUrls.add(media.getMediaURL());
         }
         return imageUrls;
