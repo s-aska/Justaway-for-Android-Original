@@ -130,12 +130,17 @@ public class StatusUtil {
                 imageUrls.add(url.getExpandedURL());
             }
         }
-        for (MediaEntity media : status.getMediaEntities()) {
-            imageUrls.add(media.getMediaURL());
+
+        if (status.getExtendedMediaEntities().length > 0) {
+            for (MediaEntity media : status.getExtendedMediaEntities()) {
+                imageUrls.add(media.getMediaURL());
+            }
+        } else {
+            for (MediaEntity media : status.getMediaEntities()) {
+                imageUrls.add(media.getMediaURL());
+            }
         }
-        for (MediaEntity media : status.getExtendedMediaEntities()) {
-            imageUrls.add(media.getMediaURL());
-        }
+
         return imageUrls;
     }
 
