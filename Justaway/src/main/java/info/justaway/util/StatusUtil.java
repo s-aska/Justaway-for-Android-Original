@@ -130,6 +130,9 @@ public class StatusUtil {
                 imageUrls.add(url.getExpandedURL());
             }
         }
+        for (MediaEntity media : status.getMediaEntities()) {
+            imageUrls.add(media.getMediaURL());
+        }
         for (MediaEntity media : status.getExtendedMediaEntities()) {
             imageUrls.add(media.getMediaURL());
         }
