@@ -3,6 +3,7 @@ apply plugin: 'android-apt'
 
 dependencies {
     compile "com.android.support:support-v4:20.+"
+    compile 'com.google.android.gms:play-services:5.0.+@aar'
     compile "com.google.code.gson:gson:2.2.4"
     compile "de.greenrobot:eventbus:2.2.0"
 
@@ -17,6 +18,7 @@ dependencies {
 
     compile "com.github.chrisbanes.actionbarpulltorefresh:library:0.9.9"
     compile fileTree(dir: 'libs', include: '*.jar')
+    wearApp project(':wear')
 }
 
 android {

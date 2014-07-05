@@ -1,1 +1,1 @@
-include 'Justaway', ':plugins:ActionBar-PullToRefresh:library'
+include 'Justaway', ':plugins:ActionBar-PullToRefresh:library',  ':wear'

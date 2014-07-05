@@ -156,6 +156,12 @@ public class PostActivity extends FragmentActivity {
             return;
         }
 
+        // Wear からツイート
+        if (intent.getBooleanExtra("wearable", false)) {
+            mStatusText.setText(intent.getStringExtra("status"));
+            tweet();
+        }
+
         ActionBar actionBar = getActionBar();
         if (actionBar != null) {
             int options = actionBar.getDisplayOptions();

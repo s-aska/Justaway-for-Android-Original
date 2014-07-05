@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Justaway</string>
+    <string name="button_tweet">Tweet</string>
+    <string name="label_cancel">Cancel</string>
+    <string name="label_action_tweet">Tweet via Justaway</string>
+    <string name="label_action_tweet2">Tweet</string>
+
+</resources>
