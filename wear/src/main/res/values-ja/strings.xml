@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">ジャスタウェイ</string>
+    <string name="button_tweet">ツイート</string>
+    <string name="label_cancel">キャンセル</string>
+    <string name="label_action_tweet">ジャスタウェイでツイート</string>
+    <string name="label_action_tweet2">ツイート</string>
+
+</resources>
