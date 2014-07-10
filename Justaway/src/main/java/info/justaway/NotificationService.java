@@ -25,6 +25,7 @@ public class NotificationService extends Service {
 
     public static final String EXTRA_VOICE_REPLY = "extra_voice_reply";
     public static boolean mStarted;
+
     public static void start() {
         if (mStarted) {
             return;
@@ -186,22 +187,39 @@ public class NotificationService extends Service {
             replyIntent.putExtra("notification", true);
             replyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
+            NotificationCompat.Action wearOpenAction = new NotificationCompat.Action(R.drawable.ic_notification_twitter,
+                    getString(R.string.menu_open),
+                    PendingIntent.getActivity(this, 1, statusIntent, PendingIntent.FLAG_UPDATE_CURRENT));
+
             RemoteInput remoteInput = new RemoteInput.Builder(EXTRA_VOICE_REPLY)
                     .setLabel(getResources().getString(R.string.context_menu_reply))
                     .build();
 
-            NotificationCompat.Action action = new NotificationCompat.Action.Builder(R.drawable.ic_notification_at,
+            NotificationCompat.Action wearReplyAction = new NotificationCompat.Action.Builder(R.drawable.ic_notification_at,
                     getString(R.string.context_menu_reply),
                     PendingIntent.getActivity(this, 1, replyIntent, PendingIntent.FLAG_CANCEL_CURRENT))
                     .addRemoteInput(remoteInput)
                     .build();
-            builder.extend(new NotificationCompat.WearableExtender().addAction(action));
+
+            builder.addAction(R.drawable.ic_notification_at,
+                    getString(R.string.context_menu_reply),
+                    PendingIntent.getActivity(this, 1, replyIntent, PendingIntent.FLAG_CANCEL_CURRENT));
+
+
             Intent favoriteIntent = new Intent(this, FavoriteActivity.class);
             favoriteIntent.putExtra("statusId", status.getId());
             favoriteIntent.putExtra("notification", true);
+
+            NotificationCompat.Action wearFavoriteAction = new NotificationCompat.Action.Builder(R.drawable.ic_notification_star,
+                    getString(R.string.context_menu_create_favorite),
+                    PendingIntent.getActivity(this, 1, favoriteIntent, PendingIntent.FLAG_UPDATE_CURRENT))
+                    .build();
+
             builder.addAction(R.drawable.ic_notification_star,
                     getString(R.string.context_menu_create_favorite),
                     PendingIntent.getActivity(this, 1, favoriteIntent, PendingIntent.FLAG_UPDATE_CURRENT));
+
+            builder.extend(new NotificationCompat.WearableExtender().addAction(wearReplyAction).addAction(wearFavoriteAction).addAction(wearOpenAction));
         }
 
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
