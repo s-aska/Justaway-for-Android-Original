@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="fontello_star">★</string>
-    <string name="fontello_reply">返</string>
-    <string name="fontello_retweet">輪</string>
-    <string name="fontello_at">"@"</string>
-    <string name="fontello_location">所</string>
-    <string name="fontello_sdd">鎖</string>
-    <string name="fontello_home">家</string>
-    <string name="fontello_mail">文</string>
-    <string name="fontello_list">欄</string>
-    <string name="fontello_edit">書</string>
-    <string name="fontello_uni">✹</string>
+    <string name="fontello_star" translatable="false">★</string>
+    <string name="fontello_reply" translatable="false">返</string>
+    <string name="fontello_retweet" translatable="false">輪</string>
+    <string name="fontello_at" translatable="false">"@"</string>
+    <string name="fontello_location" translatable="false">所</string>
+    <string name="fontello_sdd" translatable="false">鎖</string>
+    <string name="fontello_home" translatable="false">家</string>
+    <string name="fontello_mail" translatable="false">文</string>
+    <string name="fontello_list" translatable="false">欄</string>
+    <string name="fontello_edit" translatable="false">書</string>
+    <string name="fontello_uni" translatable="false">✹</string>
     <!-- https://twitter.com/JMNCR/status/398810317645283328 -->
-    <string name="fontello_picture">画</string>
-    <string name="fontello_paper">投</string>
-    <string name="fontello_lock">鍵</string>
-    <string name="fontello_twitter">鳥</string>
-    <string name="fontello_search">探</string>
-    <string name="fontello_tag">札</string>
-    <string name="fontello_archive">箱</string>
-    <string name="fontello_trash">消</string>
-    <string name="fontello_up">上</string>
-    <string name="fontello_down">下</string>
-    <string name="fontello_flash">雷</string>
-    <string name="fontello_undo">戻</string>
-    <string name="fontello_menu">三</string>
-    <string name="fontello_cancel">☓</string>
+    <string name="fontello_picture" translatable="false">画</string>
+    <string name="fontello_paper" translatable="false">投</string>
+    <string name="fontello_lock" translatable="false">鍵</string>
+    <string name="fontello_twitter" translatable="false">鳥</string>
+    <string name="fontello_search" translatable="false">探</string>
+    <string name="fontello_tag" translatable="false">札</string>
+    <string name="fontello_archive" translatable="false">箱</string>
+    <string name="fontello_trash" translatable="false">消</string>
+    <string name="fontello_up" translatable="false">上</string>
+    <string name="fontello_down" translatable="false">下</string>
+    <string name="fontello_flash" translatable="false">雷</string>
+    <string name="fontello_undo" translatable="false">戻</string>
+    <string name="fontello_menu" translatable="false">三</string>
+    <string name="fontello_cancel" translatable="false">☓</string>
 
 </resources>

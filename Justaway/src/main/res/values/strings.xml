@@ -20,7 +20,7 @@
     <string name="button_save">Save</string>
     <string name="button_unfollow">Unfollow</string>
     <string name="button_yes">Yes</string>
-    <string name="close">close</string>
+    <string name="close" translatable="false">close</string>
     <string name="confirm_create_block">Do you want to block?</string>
     <string name="confirm_create_streaming">Do you want to connect to the streaming?</string>
     <string name="confirm_destroy_block">Do you want to unblock?</string>
@@ -122,9 +122,9 @@
     <string name="notification_favorite_ticker">" favorited: "</string>
     <string name="notification_retweet_ticker">" retweeted: "</string>
     <string name="official_website">http://justaway.info/</string>
-    <string name="open">open</string>
-    <string name="profile_pointer">●　○</string>
-    <string name="profile_pointer_right">○　●</string>
+    <string name="open" translatable="false">open</string>
+    <string name="profile_pointer" translatable="false">●　○</string>
+    <string name="profile_pointer_right" translatable="false">○　●</string>
     <string name="progress_loading" tools:ignore="TypographyEllipsis">Loading...</string>
     <string name="progress_process" tools:ignore="TypographyEllipsis">Processing...</string>
     <string name="progress_sending" tools:ignore="TypographyEllipsis">Sending...</string>
