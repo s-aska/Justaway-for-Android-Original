@@ -1,11 +1,7 @@
 package info.justaway.fragment.mute;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +18,7 @@ import info.justaway.R;
 import info.justaway.settings.MuteSettings;
 import info.justaway.widget.FontelloTextView;
 
-public class SourceFragment extends Fragment {
+public class SourceFragment extends Fragment implements ConfirmDialogFragment.OnDialogButtonClickListener {
 
     private SourceAdapter mSourceAdapter;
 
@@ -45,10 +41,19 @@ public class SourceFragment extends Fragment {
         return v;
     }
 
-    public void removeSource(String source) {
+    public void onPositiveClick(String source) {
         mSourceAdapter.remove(source);
         MuteSettings.removeSource(source);
         MuteSettings.saveMuteSettings();
+    }
+
+    public void onTrashClick(String source) {
+        final Bundle args = new Bundle(1);
+        args.putString("source", source);
+
+        final ConfirmDialogFragment fragment = ConfirmDialogFragment.newInstance(this);
+        fragment.setArguments(args);
+        fragment.show(getFragmentManager(), "dialog");
     }
 
     public class SourceAdapter extends ArrayAdapter<String> {
@@ -107,43 +112,11 @@ public class SourceFragment extends Fragment {
             viewHolder.mTrash.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    final Bundle args = new Bundle(1);
-                    args.putString("source", source);
-
-                    final ConfirmDialogFragment fragment = new ConfirmDialogFragment();
-                    fragment.setArguments(args);
-                    fragment.show(getFragmentManager(), "dialog");
+                    onTrashClick(source);
                 }
             });
 
             return view;
-        }
-    }
-
-    public final class ConfirmDialogFragment extends DialogFragment {
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            final String source = getArguments().getString("source");
-            final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setTitle(String.format(getString(R.string.confirm_destroy_mute), source));
-            builder.setPositiveButton(
-                    R.string.button_yes,
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            removeSource(source);
-                        }
-                    }
-            );
-            builder.setNegativeButton(
-                            R.string.button_no,
-                            new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int which) {
-                                }
-                            }
-                    );
-            return builder.create();
         }
     }
 }
