@@ -163,6 +163,8 @@ public class NotificationService extends Service {
                 .setLargeIcon(icon)
                 .setTicker(ticker)
                 .setAutoCancel(true)
+                .setGroup(getString(R.string.app_name))
+                .setGroupSummary(true)
                 .setWhen(System.currentTimeMillis());
 
         boolean vibrate = preferences.getBoolean("notification_vibrate_on", true);
@@ -215,6 +217,6 @@ public class NotificationService extends Service {
         }
 
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        manager.notify(1, builder.build());
+        manager.notify(((int) status.getId()), builder.build());
     }
 }
