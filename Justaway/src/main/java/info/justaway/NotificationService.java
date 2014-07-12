@@ -163,6 +163,8 @@ public class NotificationService extends Service {
                 .setLargeIcon(icon)
                 .setTicker(ticker)
                 .setAutoCancel(true)
+                .setGroup(getString(R.string.app_name))
+                .setGroupSummary(true)
                 .setWhen(System.currentTimeMillis());
 
         boolean vibrate = preferences.getBoolean("notification_vibrate_on", true);
@@ -179,17 +181,16 @@ public class NotificationService extends Service {
             Intent statusIntent = new Intent(this, StatusActivity.class);
             statusIntent.putExtra("status", status);
             statusIntent.putExtra("notification", true);
-            builder.addAction(R.drawable.ic_notification_twitter,
+
+            NotificationCompat.Action statusAction = new NotificationCompat.Action(R.drawable.ic_notification_twitter,
                     getString(R.string.menu_open),
                     PendingIntent.getActivity(this, 1, statusIntent, PendingIntent.FLAG_UPDATE_CURRENT));
+            builder.addAction(statusAction);
+
             Intent replyIntent = new Intent(this, PostActivity.class);
             replyIntent.putExtra("inReplyToStatus", status);
             replyIntent.putExtra("notification", true);
             replyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-
-            NotificationCompat.Action wearOpenAction = new NotificationCompat.Action(R.drawable.ic_notification_twitter,
-                    getString(R.string.menu_open),
-                    PendingIntent.getActivity(this, 1, statusIntent, PendingIntent.FLAG_UPDATE_CURRENT));
 
             RemoteInput remoteInput = new RemoteInput.Builder(EXTRA_VOICE_REPLY)
                     .setLabel(getResources().getString(R.string.context_menu_reply))
@@ -200,11 +201,7 @@ public class NotificationService extends Service {
                     PendingIntent.getActivity(this, 1, replyIntent, PendingIntent.FLAG_CANCEL_CURRENT))
                     .addRemoteInput(remoteInput)
                     .build();
-
-            builder.addAction(R.drawable.ic_notification_at,
-                    getString(R.string.context_menu_reply),
-                    PendingIntent.getActivity(this, 1, replyIntent, PendingIntent.FLAG_CANCEL_CURRENT));
-
+            builder.addAction(wearReplyAction);
 
             Intent favoriteIntent = new Intent(this, FavoriteActivity.class);
             favoriteIntent.putExtra("statusId", status.getId());
@@ -214,15 +211,12 @@ public class NotificationService extends Service {
                     getString(R.string.context_menu_create_favorite),
                     PendingIntent.getActivity(this, 1, favoriteIntent, PendingIntent.FLAG_UPDATE_CURRENT))
                     .build();
+            builder.addAction(wearFavoriteAction);
 
-            builder.addAction(R.drawable.ic_notification_star,
-                    getString(R.string.context_menu_create_favorite),
-                    PendingIntent.getActivity(this, 1, favoriteIntent, PendingIntent.FLAG_UPDATE_CURRENT));
-
-            builder.extend(new NotificationCompat.WearableExtender().addAction(wearReplyAction).addAction(wearFavoriteAction).addAction(wearOpenAction));
+            builder.extend(new NotificationCompat.WearableExtender().addAction(wearReplyAction).addAction(wearFavoriteAction).addAction(statusAction));
         }
 
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        manager.notify(1, builder.build());
+        manager.notify(((int) status.getId()), builder.build());
     }
 }
