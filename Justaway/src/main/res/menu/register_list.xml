@@ -3,6 +3,6 @@
     <item
         android:id="@+id/create_user_list"
         android:orderInCategory="100"
-        android:showAsAction="never"
+        android:showAsAction="always"
         android:title="@string/menu_create_user_list"/>
 </menu>
