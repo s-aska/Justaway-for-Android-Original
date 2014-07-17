@@ -2,13 +2,13 @@ package info.justaway;
 
 import android.app.ActionBar;
 import android.app.Activity;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 
-import info.justaway.model.TwitterManager;
+import butterknife.ButterKnife;
+import info.justaway.task.CreateUserListTask;
 import info.justaway.util.MessageUtil;
 import info.justaway.util.ThemeUtil;
 import butterknife.InjectView;
@@ -20,13 +20,13 @@ public class CreateUserListActivity extends Activity {
     @InjectView(R.id.list_description) EditText mListDescription;
     @InjectView(R.id.privacy_radio_group) RadioGroup mPrivacyRadioGroup;
 
-    private boolean mPrivacy;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ThemeUtil.setTheme(this);
         setContentView(R.layout.activity_create_user_list);
+        ButterKnife.inject(this);
 
         ActionBar actionBar = getActionBar();
         if (actionBar != null) {
@@ -38,11 +38,24 @@ public class CreateUserListActivity extends Activity {
 
     @OnClick(R.id.save)
     void Save() {
+        boolean privacy = false;
         MessageUtil.showProgressDialog(this, getString(R.string.progress_process));
         if (mPrivacyRadioGroup.getCheckedRadioButtonId() == R.id.public_radio) {
-            mPrivacy = true;
+            privacy = true;
         }
-        new CreateUserListTask().execute();
+
+        new CreateUserListTask(mListName.getText().toString(), privacy, mListDescription.getText().toString()){
+            @Override
+            protected void onPostExecute(Boolean success) {
+                MessageUtil.dismissProgressDialog();
+                if (success) {
+                    MessageUtil.showToast(R.string.toast_create_user_list_success);
+                    finish();
+                } else {
+                    MessageUtil.showToast(R.string.toast_create_user_list_failure);
+                }
+            }
+        }.execute();
     }
 
     @Override
@@ -55,31 +68,5 @@ public class CreateUserListActivity extends Activity {
         return true;
     }
 
-    private class CreateUserListTask extends AsyncTask<Void, Void, Boolean> {
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            try {
-                // noinspection ConstantConditions
-                TwitterManager.getTwitter().createUserList(
-                        mListName.getText().toString(),
-                        mPrivacy,
-                        mListDescription.getText().toString());
-                return true;
-            } catch (Exception e) {
-                e.printStackTrace();
-                return false;
-            }
-        }
 
-        @Override
-        protected void onPostExecute(Boolean success) {
-            MessageUtil.dismissProgressDialog();
-            if (success) {
-                MessageUtil.showToast(R.string.toast_create_user_list_success);
-                finish();
-            } else {
-                MessageUtil.showToast(R.string.toast_create_user_list_failure);
-            }
-        }
-    }
 }
