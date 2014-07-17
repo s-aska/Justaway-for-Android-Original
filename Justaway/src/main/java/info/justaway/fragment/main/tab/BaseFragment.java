@@ -32,9 +32,9 @@ import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
 public abstract class BaseFragment extends Fragment implements OnRefreshListener {
 
     protected TwitterAdapter mAdapter;
-    protected Boolean mAutoLoader = false;
-    protected Boolean mReloading = false;
-    private Boolean mScrolling = false;
+    protected boolean mAutoLoader = false;
+    protected boolean mReloading = false;
+    private boolean mScrolling = false;
     protected long mMaxId = 0L; // 読み込んだ最新のツイートID
     protected long mDirectMessagesMaxId = 0L; // 読み込んだ最新の受信メッセージID
     protected long mSentDirectMessagesMaxId = 0L; // 読み込んだ最新の送信メッセージID
@@ -146,7 +146,7 @@ public abstract class BaseFragment extends Fragment implements OnRefreshListener
         }
     }
 
-    public Boolean isTop() {
+    public boolean isTop() {
         return mListView != null && mListView.getFirstVisiblePosition() == 0;
     }
 

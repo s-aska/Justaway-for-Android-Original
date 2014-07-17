@@ -30,7 +30,7 @@ public class UserListStatusesFragment extends Fragment {
     private ListView mListView;
     private long mListId;
     private ProgressBar mFooter;
-    private Boolean mAutoLoader = false;
+    private boolean mAutoLoader = false;
     private long mMaxId = 0L;
 
     @Override

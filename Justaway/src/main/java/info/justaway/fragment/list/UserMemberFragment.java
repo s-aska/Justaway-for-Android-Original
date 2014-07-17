@@ -23,7 +23,7 @@ public class UserMemberFragment extends Fragment {
     private long mCursor = -1;
     private ListView mListView;
     private ProgressBar mFooter;
-    private Boolean mAutoLoader = false;
+    private boolean mAutoLoader = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
