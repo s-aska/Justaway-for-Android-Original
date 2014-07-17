@@ -13,12 +13,18 @@ import info.justaway.util.MessageUtil;
 import info.justaway.util.ThemeUtil;
 import butterknife.InjectView;
 import butterknife.OnClick;
+import twitter4j.TwitterException;
 
 public class CreateUserListActivity extends Activity {
 
-    @InjectView(R.id.list_name) EditText mListName;
-    @InjectView(R.id.list_description) EditText mListDescription;
-    @InjectView(R.id.privacy_radio_group) RadioGroup mPrivacyRadioGroup;
+    public static final int ERROR_CODE_NAME_BLANK = 403;
+
+    @InjectView(R.id.list_name)
+    EditText mListName;
+    @InjectView(R.id.list_description)
+    EditText mListDescription;
+    @InjectView(R.id.privacy_radio_group)
+    RadioGroup mPrivacyRadioGroup;
 
 
     @Override
@@ -44,15 +50,19 @@ public class CreateUserListActivity extends Activity {
             privacy = true;
         }
 
-        new CreateUserListTask(mListName.getText().toString(), privacy, mListDescription.getText().toString()){
+        new CreateUserListTask(mListName.getText().toString(), privacy, mListDescription.getText().toString()) {
             @Override
-            protected void onPostExecute(Boolean success) {
+            protected void onPostExecute(TwitterException e) {
                 MessageUtil.dismissProgressDialog();
-                if (success) {
+                if (e == null) {
                     MessageUtil.showToast(R.string.toast_create_user_list_success);
                     finish();
                 } else {
-                    MessageUtil.showToast(R.string.toast_create_user_list_failure);
+                    if (e.getStatusCode() == ERROR_CODE_NAME_BLANK) {
+                        MessageUtil.showToast(R.string.toast_create_user_list_failure_name_blank);
+                    } else {
+                        MessageUtil.showToast(R.string.toast_create_user_list_failure);
+                    }
                 }
             }
         }.execute();

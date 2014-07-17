@@ -3,9 +3,10 @@ package info.justaway.task;
 import android.os.AsyncTask;
 
 import info.justaway.model.TwitterManager;
+import twitter4j.TwitterException;
 
 
-public class CreateUserListTask extends AsyncTask<Void, Void, Boolean> {
+public class CreateUserListTask extends AsyncTask<Void, Void, TwitterException> {
 
     private String mListName;
     private boolean mPrivacy;
@@ -18,13 +19,13 @@ public class CreateUserListTask extends AsyncTask<Void, Void, Boolean> {
     }
 
     @Override
-    protected Boolean doInBackground(Void... params) {
+    protected TwitterException doInBackground(Void... params) {
         try {
             TwitterManager.getTwitter().createUserList(mListName, mPrivacy, mListDescription);
-            return true;
-        } catch (Exception e) {
+            return null;
+        } catch (TwitterException e) {
             e.printStackTrace();
-            return false;
+            return e;
         }
     }
 }
