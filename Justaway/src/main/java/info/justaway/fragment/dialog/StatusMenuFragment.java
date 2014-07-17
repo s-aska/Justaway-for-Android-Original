@@ -163,7 +163,7 @@ public class StatusMenuFragment extends DialogFragment {
         final Status retweet = status.getRetweetedStatus();
         final Status source = retweet != null ? retweet : status;
         final UserMentionEntity[] mentions = source.getUserMentionEntities();
-        Boolean isPublic = !source.getUser().isProtected();
+        boolean isPublic = !source.getUser().isProtected();
 
         builder.setTitle(status.getText());
 

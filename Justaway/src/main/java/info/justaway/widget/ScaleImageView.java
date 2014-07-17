@@ -142,7 +142,7 @@ public class ScaleImageView extends ImageView implements OnTouchListener {
         }
 
         cutting();
-        Boolean isChanges = super.setFrame(l, t, r, b);
+        boolean isChanges = super.setFrame(l, t, r, b);
         if (mMinScale != scale) {
             mMinScale = scale;
             isChanges = true;

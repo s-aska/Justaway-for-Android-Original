@@ -38,8 +38,8 @@ public class UserTimelineFragment extends Fragment implements OnRefreshListener 
     private ListView mListView;
     private ProgressBar mFooter;
     private User mUser;
-    private Boolean mAutoLoader = false;
-    private Boolean mReload = false;
+    private boolean mAutoLoader = false;
+    private boolean mReload = false;
     private long mMaxId = 0L;
     private PullToRefreshLayout mPullToRefreshLayout;
 

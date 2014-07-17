@@ -30,7 +30,7 @@ public class FavoritesListFragment extends Fragment {
     private TwitterAdapter mAdapter;
     private ListView mListView;
     private ProgressBar mFooter;
-    private Boolean mAutoLoader = false;
+    private boolean mAutoLoader = false;
     private long mMaxId = 0L;
     private User mUser;
 

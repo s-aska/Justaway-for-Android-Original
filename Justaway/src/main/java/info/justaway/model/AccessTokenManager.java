@@ -21,7 +21,7 @@ public class AccessTokenManager {
                 .getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
     }
 
-    public static Boolean hasAccessToken() {
+    public static boolean hasAccessToken() {
         return getAccessToken() != null;
     }
 
