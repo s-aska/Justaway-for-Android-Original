@@ -220,5 +220,6 @@
     <string name="label_account_setting">Account Setting</string>
     <string name="menu_open_aclog">Open Aclog</string>
     <string name="toast_update_status_not_Follow">you cannot send messages to users who are not following you.</string>
+    <string name="toast_create_user_list_failure_name_blank">A list\'s name can\'t be blank.</string>
 
 </resources>
