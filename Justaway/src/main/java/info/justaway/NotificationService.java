@@ -20,6 +20,7 @@ import info.justaway.event.model.NotificationEvent;
 import info.justaway.model.AccessTokenManager;
 import info.justaway.model.Row;
 import twitter4j.Status;
+import twitter4j.UserMentionEntity;
 
 public class NotificationService extends Service {
 
@@ -190,6 +191,14 @@ public class NotificationService extends Service {
             Intent replyIntent = new Intent(this, PostActivity.class);
             replyIntent.putExtra("inReplyToStatus", status);
             replyIntent.putExtra("notification", true);
+            UserMentionEntity[] mentions = status.getUserMentionEntities();
+            if (status.getUser().getId() == userId && mentions.length == 1) {
+                text = "@" + mentions[0].getScreenName() + " ";
+            } else {
+                text = "@" + status.getUser().getScreenName() + " ";
+            }
+            replyIntent.putExtra("status", text);
+            replyIntent.putExtra("selection", text.length());
             replyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
             RemoteInput remoteInput = new RemoteInput.Builder(EXTRA_VOICE_REPLY)

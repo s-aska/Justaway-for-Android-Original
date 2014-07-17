@@ -238,9 +238,6 @@ public class PostActivity extends FragmentActivity {
                     mInReplyToUserIcon);
 
             mInReplyToStatus.setText(inReplyToStatus.getText());
-            String text = "@" + inReplyToStatus.getUser().getScreenName() + " ";
-            mStatusText.setText(text);
-            mStatusText.setSelection(text.length());
 
             // スクロール可能にするのに必要
             mInReplyToStatus.setMovementMethod(ScrollingMovementMethod.getInstance());
