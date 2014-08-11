@@ -17,9 +17,6 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
         <receiver
             android:name="info.justaway.appwidget.PostWidget"
             android:exported="false"
@@ -32,13 +29,6 @@
                 android:resource="@xml/post_widget"/>
         </receiver>
         <service android:name=".NotificationService" android:exported="false" />
-        <service
-            android:name=".PostListenerService"
-            android:permission="">
-            <intent-filter>
-                <action android:name="com.google.android.gms.wearable.BIND_LISTENER" />
-            </intent-filter>
-        </service>
         <activity
             android:name="info.justaway.MainActivity"
             android:label="@string/app_name"
