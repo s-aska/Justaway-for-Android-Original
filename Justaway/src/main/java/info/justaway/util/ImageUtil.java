@@ -7,35 +7,21 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 import info.justaway.JustawayApplication;
 import info.justaway.ScaleImageActivity;
-import info.justaway.display.FadeInRoundedBitmapDisplayer;
+import info.justaway.display.RoundedTransformation;
 import info.justaway.settings.BasicSettings;
 import twitter4j.Status;
 
 public class ImageUtil {
-    private static DisplayImageOptions sRoundedDisplayImageOptions;
+    private static Picasso sPicasso;
 
     public static void init() {
-        DisplayImageOptions defaultOptions = new DisplayImageOptions
-                .Builder()
-                .cacheInMemory(true)
-                .cacheOnDisc(true)
-                .resetViewBeforeLoading(true)
-                .build();
-
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration
-                .Builder(JustawayApplication.getApplication())
-                .defaultDisplayImageOptions(defaultOptions)
-                .build();
-
-        ImageLoader.getInstance().init(config);
+        sPicasso = Picasso.with(JustawayApplication.getApplication());
     }
 
     public static void displayImage(String url, ImageView view) {
@@ -44,7 +30,7 @@ public class ImageUtil {
             return;
         }
         view.setTag(url);
-        ImageLoader.getInstance().displayImage(url, view);
+        sPicasso.load(url).into(view);
     }
 
     public static void displayRoundedImage(String url, ImageView view) {
@@ -54,17 +40,9 @@ public class ImageUtil {
         }
         view.setTag(url);
         if (BasicSettings.getUserIconRoundedOn()) {
-            if (sRoundedDisplayImageOptions == null) {
-                sRoundedDisplayImageOptions = new DisplayImageOptions.Builder()
-                        .cacheInMemory(true)
-                        .cacheOnDisc(true)
-                        .resetViewBeforeLoading(true)
-                        .displayer(new FadeInRoundedBitmapDisplayer(5))
-                        .build();
-            }
-            ImageLoader.getInstance().displayImage(url, view, sRoundedDisplayImageOptions);
+            sPicasso.load(url).transform(new RoundedTransformation(5, 0)).into(view);
         } else {
-            ImageLoader.getInstance().displayImage(url, view);
+            sPicasso.load(url).into(view);
         }
     }
 

@@ -10,7 +10,7 @@ dependencies {
     compile "org.twitter4j:twitter4j-async:${twitter4jVersion}"
     compile "org.twitter4j:twitter4j-media-support:${twitter4jVersion}"
     compile "org.twitter4j:twitter4j-stream:${twitter4jVersion}"
-    compile "com.nostra13.universalimageloader:universal-image-loader:1.9.1"
+    compile 'com.squareup.picasso:picasso:2.3.4'
     compile "com.jakewharton:butterknife:${butterKnifeVersion}"
     compile "com.viewpagerindicator:library:${viewpagerIndicatorVersion}"
     apt "com.jakewharton:butterknife:${butterKnifeVersion}"
