@@ -25,7 +25,7 @@ public final class ConfirmDialogFragment extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         final String source = getArguments().getString("source");
         final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(String.format(getString(R.string.confirm_destroy_mute), source));
+        builder.setMessage(String.format(getString(R.string.confirm_destroy_mute), source));
         builder.setPositiveButton(
                 R.string.button_yes,
                 new DialogInterface.OnClickListener() {

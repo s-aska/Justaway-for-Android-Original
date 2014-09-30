@@ -131,7 +131,7 @@ public class SettingsActivity extends Activity {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
-            builder.setTitle(R.string.confirm_theme_apply_finish);
+            builder.setMessage(R.string.confirm_theme_apply_finish);
             builder.setPositiveButton(getString(R.string.button_yes),
                     new DialogInterface.OnClickListener() {
                         @Override

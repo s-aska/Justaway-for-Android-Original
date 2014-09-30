@@ -28,7 +28,7 @@ public final class AccountSwitchDialogFragment extends DialogFragment {
         assert accessToken != null;
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(String.format(getString(R.string.confirm_remove_account), accessToken.getScreenName()));
+        builder.setMessage(String.format(getString(R.string.confirm_remove_account), accessToken.getScreenName()));
         builder.setPositiveButton(
                 R.string.button_yes,
                 new DialogInterface.OnClickListener() {
