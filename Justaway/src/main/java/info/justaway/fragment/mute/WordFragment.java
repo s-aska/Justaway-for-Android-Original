@@ -141,7 +141,7 @@ public class WordFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     new AlertDialog.Builder(getActivity())
-                            .setTitle(String.format(getString(R.string.confirm_destroy_mute), word))
+                            .setMessage(String.format(getString(R.string.confirm_destroy_mute), word))
                             .setPositiveButton(
                                     R.string.button_yes,
                                     new DialogInterface.OnClickListener() {

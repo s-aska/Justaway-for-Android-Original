@@ -163,7 +163,7 @@ public class ProfileActivity extends FragmentActivity implements
                 break;
             case R.id.report_spam:
                 new AlertDialog.Builder(ProfileActivity.this)
-                        .setTitle(R.string.confirm_report_spam)
+                        .setMessage(R.string.confirm_report_spam)
                         .setPositiveButton(
                                 R.string.button_report_spam,
                                 new DialogInterface.OnClickListener() {
@@ -187,7 +187,7 @@ public class ProfileActivity extends FragmentActivity implements
                 break;
             case R.id.create_block:
                 new AlertDialog.Builder(ProfileActivity.this)
-                        .setTitle(R.string.confirm_create_block)
+                        .setMessage(R.string.confirm_create_block)
                         .setPositiveButton(
                                 R.string.button_create_block,
                                 new DialogInterface.OnClickListener() {

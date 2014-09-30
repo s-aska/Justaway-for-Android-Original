@@ -538,7 +538,7 @@ public class StatusMenuFragment extends DialogFragment {
             @Override
             public void run() {
                 new AlertDialog.Builder(getActivity())
-                        .setTitle(String.format(getString(R.string.context_create_mute), StatusUtil.getClientName(source.getSource())))
+                        .setMessage(String.format(getString(R.string.context_create_mute), StatusUtil.getClientName(source.getSource())))
                         .setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
@@ -565,7 +565,7 @@ public class StatusMenuFragment extends DialogFragment {
                 @Override
                 public void run() {
                     new AlertDialog.Builder(getActivity())
-                            .setTitle(String.format(getString(R.string.context_create_mute), "#".concat(hashtag.getText())))
+                            .setMessage(String.format(getString(R.string.context_create_mute), "#".concat(hashtag.getText())))
                             .setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
@@ -592,7 +592,7 @@ public class StatusMenuFragment extends DialogFragment {
             @Override
             public void run() {
                 new AlertDialog.Builder(getActivity())
-                        .setTitle(String.format(getString(R.string.context_create_mute), "@".concat(source.getUser().getScreenName())))
+                        .setMessage(String.format(getString(R.string.context_create_mute), "@".concat(source.getUser().getScreenName())))
                         .setPositiveButton(R.string.button_ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {

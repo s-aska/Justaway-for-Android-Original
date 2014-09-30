@@ -45,7 +45,7 @@ public class UpdateProfileImageFragment extends DialogFragment {
 
         Builder builder = new Builder(getActivity());
 
-        builder.setTitle(R.string.confirm_update_profile_image);
+        builder.setMessage(R.string.confirm_update_profile_image);
 
         // LinearLayoutを被せないとサイズを調整できない
         LinearLayout layout = new LinearLayout(getActivity());

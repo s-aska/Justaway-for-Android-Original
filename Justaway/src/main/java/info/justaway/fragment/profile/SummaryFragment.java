@@ -102,7 +102,7 @@ public class SummaryFragment extends Fragment {
                     startActivity(intent);
                 } else if (mFollowFlg) {
                     new AlertDialog.Builder(getActivity())
-                            .setTitle(R.string.confirm_unfollow)
+                            .setMessage(R.string.confirm_unfollow)
                             .setPositiveButton(
                                     R.string.button_unfollow,
                                     new DialogInterface.OnClickListener() {
@@ -140,7 +140,7 @@ public class SummaryFragment extends Fragment {
                 } else if (mBlocking) {
                     // TODO:
                     new AlertDialog.Builder(getActivity())
-                            .setTitle(R.string.confirm_destroy_block)
+                            .setMessage(R.string.confirm_destroy_block)
                             .setPositiveButton(
                                     R.string.button_destroy_block,
                                     new DialogInterface.OnClickListener() {
@@ -177,7 +177,7 @@ public class SummaryFragment extends Fragment {
                             .show();
                 } else {
                     new AlertDialog.Builder(getActivity())
-                            .setTitle(R.string.confirm_follow)
+                            .setMessage(R.string.confirm_follow)
                             .setPositiveButton(
                                     R.string.button_follow,
                                     new DialogInterface.OnClickListener() {

@@ -586,7 +586,7 @@ public class PostActivity extends FragmentActivity {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             if (mStatusText.getText() != null && mStatusText.getText().length() != 0) {
                 new AlertDialog.Builder(PostActivity.this)
-                        .setTitle(R.string.confirm_save_draft)
+                        .setMessage(R.string.confirm_save_draft)
                         .setPositiveButton(
                                 R.string.button_save,
                                 new DialogInterface.OnClickListener() {

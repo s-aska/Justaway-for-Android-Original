@@ -28,7 +28,7 @@ public class StreamingSwitchDialogFragment extends DialogFragment {
         final boolean turnOn = getArguments().getBoolean("turnOn");
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(turnOn ? R.string.confirm_create_streaming : R.string.confirm_destroy_streaming);
+        builder.setMessage(turnOn ? R.string.confirm_create_streaming : R.string.confirm_destroy_streaming);
         builder.setPositiveButton(getString(R.string.button_ok),
                 new DialogInterface.OnClickListener() {
                     @Override
