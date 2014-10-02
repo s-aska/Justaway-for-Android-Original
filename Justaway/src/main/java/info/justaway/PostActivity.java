@@ -73,6 +73,7 @@ public class PostActivity extends FragmentActivity {
     private static final int OPTION_MENU_GROUP_TWICCA = 1;
     private static final int ERROR_CODE_DUPLICATE_STATUS = 187;
     private static final int ERROR_CODE_NOT_FOLLOW_DM = 150;
+    private static final int MAX_IMAGE = 4;
 
     private Activity mContext;
     private Long mInReplyToStatusId;
@@ -98,7 +99,8 @@ public class PostActivity extends FragmentActivity {
     @InjectView(R.id.draft_button) Button mDraftButton;
     @InjectView(R.id.hashtag_button) Button mHashtagButton;
     @InjectView(R.id.count) TextView mCount;
-
+    @InjectView(R.id.image_preview_container)
+    ViewGroup mImagePreviewContainer;
 
     class ActionBarHolder {
 
@@ -303,15 +305,9 @@ public class PostActivity extends FragmentActivity {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 updateCount(s.toString());
                 if (s.toString().startsWith("D ")) {
-                    mImgPath = null;
-                    ThemeUtil.setThemeTextColor(mImgButton, R.attr.menu_text_color_disabled);
+                    mImagePreviewContainer.removeAllViews();
                     mImgButton.setEnabled(false);
                 } else {
-                    if (mImgPath == null) {
-                        ThemeUtil.setThemeTextColor(mImgButton, R.attr.menu_text_color);
-                    } else {
-                        ThemeUtil.setThemeTextColor(mImgButton, R.attr.holo_blue);
-                    }
                     mImgButton.setEnabled(true);
                 }
             }
@@ -438,11 +434,12 @@ public class PostActivity extends FragmentActivity {
             if (mInReplyToStatusId != null) {
                 statusUpdate.setInReplyToStatusId(mInReplyToStatusId);
             }
-            if (mImgPath != null) {
-                statusUpdate.setMedia(mImgPath);
-            }
 
-            UpdateStatusTask task = new UpdateStatusTask((AccessToken) mSwitchAccountSpinner.getSelectedItem()) {
+            ArrayList<File> mImagePathList = new ArrayList<>();
+            for (int i = 0; mImagePreviewContainer.getChildCount() > i; i++) {
+                mImagePathList.add((File) mImagePreviewContainer.getChildAt(i).getTag());
+            }
+            UpdateStatusTask task = new UpdateStatusTask((AccessToken) mSwitchAccountSpinner.getSelectedItem(), mImagePathList) {
                 @Override
                 protected void onPostExecute(TwitterException e) {
                     MessageUtil.dismissProgressDialog();
@@ -451,9 +448,8 @@ public class PostActivity extends FragmentActivity {
                         if (!mWidgetMode) {
                             finish();
                         } else {
-                            mImgPath = null;
+                            mImagePreviewContainer.removeAllViews();
                             mTweetButton.setEnabled(false);
-                            ThemeUtil.setThemeTextColor(mImgButton, R.attr.menu_text_color);
                         }
                     } else if (e.getErrorCode() == ERROR_CODE_DUPLICATE_STATUS) {
                         MessageUtil.showToast(getString(R.string.toast_update_status_already));
@@ -485,7 +481,6 @@ public class PostActivity extends FragmentActivity {
         mImgPath = (File) imagePath;
 
         if (mImgPath != null && mImgPath.exists()) {
-            ThemeUtil.setThemeTextColor(mImgButton, R.attr.holo_blue);
             mTweetButton.setEnabled(true);
         }
     }
@@ -547,9 +542,29 @@ public class PostActivity extends FragmentActivity {
     private void setImage(Uri uri) {
         try {
             InputStream inputStream = getContentResolver().openInputStream(uri);
-            mImgPath = FileUtil.writeToTempFile(getCacheDir(), inputStream);
+            ImageView imageView = (ImageView) getLayoutInflater().inflate(R.layout.image_preview, null);
+            imageView.setTag(FileUtil.writeToTempFile(getCacheDir(), inputStream));
+
+            imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mImagePreviewContainer.removeView(v);
+                    mImgButton.setEnabled(true);
+
+                    if (mImagePreviewContainer.getChildCount() == 0) {
+                        mImagePreviewContainer.removeAllViews();
+                        mTweetButton.setEnabled(false);
+                    }
+                }
+            });
+            imageView.setImageURI(uri);
+            mImagePreviewContainer.addView(imageView);
+
+            if (mImagePreviewContainer.getChildCount() >= MAX_IMAGE) {
+                mImgButton.setEnabled(false);
+                return;
+            }
             MessageUtil.showToast(R.string.toast_set_image_success);
-            ThemeUtil.setThemeTextColor(mImgButton, R.attr.holo_blue);
             mTweetButton.setEnabled(true);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -571,7 +586,7 @@ public class PostActivity extends FragmentActivity {
 
         if (length < 0 || length == 140) {
             // 文字数が0文字または140文字以上の時はボタンを無効
-            if (mImgPath != null) {
+            if (mImagePreviewContainer.getChildCount() > 0) {
                 mTweetButton.setEnabled(true);
             } else {
                 mTweetButton.setEnabled(false);

@@ -68,19 +68,32 @@
             android:layout_marginLeft="8dp"
             android:paddingBottom="12dp"/>
 
-        <EditText
-            android:id="@+id/status_text"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:gravity="top|left"
-            android:inputType="textMultiLine"/>
+            android:layout_weight="1">
+
+            <EditText
+                android:id="@+id/status_text"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="top|left"
+                android:inputType="textMultiLine" />
+
+            <LinearLayout
+                android:id="@+id/image_preview_container"
+                android:layout_alignParentBottom="true"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:layout_margin="16dp"
+                android:orientation="horizontal"/>
+        </RelativeLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:background="@android:color/background_dark"
-            android:background="?attr/menu_background">
+            android:background="?attr/menu_background"
+            tools:background="@android:color/background_dark">
 
             <LinearLayout
                 android:layout_width="wrap_content"
