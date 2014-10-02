@@ -714,7 +714,7 @@ public class MainActivity extends FragmentActivity {
                     mInReplyToStatus = null;
                 }
 
-                UpdateStatusTask task = new UpdateStatusTask(null) {
+                UpdateStatusTask task = new UpdateStatusTask(null, null) {
                     @Override
                     protected void onPostExecute(TwitterException e) {
                         MessageUtil.dismissProgressDialog();
