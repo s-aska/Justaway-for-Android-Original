@@ -235,11 +235,11 @@ public class ProfileActivity extends FragmentActivity implements
             MessageUtil.showToast(R.string.toast_load_data_failure);
             return;
         }
-        mFavouritesCount.setText(getString(R.string.label_favourites, mUser.getFavouritesCount()));
-        mStatusesCount.setText(getString(R.string.label_tweets, mUser.getStatusesCount()));
-        mFriendsCount.setText(getString(R.string.label_following, mUser.getFriendsCount()));
-        mFollowersCount.setText(getString(R.string.label_followers, mUser.getFollowersCount()));
-        mListedCount.setText(getString(R.string.label_listed, mUser.getListedCount()));
+        mFavouritesCount.setText(getString(R.string.label_favourites, String.format("%1$,3d", mUser.getFavouritesCount())));
+        mStatusesCount.setText(getString(R.string.label_tweets, String.format("%1$,3d", mUser.getStatusesCount())));
+        mFriendsCount.setText(getString(R.string.label_following, String.format("%1$,3d", mUser.getFriendsCount())));
+        mFollowersCount.setText(getString(R.string.label_followers, String.format("%1$,3d", mUser.getFollowersCount())));
+        mListedCount.setText(getString(R.string.label_listed, String.format("%1$,3d", mUser.getListedCount())));
 
         String bannerUrl = mUser.getProfileBannerMobileRetinaURL();
         if (bannerUrl != null) {
