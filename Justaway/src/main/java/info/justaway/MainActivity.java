@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.text.Editable;
@@ -353,16 +354,15 @@ public class MainActivity extends FragmentActivity {
      * moveTaskToBackはホームボタンを押した時と同じ動き
      */
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (mQuickTweetEdit.getText() != null && mQuickTweetEdit.getText().length() > 0) {
-                mQuickTweetEdit.setText("");
-                mInReplyToStatus = null;
-                return false;
-            }
+    public void onBackPressed() {
+        if (mQuickTweetEdit.getText() != null && mQuickTweetEdit.getText().length() > 0) {
+            mQuickTweetEdit.setText("");
+            mInReplyToStatus = null;
+        } else if (mDrawerLayout.isDrawerVisible(GravityCompat.START)) {
+            mDrawerLayout.closeDrawers();
+        } else {
             finish();
         }
-        return false;
     }
 
     @Override
