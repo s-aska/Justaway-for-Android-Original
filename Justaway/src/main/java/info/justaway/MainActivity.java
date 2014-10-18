@@ -50,6 +50,7 @@ import info.justaway.event.action.GoToTopEvent;
 import info.justaway.event.action.OpenEditorEvent;
 import info.justaway.event.action.PostAccountChangeEvent;
 import info.justaway.event.connection.StreamingConnectionEvent;
+import info.justaway.event.settings.BasicSettingsChangeEvent;
 import info.justaway.fragment.main.StreamingSwitchDialogFragment;
 import info.justaway.fragment.main.tab.BaseFragment;
 import info.justaway.fragment.main.tab.DirectMessagesFragment;
@@ -308,6 +309,7 @@ public class MainActivity extends FragmentActivity {
 
         BasicSettings.init();
         BasicSettings.resetNotification();
+        EventBus.getDefault().post(new BasicSettingsChangeEvent());
 
         new Handler().postDelayed(new Runnable() {
             @Override

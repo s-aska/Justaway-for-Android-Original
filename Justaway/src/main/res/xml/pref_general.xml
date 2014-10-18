@@ -5,6 +5,12 @@
         android:title="@string/pref_title_keep_screen_on"
         android:defaultValue="true"/>
 
+    <CheckBoxPreference
+        android:key="fast_scroll_on"
+        android:title="@string/pref_title_fast_scroll_on"
+        android:summary="@string/pref_description_fast_scroll_on"
+        android:defaultValue="true"/>
+
     <ListPreference
         android:key="font_size"
         android:title="@string/pref_title_font_size"

@@ -2,6 +2,8 @@
     <string name="title_activity_settings">Settings</string>
 
     <string name="pref_title_keep_screen_on">Keep screen</string>
+    <string name="pref_title_fast_scroll_on">Fast scroll</string>
+    <string name="pref_description_fast_scroll_on">Display scroll thumb</string>
 
     <string name="pref_title_font_size">Font size</string>
     <string-array name="pref_font_size_titles">

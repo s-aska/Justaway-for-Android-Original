@@ -22,9 +22,11 @@ import info.justaway.event.action.PostAccountChangeEvent;
 import info.justaway.event.action.StatusActionEvent;
 import info.justaway.event.model.StreamingCreateStatusEvent;
 import info.justaway.event.model.StreamingDestroyStatusEvent;
+import info.justaway.event.settings.BasicSettingsChangeEvent;
 import info.justaway.listener.StatusClickListener;
 import info.justaway.listener.StatusLongClickListener;
 import info.justaway.model.Row;
+import info.justaway.settings.BasicSettings;
 import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
 import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout;
 import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
@@ -70,7 +72,7 @@ public abstract class BaseFragment extends Fragment implements OnRefreshListener
         mListView.setOnItemLongClickListener(new StatusLongClickListener(getActivity()));
         mListView.setOnScrollListener(mOnScrollListener);
         mFooter.setVisibility(View.GONE);
-        mListView.setFastScrollEnabled(true);
+        mListView.setFastScrollEnabled(BasicSettings.getFastScrollOn());
 
         return v;
     }
@@ -276,6 +278,15 @@ public abstract class BaseFragment extends Fragment implements OnRefreshListener
      * !!! EventBus !!!
      *
      */
+
+
+    /**
+     * 高速スクロールの設定が変わったら切り替える
+     */
+    @SuppressWarnings("UnusedDeclaration")
+    public void onEventMainThread(BasicSettingsChangeEvent event) {
+        mListView.setFastScrollEnabled(BasicSettings.getFastScrollOn());
+    }
 
     @SuppressWarnings("UnusedDeclaration")
     public void onEventMainThread(StatusActionEvent event) {

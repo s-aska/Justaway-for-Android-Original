@@ -14,6 +14,7 @@ public class BasicSettings {
     private static String mThemeName;
     private static boolean mUserIconRounded;
     private static boolean mDisplayThumbnail;
+    private static boolean mFastScroll;
     private static String mUserIconSize;
     private static int mPageCount;
 
@@ -66,6 +67,7 @@ public class BasicSettings {
         mDisplayThumbnail = preferences.getBoolean("display_thumbnail_on", true);
         mPageCount = Integer.parseInt(preferences.getString("page_count", "200"));
         mStreamingMode = getSharedPreferences().getBoolean(STREAMING_MODE, true);
+        mFastScroll = preferences.getBoolean("fast_scroll_on", true);
     }
 
     public static void resetNotification() {
@@ -102,5 +104,9 @@ public class BasicSettings {
 
     public static int getPageCount() {
         return mPageCount;
+    }
+
+    public static boolean getFastScrollOn() {
+        return mFastScroll;
     }
 }
