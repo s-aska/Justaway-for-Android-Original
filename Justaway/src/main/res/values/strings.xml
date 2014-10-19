@@ -2,6 +2,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <string name="android_package_name" translatable="false">info.justaway</string>
+    <string name="app_name" translatable="false">Justaway</string>
     <string name="button_add">Add</string>
     <string name="button_apply">Apply</string>
     <string name="button_blocking">Blocked</string>
