@@ -43,7 +43,7 @@
         android:title="@string/pref_title_notification">
         <intent
             android:action="android.intent.action.MAIN"
-            android:targetPackage="info.justaway"
+            android:targetPackage="@string/android_package_name"
             android:targetClass="info.justaway.NotificationSettingsActivity"/>
     </PreferenceScreen>
 
@@ -51,8 +51,7 @@
         android:key="mute"
         android:title="@string/pref_title_mute">
         <intent
-            android:action="android.intent.action.MAIN"
-            android:targetPackage="info.justaway"
+            android:targetPackage="@string/android_package_name"
             android:targetClass="info.justaway.MuteActivity"/>
     </PreferenceScreen>
 
@@ -61,7 +60,7 @@
         android:title="@string/pref_title_performance">
         <intent
             android:action="android.intent.action.MAIN"
-            android:targetPackage="info.justaway"
+            android:targetPackage="@string/android_package_name"
             android:targetClass="info.justaway.PerformanceActivity"/>
     </PreferenceScreen>
 
