@@ -28,8 +28,8 @@ android {
         minSdkVersion 14
         targetSdkVersion 20
 
-        versionCode 39
-        versionName '1.0.38'
+        versionCode 47
+        versionName '1.0.46'
         applicationId "info.justaway"
     }
 
