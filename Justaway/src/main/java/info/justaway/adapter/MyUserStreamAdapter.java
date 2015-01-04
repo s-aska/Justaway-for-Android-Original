@@ -116,6 +116,7 @@ public class MyUserStreamAdapter extends UserStreamAdapter {
         // 自分の fav を反映
         if (source.getId() == AccessTokenManager.getUserId()) {
             FavRetweetManager.setFav(status.getId());
+            EventBus.getDefault().post(new StreamingCreateFavoriteEvent(Row.newFavorite(source, target, status)));
             return;
         }
         Row row = Row.newFavorite(source, target, status);
@@ -155,7 +156,6 @@ public class MyUserStreamAdapter extends UserStreamAdapter {
         // 自分の unfav を反映
         if (arg0.getId() == AccessTokenManager.getUserId()) {
             FavRetweetManager.removeFav(arg2.getId());
-            return;
         }
         if (mPause) {
             mStreamingUnFavoriteEvents.add(new StreamingUnFavoriteEvent(arg0, arg2));

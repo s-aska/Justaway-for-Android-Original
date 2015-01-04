@@ -148,6 +148,10 @@ public class TabSettingsActivity extends FragmentActivity {
         if (directMessagesMenuItem != null) {
             directMessagesMenuItem.setVisible(!mAdapter.hasTabId(TabManager.DIRECT_MESSAGES_TAB_ID));
         }
+        MenuItem favoritesMenuItem = menu.findItem(R.id.menu_add_favorites_tab);
+        if (favoritesMenuItem != null) {
+            favoritesMenuItem.setVisible(!mAdapter.hasTabId(TabManager.FAVORITES_TAB_ID));
+        }
         return true;
     }
 
@@ -165,6 +169,9 @@ public class TabSettingsActivity extends FragmentActivity {
                 break;
             case R.id.menu_add_direct_messages_tab:
                 mAdapter.insert(new TabManager.Tab(TabManager.DIRECT_MESSAGES_TAB_ID), 0);
+                break;
+            case R.id.menu_add_favorites_tab:
+                mAdapter.insert(new TabManager.Tab(TabManager.FAVORITES_TAB_ID), 0);
                 break;
             case R.id.menu_user_list_tab:
                 TabManager.saveTabs(mAdapter.getTabs());
@@ -207,7 +214,7 @@ public class TabSettingsActivity extends FragmentActivity {
             }
         }
 
-        private ArrayList<TabManager.Tab> mTabs = new ArrayList<TabManager.Tab>();
+        private ArrayList<TabManager.Tab> mTabs = new ArrayList<>();
         private LayoutInflater mInflater;
         private int mLayout;
         private TabManager.Tab mCurrentTab;

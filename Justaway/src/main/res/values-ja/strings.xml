@@ -84,6 +84,7 @@
     <string name="menu_account_setting">アカウント</string>
     <string name="menu_add_account">アカウント追加</string>
     <string name="menu_add_direct_messages_tab">DMを追加</string>
+    <string name="menu_add_favorites_tab">お気に入りを追加</string>
     <string name="menu_add_home_tab">Homeを追加</string>
     <string name="menu_add_interactions_tab">リプ・通知を追加</string>
     <string name="menu_add_to_list">リストに登録</string>
@@ -131,6 +132,7 @@
     <string name="title_create_mute_word">ワードを入力して下さい</string>
     <string name="title_create_user_list">リストを作成</string>
     <string name="title_direct_messages">DM</string>
+    <string name="title_favorites">お気に入り</string>
     <string name="title_edit_profile">プロフィール編集</string>
     <string name="title_interactions">リプ・通知</string>
     <string name="title_main">Home</string>

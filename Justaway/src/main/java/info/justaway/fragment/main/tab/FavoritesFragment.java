@@ -9,21 +9,20 @@ import info.justaway.model.Row;
 import info.justaway.model.TabManager;
 import info.justaway.model.TwitterManager;
 import info.justaway.settings.BasicSettings;
-import info.justaway.util.StatusUtil;
 import twitter4j.Paging;
 import twitter4j.ResponseList;
 import twitter4j.Status;
 
 /**
- * 将来「つながり」タブ予定のタブ、現在はリプしか表示されない
+ * お気に入りタブ
  */
-public class InteractionsFragment extends BaseFragment {
+public class FavoritesFragment extends BaseFragment {
 
     /**
      * このタブを表す固有のID、ユーザーリストで正数を使うため負数を使う
      */
     public long getTabId() {
-        return TabManager.INTERACTIONS_TAB_ID;
+        return TabManager.FAVORITES_TAB_ID;
     }
 
     /**
@@ -34,37 +33,15 @@ public class InteractionsFragment extends BaseFragment {
      */
     @Override
     protected boolean isSkip(Row row) {
-        if (row.isFavorite()) {
-            return row.getSource().getId() == AccessTokenManager.getUserId();
-        }
-        if (row.isStatus()) {
-
-            Status status = row.getStatus();
-            Status retweet = status.getRetweetedStatus();
-
-            /**
-             * 自分のツイートがRTされた時
-             */
-            if (retweet != null && retweet.getUser().getId() == AccessTokenManager.getUserId()) {
-                return false;
-            }
-
-            /**
-             * 自分宛のメンション（但し「自分をメンションに含むツイートがRTされた時」はうざいので除く）
-             */
-            if (retweet == null && StatusUtil.isMentionForMe(status)) {
-                return false;
-            }
-        }
-        return true;
+        return !row.isFavorite() || row.getSource().getId() != AccessTokenManager.getUserId();
     }
 
     @Override
     protected void taskExecute() {
-        new MentionsTimelineTask().execute();
+        new FavoritesTask().execute();
     }
 
-    private class MentionsTimelineTask extends AsyncTask<Void, Void, ResponseList<Status>> {
+    private class FavoritesTask extends AsyncTask<Void, Void, ResponseList<Status>> {
         @Override
         protected ResponseList<twitter4j.Status> doInBackground(Void... params) {
             try {
@@ -73,7 +50,7 @@ public class InteractionsFragment extends BaseFragment {
                     paging.setMaxId(mMaxId - 1);
                     paging.setCount(BasicSettings.getPageCount());
                 }
-                return TwitterManager.getTwitter().getMentionsTimeline(paging);
+                return TwitterManager.getTwitter().getFavorites(paging);
             } catch (OutOfMemoryError e) {
                 return null;
             } catch (Exception e) {

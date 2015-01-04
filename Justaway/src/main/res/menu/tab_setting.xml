@@ -19,6 +19,12 @@
         android:title="@string/menu_add_direct_messages_tab"/>
 
     <item
+        android:id="@+id/menu_add_favorites_tab"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/menu_add_favorites_tab"/>
+
+    <item
         android:id="@+id/menu_user_list_tab"
         android:orderInCategory="100"
         android:showAsAction="never"

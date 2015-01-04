@@ -86,7 +86,8 @@
     <string name="label_word">Keyword</string>
     <string name="menu_account_setting">Accounts</string>
     <string name="menu_add_account">Add account</string>
-    <string name="menu_add_direct_messages_tab">Add Direct Messages tab</string>
+    <string name="menu_add_direct_messages_tab">Add Messages tab</string>
+    <string name="menu_add_favorites_tab">Add Favorites tab</string>
     <string name="menu_add_home_tab">Add Home tab</string>
     <string name="menu_add_interactions_tab">Add Interactions tab</string>
     <string name="menu_add_to_list">Add to list</string>
@@ -136,7 +137,8 @@
     <string name="title_choose_user_lists">Select the list to display</string>
     <string name="title_create_mute_word">Enter the keyword</string>
     <string name="title_create_user_list">Create user list</string>
-    <string name="title_direct_messages">Direct message</string>
+    <string name="title_direct_messages">Messages</string>
+    <string name="title_favorites">Favorites</string>
     <string name="title_edit_profile">Edit Profile</string>
     <string name="title_interactions">Reply and notification</string>
     <string name="title_main">Home</string>

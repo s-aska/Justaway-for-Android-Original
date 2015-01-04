@@ -15,8 +15,9 @@ public class TabManager {
     public static final long TIMELINE_TAB_ID = -1L;
     public static final long INTERACTIONS_TAB_ID = -2L;
     public static final long DIRECT_MESSAGES_TAB_ID = -3L;
+    public static final long FAVORITES_TAB_ID = -4L;
     private static final String TABS = "tabs-";
-    private static ArrayList<Tab> sTabs = new ArrayList<Tab>();
+    private static ArrayList<Tab> sTabs = new ArrayList<>();
 
     private static SharedPreferences getSharedPreferences() {
         return JustawayApplication.getApplication()
@@ -46,15 +47,16 @@ public class TabManager {
         SharedPreferences.Editor editor = getSharedPreferences().edit();
         editor.remove(TABS.concat(String.valueOf(AccessTokenManager.getUserId())));
         editor.putString(TABS.concat(String.valueOf(AccessTokenManager.getUserId())).concat("/v2"), json);
-        editor.commit();
+        editor.apply();
         sTabs = tabs;
     }
 
     public static ArrayList<Tab> generalTabs() {
-        ArrayList<Tab> tabs = new ArrayList<Tab>();
+        ArrayList<Tab> tabs = new ArrayList<>();
         tabs.add(new Tab(TIMELINE_TAB_ID));
         tabs.add(new Tab(INTERACTIONS_TAB_ID));
         tabs.add(new Tab(DIRECT_MESSAGES_TAB_ID));
+        tabs.add(new Tab(FAVORITES_TAB_ID));
         return tabs;
     }
 
@@ -86,6 +88,8 @@ public class TabManager {
                 return JustawayApplication.getApplication().getString(R.string.title_interactions);
             } else if (id == DIRECT_MESSAGES_TAB_ID) {
                 return JustawayApplication.getApplication().getString(R.string.title_direct_messages);
+            } else if (id == FAVORITES_TAB_ID) {
+                return JustawayApplication.getApplication().getString(R.string.title_favorites);
             } else {
                 return name;
             }
@@ -98,6 +102,8 @@ public class TabManager {
                 return R.string.fontello_at;
             } else if (id == DIRECT_MESSAGES_TAB_ID) {
                 return R.string.fontello_mail;
+            } else if (id == FAVORITES_TAB_ID) {
+                return R.string.fontello_star;
             } else {
                 return R.string.fontello_list;
             }

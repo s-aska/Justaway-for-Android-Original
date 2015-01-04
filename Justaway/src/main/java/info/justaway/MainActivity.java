@@ -54,6 +54,7 @@ import info.justaway.event.settings.BasicSettingsChangeEvent;
 import info.justaway.fragment.main.StreamingSwitchDialogFragment;
 import info.justaway.fragment.main.tab.BaseFragment;
 import info.justaway.fragment.main.tab.DirectMessagesFragment;
+import info.justaway.fragment.main.tab.FavoritesFragment;
 import info.justaway.fragment.main.tab.InteractionsFragment;
 import info.justaway.fragment.main.tab.TimelineFragment;
 import info.justaway.fragment.main.tab.UserListFragment;
@@ -528,6 +529,8 @@ public class MainActivity extends FragmentActivity {
                     mMainPagerAdapter.addTab(InteractionsFragment.class, null, tab.getName(), tab.id);
                 } else if (tab.id == TabManager.DIRECT_MESSAGES_TAB_ID) {
                     mMainPagerAdapter.addTab(DirectMessagesFragment.class, null, tab.getName(), tab.id);
+                } else if (tab.id == TabManager.FAVORITES_TAB_ID) {
+                    mMainPagerAdapter.addTab(FavoritesFragment.class, null, tab.getName(), tab.id);
                 } else {
                     Bundle args = new Bundle();
                     args.putLong("userListId", tab.id);
