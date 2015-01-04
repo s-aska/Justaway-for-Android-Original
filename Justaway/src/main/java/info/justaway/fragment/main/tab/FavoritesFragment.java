@@ -5,6 +5,7 @@ import android.view.View;
 
 import info.justaway.event.model.StreamingCreateFavoriteEvent;
 import info.justaway.model.AccessTokenManager;
+import info.justaway.model.FavRetweetManager;
 import info.justaway.model.Row;
 import info.justaway.model.TabManager;
 import info.justaway.model.TwitterManager;
@@ -71,6 +72,7 @@ public class FavoritesFragment extends BaseFragment {
             if (mReloading) {
                 clear();
                 for (twitter4j.Status status : statuses) {
+                    FavRetweetManager.setFav(status.getId());
                     if (mMaxId <= 0L || mMaxId > status.getId()) {
                         mMaxId = status.getId();
                     }
@@ -80,6 +82,7 @@ public class FavoritesFragment extends BaseFragment {
                 mPullToRefreshLayout.setRefreshComplete();
             } else {
                 for (twitter4j.Status status : statuses) {
+                    FavRetweetManager.setFav(status.getId());
                     if (mMaxId <= 0L || mMaxId > status.getId()) {
                         mMaxId = status.getId();
                     }

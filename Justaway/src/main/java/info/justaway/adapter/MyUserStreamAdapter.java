@@ -6,7 +6,6 @@ import android.os.Handler;
 import java.util.ArrayList;
 
 import de.greenrobot.event.EventBus;
-import info.justaway.JustawayApplication;
 import info.justaway.event.model.StreamingCreateFavoriteEvent;
 import info.justaway.event.model.StreamingCreateStatusEvent;
 import info.justaway.event.model.StreamingDestroyMessageEvent;
@@ -28,11 +27,11 @@ public class MyUserStreamAdapter extends UserStreamAdapter {
 
     private boolean mStopped;
     private boolean mPause;
-    private ArrayList<StreamingCreateStatusEvent> mStreamingCreateStatusEvents = new ArrayList<StreamingCreateStatusEvent>();
-    private ArrayList<StreamingDestroyStatusEvent> mStreamingDestroyStatusEvents = new ArrayList<StreamingDestroyStatusEvent>();
-    private ArrayList<StreamingCreateFavoriteEvent> mStreamingCreateFavoriteEvents = new ArrayList<StreamingCreateFavoriteEvent>();
-    private ArrayList<StreamingUnFavoriteEvent> mStreamingUnFavoriteEvents = new ArrayList<StreamingUnFavoriteEvent>();
-    private ArrayList<StreamingDestroyMessageEvent> mStreamingDestroyMessageEvents = new ArrayList<StreamingDestroyMessageEvent>();
+    private ArrayList<StreamingCreateStatusEvent> mStreamingCreateStatusEvents = new ArrayList<>();
+    private ArrayList<StreamingDestroyStatusEvent> mStreamingDestroyStatusEvents = new ArrayList<>();
+    private ArrayList<StreamingCreateFavoriteEvent> mStreamingCreateFavoriteEvents = new ArrayList<>();
+    private ArrayList<StreamingUnFavoriteEvent> mStreamingUnFavoriteEvents = new ArrayList<>();
+    private ArrayList<StreamingDestroyMessageEvent> mStreamingDestroyMessageEvents = new ArrayList<>();
 
     public void stop() {
         mStopped = true;
@@ -113,13 +112,13 @@ public class MyUserStreamAdapter extends UserStreamAdapter {
         if (mStopped) {
             return;
         }
+        Row row = Row.newFavorite(source, target, status);
         // 自分の fav を反映
         if (source.getId() == AccessTokenManager.getUserId()) {
             FavRetweetManager.setFav(status.getId());
-            EventBus.getDefault().post(new StreamingCreateFavoriteEvent(Row.newFavorite(source, target, status)));
+            EventBus.getDefault().post(new StreamingCreateFavoriteEvent(row));
             return;
         }
-        Row row = Row.newFavorite(source, target, status);
         EventBus.getDefault().post(new NotificationEvent(row));
         new AsyncTask<Row, Void, twitter4j.Status>(){
             private Row mRow;
