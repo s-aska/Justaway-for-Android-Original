@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 import android.view.View;
 
 import info.justaway.event.model.StreamingCreateFavoriteEvent;
+import info.justaway.event.model.StreamingUnFavoriteEvent;
 import info.justaway.model.AccessTokenManager;
 import info.justaway.model.Row;
 import info.justaway.model.TabManager;
@@ -120,5 +121,21 @@ public class InteractionsFragment extends BaseFragment {
      */
     public void onEventMainThread(StreamingCreateFavoriteEvent event) {
         addStack(event.getRow());
+    }
+
+    /**
+     * ストリーミングAPIからあんふぁぼイベントを受信
+     * @param event ツイート
+     */
+    public void onEventMainThread(StreamingUnFavoriteEvent event) {
+        int removePosition = mAdapter.removeStatus(event.getStatus().getId());
+        if (removePosition >= 0) {
+            int visiblePosition = mListView.getFirstVisiblePosition();
+            if (visiblePosition > removePosition) {
+                View view = mListView.getChildAt(0);
+                int y = view != null ? view.getTop() : 0;
+                mListView.setSelectionFromTop(visiblePosition - 1, y);
+            }
+        }
     }
 }

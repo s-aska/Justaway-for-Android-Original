@@ -25,6 +25,7 @@ import info.justaway.event.model.StreamingDestroyStatusEvent;
 import info.justaway.event.settings.BasicSettingsChangeEvent;
 import info.justaway.listener.StatusClickListener;
 import info.justaway.listener.StatusLongClickListener;
+import info.justaway.model.AccessTokenManager;
 import info.justaway.model.Row;
 import info.justaway.settings.BasicSettings;
 import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
@@ -175,15 +176,27 @@ public abstract class BaseFragment extends Fragment implements OnRefreshListener
 
             // 要素を上に追加（ addだと下に追加されてしまう ）
             int count = 0;
+            boolean highlight = false;
             for (Row row : mStackRows) {
                 mAdapter.insert(row, 0);
                 count++;
+                if (row.isFavorite()) {
+                    // お気に入りしたのが自分じゃない時
+                    if (row.getSource().getId() != AccessTokenManager.getUserId()) {
+                        highlight = true;
+                    }
+                } else {
+                    // 投稿主が自分じゃない時
+                    if (row.getStatus().getUser().getId() != AccessTokenManager.getUserId()) {
+                        highlight = true;
+                    }
+                }
             }
             mStackRows.clear();
 
             boolean autoScroll = position == 0 && y == 0 && count < 5;
 
-            if (count > 0) {
+            if (highlight) {
                 EventBus.getDefault().post(new NewRecordEvent(getTabId(), autoScroll));
             }
 
