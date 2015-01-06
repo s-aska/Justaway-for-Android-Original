@@ -107,6 +107,7 @@ public class NotificationService extends Service {
         String text;
         String ticker;
         int smallIcon;
+        long id;
         if (row.isDirectMessage()) {
             if (!preferences.getBoolean("notification_message_on", true)) {
                 return;
@@ -116,6 +117,7 @@ public class NotificationService extends Service {
             text = row.getMessage().getText();
             ticker = text;
             smallIcon = R.drawable.ic_notification_mail;
+            id = row.getMessage().getId();
         } else if (status != null && row.isFavorite()) {
             if (!preferences.getBoolean("notification_favorite_on", true)) {
                 return;
@@ -125,6 +127,7 @@ public class NotificationService extends Service {
             text = getString(R.string.notification_favorite) + status.getText();
             ticker = title + getString(R.string.notification_favorite_ticker) + status.getText();
             smallIcon = R.drawable.ic_notification_star;
+            id = status.getId();
         } else if (status != null && status.getInReplyToUserId() == userId) {
             if (!preferences.getBoolean("notification_reply_on", true)) {
                 return;
@@ -134,6 +137,7 @@ public class NotificationService extends Service {
             text = status.getText();
             ticker = text;
             smallIcon = R.drawable.ic_notification_at;
+            id = status.getId();
         } else if (retweet != null && retweet.getUser().getId() == userId) {
             if (!preferences.getBoolean("notification_retweet_on", true)) {
                 return;
@@ -143,6 +147,7 @@ public class NotificationService extends Service {
             text = getString(R.string.notification_retweet) + status.getText();
             ticker = title + getString(R.string.notification_retweet_ticker) + status.getText();
             smallIcon = R.drawable.ic_notification_rt;
+            id = status.getId();
         } else {
             return;
         }
@@ -226,6 +231,6 @@ public class NotificationService extends Service {
         }
 
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        manager.notify(((int) status.getId()), builder.build());
+        manager.notify(((int) (id > 0 ? id : 1)), builder.build());
     }
 }
