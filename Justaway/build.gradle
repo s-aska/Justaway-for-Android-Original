@@ -29,8 +29,8 @@ android {
         minSdkVersion 14
         targetSdkVersion 20
 
-        versionCode 50
-        versionName '1.0.50'
+        versionCode 51
+        versionName '1.0.51'
         applicationId "info.justaway"
     }
 
@@ -48,9 +48,8 @@ android {
         }
 
         release {
-            runProguard false
-            proguardFile getDefaultProguardFile('proguard-android.txt')
-            proguardFile file('proguard-project.txt')
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
             if (project.hasProperty('storeFile')) {
                 signingConfig signingConfigs.release
