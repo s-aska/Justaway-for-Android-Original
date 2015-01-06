@@ -185,9 +185,14 @@ public abstract class BaseFragment extends Fragment implements OnRefreshListener
                     if (row.getSource().getId() != AccessTokenManager.getUserId()) {
                         highlight = true;
                     }
-                } else {
+                } else if (row.isStatus()) {
                     // 投稿主が自分じゃない時
                     if (row.getStatus().getUser().getId() != AccessTokenManager.getUserId()) {
+                        highlight = true;
+                    }
+                } else if (row.isDirectMessage()) {
+                    // 投稿主が自分じゃない時
+                    if (row.getMessage().getSenderId() != AccessTokenManager.getUserId()) {
                         highlight = true;
                     }
                 }
