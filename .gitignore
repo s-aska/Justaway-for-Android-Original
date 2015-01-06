@@ -36,3 +36,4 @@ local.properties
 proguard/
 
 secret.xml
+manifest-merger-release-report.txt
