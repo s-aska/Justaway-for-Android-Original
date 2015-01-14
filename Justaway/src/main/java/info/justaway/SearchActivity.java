@@ -17,6 +17,7 @@ import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
@@ -30,6 +31,7 @@ import info.justaway.event.model.StreamingDestroyStatusEvent;
 import info.justaway.listener.StatusClickListener;
 import info.justaway.listener.StatusLongClickListener;
 import info.justaway.model.Row;
+import info.justaway.model.TabManager;
 import info.justaway.model.TwitterManager;
 import info.justaway.util.KeyboardUtil;
 import info.justaway.util.MessageUtil;
@@ -166,6 +168,14 @@ public class SearchActivity extends FragmentActivity implements LoaderManager.Lo
                 if (mSearchWords.getText() != null) {
                     new CreateSavedSearchTask().execute(mSearchWords.getText().toString());
                 }
+                break;
+            case R.id.search_to_tab:
+                ArrayList<TabManager.Tab> tabs = TabManager.loadTabs();
+                TabManager.Tab tab = new TabManager.Tab(TabManager.SEARCH_TAB_ID);
+                tab.name = mSearchWords.getText().toString();
+                tabs.add(tab);
+                TabManager.saveTabs(tabs);
+                setResult(RESULT_OK);
                 break;
         }
         return true;

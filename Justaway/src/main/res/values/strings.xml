@@ -108,6 +108,7 @@
     <string name="menu_profile">Profile</string>
     <string name="menu_report_spam">Report spam</string>
     <string name="menu_save_search">Save</string>
+    <string name="menu_search_to_tab">To tab</string>
     <string name="menu_search">Search</string>
     <string name="menu_send_direct_messages">Send message</string>
     <string name="menu_send_reply">Send reply</string>

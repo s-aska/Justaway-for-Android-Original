@@ -9,8 +9,11 @@ import android.support.v4.view.ViewPager;
 
 import java.util.ArrayList;
 
+import info.justaway.JustawayApplication;
+import info.justaway.R;
 import info.justaway.fragment.main.tab.BaseFragment;
 import info.justaway.model.AccessTokenManager;
+import info.justaway.model.TabManager;
 import info.justaway.model.UserListCache;
 import twitter4j.UserList;
 
@@ -26,6 +29,7 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
         private final Class<? extends Fragment> mClazz;
         private final Bundle mArgs;
         private String mTabTitle;
+        private String mSearchWord;
         private final long mId;
 
         /**
@@ -37,10 +41,18 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
          * @param id       タブの識別子、タブの取得に利用する
          */
         TabInfo(Class<? extends Fragment> clazz, Bundle args, String tabTitle, long id) {
-            this.mClazz = clazz;
-            this.mArgs = args;
-            this.mTabTitle = tabTitle;
-            this.mId = id;
+            mClazz = clazz;
+            mArgs = args;
+            mTabTitle = tabTitle;
+            mId = id;
+        }
+
+        TabInfo(Class<? extends Fragment> clazz, Bundle args, String tabTitle, long id, String searchWord) {
+            mClazz = clazz;
+            mArgs = args;
+            mTabTitle = tabTitle;
+            mId = id;
+            mSearchWord = searchWord;
         }
     }
 
@@ -82,6 +94,17 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
         return -1;
     }
 
+    public int findPositionBySearchWord(String searchWord) {
+        int position = 0;
+        for (TabInfo tab : mTabs) {
+            if (tab.mId == TabManager.SEARCH_TAB_ID && searchWord.equals(tab.mSearchWord)) {
+                return position;
+            }
+            position++;
+        }
+        return -1;
+    }
+
     public BaseFragment findFragmentById(long id) {
         int position = 0;
         for (TabInfo tab : mTabs) {
@@ -103,6 +126,11 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
      */
     public void addTab(Class<? extends Fragment> clazz, Bundle args, String tabTitle, long id) {
         TabInfo info = new TabInfo(clazz, args, tabTitle, id);
+        mTabs.add(info);
+    }
+
+    public void addTab(Class<? extends Fragment> clazz, Bundle args, String tabTitle, long id, String searchWord) {
+        TabInfo info = new TabInfo(clazz, args, tabTitle, id, searchWord);
         mTabs.add(info);
     }
 

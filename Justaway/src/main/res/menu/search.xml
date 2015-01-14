@@ -5,4 +5,10 @@
         android:orderInCategory="100"
         android:showAsAction="never"
         android:title="@string/menu_save_search"/>
+
+    <item
+        android:id="@+id/search_to_tab"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/menu_search_to_tab"/>
 </menu>

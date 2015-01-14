@@ -41,7 +41,7 @@ public abstract class BaseFragment extends Fragment implements OnRefreshListener
     protected long mMaxId = 0L; // 読み込んだ最新のツイートID
     protected long mDirectMessagesMaxId = 0L; // 読み込んだ最新の受信メッセージID
     protected long mSentDirectMessagesMaxId = 0L; // 読み込んだ最新の送信メッセージID
-    private ArrayList<Row> mStackRows = new ArrayList<Row>();
+    private ArrayList<Row> mStackRows = new ArrayList<>();
 
     @InjectView(R.id.list_view) protected ListView mListView;
     @InjectView(R.id.guruguru) protected ProgressBar mFooter;
@@ -202,7 +202,7 @@ public abstract class BaseFragment extends Fragment implements OnRefreshListener
             boolean autoScroll = position == 0 && y == 0 && count < 5;
 
             if (highlight) {
-                EventBus.getDefault().post(new NewRecordEvent(getTabId(), autoScroll));
+                EventBus.getDefault().post(new NewRecordEvent(getTabId(), getSearchWord(), autoScroll));
             }
 
             if (autoScroll) {
@@ -285,6 +285,9 @@ public abstract class BaseFragment extends Fragment implements OnRefreshListener
      * タブ固有のID、ユーザーリストではリストのIDを、その他はマイナスの固定値を返す
      */
     public abstract long getTabId();
+    public String getSearchWord() {
+        return "";
+    };
 
     /**
      * 読み込み用のAsyncTaskを実行する

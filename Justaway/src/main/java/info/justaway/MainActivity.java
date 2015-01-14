@@ -56,6 +56,7 @@ import info.justaway.fragment.main.tab.BaseFragment;
 import info.justaway.fragment.main.tab.DirectMessagesFragment;
 import info.justaway.fragment.main.tab.FavoritesFragment;
 import info.justaway.fragment.main.tab.InteractionsFragment;
+import info.justaway.fragment.main.tab.SearchFragment;
 import info.justaway.fragment.main.tab.TimelineFragment;
 import info.justaway.fragment.main.tab.UserListFragment;
 import info.justaway.model.AccessTokenManager;
@@ -286,6 +287,9 @@ public class MainActivity extends FragmentActivity {
                 }
                 break;
             case REQUEST_SEARCH:
+                if (resultCode == RESULT_OK) {
+                    setupTab();
+                }
                 cancelSearch();
                 break;
             default:
@@ -531,6 +535,10 @@ public class MainActivity extends FragmentActivity {
                     mMainPagerAdapter.addTab(DirectMessagesFragment.class, null, tab.getName(), tab.id);
                 } else if (tab.id == TabManager.FAVORITES_TAB_ID) {
                     mMainPagerAdapter.addTab(FavoritesFragment.class, null, tab.getName(), tab.id);
+                } else if (tab.id == TabManager.SEARCH_TAB_ID) {
+                    Bundle args = new Bundle();
+                    args.putString("searchWord", tab.name);
+                    mMainPagerAdapter.addTab(SearchFragment.class, args, tab.getName(), tab.id, tab.name);
                 } else {
                     Bundle args = new Bundle();
                     args.putLong("userListId", tab.id);
@@ -965,7 +973,7 @@ public class MainActivity extends FragmentActivity {
      * オートスクロールじゃない場合は対応するタブを青くする
      */
     public void onEventMainThread(NewRecordEvent event) {
-        int position = mMainPagerAdapter.findPositionById(event.getTabId());
+        int position = event.getTabId() != TabManager.SEARCH_TAB_ID ? mMainPagerAdapter.findPositionById(event.getTabId()) : mMainPagerAdapter.findPositionBySearchWord(event.getSearchWord());
         if (position < 0) {
             return;
         }

@@ -105,6 +105,7 @@
     <string name="menu_profile">プロフィール</string>
     <string name="menu_report_spam">スパムとして報告</string>
     <string name="menu_save_search">検索を保存</string>
+    <string name="menu_search_to_tab">検索をタブにする</string>
     <string name="menu_search">検索</string>
     <string name="menu_send_direct_messages">DMを送る</string>
     <string name="menu_send_reply">リプを送る</string>

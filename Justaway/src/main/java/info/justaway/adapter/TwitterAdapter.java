@@ -78,7 +78,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     private int mColorBlue = 0;
     private static final int LIMIT = 100;
     private int mLimit = LIMIT;
-    private static final LongSparseArray<Boolean> mIdMap = new LongSparseArray<>();
+    private final LongSparseArray<Boolean> mIdMap = new LongSparseArray<>();
 
     public TwitterAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId);
@@ -142,7 +142,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     public void remove(Row row) {
         super.remove(row);
         if (row.isStatus()) {
-            mIdMap.delete(row.getStatus().getId());
+            mIdMap.remove(row.getStatus().getId());
         }
     }
 
