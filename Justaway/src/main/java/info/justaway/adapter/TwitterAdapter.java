@@ -7,7 +7,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.util.LongSparseArray;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -76,6 +78,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     private int mColorBlue = 0;
     private static final int LIMIT = 100;
     private int mLimit = LIMIT;
+    private static final LongSparseArray<Boolean> mIdMap = new LongSparseArray<>();
 
     public TwitterAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId);
@@ -96,6 +99,9 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             return;
         }
         super.add(row);
+        if (row.isStatus()) {
+            mIdMap.put(row.getStatus().getId(), true);
+        }
         filter(row);
         mLimit++;
     }
@@ -109,6 +115,9 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             return;
         }
         super.add(row);
+        if (row.isStatus()) {
+            mIdMap.put(row.getStatus().getId(), true);
+        }
         filter(row);
         limitation();
     }
@@ -122,26 +131,23 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             return;
         }
         super.insert(row, index);
+        if (row.isStatus()) {
+            mIdMap.put(row.getStatus().getId(), true);
+        }
         filter(row);
         limitation();
     }
 
-    public boolean exists(Row row) {
-        // 先頭の3つくらい見れば十分
-        int max = 3;
+    @Override
+    public void remove(Row row) {
+        super.remove(row);
         if (row.isStatus()) {
-            for (int i = 0; i < getCount(); i++) {
-                Row status = getItem(i);
-                if (status.isStatus() && status.getStatus().getId() == row.getStatus().getId()) {
-                    return true;
-                }
-                max--;
-                if (max < 1) {
-                    break;
-                }
-            }
+            mIdMap.delete(row.getStatus().getId());
         }
-        return false;
+    }
+
+    public boolean exists(Row row) {
+        return row.isStatus() && mIdMap.get(row.getStatus().getId(), false);
     }
 
     private void filter(Row row) {
@@ -202,6 +208,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     @Override
     public void clear() {
         super.clear();
+        mIdMap.clear();
         mLimit = LIMIT;
     }
 
@@ -497,6 +504,8 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     }
 
     public static final class RetweetDialogFragment extends DialogFragment {
+        @SuppressWarnings("ConstantConditions")
+        @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             final Status status = (Status) getArguments().getSerializable("status");
@@ -537,6 +546,8 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
     }
 
     public static final class DestroyRetweetDialogFragment extends DialogFragment {
+        @SuppressWarnings("ConstantConditions")
+        @NonNull
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             final Status status = (Status) getArguments().getSerializable("status");

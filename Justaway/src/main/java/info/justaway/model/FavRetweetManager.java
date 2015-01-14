@@ -6,8 +6,8 @@ import android.support.v4.util.LongSparseArray;
  * どのツイートをふぁぼ又はRTしているかを管理する
  */
 public class FavRetweetManager {
-    private static final LongSparseArray<Boolean> mIsFavMap = new LongSparseArray<Boolean>();
-    private static final LongSparseArray<Long> mRtIdMap = new LongSparseArray<Long>();
+    private static final LongSparseArray<Boolean> mIsFavMap = new LongSparseArray<>();
+    private static final LongSparseArray<Long> mRtIdMap = new LongSparseArray<>();
 
     public static void setFav(Long id) {
         mIsFavMap.put(id, true);
