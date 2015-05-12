@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import java.io.File;
 import java.util.ArrayList;
 
+import info.justaway.model.ImageResizer;
 import info.justaway.model.TwitterManager;
 import info.justaway.settings.PostStockSettings;
 import twitter4j.HashtagEntity;
@@ -27,6 +28,7 @@ public class UpdateStatusTask extends AsyncTask<StatusUpdate, Void, TwitterExcep
     @Override
     protected TwitterException doInBackground(StatusUpdate... params) {
         StatusUpdate statusUpdate = params[0];
+        long maxFileSize = 3145728; // 3MB
         try {
             twitter4j.Status status;
             if (mAccessToken == null) {
@@ -39,7 +41,8 @@ public class UpdateStatusTask extends AsyncTask<StatusUpdate, Void, TwitterExcep
                 if (!mImagePathList.isEmpty()) {
                     long[] mediaIds = new long[mImagePathList.size()];
                     for (int i = 0; i < mImagePathList.size(); i++) {
-                        UploadedMedia media = twitter.uploadMedia(mImagePathList.get(i));
+                        File imageFile = ImageResizer.compress(mImagePathList.get(i), maxFileSize);
+                        UploadedMedia media = twitter.uploadMedia(imageFile);
                         mediaIds[i] = media.getMediaId();
                     }
                     statusUpdate.setMediaIds(mediaIds);
