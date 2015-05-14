@@ -22,7 +22,6 @@ public class StatusUtil {
     private static final Pattern IMAGES_PATTERN = Pattern.compile("^https?://.*\\.(png|gif|jpeg|jpg)$");
     private static final Pattern YOUTUBE_PATTERN = Pattern.compile("^https?://(?:www\\.youtube\\.com/watch\\?.*v=|youtu\\.be/)([\\w-]+)");
     private static final Pattern NICONICO_PATTERN = Pattern.compile("^http://(?:www\\.nicovideo\\.jp/watch|nico\\.ms)/sm(\\d+)$");
-    private static final Pattern PIXIV_PATTERN = Pattern.compile("^http://www\\.pixiv\\.net/member_illust\\.php");
 
     private static final Pattern URL_PATTERN = Pattern.compile("(http://|https://)[\\w\\.\\-/:#\\?=&;%~\\+]+");
     private static final Pattern MENTION_PATTERN = Pattern.compile("@[a-zA-Z0-9_]+");
@@ -125,10 +124,6 @@ public class StatusUtil {
                 int host = id % 4 + 1;
                 imageUrls.add("http://tn-skr" + host + ".smilevideo.jp/smile?i=" + id + ".L");
                 continue;
-            }
-            Matcher pixiv_matcher = PIXIV_PATTERN.matcher(url.getExpandedURL());
-            if (pixiv_matcher.find()) {
-                imageUrls.add(url.getExpandedURL());
             }
             Matcher images_matcher = IMAGES_PATTERN.matcher(url.getExpandedURL());
             if (images_matcher.find()) {
