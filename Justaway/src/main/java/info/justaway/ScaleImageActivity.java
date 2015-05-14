@@ -9,7 +9,6 @@ import android.os.Environment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
@@ -21,13 +20,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import info.justaway.task.PhotoLoader;
+import info.justaway.util.ImageUtil;
 import info.justaway.util.MessageUtil;
 import info.justaway.widget.ScaleImageView;
 
@@ -82,7 +82,7 @@ public class ScaleImageActivity extends FragmentActivity implements LoaderManage
             return;
         }
 
-        ImageLoader.getInstance().displayImage(mUrl, mImageView);
+        ImageUtil.displayImage(mUrl, mImageView);
     }
 
     @Override
@@ -117,10 +117,14 @@ public class ScaleImageActivity extends FragmentActivity implements LoaderManage
                 protected Void doInBackground(Void... params) {
                     int count;
                     try {
-                        URL url = new URL(mUrl);
-                        URLConnection connection = url.openConnection();
+                        String pixivImageURL = ImageUtil.getPixivImageURL(mUrl);
+                        URL url = new URL(pixivImageURL != null ? pixivImageURL : mUrl);
+                        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                        if (pixivImageURL != null) {
+                            connection.setRequestProperty("Referer", "http://www.pixiv.com/");
+                        }
                         connection.connect();
-                        InputStream input = new BufferedInputStream(url.openStream(), 10 * 1024);
+                        InputStream input = new BufferedInputStream(connection.getInputStream(), 10 * 1024);
                         File root = new File(Environment.getExternalStorageDirectory(), "/Download/");
                         File file = new File(root, new Date().getTime() + ".jpg");
                         OutputStream output = new FileOutputStream(file);
