@@ -17,7 +17,7 @@ import twitter4j.UserMentionEntity;
 public class StatusUtil {
     private static final Pattern TWITPIC_PATTERN = Pattern.compile("^http://twitpic\\.com/(\\w+)$");
     private static final Pattern TWIPPLE_PATTERN = Pattern.compile("^http://p\\.twipple\\.jp/(\\w+)$");
-    private static final Pattern INSTAGRAM_PATTERN = Pattern.compile("^http://instagram\\.com/p/([^/]+)/$");
+    private static final Pattern INSTAGRAM_PATTERN = Pattern.compile("^https?://instagram\\.com/p/([^/]+)/$");
     private static final Pattern PHOTOZOU_PATTERN = Pattern.compile("^http://photozou\\.jp/photo/show/\\d+/(\\d+)$");
     private static final Pattern IMAGES_PATTERN = Pattern.compile("^https?://.*\\.(png|gif|jpeg|jpg)$");
     private static final Pattern YOUTUBE_PATTERN = Pattern.compile("^https?://(?:www\\.youtube\\.com/watch\\?.*v=|youtu\\.be/)([\\w-]+)");
