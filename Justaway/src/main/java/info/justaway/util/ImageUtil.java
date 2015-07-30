@@ -87,8 +87,12 @@ public class ImageUtil {
             for (final String url : imageUrls) {
                 ImageView image = new ImageView(context);
                 image.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                viewGroup.addView(image,
-                        new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 120));
+                LinearLayout.LayoutParams layoutParams =
+                        new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 240);
+                if (index > 0) {
+                    layoutParams.setMargins(0, 20, 0, 0);
+                }
+                viewGroup.addView(image, layoutParams);
                 displayRoundedImage(url, image);
 
                 // 画像タップで拡大表示（ピンチイン・ピンチアウトいつかちゃんとやる）

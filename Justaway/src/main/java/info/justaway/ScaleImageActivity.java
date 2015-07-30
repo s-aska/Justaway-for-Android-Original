@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 
 import com.viewpagerindicator.CirclePageIndicator;
@@ -19,6 +20,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Array;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -117,6 +119,7 @@ public class ScaleImageActivity extends FragmentActivity {
             return;
         }
 
+        symbol.setVisibility(View.GONE);
         imageUrls.add(firstUrl);
         Bundle args = new Bundle();
         args.putString("url", firstUrl);
@@ -125,7 +128,11 @@ public class ScaleImageActivity extends FragmentActivity {
     }
 
     public void showStatus(twitter4j.Status status, Integer index) {
-        for (final String imageURL : StatusUtil.getImageUrls(status)) {
+        ArrayList<String> urls = StatusUtil.getImageUrls(status);
+        if (urls.size() == 1) {
+            symbol.setVisibility(View.GONE);
+        }
+        for (final String imageURL : urls) {
             imageUrls.add(imageURL);
             Bundle args = new Bundle();
             args.putString("url", imageURL);
