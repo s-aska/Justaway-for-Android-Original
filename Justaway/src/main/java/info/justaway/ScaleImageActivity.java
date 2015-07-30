@@ -7,14 +7,12 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
-import android.util.Log;
+import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
+import com.viewpagerindicator.CirclePageIndicator;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -23,23 +21,34 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import info.justaway.task.PhotoLoader;
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import info.justaway.adapter.SimplePagerAdapter;
+import info.justaway.fragment.ScaleImageFragment;
+import info.justaway.model.TwitterManager;
 import info.justaway.util.MessageUtil;
-import info.justaway.widget.ScaleImageView;
+import info.justaway.util.StatusUtil;
 
 /**
  * 画像の拡大表示用のActivity、かぶせて使う
  *
  * @author aska
  */
-public class ScaleImageActivity extends FragmentActivity implements LoaderManager.LoaderCallbacks<String> {
+public class ScaleImageActivity extends FragmentActivity {
 
-    private ScaleImageView mImageView;
-    private String mUrl;
+    @InjectView(R.id.pager) ViewPager pager;
+    @InjectView(R.id.symbol) CirclePageIndicator symbol;
+
+    private ArrayList<String> imageUrls = new ArrayList<>();
+    private SimplePagerAdapter simplePagerAdapter;
+
+    public ScaleImageActivity() {
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,10 +56,14 @@ public class ScaleImageActivity extends FragmentActivity implements LoaderManage
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        mImageView = new ScaleImageView(this);
-        mImageView.setActivity(this);
+        setContentView(R.layout.activity_scale_image);
+        ButterKnife.inject(this);
 
-        setContentView(mImageView);
+        simplePagerAdapter = new SimplePagerAdapter(this, pager);
+        symbol.setViewPager(pager);
+        pager.setOffscreenPageLimit(4);
+
+        String firstUrl;
 
         // インテント経由での起動をサポート
         Intent intent = getIntent();
@@ -59,47 +72,67 @@ public class ScaleImageActivity extends FragmentActivity implements LoaderManage
             if (data == null) {
                 return;
             }
-            mUrl = data.toString();
+            firstUrl = data.toString();
         } else {
             Bundle args = intent.getExtras();
             if (args == null) {
                 return;
             }
-            mUrl = args.getString("url");
+
+            twitter4j.Status status = (twitter4j.Status) args.getSerializable("status");
+            if (status != null) {
+                Integer index = args.getInt("index", 0);
+                showStatus(status, index);
+            }
+
+            firstUrl = args.getString("url");
         }
 
-        if (mUrl == null) {
+        if (firstUrl == null) {
             return;
         }
 
         Pattern pattern = Pattern.compile("https?://twitter\\.com/\\w+/status/(\\d+)/photo/(\\d+)/?.*");
-        Matcher matcher = pattern.matcher(mUrl);
+        Matcher matcher = pattern.matcher(firstUrl);
         if (matcher.find()) {
-            Bundle args = new Bundle(1);
-            args.putLong("statusId", Long.valueOf(matcher.group(1)));
-            args.putInt("index", Integer.valueOf(matcher.group(2)));
-            getSupportLoaderManager().initLoader(0, args, this);
+            final Long statusId = Long.valueOf(matcher.group(1));
+            new AsyncTask<Void, Void, twitter4j.Status>() {
+                @Override
+                protected twitter4j.Status doInBackground(Void... params) {
+                    try {
+                        return TwitterManager.getTwitter().showStatus(statusId);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        return null;
+                    }
+                }
+
+                @Override
+                protected void onPostExecute(twitter4j.Status status) {
+                    if (status != null) {
+                        showStatus(status, 0);
+                    }
+                }
+            }.execute();
             return;
         }
 
-        ImageLoader.getInstance().displayImage(mUrl, mImageView);
+        imageUrls.add(firstUrl);
+        Bundle args = new Bundle();
+        args.putString("url", firstUrl);
+        simplePagerAdapter.addTab(ScaleImageFragment.class, args);
+        simplePagerAdapter.notifyDataSetChanged();
     }
 
-    @Override
-    public Loader<String> onCreateLoader(int id, Bundle args) {
-        long statusId = args.getLong("statusId");
-        int index = args.getInt("index");
-        return new PhotoLoader(this, statusId, index);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<String> loader, String url) {
-        ImageLoader.getInstance().displayImage(url, mImageView);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<String> arg0) {
-
+    public void showStatus(twitter4j.Status status, Integer index) {
+        for (final String imageURL : StatusUtil.getImageUrls(status)) {
+            imageUrls.add(imageURL);
+            Bundle args = new Bundle();
+            args.putString("url", imageURL);
+            simplePagerAdapter.addTab(ScaleImageFragment.class, args);
+        }
+        simplePagerAdapter.notifyDataSetChanged();
+        pager.setCurrentItem(index);
     }
 
     @Override
@@ -112,12 +145,12 @@ public class ScaleImageActivity extends FragmentActivity implements LoaderManage
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
         if (itemId == R.id.save) {
-            AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>(){
+            AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
                 @Override
                 protected Void doInBackground(Void... params) {
                     int count;
                     try {
-                        URL url = new URL(mUrl);
+                        URL url = new URL(imageUrls.get(pager.getCurrentItem()));
                         URLConnection connection = url.openConnection();
                         connection.connect();
                         InputStream input = new BufferedInputStream(url.openStream(), 10 * 1024);
@@ -143,7 +176,7 @@ public class ScaleImageActivity extends FragmentActivity implements LoaderManage
                 }
 
                 @Override
-                protected void onPostExecute(Void result){
+                protected void onPostExecute(Void result) {
                     MessageUtil.showToast(R.string.toast_save_image_success);
                 }
             };

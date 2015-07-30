@@ -11,6 +11,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import info.justaway.JustawayApplication;
@@ -75,13 +76,14 @@ public class ImageUtil {
      * @param viewGroup サムネイルを表示するView
      * @param status    ツイート
      */
-    public static void displayThumbnailImages(final Context context, ViewGroup viewGroup, Status status) {
+    public static void displayThumbnailImages(final Context context, ViewGroup viewGroup, final Status status) {
         // ツイートに含まれる画像のURLをすべて取得
         ArrayList<String> imageUrls = StatusUtil.getImageUrls(status);
         if (imageUrls.size() > 0) {
 
             // 画像を貼るスペースをクリア
             viewGroup.removeAllViews();
+            int index = 0;
             for (final String url : imageUrls) {
                 ImageView image = new ImageView(context);
                 image.setScaleType(ImageView.ScaleType.CENTER_CROP);
@@ -90,14 +92,17 @@ public class ImageUtil {
                 displayRoundedImage(url, image);
 
                 // 画像タップで拡大表示（ピンチイン・ピンチアウトいつかちゃんとやる）
+                final int openIndex = index;
                 image.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(v.getContext(), ScaleImageActivity.class);
-                        intent.putExtra("url", url);
+                        intent.putExtra("status", status);
+                        intent.putExtra("index", openIndex);
                         context.startActivity(intent);
                     }
                 });
+                index++;
             }
             viewGroup.setVisibility(View.VISIBLE);
         } else {
