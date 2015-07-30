@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import butterknife.ButterKnife;
@@ -54,6 +55,10 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         @InjectView(R.id.lock) TextView mLock;
         @InjectView(R.id.datetime_relative) TextView mDatetimeRelative;
         @InjectView(R.id.status) TextView mStatus;
+        @InjectView(R.id.quoted_display_name) TextView mQuotedDisplayName;
+        @InjectView(R.id.quoted_screen_name) TextView mQuotedScreenName;
+        @InjectView(R.id.quoted_status) TextView mQuotedStatus;
+        @InjectView(R.id.quoted_tweet) RelativeLayout mQuotedTweet;
         @InjectView(R.id.images_container) ViewGroup mImagesContainer;
         @InjectView(R.id.menu_and_via_container) ViewGroup mMenuAndViaContainer;
         @InjectView(R.id.do_reply) TextView mDoReply;
@@ -301,6 +306,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                 .setText(TimeUtil.getAbsoluteTime(message.getCreatedAt()));
         holder.mDatetimeRelative.setText(TimeUtil.getRelativeTime(message.getCreatedAt()));
         holder.mVia.setVisibility(View.GONE);
+        holder.mQuotedTweet.setVisibility(View.GONE);
         holder.mRetweetContainer.setVisibility(View.GONE);
         holder.mImagesContainer.setVisibility(View.GONE);
         UserIconManager.displayUserIcon(message.getSender(), holder.mIcon);
@@ -494,6 +500,17 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         // RTの場合はRT元
         String statusString = StatusUtil.getExpandedText(status);
         holder.mStatus.setText(StatusUtil.generateUnderline(statusString));
+
+        // 引用ツイート
+        Status quotedStatus = status.getQuotedStatus();
+        if (quotedStatus != null) {
+            holder.mQuotedDisplayName.setText(quotedStatus.getUser().getName());
+            holder.mQuotedScreenName.setText(quotedStatus.getUser().getScreenName());
+            holder.mQuotedStatus.setText(quotedStatus.getText());
+            holder.mQuotedTweet.setVisibility(View.VISIBLE);
+        } else {
+            holder.mQuotedTweet.setVisibility(View.GONE);
+        }
 
         // プレビュー表示On
         if (BasicSettings.getDisplayThumbnailOn()) {

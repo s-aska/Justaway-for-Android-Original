@@ -42,7 +42,7 @@
             android:textColor="#666666"
             android:textSize="10sp"
             tools:ignore="SmallSp"
-            tools:text="@justawayfactory"/>
+            tools:text="\@justawayfactory"/>
 
     </RelativeLayout>
 
@@ -81,7 +81,7 @@
         android:lines="1"
         android:ellipsize="end"
         tools:ignore="SmallSp"
-        tools:text="@justawayfactory"/>
+        tools:text="\@justawayfactory"/>
 
     <info.justaway.widget.FontelloTextView
         android:id="@+id/lock"
@@ -115,11 +115,55 @@
         android:layout_below="@id/display_name"
         tools:text="Hello World."/>
 
+    <RelativeLayout
+        android:id="@+id/quoted_tweet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/status"
+        android:layout_toRightOf="@id/icon"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="4dp"
+        android:padding="10dp"
+        android:background="@drawable/quoted_tweet_frame">
+
+        <TextView
+            android:id="@+id/quoted_display_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="6dp"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            tools:text="Justaway Factory"/>
+
+        <TextView
+            android:id="@+id/quoted_screen_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:layout_toRightOf="@id/quoted_display_name"
+            android:layout_alignBaseline="@id/quoted_display_name"
+            android:textColor="#666666"
+            android:textSize="10sp"
+            android:lines="1"
+            android:ellipsize="end"
+            tools:ignore="SmallSp"
+            tools:text="\@justawayfactory"/>
+
+        <TextView
+            android:id="@+id/quoted_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:layout_below="@id/quoted_display_name"
+            tools:text="Hello World."/>
+
+    </RelativeLayout>
+
     <LinearLayout
         android:id="@+id/images_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/status"
+        android:layout_below="@id/quoted_tweet"
         android:layout_toRightOf="@id/icon"
         android:layout_marginBottom="4dp"
         android:layout_marginTop="10dp"
@@ -242,7 +286,7 @@
             android:layout_marginTop="2dp"
             android:textSize="10sp"
             tools:ignore="SmallSp"
-            tools:text="@su_aska"/>
+            tools:text="\@su_aska"/>
     </RelativeLayout>
 
 </RelativeLayout>

@@ -40,7 +40,7 @@ project.ext {
     // CIサーバなどでは -PdisablePreDex をつける。 preDexが省略されてビルドが速くなる
     preDexLibs = !project.hasProperty('disablePreDex')
 
-    twitter4jVersion = "4.0.3"
+    twitter4jVersion = "4.0.4"
     butterKnifeVersion = '4.0.1'
     viewpagerIndicatorVersion = '2.4.1@aar'
 }
