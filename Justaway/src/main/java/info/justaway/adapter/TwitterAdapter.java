@@ -59,6 +59,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         @InjectView(R.id.quoted_screen_name) TextView mQuotedScreenName;
         @InjectView(R.id.quoted_status) TextView mQuotedStatus;
         @InjectView(R.id.quoted_tweet) RelativeLayout mQuotedTweet;
+        @InjectView(R.id.quoted_images_container) ViewGroup mQuotedImagesContainer;
         @InjectView(R.id.images_container) ViewGroup mImagesContainer;
         @InjectView(R.id.menu_and_via_container) ViewGroup mMenuAndViaContainer;
         @InjectView(R.id.do_reply) TextView mDoReply;
@@ -507,6 +508,13 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             holder.mQuotedDisplayName.setText(quotedStatus.getUser().getName());
             holder.mQuotedScreenName.setText(quotedStatus.getUser().getScreenName());
             holder.mQuotedStatus.setText(quotedStatus.getText());
+
+            // プレビュー表示On
+            if (BasicSettings.getDisplayThumbnailOn()) {
+                ImageUtil.displayThumbnailImages(mContext, holder.mQuotedImagesContainer, quotedStatus);
+            } else {
+                holder.mQuotedImagesContainer.setVisibility(View.GONE);
+            }
             holder.mQuotedTweet.setVisibility(View.VISIBLE);
         } else {
             holder.mQuotedTweet.setVisibility(View.GONE);

@@ -157,6 +157,15 @@
             android:layout_below="@id/quoted_display_name"
             tools:text="Hello World."/>
 
+        <LinearLayout
+            android:id="@+id/quoted_images_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/quoted_status"
+            android:layout_marginBottom="4dp"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical"/>
+
     </RelativeLayout>
 
     <LinearLayout
