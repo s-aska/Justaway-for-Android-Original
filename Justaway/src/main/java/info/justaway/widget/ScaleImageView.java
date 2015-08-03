@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.util.FloatMath;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -222,11 +221,11 @@ public class ScaleImageView extends ImageView implements OnTouchListener {
     private float distance(float x0, float x1, float y0, float y1) {
         float x = x0 - x1;
         float y = y0 - y1;
-        return FloatMath.sqrt(x * x + y * y);
+        return (float) Math.sqrt(x * x + y * y);
     }
 
     private float displayDistance() {
-        return FloatMath.sqrt(mWidth * mWidth + mHeight * mHeight);
+        return (float) Math.sqrt(mWidth * mWidth + mHeight * mHeight);
     }
 
     @SuppressWarnings("NullableProblems")
