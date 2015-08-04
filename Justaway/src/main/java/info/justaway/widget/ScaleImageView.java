@@ -13,6 +13,8 @@ import android.view.View.OnTouchListener;
 import android.widget.ImageView;
 
 public class ScaleImageView extends ImageView implements OnTouchListener {
+    static boolean sBounds = false;
+
     private Activity mActivity;
     private Context mContext;
     private static final float MAX_SCALE = 10f;
@@ -197,11 +199,18 @@ public class ScaleImageView extends ImageView implements OnTouchListener {
     public void cutting() {
         int width = (int) (mIntrinsicWidth * getScale());
         int height = (int) (mIntrinsicHeight * getScale());
+        boolean bounds = false;
         if (getTranslateX() < -(width - mWidth)) {
             mMatrix.postTranslate(-(getTranslateX() + width - mWidth), 0);
+            bounds = true;
+        } else if (getTranslateX() == -(width - mWidth)) {
+            bounds = true;
         }
         if (getTranslateX() > 0) {
             mMatrix.postTranslate(-getTranslateX(), 0);
+            bounds = true;
+        } else if (getTranslateX() == 0) {
+            bounds = true;
         }
         if (getTranslateY() < -(height - mHeight)) {
             mMatrix.postTranslate(0, -(getTranslateY() + height - mHeight));
@@ -215,6 +224,7 @@ public class ScaleImageView extends ImageView implements OnTouchListener {
         if (height < mHeight) {
             mMatrix.postTranslate(0, (mHeight - height) / 2);
         }
+        sBounds = bounds;
         setImageMatrix(mMatrix);
     }
 
@@ -258,7 +268,7 @@ public class ScaleImageView extends ImageView implements OnTouchListener {
                     scale = scale * scale;
                     zoomTo(scale, mWidth / 2, mHeight / 2);
                     cutting();
-                } else if (!mIsScaling) {
+                } else {
                     int distanceX = mPrevMoveX - (int) event.getX();
                     int distanceY = mPrevMoveY - (int) event.getY();
                     mPrevMoveX = (int) event.getX();

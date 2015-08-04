@@ -7,7 +7,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,7 +19,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Array;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -35,6 +33,7 @@ import info.justaway.fragment.ScaleImageFragment;
 import info.justaway.model.TwitterManager;
 import info.justaway.util.MessageUtil;
 import info.justaway.util.StatusUtil;
+import info.justaway.widget.ScaleImageViewPager;
 
 /**
  * 画像の拡大表示用のActivity、かぶせて使う
@@ -43,7 +42,7 @@ import info.justaway.util.StatusUtil;
  */
 public class ScaleImageActivity extends FragmentActivity {
 
-    @InjectView(R.id.pager) ViewPager pager;
+    @InjectView(R.id.pager) ScaleImageViewPager pager;
     @InjectView(R.id.symbol) CirclePageIndicator symbol;
 
     private ArrayList<String> imageUrls = new ArrayList<>();
