@@ -22,7 +22,7 @@ import android.widget.TextView;
 import com.viewpagerindicator.CirclePageIndicator;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 import butterknife.OnClick;
 import de.greenrobot.event.EventBus;
 import info.justaway.adapter.SimplePagerAdapter;
@@ -47,17 +47,17 @@ import twitter4j.User;
 public class ProfileActivity extends FragmentActivity implements
         LoaderManager.LoaderCallbacks<Profile> {
 
-    @InjectView(R.id.banner) ImageView mBanner;
-    @InjectView(R.id.pager) ViewPager mPager;
-    @InjectView(R.id.symbol) CirclePageIndicator mSymbol;
-    @InjectView(R.id.frame) FrameLayout mFrame;
-    @InjectView(R.id.statuses_count) TextView mStatusesCount;
-    @InjectView(R.id.friends_count) TextView mFriendsCount;
-    @InjectView(R.id.followers_count) TextView mFollowersCount;
-    @InjectView(R.id.listed_count) TextView mListedCount;
-    @InjectView(R.id.favourites_count) TextView mFavouritesCount;
-    @InjectView(R.id.collapse_label) FontelloTextView mCollapseLabel;
-    @InjectView(R.id.list_pager) ViewPager mListPager;
+    @Bind(R.id.banner) ImageView mBanner;
+    @Bind(R.id.pager) ViewPager mPager;
+    @Bind(R.id.symbol) CirclePageIndicator mSymbol;
+    @Bind(R.id.frame) FrameLayout mFrame;
+    @Bind(R.id.statuses_count) TextView mStatusesCount;
+    @Bind(R.id.friends_count) TextView mFriendsCount;
+    @Bind(R.id.followers_count) TextView mFollowersCount;
+    @Bind(R.id.listed_count) TextView mListedCount;
+    @Bind(R.id.favourites_count) TextView mFavouritesCount;
+    @Bind(R.id.collapse_label) FontelloTextView mCollapseLabel;
+    @Bind(R.id.list_pager) ViewPager mListPager;
 
     private User mUser;
 
@@ -66,7 +66,7 @@ public class ProfileActivity extends FragmentActivity implements
         super.onCreate(savedInstanceState);
         ThemeUtil.setTheme(this);
         setContentView(R.layout.activity_profile);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         ActionBar actionBar = getActionBar();
         if (actionBar != null) {

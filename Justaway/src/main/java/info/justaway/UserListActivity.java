@@ -11,7 +11,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 import butterknife.OnClick;
 import info.justaway.adapter.SimplePagerAdapter;
 import info.justaway.fragment.list.UserListStatusesFragment;
@@ -25,9 +25,9 @@ import twitter4j.UserList;
 
 public class UserListActivity extends FragmentActivity {
 
-    @InjectView(R.id.users_label) TextView mUsersLabel;
-    @InjectView(R.id.tweets_label) TextView mTweetsLabel;
-    @InjectView(R.id.list_pager) ViewPager mListPager;
+    @Bind(R.id.users_label) TextView mUsersLabel;
+    @Bind(R.id.tweets_label) TextView mTweetsLabel;
+    @Bind(R.id.list_pager) ViewPager mListPager;
 
     private UserList mUserList;
     private Boolean mIsFollowing;
@@ -42,7 +42,7 @@ public class UserListActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         ThemeUtil.setTheme(this);
         setContentView(R.layout.activity_user_list);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         ActionBar actionBar = getActionBar();
         if (actionBar != null) {

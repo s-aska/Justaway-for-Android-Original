@@ -9,7 +9,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 import butterknife.OnClick;
 import info.justaway.model.AccessTokenManager;
 import info.justaway.model.TwitterManager;
@@ -28,8 +28,8 @@ public class SignInActivity extends Activity {
     private static final String STATE_REQUEST_TOKEN = "request_token";
     private RequestToken mRequestToken;
 
-    @InjectView(R.id.start_oauth_button) FontelloButton mStartOauthButton;
-    @InjectView(R.id.connect_with_twitter) TextView mConnectWithTwitter;
+    @Bind(R.id.start_oauth_button) FontelloButton mStartOauthButton;
+    @Bind(R.id.connect_with_twitter) TextView mConnectWithTwitter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +37,7 @@ public class SignInActivity extends Activity {
         ThemeUtil.setTheme(this);
         setContentView(R.layout.activity_signin);
 
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         Intent intent = getIntent();
         if (intent.getBooleanExtra("add_account", false)) {

@@ -16,7 +16,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 import info.justaway.R;
 import info.justaway.settings.MuteSettings;
 import info.justaway.util.KeyboardUtil;
@@ -86,11 +86,11 @@ public class WordFragment extends Fragment {
     public class WordAdapter extends ArrayAdapter<String> {
 
         class ViewHolder {
-            @InjectView(R.id.word) TextView mWord;
-            @InjectView(R.id.trash) FontelloTextView mTrash;
+            @Bind(R.id.word) TextView mWord;
+            @Bind(R.id.trash) FontelloTextView mTrash;
 
             ViewHolder(View view) {
-                ButterKnife.inject(this, view);
+                ButterKnife.bind(this, view);
             }
         }
 

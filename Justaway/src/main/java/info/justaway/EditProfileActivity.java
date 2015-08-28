@@ -16,7 +16,7 @@ import java.io.File;
 import java.io.InputStream;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 import butterknife.OnClick;
 import info.justaway.fragment.profile.UpdateProfileImageFragment;
 import info.justaway.model.TwitterManager;
@@ -31,18 +31,18 @@ public class EditProfileActivity extends FragmentActivity implements LoaderManag
 
     private static final int REQ_PICK_PROFILE_IMAGE = 1;
 
-    @InjectView(R.id.icon) ImageView mIcon;
-    @InjectView(R.id.name) EditText mName;
-    @InjectView(R.id.location) EditText mLocation;
-    @InjectView(R.id.url) EditText mUrl;
-    @InjectView(R.id.description) EditText mDescription;
+    @Bind(R.id.icon) ImageView mIcon;
+    @Bind(R.id.name) EditText mName;
+    @Bind(R.id.location) EditText mLocation;
+    @Bind(R.id.url) EditText mUrl;
+    @Bind(R.id.description) EditText mDescription;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ThemeUtil.setTheme(this);
         setContentView(R.layout.activity_edit_profile);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         ActionBar actionBar = getActionBar();
         if (actionBar != null) {

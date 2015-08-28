@@ -46,7 +46,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 import butterknife.OnClick;
 import info.justaway.model.AccessTokenManager;
 import info.justaway.model.UserIconManager;
@@ -87,25 +87,25 @@ public class PostActivity extends FragmentActivity {
     private List<ResolveInfo> mTwiccaPlugins;
     private ActionBarHolder mActionBarHolder;
 
-    @InjectView(R.id.in_reply_to_cancel) TextView mCancel;
-    @InjectView(R.id.in_reply_to_user_icon) ImageView mInReplyToUserIcon;
-    @InjectView(R.id.in_reply_to_status) TextView mInReplyToStatus;
-    @InjectView(R.id.in_reply_to_layout) RelativeLayout mInReplyToLayout;
-    @InjectView(R.id.switch_account_spinner) Spinner mSwitchAccountSpinner;
-    @InjectView(R.id.status_text) EditText mStatusText;
-    @InjectView(R.id.suddenly_button) Button mSuddenlyButton;
-    @InjectView(R.id.tweet_button) Button mTweetButton;
-    @InjectView(R.id.img_button) Button mImgButton;
-    @InjectView(R.id.draft_button) Button mDraftButton;
-    @InjectView(R.id.hashtag_button) Button mHashtagButton;
-    @InjectView(R.id.count) TextView mCount;
-    @InjectView(R.id.image_preview_container)
+    @Bind(R.id.in_reply_to_cancel) TextView mCancel;
+    @Bind(R.id.in_reply_to_user_icon) ImageView mInReplyToUserIcon;
+    @Bind(R.id.in_reply_to_status) TextView mInReplyToStatus;
+    @Bind(R.id.in_reply_to_layout) RelativeLayout mInReplyToLayout;
+    @Bind(R.id.switch_account_spinner) Spinner mSwitchAccountSpinner;
+    @Bind(R.id.status_text) EditText mStatusText;
+    @Bind(R.id.suddenly_button) Button mSuddenlyButton;
+    @Bind(R.id.tweet_button) Button mTweetButton;
+    @Bind(R.id.img_button) Button mImgButton;
+    @Bind(R.id.draft_button) Button mDraftButton;
+    @Bind(R.id.hashtag_button) Button mHashtagButton;
+    @Bind(R.id.count) TextView mCount;
+    @Bind(R.id.image_preview_container)
     ViewGroup mImagePreviewContainer;
 
     class ActionBarHolder {
 
-        @InjectView(R.id.title) TextView mTitle;
-        @InjectView(R.id.undo) FontelloButton mUndo;
+        @Bind(R.id.title) TextView mTitle;
+        @Bind(R.id.undo) FontelloButton mUndo;
 
         @OnClick(R.id.undo)
         void undo() {
@@ -126,7 +126,7 @@ public class PostActivity extends FragmentActivity {
         }
 
         public ActionBarHolder(View view) {
-            ButterKnife.inject(this, view);
+            ButterKnife.bind(this, view);
         }
     }
 
@@ -136,7 +136,7 @@ public class PostActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         ThemeUtil.setTheme(this);
         setContentView(R.layout.activity_post);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
         mContext = this;
 
         // Wear からリプライを返す

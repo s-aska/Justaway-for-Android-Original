@@ -27,7 +27,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 import info.justaway.adapter.SimplePagerAdapter;
 import info.justaway.fragment.ScaleImageFragment;
 import info.justaway.model.TwitterManager;
@@ -42,8 +42,8 @@ import info.justaway.widget.ScaleImageViewPager;
  */
 public class ScaleImageActivity extends FragmentActivity {
 
-    @InjectView(R.id.pager) ScaleImageViewPager pager;
-    @InjectView(R.id.symbol) CirclePageIndicator symbol;
+    @Bind(R.id.pager) ScaleImageViewPager pager;
+    @Bind(R.id.symbol) CirclePageIndicator symbol;
 
     private ArrayList<String> imageUrls = new ArrayList<>();
     private SimplePagerAdapter simplePagerAdapter;
@@ -58,7 +58,7 @@ public class ScaleImageActivity extends FragmentActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         setContentView(R.layout.activity_scale_image);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         simplePagerAdapter = new SimplePagerAdapter(this, pager);
         symbol.setViewPager(pager);

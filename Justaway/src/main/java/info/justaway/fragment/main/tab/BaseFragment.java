@@ -12,7 +12,7 @@ import android.widget.ProgressBar;
 import java.util.ArrayList;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 import de.greenrobot.event.EventBus;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
@@ -43,9 +43,9 @@ public abstract class BaseFragment extends Fragment implements OnRefreshListener
     protected long mSentDirectMessagesMaxId = 0L; // 読み込んだ最新の送信メッセージID
     private ArrayList<Row> mStackRows = new ArrayList<>();
 
-    @InjectView(R.id.list_view) protected ListView mListView;
-    @InjectView(R.id.guruguru) protected ProgressBar mFooter;
-    @InjectView(R.id.ptr_layout) protected PullToRefreshLayout mPullToRefreshLayout;
+    @Bind(R.id.list_view) protected ListView mListView;
+    @Bind(R.id.guruguru) protected ProgressBar mFooter;
+    @Bind(R.id.ptr_layout) protected PullToRefreshLayout mPullToRefreshLayout;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,7 +59,7 @@ public abstract class BaseFragment extends Fragment implements OnRefreshListener
         if (v == null) {
             return null;
         }
-        ButterKnife.inject(this, v);
+        ButterKnife.bind(this, v);
 
         /**
          * PullToRefreshの初期化処理

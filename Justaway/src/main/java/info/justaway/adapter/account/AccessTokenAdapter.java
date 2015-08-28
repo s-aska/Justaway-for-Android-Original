@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 import info.justaway.R;
 import info.justaway.listener.OnTrashListener;
 import info.justaway.model.AccessTokenManager;
@@ -26,12 +26,12 @@ public class AccessTokenAdapter extends ArrayAdapter<AccessToken> {
     private int mColorBlue;
 
     class ViewHolder {
-        @InjectView(R.id.icon) ImageView mIcon;
-        @InjectView(R.id.screen_name) TextView mScreenName;
-        @InjectView(R.id.trash) FontelloButton mTrash;
+        @Bind(R.id.icon) ImageView mIcon;
+        @Bind(R.id.screen_name) TextView mScreenName;
+        @Bind(R.id.trash) FontelloButton mTrash;
 
         ViewHolder(View view) {
-            ButterKnife.inject(this, view);
+            ButterKnife.bind(this, view);
         }
     }
 

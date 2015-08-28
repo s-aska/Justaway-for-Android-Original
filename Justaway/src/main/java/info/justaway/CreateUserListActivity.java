@@ -11,7 +11,7 @@ import butterknife.ButterKnife;
 import info.justaway.task.CreateUserListTask;
 import info.justaway.util.MessageUtil;
 import info.justaway.util.ThemeUtil;
-import butterknife.InjectView;
+import butterknife.Bind;
 import butterknife.OnClick;
 import twitter4j.TwitterException;
 
@@ -19,11 +19,11 @@ public class CreateUserListActivity extends Activity {
 
     public static final int ERROR_CODE_NAME_BLANK = 403;
 
-    @InjectView(R.id.list_name)
+    @Bind(R.id.list_name)
     EditText mListName;
-    @InjectView(R.id.list_description)
+    @Bind(R.id.list_description)
     EditText mListDescription;
-    @InjectView(R.id.privacy_radio_group)
+    @Bind(R.id.privacy_radio_group)
     RadioGroup mPrivacyRadioGroup;
 
 
@@ -32,7 +32,7 @@ public class CreateUserListActivity extends Activity {
         super.onCreate(savedInstanceState);
         ThemeUtil.setTheme(this);
         setContentView(R.layout.activity_create_user_list);
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         ActionBar actionBar = getActionBar();
         if (actionBar != null) {
