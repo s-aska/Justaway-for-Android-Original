@@ -21,7 +21,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 import info.justaway.model.TabManager;
 import info.justaway.util.ThemeUtil;
 import info.justaway.widget.FontelloTextView;
@@ -205,12 +205,12 @@ public class TabSettingsActivity extends FragmentActivity {
     public class TabAdapter extends ArrayAdapter<TabManager.Tab> {
 
         class ViewHolder {
-            @InjectView(R.id.handle) FontelloTextView mHandle;
-            @InjectView(R.id.tab_icon) FontelloTextView mTabIcon;
-            @InjectView(R.id.name) TextView mName;
+            @Bind(R.id.handle) FontelloTextView mHandle;
+            @Bind(R.id.tab_icon) FontelloTextView mTabIcon;
+            @Bind(R.id.name) TextView mName;
 
             ViewHolder(View view) {
-                ButterKnife.inject(this, view);
+                ButterKnife.bind(this, view);
             }
         }
 

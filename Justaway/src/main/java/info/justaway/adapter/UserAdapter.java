@@ -10,7 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 import info.justaway.ProfileActivity;
 import info.justaway.R;
 import info.justaway.util.ImageUtil;
@@ -21,14 +21,14 @@ import twitter4j.User;
 public class UserAdapter extends ArrayAdapter<User> {
 
     static class ViewHolder {
-        @InjectView(R.id.icon) ImageView mIcon;
-        @InjectView(R.id.display_name) TextView mDisplayName;
-        @InjectView(R.id.screen_name) TextView mScreenName;
-        @InjectView(R.id.lock) FontelloTextView mFontelloLock;
-        @InjectView(R.id.description) TextView mDescription;
+        @Bind(R.id.icon) ImageView mIcon;
+        @Bind(R.id.display_name) TextView mDisplayName;
+        @Bind(R.id.screen_name) TextView mScreenName;
+        @Bind(R.id.lock) FontelloTextView mFontelloLock;
+        @Bind(R.id.description) TextView mDescription;
 
         public ViewHolder(View view) {
-            ButterKnife.inject(this, view);
+            ButterKnife.bind(this, view);
         }
     }
 

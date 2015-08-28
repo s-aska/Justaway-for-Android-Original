@@ -20,7 +20,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 import de.greenrobot.event.EventBus;
 import info.justaway.BuildConfig;
 import info.justaway.ProfileActivity;
@@ -45,36 +45,36 @@ import twitter4j.User;
 public class TwitterAdapter extends ArrayAdapter<Row> {
 
     static class ViewHolder {
-        @InjectView(R.id.action_container) ViewGroup mActionContainer;
-        @InjectView(R.id.action_icon) TextView mActionIcon;
-        @InjectView(R.id.action_by_display_name) TextView mActionByDisplayName;
-        @InjectView(R.id.action_by_screen_name) TextView mActionByScreenName;
-        @InjectView(R.id.icon) ImageView mIcon;
-        @InjectView(R.id.display_name) TextView mDisplayName;
-        @InjectView(R.id.screen_name) TextView mScreenName;
-        @InjectView(R.id.lock) TextView mLock;
-        @InjectView(R.id.datetime_relative) TextView mDatetimeRelative;
-        @InjectView(R.id.status) TextView mStatus;
-        @InjectView(R.id.quoted_display_name) TextView mQuotedDisplayName;
-        @InjectView(R.id.quoted_screen_name) TextView mQuotedScreenName;
-        @InjectView(R.id.quoted_status) TextView mQuotedStatus;
-        @InjectView(R.id.quoted_tweet) RelativeLayout mQuotedTweet;
-        @InjectView(R.id.quoted_images_container) ViewGroup mQuotedImagesContainer;
-        @InjectView(R.id.images_container) ViewGroup mImagesContainer;
-        @InjectView(R.id.menu_and_via_container) ViewGroup mMenuAndViaContainer;
-        @InjectView(R.id.do_reply) TextView mDoReply;
-        @InjectView(R.id.do_retweet) TextView mDoRetweet;
-        @InjectView(R.id.retweet_count) TextView mRetweetCount;
-        @InjectView(R.id.do_fav) TextView mDoFav;
-        @InjectView(R.id.fav_count) TextView mFavCount;
-        @InjectView(R.id.via) TextView mVia;
-        @InjectView(R.id.datetime) TextView mDatetime;
-        @InjectView(R.id.retweet_container) View mRetweetContainer;
-        @InjectView(R.id.retweet_icon) ImageView mRetweetIcon;
-        @InjectView(R.id.retweet_by) TextView mRetweetBy;
+        @Bind(R.id.action_container) ViewGroup mActionContainer;
+        @Bind(R.id.action_icon) TextView mActionIcon;
+        @Bind(R.id.action_by_display_name) TextView mActionByDisplayName;
+        @Bind(R.id.action_by_screen_name) TextView mActionByScreenName;
+        @Bind(R.id.icon) ImageView mIcon;
+        @Bind(R.id.display_name) TextView mDisplayName;
+        @Bind(R.id.screen_name) TextView mScreenName;
+        @Bind(R.id.lock) TextView mLock;
+        @Bind(R.id.datetime_relative) TextView mDatetimeRelative;
+        @Bind(R.id.status) TextView mStatus;
+        @Bind(R.id.quoted_display_name) TextView mQuotedDisplayName;
+        @Bind(R.id.quoted_screen_name) TextView mQuotedScreenName;
+        @Bind(R.id.quoted_status) TextView mQuotedStatus;
+        @Bind(R.id.quoted_tweet) RelativeLayout mQuotedTweet;
+        @Bind(R.id.quoted_images_container) ViewGroup mQuotedImagesContainer;
+        @Bind(R.id.images_container) ViewGroup mImagesContainer;
+        @Bind(R.id.menu_and_via_container) ViewGroup mMenuAndViaContainer;
+        @Bind(R.id.do_reply) TextView mDoReply;
+        @Bind(R.id.do_retweet) TextView mDoRetweet;
+        @Bind(R.id.retweet_count) TextView mRetweetCount;
+        @Bind(R.id.do_fav) TextView mDoFav;
+        @Bind(R.id.fav_count) TextView mFavCount;
+        @Bind(R.id.via) TextView mVia;
+        @Bind(R.id.datetime) TextView mDatetime;
+        @Bind(R.id.retweet_container) View mRetweetContainer;
+        @Bind(R.id.retweet_icon) ImageView mRetweetIcon;
+        @Bind(R.id.retweet_by) TextView mRetweetBy;
 
         public ViewHolder(View view) {
-            ButterKnife.inject(this, view);
+            ButterKnife.bind(this, view);
         }
     }
 

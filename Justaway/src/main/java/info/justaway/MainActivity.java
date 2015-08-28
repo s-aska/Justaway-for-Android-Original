@@ -35,7 +35,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import butterknife.ButterKnife;
-import butterknife.InjectView;
+import butterknife.Bind;
 import butterknife.OnClick;
 import butterknife.OnItemClick;
 import butterknife.OnLongClick;
@@ -100,26 +100,26 @@ public class MainActivity extends FragmentActivity {
     private int mDisabledTextColor;
     private ActionBarHolder mActionBarHolder;
 
-    @InjectView(R.id.drawer_layout) DrawerLayout mDrawerLayout;
-    @InjectView(R.id.quick_tweet_layout) LinearLayout mQuickTweetLayout;
-    @InjectView(R.id.tab_menus) LinearLayout mTabMenus;
-    @InjectView(R.id.account_list) ListView mDrawerList;
-    @InjectView(R.id.send_button) TextView mSendButton;
-    @InjectView(R.id.post_button) Button mPostButton;
-    @InjectView(R.id.quick_tweet_edit) ClearEditText mQuickTweetEdit;
+    @Bind(R.id.drawer_layout) DrawerLayout mDrawerLayout;
+    @Bind(R.id.quick_tweet_layout) LinearLayout mQuickTweetLayout;
+    @Bind(R.id.tab_menus) LinearLayout mTabMenus;
+    @Bind(R.id.account_list) ListView mDrawerList;
+    @Bind(R.id.send_button) TextView mSendButton;
+    @Bind(R.id.post_button) Button mPostButton;
+    @Bind(R.id.quick_tweet_edit) ClearEditText mQuickTweetEdit;
 
     /**
      * ButterKnife for ActionBar
      */
     class ActionBarHolder {
-        @InjectView(R.id.action_bar_title) TextView title;
-        @InjectView(R.id.action_bar_sub_title) TextView subTitle;
-        @InjectView(R.id.action_bar_normal_layout) LinearLayout normalLayout;
-        @InjectView(R.id.action_bar_search_layout) FrameLayout searchLayout;
-        @InjectView(R.id.action_bar_search_text) AutoCompleteEditText searchText;
-        @InjectView(R.id.action_bar_search_button) TextView searchButton;
-        @InjectView(R.id.action_bar_search_cancel) TextView cancelButton;
-        @InjectView(R.id.action_bar_streaming_button) TextView streamingButton;
+        @Bind(R.id.action_bar_title) TextView title;
+        @Bind(R.id.action_bar_sub_title) TextView subTitle;
+        @Bind(R.id.action_bar_normal_layout) LinearLayout normalLayout;
+        @Bind(R.id.action_bar_search_layout) FrameLayout searchLayout;
+        @Bind(R.id.action_bar_search_text) AutoCompleteEditText searchText;
+        @Bind(R.id.action_bar_search_button) TextView searchButton;
+        @Bind(R.id.action_bar_search_cancel) TextView cancelButton;
+        @Bind(R.id.action_bar_streaming_button) TextView streamingButton;
 
         @OnClick(R.id.action_bar_search_button)
         void actionBarSearchButton() {
@@ -139,7 +139,7 @@ public class MainActivity extends FragmentActivity {
         }
 
         public ActionBarHolder(View view) {
-            ButterKnife.inject(this, view);
+            ButterKnife.bind(this, view);
         }
     }
 
@@ -154,7 +154,7 @@ public class MainActivity extends FragmentActivity {
         }
 
         public DrawerHolder(View view) {
-            ButterKnife.inject(this, view);
+            ButterKnife.bind(this, view);
         }
     }
 
@@ -212,7 +212,7 @@ public class MainActivity extends FragmentActivity {
          */
         setContentView(R.layout.activity_main);
 
-        ButterKnife.inject(this);
+        ButterKnife.bind(this);
 
         /**
          * 起動と同時にキーボードが出現するのを抑止、クイックモード時に起きる
