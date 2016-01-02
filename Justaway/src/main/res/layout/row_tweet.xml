@@ -157,30 +157,56 @@
             android:layout_below="@id/quoted_display_name"
             tools:text="Hello World."/>
 
-        <LinearLayout
-            android:id="@+id/quoted_images_container"
-            android:layout_width="match_parent"
+        <FrameLayout
+            android:id="@+id/quoted_images_container_wrapper"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/quoted_status"
             android:layout_marginBottom="4dp"
-            android:layout_marginTop="10dp"
-            android:orientation="vertical"/>
+            android:layout_marginTop="10dp">
+            <LinearLayout
+                android:id="@+id/quoted_images_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"/>
+            <info.justaway.widget.FontelloTextView
+                android:id="@+id/quoted_play"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/fontello_play"
+                android:textColor="#666666"
+                android:textSize="24sp"/>
+        </FrameLayout>
 
     </RelativeLayout>
 
-    <LinearLayout
-        android:id="@+id/images_container"
-        android:layout_width="match_parent"
+    <FrameLayout
+        android:id="@+id/images_container_wrapper"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/quoted_tweet"
         android:layout_toRightOf="@id/icon"
         android:layout_marginBottom="4dp"
-        android:layout_marginTop="10dp"
-        android:orientation="vertical"/>
+        android:layout_marginTop="10dp">
+        <LinearLayout
+            android:id="@+id/images_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"/>
+        <info.justaway.widget.FontelloTextView
+            android:id="@+id/play"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/fontello_play"
+            android:textColor="#666666"
+            android:textSize="24sp"/>
+    </FrameLayout>
 
     <RelativeLayout
         android:id="@+id/menu_and_via_container"
-        android:layout_below="@id/images_container"
+        android:layout_below="@id/images_container_wrapper"
         android:layout_toRightOf="@id/icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">

@@ -27,5 +27,6 @@
     <string name="fontello_undo" translatable="false">戻</string>
     <string name="fontello_menu" translatable="false">三</string>
     <string name="fontello_cancel" translatable="false">☓</string>
+    <string name="fontello_play" translatable="false">進</string>
 
 </resources>

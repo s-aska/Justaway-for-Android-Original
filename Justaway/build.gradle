@@ -3,7 +3,7 @@ apply plugin: 'com.neenbedankt.android-apt'
 
 dependencies {
     //noinspection GradleDynamicVersion
-    compile "com.android.support:support-v4:21.+"
+    compile "com.android.support:support-v4:23.1.1"
     compile "com.google.code.gson:gson:2.3"
     compile "de.greenrobot:eventbus:2.2.0"
 
@@ -28,8 +28,8 @@ android {
         minSdkVersion 14
         targetSdkVersion 22
 
-        versionCode 62
-        versionName '1.0.62'
+        versionCode 63
+        versionName '1.0.63'
         applicationId "info.justaway"
     }
 
@@ -37,7 +37,6 @@ android {
         // debug {
         //     storeFile file("debug.keystore")
         // }
-
         release
     }
 
@@ -84,5 +83,13 @@ if (project.hasProperty('keyAlias')) {
 }
 if (project.hasProperty('keyPassword')) {
     android.signingConfigs.release.keyPassword = keyPassword
+}
+
+allprojects {
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+        }
+    }
 }
 

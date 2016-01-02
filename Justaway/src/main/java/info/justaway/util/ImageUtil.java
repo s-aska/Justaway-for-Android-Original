@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -76,7 +77,7 @@ public class ImageUtil {
      * @param viewGroup サムネイルを表示するView
      * @param status    ツイート
      */
-    public static void displayThumbnailImages(final Context context, ViewGroup viewGroup, final Status status) {
+    public static void displayThumbnailImages(final Context context, ViewGroup viewGroup, ViewGroup wrapperViewGroup, TextView play, final Status status) {
 
         // ツイートに含まれる動画のURLを取得
         final String videoUrl = StatusUtil.getVideoUrl(status);
@@ -96,6 +97,7 @@ public class ImageUtil {
                 if (index > 0) {
                     layoutParams.setMargins(0, 20, 0, 0);
                 }
+                // layoutParams.gravity = Gravity.CENTER_HORIZONTAL;
                 viewGroup.addView(image, layoutParams);
                 displayRoundedImage(url, image);
 
@@ -121,12 +123,16 @@ public class ImageUtil {
                             context.startActivity(intent);
                         }
                     });
+
                 }
                 index++;
             }
             viewGroup.setVisibility(View.VISIBLE);
+            wrapperViewGroup.setVisibility(View.VISIBLE);
         } else {
             viewGroup.setVisibility(View.GONE);
+            wrapperViewGroup.setVisibility(View.GONE);
         }
+        play.setVisibility(videoUrl.isEmpty() ? View.GONE : View.VISIBLE);
     }
 }

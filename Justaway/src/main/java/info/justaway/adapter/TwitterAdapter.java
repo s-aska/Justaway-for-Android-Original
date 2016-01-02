@@ -59,8 +59,12 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         @Bind(R.id.quoted_screen_name) TextView mQuotedScreenName;
         @Bind(R.id.quoted_status) TextView mQuotedStatus;
         @Bind(R.id.quoted_tweet) RelativeLayout mQuotedTweet;
+        @Bind(R.id.quoted_images_container_wrapper) ViewGroup mQuotedImagesContainerWrapper;
         @Bind(R.id.quoted_images_container) ViewGroup mQuotedImagesContainer;
+        @Bind(R.id.quoted_play) TextView mQuotedPlay;
+        @Bind(R.id.images_container_wrapper) ViewGroup mImagesContainerWrapper;
         @Bind(R.id.images_container) ViewGroup mImagesContainer;
+        @Bind(R.id.play) TextView mPlay;
         @Bind(R.id.menu_and_via_container) ViewGroup mMenuAndViaContainer;
         @Bind(R.id.do_reply) TextView mDoReply;
         @Bind(R.id.do_retweet) TextView mDoRetweet;
@@ -310,6 +314,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         holder.mQuotedTweet.setVisibility(View.GONE);
         holder.mRetweetContainer.setVisibility(View.GONE);
         holder.mImagesContainer.setVisibility(View.GONE);
+        holder.mImagesContainerWrapper.setVisibility(View.GONE);
         UserIconManager.displayUserIcon(message.getSender(), holder.mIcon);
         holder.mIcon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -511,7 +516,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
 
             // プレビュー表示On
             if (BasicSettings.getDisplayThumbnailOn()) {
-                ImageUtil.displayThumbnailImages(mContext, holder.mQuotedImagesContainer, quotedStatus);
+                ImageUtil.displayThumbnailImages(mContext, holder.mQuotedImagesContainer, holder.mImagesContainerWrapper, holder.mQuotedPlay, quotedStatus);
             } else {
                 holder.mQuotedImagesContainer.setVisibility(View.GONE);
             }
@@ -522,9 +527,10 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
 
         // プレビュー表示On
         if (BasicSettings.getDisplayThumbnailOn()) {
-            ImageUtil.displayThumbnailImages(mContext, holder.mImagesContainer, status);
+            ImageUtil.displayThumbnailImages(mContext, holder.mImagesContainer, holder.mImagesContainerWrapper, holder.mPlay, status);
         } else {
             holder.mImagesContainer.setVisibility(View.GONE);
+            holder.mImagesContainerWrapper.setVisibility(View.GONE);
         }
     }
 

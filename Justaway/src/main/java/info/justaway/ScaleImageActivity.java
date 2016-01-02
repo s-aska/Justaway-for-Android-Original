@@ -151,14 +151,14 @@ public class ScaleImageActivity extends FragmentActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
-        final URL url;
-        try {
-            url = new URL(imageUrls.get(pager.getCurrentItem()));
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-            return false;
-        }
         if (itemId == R.id.save) {
+            final URL url;
+            try {
+                url = new URL(imageUrls.get(pager.getCurrentItem()));
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+                return false;
+            }
             AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
                 @Override
                 protected Void doInBackground(Void... params) {
