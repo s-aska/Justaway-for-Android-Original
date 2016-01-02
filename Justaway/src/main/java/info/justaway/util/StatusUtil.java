@@ -9,6 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import info.justaway.model.AccessTokenManager;
+import twitter4j.ExtendedMediaEntity;
 import twitter4j.MediaEntity;
 import twitter4j.Status;
 import twitter4j.URLEntity;
@@ -148,6 +149,17 @@ public class StatusUtil {
         }
 
         return imageUrls;
+    }
+
+    public static String getVideoUrl(Status status) {
+        for (final ExtendedMediaEntity extendedMediaEntity : status.getExtendedMediaEntities()) {
+            for (final ExtendedMediaEntity.Variant videoVariant : extendedMediaEntity.getVideoVariants()) {
+                if (videoVariant.getUrl().lastIndexOf("mp4") != -1) {
+                    return videoVariant.getUrl();
+                }
+            }
+        }
+        return "";
     }
 
     public static SpannableStringBuilder generateUnderline(String str) {

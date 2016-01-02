@@ -11,11 +11,11 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 import info.justaway.JustawayApplication;
 import info.justaway.ScaleImageActivity;
+import info.justaway.VideoActivity;
 import info.justaway.display.FadeInRoundedBitmapDisplayer;
 import info.justaway.settings.BasicSettings;
 import twitter4j.Status;
@@ -77,6 +77,10 @@ public class ImageUtil {
      * @param status    ツイート
      */
     public static void displayThumbnailImages(final Context context, ViewGroup viewGroup, final Status status) {
+
+        // ツイートに含まれる動画のURLを取得
+        final String videoUrl = StatusUtil.getVideoUrl(status);
+
         // ツイートに含まれる画像のURLをすべて取得
         ArrayList<String> imageUrls = StatusUtil.getImageUrls(status);
         if (imageUrls.size() > 0) {
@@ -95,17 +99,29 @@ public class ImageUtil {
                 viewGroup.addView(image, layoutParams);
                 displayRoundedImage(url, image);
 
-                // 画像タップで拡大表示（ピンチイン・ピンチアウトいつかちゃんとやる）
-                final int openIndex = index;
-                image.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(v.getContext(), ScaleImageActivity.class);
-                        intent.putExtra("status", status);
-                        intent.putExtra("index", openIndex);
-                        context.startActivity(intent);
-                    }
-                });
+                if (videoUrl.isEmpty()) {
+                    // 画像タップで拡大表示（ピンチイン・ピンチアウトいつかちゃんとやる）
+                    final int openIndex = index;
+                    image.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(v.getContext(), ScaleImageActivity.class);
+                            intent.putExtra("status", status);
+                            intent.putExtra("index", openIndex);
+                            context.startActivity(intent);
+                        }
+                    });
+                } else {
+                    // 画像タップで拡大表示（ピンチイン・ピンチアウトいつかちゃんとやる）
+                    image.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(v.getContext(), VideoActivity.class);
+                            intent.putExtra("videoUrl", videoUrl);
+                            context.startActivity(intent);
+                        }
+                    });
+                }
                 index++;
             }
             viewGroup.setVisibility(View.VISIBLE);

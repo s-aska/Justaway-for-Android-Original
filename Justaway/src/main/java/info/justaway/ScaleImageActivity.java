@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -150,13 +151,19 @@ public class ScaleImageActivity extends FragmentActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
+        final URL url;
+        try {
+            url = new URL(imageUrls.get(pager.getCurrentItem()));
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            return false;
+        }
         if (itemId == R.id.save) {
             AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
                 @Override
                 protected Void doInBackground(Void... params) {
                     int count;
                     try {
-                        URL url = new URL(imageUrls.get(pager.getCurrentItem()));
                         URLConnection connection = url.openConnection();
                         connection.connect();
                         InputStream input = new BufferedInputStream(url.openStream(), 10 * 1024);

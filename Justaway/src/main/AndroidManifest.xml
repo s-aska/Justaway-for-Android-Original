@@ -124,6 +124,9 @@
             android:name=".ScaleImageActivity"
             android:theme="@style/Theme.MyTrans"/>
         <activity
+            android:name=".VideoActivity"
+            android:theme="@style/Theme.MyTrans"/>
+        <activity
             android:name=".SearchActivity"
             android:label="@string/title_search"/>
         <activity
