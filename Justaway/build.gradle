@@ -28,8 +28,8 @@ android {
         minSdkVersion 14
         targetSdkVersion 22
 
-        versionCode 63
-        versionName '1.0.63'
+        versionCode 64
+        versionName '1.0.64'
         applicationId "info.justaway"
     }
 
@@ -43,6 +43,12 @@ android {
     buildTypes {
         debug {
             applicationIdSuffix ".debug"
+
+            // 不具合に気付かないので有効にしておく
+            minifyEnabled true
+            shrinkResources false
+
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
 
         release {
