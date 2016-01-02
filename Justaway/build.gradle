@@ -28,8 +28,8 @@ android {
         minSdkVersion 14
         targetSdkVersion 22
 
-        versionCode 64
-        versionName '1.0.64'
+        versionCode 66
+        versionName '1.0.66'
         applicationId "info.justaway"
     }
 
@@ -45,17 +45,17 @@ android {
             applicationIdSuffix ".debug"
 
             // 不具合に気付かないので有効にしておく
-            minifyEnabled true
+            minifyEnabled false
             shrinkResources false
 
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            // proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
 
         release {
-            minifyEnabled true
+            minifyEnabled false
             shrinkResources false
 
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            // proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
 
             if (project.hasProperty('storeFile')) {
                 signingConfig signingConfigs.release
