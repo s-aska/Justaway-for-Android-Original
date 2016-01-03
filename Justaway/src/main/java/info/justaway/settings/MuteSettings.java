@@ -36,11 +36,18 @@ public class MuteSettings {
         Gson gson = new Gson();
         if (json != null) {
             sMuteSettingsData = gson.fromJson(json, MuteSettingsData.class);
-        } else {
+        }
+        if (sMuteSettingsData == null) {
             sMuteSettingsData = new MuteSettingsData();
-            sMuteSettingsData.sourceMap = new HashMap<String, Boolean>();
-            sMuteSettingsData.userMap = new HashMap<Long, String>();
-            sMuteSettingsData.words = new ArrayList<String>();
+        }
+        if (sMuteSettingsData.sourceMap == null) {
+            sMuteSettingsData.sourceMap = new HashMap<>();
+        }
+        if (sMuteSettingsData.userMap == null) {
+            sMuteSettingsData.userMap = new HashMap<>();
+        }
+        if (sMuteSettingsData.words == null) {
+            sMuteSettingsData.words = new ArrayList<>();
         }
     }
 
@@ -49,7 +56,7 @@ public class MuteSettings {
         String exportJson = gson.toJson(sMuteSettingsData);
         SharedPreferences.Editor editor = getSharedPreferences().edit();
         editor.putString(PREF_KEY, exportJson);
-        editor.commit();
+        editor.apply();
     }
 
     public static boolean isMute(Row row) {

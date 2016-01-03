@@ -43,11 +43,15 @@ public class PostStockSettings {
         Gson gson = new Gson();
         if (json != null) {
             mPostStockSettingsDate = gson.fromJson(json, PostStockSettingsDate.class);
-        } else {
+        }
+        if (mPostStockSettingsDate == null) {
             mPostStockSettingsDate = new PostStockSettingsDate();
-            mPostStockSettingsDate.hashtags = new ArrayList<String>();
-            mPostStockSettingsDate.drafts = new ArrayList<String>();
-
+        }
+        if (mPostStockSettingsDate.hashtags == null) {
+            mPostStockSettingsDate.hashtags = new ArrayList<>();
+        }
+        if (mPostStockSettingsDate.drafts == null) {
+            mPostStockSettingsDate.drafts = new ArrayList<>();
         }
     }
 
@@ -57,7 +61,7 @@ public class PostStockSettings {
         String exportJson = gson.toJson(mPostStockSettingsDate);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString(PREF_KEY, exportJson);
-        editor.commit();
+        editor.apply();
     }
 
     public void addHashtag(String hashtag) {

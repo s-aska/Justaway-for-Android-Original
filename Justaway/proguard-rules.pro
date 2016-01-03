@@ -27,6 +27,7 @@
 
 # http://qiita.com/petitviolet/items/1b709f3f0db2659a271a
 -keepnames class info.justaway.model.** { *; }
+-keepnames class info.justaway.settings.** { *; }
 
 # for Twitter4j
 -dontwarn twitter4j.**
