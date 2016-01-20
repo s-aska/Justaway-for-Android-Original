@@ -3,6 +3,7 @@ package info.justaway.model;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.media.ExifInterface;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -32,6 +33,10 @@ public class ImageResizer {
             option.inJustDecodeBounds = false;
             option.inSampleSize = 2;
             Bitmap bitmap = BitmapFactory.decodeFile(file.getPath(), option);
+            Matrix matrix = getExifMatrix(file);
+            if (matrix != null) {
+                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+            }
             for (int i = 0; i < 10; i++) {
                 bitmap = half(bitmap);
                 FileOutputStream out = new FileOutputStream(tempFile.getPath());
@@ -50,6 +55,52 @@ public class ImageResizer {
         }
 
         return tempFile;
+    }
+
+    public static Matrix getExifMatrix(File file) {
+        ExifInterface exifInterface = null;
+        try {
+            exifInterface = new ExifInterface(file.getAbsolutePath());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (exifInterface == null) {
+            return null;
+        }
+        Matrix matrix = new Matrix();
+        int orientation = exifInterface.getAttributeInt(
+                ExifInterface.TAG_ORIENTATION,
+                ExifInterface.ORIENTATION_UNDEFINED);
+        switch (orientation) {
+            case ExifInterface.ORIENTATION_UNDEFINED:
+                break;
+            case ExifInterface.ORIENTATION_NORMAL:
+                break;
+            case ExifInterface.ORIENTATION_FLIP_HORIZONTAL:
+                matrix.postScale(-1f, 1f);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_180:
+                matrix.postRotate(180f);
+                break;
+            case ExifInterface.ORIENTATION_FLIP_VERTICAL:
+                matrix.postScale(1f, -1f);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_90:
+                matrix.postRotate(90f);
+                break;
+            case ExifInterface.ORIENTATION_TRANSVERSE:
+                matrix.postRotate(-90f);
+                matrix.postScale(1f, -1f);
+                break;
+            case ExifInterface.ORIENTATION_TRANSPOSE:
+                matrix.postRotate(90f);
+                matrix.postScale(1f, -1f);
+                break;
+            case ExifInterface.ORIENTATION_ROTATE_270:
+                matrix.postRotate(-90f);
+                break;
+        }
+        return matrix;
     }
 
     /**
