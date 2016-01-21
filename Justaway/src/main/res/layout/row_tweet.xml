@@ -175,7 +175,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="@string/fontello_play"
-                android:textColor="#666666"
+                android:textColor="#ffffff"
                 android:textSize="24sp"/>
         </FrameLayout>
 
@@ -200,7 +200,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="@string/fontello_play"
-            android:textColor="#666666"
+            android:textColor="#ffffff"
             android:textSize="24sp"/>
     </FrameLayout>
 
