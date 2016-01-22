@@ -1,13 +1,15 @@
 package info.justaway;
 
+import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
-import android.widget.MediaController;
 import android.widget.ProgressBar;
 import android.widget.VideoView;
 
@@ -16,7 +18,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import info.justaway.util.MessageUtil;
 
-public class VideoActivity extends FragmentActivity implements MediaPlayer.OnPreparedListener {
+public class VideoActivity extends FragmentActivity {
 
     @Bind(R.id.player)
     VideoView player;
@@ -30,10 +32,10 @@ public class VideoActivity extends FragmentActivity implements MediaPlayer.OnPre
         finish();
     }
 
-    private MediaPlayer mMediaPlayer = null;
-
     public VideoActivity() {
     }
+
+    boolean musicWasPlaying = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,33 +62,40 @@ public class VideoActivity extends FragmentActivity implements MediaPlayer.OnPre
             return;
         }
 
+        musicWasPlaying = ((AudioManager) getSystemService(Context.AUDIO_SERVICE)).isMusicActive();
+
         guruguru.setVisibility(View.VISIBLE);
-        final MediaController mediaController = new MediaController(this);
-        mediaController.setOnClickListener(new View.OnClickListener() {
+        player.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
+            public boolean onTouch(View view, MotionEvent motionEvent) {
                 finish();
+                return false;
             }
         });
-        player.setMediaController(mediaController);
-        player.setOnPreparedListener(this);
+        player.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mediaPlayer) {
+                guruguru.setVisibility(View.GONE);
+            }
+        });
+        player.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mediaPlayer) {
+                player.seekTo(0);
+                player.start();
+            }
+        });
         player.setVideoURI(Uri.parse(videoUrl));
         player.start();
     }
 
     @Override
-    public void onPrepared(MediaPlayer mp) {
-        guruguru.setVisibility(View.GONE);
-        mp.setLooping(true);
-        mMediaPlayer = mp;
-    }
-
-    @Override
     protected void onDestroy() {
-        super.onDestroy();
-        if (mMediaPlayer != null) {
-            mMediaPlayer.release();
-            mMediaPlayer = null;
+        if (musicWasPlaying) {
+            Intent i = new Intent("com.android.music.musicservicecommand");
+            i.putExtra("command", "play");
+            sendBroadcast(i);
         }
+        super.onDestroy();
     }
 }
