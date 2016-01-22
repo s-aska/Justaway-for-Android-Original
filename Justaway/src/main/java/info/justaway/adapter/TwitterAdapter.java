@@ -519,6 +519,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                 ImageUtil.displayThumbnailImages(mContext, holder.mQuotedImagesContainer, holder.mImagesContainerWrapper, holder.mQuotedPlay, quotedStatus);
             } else {
                 holder.mQuotedImagesContainer.setVisibility(View.GONE);
+                holder.mQuotedImagesContainerWrapper.setVisibility(View.GONE);
             }
             holder.mQuotedTweet.setVisibility(View.VISIBLE);
         } else {
