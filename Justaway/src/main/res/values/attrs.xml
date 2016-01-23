@@ -6,7 +6,7 @@
         <attr name="menu_text_color_disabled" format="color"/>
         <attr name="menu_background" format="color"/>
         <attr name="menu_active_background" format="color"/>
-        <attr name="background" format="color"/>
+        <attr name="holo_background" format="color"/>
         <attr name="holo_green" format="reference|color"/>
         <attr name="holo_orange" format="reference|color"/>
         <attr name="holo_red" format="reference|color"/>

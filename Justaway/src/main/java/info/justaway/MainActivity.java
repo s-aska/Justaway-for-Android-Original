@@ -9,7 +9,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.GravityCompat;
@@ -191,9 +191,9 @@ public class MainActivity extends FragmentActivity {
 
             int options = actionBar.getDisplayOptions();
             if ((options & ActionBar.DISPLAY_SHOW_CUSTOM) == ActionBar.DISPLAY_SHOW_CUSTOM) {
-                actionBar.setDisplayOptions(options ^ ActionBar.DISPLAY_SHOW_CUSTOM);
+                actionBar.setDisplayShowCustomEnabled(false);
             } else {
-                actionBar.setDisplayOptions(options | ActionBar.DISPLAY_SHOW_CUSTOM);
+                actionBar.setDisplayShowCustomEnabled(true);
                 if (actionBar.getCustomView() == null) {
                     actionBar.setCustomView(R.layout.action_bar_main);
                     mActionBarHolder = new ActionBarHolder(actionBar.getCustomView());
@@ -274,8 +274,11 @@ public class MainActivity extends FragmentActivity {
                 }
                 if (mAccessTokenAdapter != null) {
                     mAccessTokenAdapter.clear();
-                    for (AccessToken accessToken : AccessTokenManager.getAccessTokens()) {
-                        mAccessTokenAdapter.add(accessToken);
+                    ArrayList<AccessToken> accessTokens = AccessTokenManager.getAccessTokens();
+                    if (accessTokens != null) {
+                        for (AccessToken accessToken : accessTokens) {
+                            mAccessTokenAdapter.add(accessToken);
+                        }
                     }
                 }
                 break;
@@ -461,6 +464,7 @@ public class MainActivity extends FragmentActivity {
     /**
      * ActionBarでCustomView使ってるので自分で再実装
      */
+    @SuppressLint("SetTextI18n")
     @Override
     public void setTitle(CharSequence title) {
         if (mActionBarHolder.title != null) {
@@ -622,7 +626,7 @@ public class MainActivity extends FragmentActivity {
         /**
          * スワイプ移動でも移動先が未読アプしている場合、アピ解除判定を行う
          */
-        mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+        mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
                 BaseFragment f = mMainPagerAdapter.findFragmentByPosition(position);
@@ -810,12 +814,13 @@ public class MainActivity extends FragmentActivity {
     };
 
     private ActionBarDrawerToggle getActionBarDrawerToggle() {
-        int drawer = BasicSettings.getThemeName().equals("black") ?
-                R.drawable.ic_dark_drawer :
-                R.drawable.ic_dark_drawer;
+//        int drawer = BasicSettings.getThemeName().equals("black") ?
+//                R.drawable.ic_dark_drawer :
+//                R.drawable.ic_dark_drawer;
 
+        //return new ActionBarDrawerToggle(this,mDrawerLayout, drawer)
         return new ActionBarDrawerToggle(
-                this, mDrawerLayout, drawer, R.string.open, R.string.close) {
+                this, mDrawerLayout, R.string.open, R.string.close) {
 
             public void onDrawerClosed(View view) {
                 invalidateOptionsMenu();

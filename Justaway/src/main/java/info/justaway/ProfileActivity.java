@@ -266,7 +266,7 @@ public class ProfileActivity extends FragmentActivity implements
          * これは透明度＆背景色黒で実現している、背景色黒だけだと背景画像が見えないが、
          * 透明度を指定することで背景画像の表示と白色のテキストの視認性を両立している
          */
-        mPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        mPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
@@ -331,7 +331,7 @@ public class ProfileActivity extends FragmentActivity implements
 
         tabs[0].setTextColor(colorBlue);
 
-        mListPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+        mListPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
                 /**

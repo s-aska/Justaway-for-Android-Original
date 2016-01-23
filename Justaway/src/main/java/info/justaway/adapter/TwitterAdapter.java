@@ -1,5 +1,6 @@
 package info.justaway.adapter;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -9,6 +10,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.util.LongSparseArray;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -280,6 +282,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         return view;
     }
 
+    @SuppressLint("SetTextI18n")
     private void renderMessage(ViewHolder holder, final DirectMessage message) {
 
         long userId = AccessTokenManager.getUserId();
@@ -328,6 +331,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         holder.mLock.setVisibility(View.INVISIBLE);
     }
 
+    @SuppressLint("SetTextI18n")
     private void renderStatus(final ViewHolder holder, final Status status, Status retweet,
                               User favorite) {
 
@@ -393,21 +397,21 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
                     ActionUtil.doDestroyFavorite(status.getId());
                 } else {
                     holder.mDoFav.setTag("is_fav");
-                    holder.mDoFav.setTextColor(mContext.getResources().getColor(R.color.holo_orange_light));
+                    holder.mDoFav.setTextColor(ContextCompat.getColor(mContext, R.color.holo_orange_light));
                     ActionUtil.doFavorite(status.getId());
                 }
             }
         });
 
         if (FavRetweetManager.getRtId(status) != null) {
-            holder.mDoRetweet.setTextColor(mContext.getResources().getColor(R.color.holo_green_light));
+            holder.mDoRetweet.setTextColor(ContextCompat.getColor(mContext, R.color.holo_green_light));
         } else {
             holder.mDoRetweet.setTextColor(Color.parseColor("#666666"));
         }
 
         if (FavRetweetManager.isFav(status)) {
             holder.mDoFav.setTag("is_fav");
-            holder.mDoFav.setTextColor(mContext.getResources().getColor(R.color.holo_orange_light));
+            holder.mDoFav.setTextColor(ContextCompat.getColor(mContext, R.color.holo_orange_light));
         } else {
             holder.mDoFav.setTag("no_fav");
             holder.mDoFav.setTextColor(Color.parseColor("#666666"));
@@ -439,7 +443,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         // favの場合
         if (favorite != null) {
             holder.mActionIcon.setText(R.string.fontello_star);
-            holder.mActionIcon.setTextColor(mContext.getResources().getColor(R.color.holo_orange_light));
+            holder.mActionIcon.setTextColor(ContextCompat.getColor(mContext, R.color.holo_orange_light));
             holder.mActionByDisplayName.setText(favorite.getName());
             holder.mActionByScreenName.setText("@" + favorite.getScreenName());
             holder.mRetweetContainer.setVisibility(View.GONE);
@@ -453,7 +457,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             // 自分のツイート
             if (userId == status.getUser().getId()) {
                 holder.mActionIcon.setText(R.string.fontello_retweet);
-                holder.mActionIcon.setTextColor(mContext.getResources().getColor(R.color.holo_green_light));
+                holder.mActionIcon.setTextColor(ContextCompat.getColor(mContext, R.color.holo_green_light));
                 holder.mActionByDisplayName.setText(retweet.getUser().getName());
                 holder.mActionByScreenName.setText("@" + retweet.getUser().getScreenName());
                 holder.mRetweetContainer.setVisibility(View.GONE);
@@ -476,7 +480,7 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
             // 自分へのリプ
             if (StatusUtil.isMentionForMe(status)) {
                 holder.mActionIcon.setText(R.string.fontello_at);
-                holder.mActionIcon.setTextColor(mContext.getResources().getColor(R.color.holo_red_light));
+                holder.mActionIcon.setTextColor(ContextCompat.getColor(mContext, R.color.holo_red_light));
                 holder.mActionByDisplayName.setText(status.getUser().getName());
                 holder.mActionByScreenName.setText("@" + status.getUser().getScreenName());
                 holder.mActionContainer.setVisibility(View.VISIBLE);

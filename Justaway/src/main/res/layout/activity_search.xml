@@ -4,7 +4,7 @@
               android:layout_height="match_parent"
               android:orientation="vertical"
               tools:background="@android:color/background_dark"
-              android:background="?attr/background">
+              android:background="?attr/holo_background">
 
     <LinearLayout
         android:orientation="horizontal"

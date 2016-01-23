@@ -73,7 +73,7 @@ public class UserListActivity extends FragmentActivity {
         pagerAdapter.addTab(UserMemberFragment.class, args);
         pagerAdapter.addTab(UserListStatusesFragment.class, args);
         pagerAdapter.notifyDataSetChanged();
-        mListPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+        mListPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
                 if (position == 0) {
