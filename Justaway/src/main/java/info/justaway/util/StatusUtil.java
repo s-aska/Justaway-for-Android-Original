@@ -18,12 +18,13 @@ import twitter4j.UserMentionEntity;
 public class StatusUtil {
     private static final Pattern TWITPIC_PATTERN = Pattern.compile("^http://twitpic\\.com/(\\w+)$");
     private static final Pattern TWIPPLE_PATTERN = Pattern.compile("^http://p\\.twipple\\.jp/(\\w+)$");
-    private static final Pattern INSTAGRAM_PATTERN = Pattern.compile("^https?://instagram\\.com/p/([^/]+)/$");
+    private static final Pattern INSTAGRAM_PATTERN = Pattern.compile("^https?://(?:www\\.)?instagram\\.com/p/([^/]+)/$");
     private static final Pattern PHOTOZOU_PATTERN = Pattern.compile("^http://photozou\\.jp/photo/show/\\d+/(\\d+)$");
     private static final Pattern IMAGES_PATTERN = Pattern.compile("^https?://.*\\.(png|gif|jpeg|jpg)$");
     private static final Pattern YOUTUBE_PATTERN = Pattern.compile("^https?://(?:www\\.youtube\\.com/watch\\?.*v=|youtu\\.be/)([\\w-]+)");
     private static final Pattern NICONICO_PATTERN = Pattern.compile("^http://(?:www\\.nicovideo\\.jp/watch|nico\\.ms)/sm(\\d+)$");
     private static final Pattern PIXIV_PATTERN = Pattern.compile("^http://www\\.pixiv\\.net/member_illust\\.php.*illust_id=(\\d+)");
+    private static final Pattern GYAZO_PATTERN = Pattern.compile("^https?://gyazo\\.com/(\\w+)");
 
     private static final Pattern URL_PATTERN = Pattern.compile("(http://|https://)[\\w\\.\\-/:#\\?=&;%~\\+]+");
     private static final Pattern MENTION_PATTERN = Pattern.compile("@[a-zA-Z0-9_]+");
@@ -130,6 +131,11 @@ public class StatusUtil {
             Matcher pixiv_matcher = PIXIV_PATTERN.matcher(url.getExpandedURL());
             if (pixiv_matcher.find()) {
                 imageUrls.add("http://embed.pixiv.net/decorate.php?illust_id=" + pixiv_matcher.group(1));
+                continue;
+            }
+            Matcher gyazo_matcher = GYAZO_PATTERN.matcher(url.getExpandedURL());
+            if (gyazo_matcher.find()) {
+                imageUrls.add("https://i.gyazo.com/" + gyazo_matcher.group(1) + ".png");
                 continue;
             }
             Matcher images_matcher = IMAGES_PATTERN.matcher(url.getExpandedURL());
