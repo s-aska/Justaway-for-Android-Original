@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pref_title_notification_on">Notificaciones</string>
+    <string name="pref_description_notification_on">Sólo funcionará si la transmisión está activada.</string>
+    <string name="pref_title_notification_reply_on">Respuestas</string>
+    <string name="pref_title_notification_message_on">Mensajes directos</string>
+    <string name="pref_title_notification_favorite_on">Favoritos</string>
+    <string name="pref_title_notification_retweet_on">Retweets</string>
+    <string name="pref_title_notification_vibrate_on">Vibración</string>
+    <string name="pref_title_notification_sound_on">Sonido</string>
+</resources>

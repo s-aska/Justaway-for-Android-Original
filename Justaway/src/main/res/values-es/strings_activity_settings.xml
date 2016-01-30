@@ -1,0 +1,69 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="title_activity_settings">Configuración</string>
+
+    <string name="pref_title_keep_screen_on">Mantener pantalla encendida</string>
+    <string name="pref_title_fast_scroll_on">Desplazamiento rápido</string>
+    <string name="pref_description_fast_scroll_on">Mostrar borde para desplazamiento rápido</string>
+
+    <string name="pref_title_font_size">Tamaño de letra</string>
+    <string-array name="pref_font_size_titles">
+        <item>10 pt</item>
+        <item>11 pt</item>
+        <item>12 pt</item>
+        <item>13 pt</item>
+        <item>14 pt</item>
+        <item>15 pt</item>
+        <item>16 pt</item>
+        <item>17 pt</item>
+        <item>18 pt</item>
+        <item>19 pt</item>
+        <item>20 pt</item>
+    </string-array>
+    <string-array name="pref_font_size_values">
+        <item>10</item>
+        <item>11</item>
+        <item>12</item>
+        <item>13</item>
+        <item>14</item>
+        <item>15</item>
+        <item>16</item>
+        <item>17</item>
+        <item>18</item>
+        <item>19</item>
+        <item>20</item>
+    </string-array>
+
+    <string name="pref_title_notification">Configuración de notificaciones</string>
+
+    <string name="pref_title_mute">Configuración de silencio</string>
+
+    <string name="pref_title_performance">Configuración de rendimiento</string>
+
+    <string name="pref_title_log_tap">Acción al hacer un toque largo</string>
+    <string-array name="pref_long_tap_titles">
+        <item>Citar</item>
+        <item>Ver conversación</item>
+        <item>Ver otros tweets</item>
+        <item>Compartir</item>
+        <item>Responder a todos</item>
+        <item>Nada</item>
+    </string-array>
+    <string-array name="pref_log_tap_values">
+        <item>quote</item>
+        <item>talk</item>
+        <item>show_around</item>
+        <item>share_url</item>
+        <item>reply_all</item>
+        <item>nothing</item>
+    </string-array>
+
+    <string name="pref_title_theme">Color del tema</string>
+    <string-array name="pref_theme_titles">
+        <item>Oscuro</item>
+        <item>Claro</item>
+    </string-array>
+    <string-array name="pref_theme_values">
+        <item>black</item>
+        <item>white</item>
+    </string-array>
+</resources>
