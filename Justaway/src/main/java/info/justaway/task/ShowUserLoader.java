@@ -27,14 +27,17 @@ public class ShowUserLoader extends AbstractAsyncTaskLoader<Profile> {
 
     @Override
     public Profile loadInBackground() {
+        String args = "";
         try {
             Twitter twitter = TwitterManager.getTwitter();
             User user;
             Relationship relationship;
             if (mScreenName != null) {
+                args = "name:" + mScreenName;
                 user = twitter.showUser(mScreenName);
                 relationship = twitter.showFriendship(AccessTokenManager.getScreenName(), mScreenName);
             } else {
+                args = "id:" + mUserId;
                 user = twitter.showUser(mUserId);
                 relationship = twitter.showFriendship(AccessTokenManager.getUserId(), mUserId);
             }
@@ -44,7 +47,9 @@ public class ShowUserLoader extends AbstractAsyncTaskLoader<Profile> {
             return profile;
         } catch (TwitterException e) {
             e.printStackTrace();
-            return null;
+            Profile profile = new Profile();
+            profile.setError("(args:" + args + " code:" + e.getErrorCode() + ")");
+            return profile;
         }
     }
 }

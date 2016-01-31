@@ -20,6 +20,12 @@ public class MessageUtil {
         Toast.makeText(application, text, Toast.LENGTH_SHORT).show();
     }
 
+    public static void showToast(int id, String description) {
+        JustawayApplication application = JustawayApplication.getApplication();
+        String text = application.getString(id) + "\n" + description;
+        Toast.makeText(application, text, Toast.LENGTH_SHORT).show();
+    }
+
     public static void showProgressDialog(Context context, String message) {
         sProgressDialog = new ProgressDialog(context);
         sProgressDialog.setMessage(message);

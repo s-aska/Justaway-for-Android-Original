@@ -10,6 +10,7 @@ public class Profile {
     private User user;
     private Relationship relationship;
     private ResponseList<Status> statuses;
+    private String error;
 
     public ResponseList<Status> getStatuses() {
         return statuses;
@@ -33,5 +34,13 @@ public class Profile {
 
     public void setRelationship(Relationship relationship) {
         this.relationship = relationship;
+    }
+
+    public void setError(String error) {
+        this.error = error;
+    }
+
+    public String getError() {
+        return error;
     }
 }

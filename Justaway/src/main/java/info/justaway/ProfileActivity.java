@@ -77,7 +77,9 @@ public class ProfileActivity extends FragmentActivity implements
         // インテント経由での起動をサポート
         Intent intent = getIntent();
         Bundle args = new Bundle(1);
-        if (Intent.ACTION_VIEW.equals(intent.getAction()) && intent.getData() != null) {
+        if (Intent.ACTION_VIEW.equals(intent.getAction()) && intent.getData() != null
+                && intent.getData().getLastPathSegment() != null
+                && !intent.getData().getLastPathSegment().isEmpty()) {
             args.putString("screenName", intent.getData().getLastPathSegment());
         } else {
             String screenName = intent.getStringExtra("screenName");
@@ -227,12 +229,16 @@ public class ProfileActivity extends FragmentActivity implements
     public void onLoadFinished(Loader<Profile> arg0, Profile profile) {
         MessageUtil.dismissProgressDialog();
         if (profile == null) {
-            MessageUtil.showToast(R.string.toast_load_data_failure);
+            MessageUtil.showToast(R.string.toast_load_data_failure, "(null)");
+            return;
+        }
+        if (profile.getError() != null && !profile.getError().isEmpty()) {
+            MessageUtil.showToast(R.string.toast_load_data_failure, profile.getError());
             return;
         }
         mUser = profile.getUser();
         if (mUser == null) {
-            MessageUtil.showToast(R.string.toast_load_data_failure);
+            MessageUtil.showToast(R.string.toast_load_data_failure, "(missing user)");
             return;
         }
         mFavouritesCount.setText(getString(R.string.label_favourites, String.format("%1$,3d", mUser.getFavouritesCount())));
