@@ -125,7 +125,7 @@
     <string name="notification_favorite_ticker">" favorited: "</string>
     <string name="notification_retweet_ticker">" retweeted: "</string>
     <string name="official_website">http://justaway.info/</string>
-    <string name="open" translatable="false">open</string>
+    <string name="open">open</string>
     <string name="profile_pointer" translatable="false">●　○</string>
     <string name="profile_pointer_right" translatable="false">○　●</string>
     <string name="progress_loading" tools:ignore="TypographyEllipsis">Loading...</string>

@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <string name="android_package_name" translatable="false">info.justaway</string>
-    <string name="app_name" translatable="false">Justaway</string>
     <string name="button_add">Añadir</string>
     <string name="button_apply">Aplicar</string>
     <string name="button_blocking">Bloqueado</string>
@@ -21,7 +19,7 @@
     <string name="button_save">Guardar</string>
     <string name="button_unfollow">Dejar de seguir</string>
     <string name="button_yes">Si</string>
-    <string name="close" translatable="false">Cerrar</string>
+    <string name="close">Cerrar</string>
     <string name="confirm_create_block">¿Quieres bloquear a este usuario?</string>
     <string name="confirm_create_streaming">¿Quieres conectarte a la transmisión?</string>
     <string name="confirm_destroy_block">¿Quieres desbloquear a este usuario?</string>
@@ -125,9 +123,7 @@
     <string name="notification_favorite_ticker">" marcó como favorito: "</string>
     <string name="notification_retweet_ticker">" hizo retweet: "</string>
     <string name="official_website">http://justaway.info/</string>
-    <string name="open" translatable="false">abrir</string>
-    <string name="profile_pointer" translatable="false">●　○</string>
-    <string name="profile_pointer_right" translatable="false">○　●</string>
+    <string name="open">abrir</string>
     <string name="progress_loading" tools:ignore="TypographyEllipsis">Cargando...</string>
     <string name="progress_process" tools:ignore="TypographyEllipsis">Procesando...</string>
     <string name="progress_sending" tools:ignore="TypographyEllipsis">Enviando...</string>

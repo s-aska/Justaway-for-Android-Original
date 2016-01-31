@@ -10,7 +10,7 @@
         android:layout_width="wrap_content"
         android:layout_height="32dp"
         android:gravity="center"
-        android:textSize="18sp"
+        android:textSize="16sp"
         android:text="@string/label_account_setting"/>
 
 </RelativeLayout>

@@ -19,6 +19,7 @@
     <string name="button_save">保存</string>
     <string name="button_unfollow">フォロー解除</string>
     <string name="button_yes">はい</string>
+    <string name="close">close</string>
     <string name="confirm_create_block">ブロックしますか？</string>
     <string name="confirm_create_streaming">ストリーミングに接続しますか？</string>
     <string name="confirm_destroy_block">ブロックを解除しますか？</string>
@@ -122,6 +123,7 @@
     <string name="notification_favorite_ticker">"さんがお気に入りに登録しました: "</string>
     <string name="notification_retweet_ticker">"さんがリツイート: "</string>
     <string name="official_website">http://justaway.info/</string>
+    <string name="open">open</string>
     <string name="progress_loading">読み込み中</string>
     <string name="progress_process">処理中</string>
     <string name="progress_sending">送信中</string>
