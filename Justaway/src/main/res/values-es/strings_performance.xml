@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pref_title_user_icon_rounded_on">Usar iconos redondeados</string>
+    <string name="pref_description_user_icon_rounded_on">Desactivar esto disminuye el consumo de memoria.</string>
+
+    <string name="pref_title_user_icon_size">Calidad de iconos de perfil</string>
+    <string-array name="pref_user_icon_size_titles">
+        <item>No mostrar</item>
+        <item>Baja</item>
+        <item>Media</item>
+        <item>Alta</item>
+    </string-array>
+    <string-array name="pref_user_icon_size_values">
+        <item>none</item>
+        <item>mini</item>
+        <item>normal</item>
+        <item>bigger</item>
+    </string-array>
+
+    <string name="pref_title_display_thumbnail_on">Mostrar miniaturas</string>
+    <string name="pref_description_display_thumbnail_on">Mostrar las miniaturas de las imágenes en los tweets.</string>
+
+    <string name="pref_title_page_count">Número de tweets a almacenar.</string>
+    <string-array name="pref_page_count_titles">
+        <item>20 tweets</item>
+        <item>50 tweets</item>
+        <item>100 tweets</item>
+        <item>200 tweets</item>
+    </string-array>
+    <string-array name="pref_page_count_values">
+        <item>20</item>
+        <item>50</item>
+        <item>100</item>
+        <item>200</item>
+    </string-array>
+</resources>
