@@ -48,6 +48,9 @@ public class AccessTokenManager {
 
         Gson gson = new Gson();
         AccountSettings accountSettings = gson.fromJson(json, AccountSettings.class);
+        if (accountSettings == null || accountSettings.accessTokens == null) {
+            return null;
+        }
         sAccessToken = accountSettings.accessTokens.get(accountSettings.index);
         return sAccessToken;
     }
