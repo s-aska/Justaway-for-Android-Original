@@ -168,9 +168,9 @@ public class PostActivity extends FragmentActivity {
         if (actionBar != null) {
             int options = actionBar.getDisplayOptions();
             if ((options & ActionBar.DISPLAY_SHOW_CUSTOM) == ActionBar.DISPLAY_SHOW_CUSTOM) {
-                actionBar.setDisplayOptions(options ^ ActionBar.DISPLAY_SHOW_CUSTOM);
+                actionBar.setDisplayShowCustomEnabled(false);
             } else {
-                actionBar.setDisplayOptions(options | ActionBar.DISPLAY_SHOW_CUSTOM);
+                actionBar.setDisplayShowCustomEnabled(true);
                 if (actionBar.getCustomView() == null) {
                     actionBar.setCustomView(R.layout.action_bar_post);
                     mActionBarHolder = new ActionBarHolder(actionBar.getCustomView());

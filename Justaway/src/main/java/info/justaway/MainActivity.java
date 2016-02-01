@@ -9,7 +9,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.GravityCompat;
@@ -814,13 +814,13 @@ public class MainActivity extends FragmentActivity {
     };
 
     private ActionBarDrawerToggle getActionBarDrawerToggle() {
-//        int drawer = BasicSettings.getThemeName().equals("black") ?
-//                R.drawable.ic_dark_drawer :
-//                R.drawable.ic_dark_drawer;
+        int drawer = BasicSettings.getThemeName().equals("black") ?
+                R.drawable.ic_dark_drawer :
+                R.drawable.ic_dark_drawer;
 
-        //return new ActionBarDrawerToggle(this,mDrawerLayout, drawer)
         return new ActionBarDrawerToggle(
-                this, mDrawerLayout, R.string.open, R.string.close) {
+                this, mDrawerLayout, drawer, R.string.open, R.string.close) {
+//        return new ActionBarDrawerToggle(this, mDrawerLayout, R.string.open, R.string.close) {
 
             public void onDrawerClosed(View view) {
                 invalidateOptionsMenu();
