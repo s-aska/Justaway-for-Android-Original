@@ -35,7 +35,7 @@ public class ShowUserLoader extends AbstractAsyncTaskLoader<Profile> {
             if (mScreenName != null) {
                 args = "name:" + mScreenName;
                 user = twitter.showUser(mScreenName);
-                relationship = twitter.showFriendship(AccessTokenManager.getScreenName(), mScreenName);
+                relationship = twitter.showFriendship(AccessTokenManager.getUserId(), user.getId());
             } else {
                 args = "id:" + mUserId;
                 user = twitter.showUser(mUserId);
