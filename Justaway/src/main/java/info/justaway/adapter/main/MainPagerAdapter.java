@@ -97,7 +97,7 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
     public int findPositionBySearchWord(String searchWord) {
         int position = 0;
         for (TabInfo tab : mTabs) {
-            if (tab.mId == TabManager.SEARCH_TAB_ID && searchWord.equals(tab.mSearchWord)) {
+            if (tab.mId <= TabManager.SEARCH_TAB_ID && searchWord.equals(tab.mSearchWord)) {
                 return position;
             }
             position++;

@@ -539,7 +539,7 @@ public class MainActivity extends FragmentActivity {
                     mMainPagerAdapter.addTab(DirectMessagesFragment.class, null, tab.getName(), tab.id);
                 } else if (tab.id == TabManager.FAVORITES_TAB_ID) {
                     mMainPagerAdapter.addTab(FavoritesFragment.class, null, tab.getName(), tab.id);
-                } else if (tab.id == TabManager.SEARCH_TAB_ID) {
+                } else if (tab.id <= TabManager.SEARCH_TAB_ID) {
                     Bundle args = new Bundle();
                     args.putString("searchWord", tab.name);
                     mMainPagerAdapter.addTab(SearchFragment.class, args, tab.getName(), tab.id, tab.name);
@@ -978,7 +978,7 @@ public class MainActivity extends FragmentActivity {
      * オートスクロールじゃない場合は対応するタブを青くする
      */
     public void onEventMainThread(NewRecordEvent event) {
-        int position = event.getTabId() != TabManager.SEARCH_TAB_ID ? mMainPagerAdapter.findPositionById(event.getTabId()) : mMainPagerAdapter.findPositionBySearchWord(event.getSearchWord());
+        int position = event.getTabId() > TabManager.SEARCH_TAB_ID ? mMainPagerAdapter.findPositionById(event.getTabId()) : mMainPagerAdapter.findPositionBySearchWord(event.getSearchWord());
         if (position < 0) {
             return;
         }

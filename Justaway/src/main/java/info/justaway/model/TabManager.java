@@ -33,6 +33,11 @@ public class TabManager {
             Gson gson = new Gson();
             TabData tabData = gson.fromJson(json, TabData.class);
             sTabs = tabData.tabs;
+            for (Tab tab : sTabs) {
+                if (tab.id <= SEARCH_TAB_ID) {
+                    tab.id = SEARCH_TAB_ID - tab.name.hashCode();
+                }
+            }
         }
         if (sTabs.size() == 0) {
             sTabs = generalTabs();
@@ -91,7 +96,7 @@ public class TabManager {
                 return JustawayApplication.getApplication().getString(R.string.title_direct_messages);
             } else if (id == FAVORITES_TAB_ID) {
                 return JustawayApplication.getApplication().getString(R.string.title_favorites);
-            } else if (id == SEARCH_TAB_ID) {
+            } else if (id <= SEARCH_TAB_ID) {
                 return JustawayApplication.getApplication().getString(R.string.title_search) + ":" + name;
             } else {
                 return name;
@@ -107,7 +112,7 @@ public class TabManager {
                 return R.string.fontello_mail;
             } else if (id == FAVORITES_TAB_ID) {
                 return R.string.fontello_star;
-            } else if (id == SEARCH_TAB_ID) {
+            } else if (id <= SEARCH_TAB_ID) {
                 return R.string.fontello_search;
             } else {
                 return R.string.fontello_list;
