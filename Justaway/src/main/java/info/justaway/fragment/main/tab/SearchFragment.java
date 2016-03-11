@@ -19,7 +19,7 @@ public class SearchFragment extends BaseFragment {
      * このタブを表す固有のID、ユーザーリストで正数を使うため負数を使う
      */
     public long getTabId() {
-        return TabManager.SEARCH_TAB_ID - mSearchWord.hashCode();
+        return TabManager.SEARCH_TAB_ID - Math.abs(mSearchWord.hashCode());
     }
 
     public String getSearchWord() {

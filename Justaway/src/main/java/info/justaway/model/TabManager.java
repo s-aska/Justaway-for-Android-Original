@@ -35,7 +35,7 @@ public class TabManager {
             sTabs = tabData.tabs;
             for (Tab tab : sTabs) {
                 if (tab.id <= SEARCH_TAB_ID) {
-                    tab.id = SEARCH_TAB_ID - tab.name.hashCode();
+                    tab.id = SEARCH_TAB_ID - Math.abs(tab.name.hashCode());
                 }
             }
         }

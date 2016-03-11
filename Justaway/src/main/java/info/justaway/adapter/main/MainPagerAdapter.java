@@ -9,8 +9,6 @@ import android.support.v4.view.ViewPager;
 
 import java.util.ArrayList;
 
-import info.justaway.JustawayApplication;
-import info.justaway.R;
 import info.justaway.fragment.main.tab.BaseFragment;
 import info.justaway.model.AccessTokenManager;
 import info.justaway.model.TabManager;

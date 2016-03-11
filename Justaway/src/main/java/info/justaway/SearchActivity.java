@@ -172,7 +172,7 @@ public class SearchActivity extends FragmentActivity implements LoaderManager.Lo
             case R.id.search_to_tab:
                 ArrayList<TabManager.Tab> tabs = TabManager.loadTabs();
                 String searchWord = mSearchWords.getText().toString();
-                TabManager.Tab tab = new TabManager.Tab(TabManager.SEARCH_TAB_ID - searchWord.hashCode());
+                TabManager.Tab tab = new TabManager.Tab(TabManager.SEARCH_TAB_ID - Math.abs(searchWord.hashCode()));
                 tab.name = searchWord;
                 tabs.add(tab);
                 TabManager.saveTabs(tabs);
