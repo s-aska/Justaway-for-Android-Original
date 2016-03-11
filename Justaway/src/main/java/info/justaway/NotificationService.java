@@ -108,7 +108,7 @@ public class NotificationService extends Service {
         String ticker;
         int smallIcon;
         long id;
-        if (row.isDirectMessage()) {
+        if (row.isDirectMessage() && row.getMessage().getSender().getId() != userId) {
             if (!preferences.getBoolean("notification_message_on", true)) {
                 return;
             }
