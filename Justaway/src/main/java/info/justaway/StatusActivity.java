@@ -58,6 +58,12 @@ public class StatusActivity extends FragmentActivity {
                 startActivity(scaleImage);
                 finish();
                 return;
+            } else if (uri.getPath().contains("video")) {
+                Intent videoActivity = new Intent(this, VideoActivity.class);
+                videoActivity.putExtra("statusUrl", uri.toString());
+                startActivity(videoActivity);
+                finish();
+                return;
             } else {
                 statusId = Long.parseLong(uri.getLastPathSegment());
             }
