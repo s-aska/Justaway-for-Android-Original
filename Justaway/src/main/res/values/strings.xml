@@ -216,7 +216,7 @@
     <string name="label_search_user">" User Search"</string>
     <string name="label_display_profile">"'s Profile"</string>
     <string name="title_user_search">User Search</string>
-    <string name="hint_search">探 Search</string>
+    <string name="hint_search">Search</string>
     <string name="title_notification">Notification Settings</string>
     <string name="tab_tweets">Tweets</string>
     <string name="hint_list_name">25 characters or less</string>
