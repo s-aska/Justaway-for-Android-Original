@@ -221,5 +221,7 @@
     <string name="menu_open_aclog">Aclogで開く</string>
     <string name="toast_update_status_not_Follow">相手にフォローされていません</string>
     <string name="toast_create_user_list_failure_name_blank">リスト名を入力してください</string>
+    <string name="pref_title_quick_post_on">クイック投稿</string>
+    <string name="pref_description_quick_post_on">クイック投稿バーをタブの上に表示します</string>
 
 </resources>

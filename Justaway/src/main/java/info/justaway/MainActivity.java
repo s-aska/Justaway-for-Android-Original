@@ -318,6 +318,12 @@ public class MainActivity extends FragmentActivity {
         BasicSettings.resetNotification();
         EventBus.getDefault().post(new BasicSettingsChangeEvent());
 
+        if (BasicSettings.getQuickMode()) {
+            showQuickPanel();
+        } else {
+            hideQuickPanel();
+        }
+
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
