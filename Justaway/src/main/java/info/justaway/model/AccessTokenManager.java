@@ -94,7 +94,7 @@ public class AccessTokenManager {
 
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString(TOKENS, exportJson);
-        editor.commit();
+        editor.apply();
     }
 
     public static void removeAccessToken(AccessToken removeAccessToken) {
@@ -124,7 +124,7 @@ public class AccessTokenManager {
 
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString(TOKENS, exportJson);
-        editor.commit();
+        editor.apply();
     }
 
     public static long getUserId() {

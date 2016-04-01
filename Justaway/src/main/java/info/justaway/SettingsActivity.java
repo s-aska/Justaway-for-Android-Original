@@ -60,6 +60,24 @@ public class SettingsActivity extends Activity {
 
             addPreferencesFromResource(R.xml.pref_general);
 
+            ListPreference displayAccountNamePreference = (ListPreference) findPreference("display_account_name");
+            if (displayAccountNamePreference == null) {
+                return;
+            }
+            displayAccountNamePreference.setSummary(displayAccountNamePreference.getEntry());
+            displayAccountNamePreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+                @Override
+                public boolean onPreferenceChange(Preference preference, Object newValue) {
+                    ListPreference listPreference = (ListPreference) preference;
+                    int listId = listPreference.findIndexOfValue((String) newValue);
+                    CharSequence[] entries = listPreference.getEntries();
+                    if (entries != null) {
+                        preference.setSummary(entries[listId]);
+                    }
+                    return true;
+                }
+            });
+
             ListPreference fontSizePreference = (ListPreference) findPreference("font_size");
             if (fontSizePreference == null) {
                 return;

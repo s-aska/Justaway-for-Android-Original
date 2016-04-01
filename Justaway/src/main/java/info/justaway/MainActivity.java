@@ -34,8 +34,8 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import butterknife.ButterKnife;
 import butterknife.Bind;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnItemClick;
 import butterknife.OnLongClick;
@@ -62,6 +62,7 @@ import info.justaway.fragment.main.tab.UserListFragment;
 import info.justaway.model.AccessTokenManager;
 import info.justaway.model.TabManager;
 import info.justaway.model.TwitterManager;
+import info.justaway.model.UserIconManager;
 import info.justaway.settings.BasicSettings;
 import info.justaway.task.SendDirectMessageTask;
 import info.justaway.task.UpdateStatusTask;
@@ -319,6 +320,10 @@ public class MainActivity extends FragmentActivity {
         BasicSettings.resetNotification();
         EventBus.getDefault().post(new BasicSettingsChangeEvent());
 
+        // アカウント名表示の設定反映
+        int currentPosition = mViewPager.getCurrentItem();
+        setTitle(mMainPagerAdapter.getPageTitle(currentPosition));
+
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -474,7 +479,18 @@ public class MainActivity extends FragmentActivity {
                 mActionBarHolder.subTitle.setText(matcher.group(1));
             } else {
                 mActionBarHolder.title.setText(title);
-                mActionBarHolder.subTitle.setText("@" + AccessTokenManager.getScreenName());
+                BasicSettings.DisplayAccountName displayAccountName = BasicSettings.getDisplayAccountName();
+                switch (displayAccountName) {
+                    case SCREEN_NAME:
+                        mActionBarHolder.subTitle.setText("@" + AccessTokenManager.getScreenName());
+                        break;
+                    case DISPLAY_NAME:
+                        mActionBarHolder.subTitle.setText(UserIconManager.getName(AccessTokenManager.getUserId()));
+                        break;
+                    case NONE:
+                        mActionBarHolder.subTitle.setText("");
+                        break;
+                }
             }
         }
     }

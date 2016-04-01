@@ -1,6 +1,18 @@
 <resources>
     <string name="title_activity_settings">設定</string>
 
+    <string name="pref_title_display_account_name">ツールバーのアカウント名</string>
+    <string-array name="pref_display_account_name_titles">
+        <item>ユーザー名（@xxx）</item>
+        <item>プロフィールの名前</item>
+        <item>表示しない</item>
+    </string-array>
+    <string-array name="pref_display_account_name_values">
+        <item>screen_name</item>
+        <item>display_name</item>
+        <item>none</item>
+    </string-array>
+
     <string name="pref_title_keep_screen_on">スリープしない</string>
     <string name="pref_title_fast_scroll_on">高速スクロール</string>
     <string name="pref_description_fast_scroll_on">スクロールバーのスライダーを表示する</string>

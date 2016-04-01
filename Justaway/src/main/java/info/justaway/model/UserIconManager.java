@@ -25,6 +25,9 @@ public class UserIconManager {
     private static final String PREF_KEY_USER_ICON_MAP = "data/v2";
     private static HashMap<String, String> sUserIconMap = new HashMap<String, String>();
 
+    private static final String PREF_KEY_USER_NAME_MAP = "data/name";
+    private static HashMap<String, String> sUserNameMap = new HashMap<String, String>();
+
     private static SharedPreferences getSharedPreferences() {
         return JustawayApplication.getApplication()
                 .getSharedPreferences(PREF_NAME_USER_ICON_MAP, Context.MODE_PRIVATE);
@@ -33,21 +36,33 @@ public class UserIconManager {
     public static void displayUserIcon(User user, final ImageView view) {
         String url;
         String size = BasicSettings.getUserIconSize();
-        if (size.equals("bigger")) {
-            url = user.getBiggerProfileImageURL();
-        } else if (size.equals("normal")) {
-            url = user.getProfileImageURL();
-        } else if (size.equals("mini")) {
-            url = user.getMiniProfileImageURL();
-        } else {
-            view.setVisibility(View.GONE);
-            return;
+        switch (size) {
+            case "bigger":
+                url = user.getBiggerProfileImageURL();
+                break;
+            case "normal":
+                url = user.getProfileImageURL();
+                break;
+            case "mini":
+                url = user.getMiniProfileImageURL();
+                break;
+            default:
+                view.setVisibility(View.GONE);
+                return;
         }
         if (BasicSettings.getUserIconRoundedOn()) {
             ImageUtil.displayRoundedImage(url, view);
         } else {
             ImageUtil.displayImage(url, view);
         }
+    }
+
+    public static String getName(final long userId) {
+        String name = sUserNameMap.get(String.valueOf(userId));
+        if (name != null) {
+            return name;
+        }
+        return "";
     }
 
     /**
@@ -68,16 +83,21 @@ public class UserIconManager {
     public static void addUserIconMap(User user) {
         final SharedPreferences preferences = getSharedPreferences();
         final Gson gson = new Gson();
-        String json = preferences.getString(PREF_KEY_USER_ICON_MAP, null);
-        if (json != null) {
-            sUserIconMap = gson.fromJson(json, sUserIconMap.getClass());
+        String iconJson = getSharedPreferences().getString(PREF_KEY_USER_ICON_MAP, null);
+        if (iconJson != null) {
+            sUserIconMap = gson.fromJson(iconJson, sUserIconMap.getClass());
+        }
+        String nameJson = getSharedPreferences().getString(PREF_KEY_USER_NAME_MAP, null);
+        if (nameJson != null) {
+            sUserNameMap = gson.fromJson(nameJson, sUserNameMap.getClass());
         }
         sUserIconMap.put(String.valueOf(user.getId()), user.getBiggerProfileImageURL());
-        String exportJson = gson.toJson(sUserIconMap);
+        sUserNameMap.put(String.valueOf(user.getId()), user.getName());
         SharedPreferences.Editor editor = preferences.edit();
         editor.clear();
-        editor.putString(PREF_KEY_USER_ICON_MAP, exportJson);
-        editor.commit();
+        editor.putString(PREF_KEY_USER_ICON_MAP, gson.toJson(sUserIconMap));
+        editor.putString(PREF_KEY_USER_NAME_MAP, gson.toJson(sUserNameMap));
+        editor.apply();
     }
 
     @SuppressWarnings("unchecked")
@@ -88,9 +108,13 @@ public class UserIconManager {
         }
 
         final Gson gson = new Gson();
-        String json = getSharedPreferences().getString(PREF_KEY_USER_ICON_MAP, null);
-        if (json != null) {
-            sUserIconMap = gson.fromJson(json, sUserIconMap.getClass());
+        String iconJson = getSharedPreferences().getString(PREF_KEY_USER_ICON_MAP, null);
+        if (iconJson != null) {
+            sUserIconMap = gson.fromJson(iconJson, sUserIconMap.getClass());
+        }
+        String nameJson = getSharedPreferences().getString(PREF_KEY_USER_NAME_MAP, null);
+        if (nameJson != null) {
+            sUserNameMap = gson.fromJson(nameJson, sUserNameMap.getClass());
         }
 
         final long userIds[] = new long[accessTokens.size()];
@@ -118,14 +142,16 @@ public class UserIconManager {
                     return;
                 }
                 sUserIconMap.clear();
+                sUserNameMap.clear();
                 for (User user : users) {
                     sUserIconMap.put(String.valueOf(user.getId()), user.getBiggerProfileImageURL());
+                    sUserNameMap.put(String.valueOf(user.getId()), user.getName());
                 }
-                String exportJson = gson.toJson(sUserIconMap);
                 SharedPreferences.Editor editor = getSharedPreferences().edit();
                 editor.clear();
-                editor.putString(PREF_KEY_USER_ICON_MAP, exportJson);
-                editor.commit();
+                editor.putString(PREF_KEY_USER_ICON_MAP, gson.toJson(sUserIconMap));
+                editor.putString(PREF_KEY_USER_NAME_MAP, gson.toJson(sUserNameMap));
+                editor.apply();
             }
         }.execute();
     }

@@ -1,6 +1,18 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="title_activity_settings">Configuración</string>
 
+    <string name="pref_title_display_account_name">Nombre de la cuenta de la barra de herramientas</string>
+    <string-array name="pref_display_account_name_titles">
+        <item>Nombre de pantalla (@xxx)</item>
+        <item>Nombre de perfil</item>
+        <item>None</item>
+    </string-array>
+    <string-array name="pref_display_account_name_values">
+        <item>screen_name</item>
+        <item>display_name</item>
+        <item>none</item>
+    </string-array>
+
     <string name="pref_title_keep_screen_on">Mantener pantalla encendida</string>
     <string name="pref_title_fast_scroll_on">Desplazamiento rápido</string>
     <string name="pref_description_fast_scroll_on">Mostrar borde para desplazamiento rápido</string>

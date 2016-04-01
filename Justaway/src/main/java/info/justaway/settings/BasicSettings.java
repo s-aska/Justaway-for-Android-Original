@@ -8,10 +8,27 @@ import info.justaway.NotificationService;
 
 public class BasicSettings {
 
+    public enum DisplayAccountName {
+        SCREEN_NAME("SCREEN_NAME"),
+        DISPLAY_NAME("DISPLAY_NAME"),
+        NONE("NONE");
+
+        private final String text;
+
+        DisplayAccountName(final String text) {
+            this.text = text;
+        }
+
+        public String getString() {
+            return this.text;
+        }
+    }
+
     private static final String PREF_NAME_SETTINGS = "settings";
     private static int mFontSize;
     private static String mLongTapAction;
     private static String mThemeName;
+    private static DisplayAccountName mDisplayAccountName;
     private static boolean mUserIconRounded;
     private static boolean mDisplayThumbnail;
     private static boolean mFastScroll;
@@ -68,6 +85,7 @@ public class BasicSettings {
         mPageCount = Integer.parseInt(preferences.getString("page_count", "200"));
         mStreamingMode = getSharedPreferences().getBoolean(STREAMING_MODE, true);
         mFastScroll = preferences.getBoolean("fast_scroll_on", true);
+        mDisplayAccountName = DisplayAccountName.valueOf(preferences.getString("display_account_name", "screen_name").toUpperCase());
     }
 
     public static void resetNotification() {
@@ -108,5 +126,9 @@ public class BasicSettings {
 
     public static boolean getFastScrollOn() {
         return mFastScroll;
+    }
+
+    public static DisplayAccountName getDisplayAccountName() {
+        return mDisplayAccountName;
     }
 }
