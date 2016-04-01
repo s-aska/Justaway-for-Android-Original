@@ -41,7 +41,11 @@ public class SearchAdapter extends ArrayAdapter<String> implements Filterable {
 
     @Override
     public String getItem(int position) {
-        return mStrings.get(position);
+        if (mStrings.size() > position) {
+            return mStrings.get(position);
+        } else {
+            return "";
+        }
     }
 
     @Override

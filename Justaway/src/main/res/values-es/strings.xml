@@ -221,5 +221,7 @@
     <string name="menu_open_aclog">Abrir Aclog</string>
     <string name="toast_update_status_not_Follow">No puedes enviar mensajes a usuarios que no te siguen</string>
     <string name="toast_create_user_list_failure_name_blank">El nombre de la listas no puede estar vacío</string>
+    <string name="pref_title_quick_post_on">Post rápido</string>
+    <string name="pref_description_quick_post_on">Mostrar barra de post rápido</string>
 
 </resources>

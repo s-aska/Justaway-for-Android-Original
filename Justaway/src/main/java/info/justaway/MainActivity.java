@@ -199,7 +199,6 @@ public class MainActivity extends FragmentActivity {
                     actionBar.setCustomView(R.layout.action_bar_main);
                     mActionBarHolder = new ActionBarHolder(actionBar.getCustomView());
                     mSearchAdapter = new SearchAdapter(this, R.layout.row_auto_complete);
-                    mActionBarHolder.searchText.setTypeface(JustawayApplication.getFontello());
                     mActionBarHolder.searchText.setThreshold(0);
                     mActionBarHolder.searchText.setAdapter(mSearchAdapter);
                     mActionBarHolder.searchText.setOnItemClickListener(getActionBarAutoCompleteOnClickListener());
@@ -323,6 +322,12 @@ public class MainActivity extends FragmentActivity {
         // アカウント名表示の設定反映
         int currentPosition = mViewPager.getCurrentItem();
         setTitle(mMainPagerAdapter.getPageTitle(currentPosition));
+
+        if (BasicSettings.getQuickMode()) {
+            showQuickPanel();
+        } else {
+            hideQuickPanel();
+        }
 
         new Handler().postDelayed(new Runnable() {
             @Override

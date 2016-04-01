@@ -216,7 +216,7 @@
     <string name="label_search_user">" User Search"</string>
     <string name="label_display_profile">"'s Profile"</string>
     <string name="title_user_search">User Search</string>
-    <string name="hint_search">探 Search</string>
+    <string name="hint_search">Search</string>
     <string name="title_notification">Notification Settings</string>
     <string name="tab_tweets">Tweets</string>
     <string name="hint_list_name">25 characters or less</string>
@@ -225,5 +225,7 @@
     <string name="menu_open_aclog">Open Aclog</string>
     <string name="toast_update_status_not_Follow">you cannot send messages to users who are not following you.</string>
     <string name="toast_create_user_list_failure_name_blank">A list\'s name can\'t be blank.</string>
+    <string name="pref_title_quick_post_on">Quick post</string>
+    <string name="pref_description_quick_post_on">Quick post bar to display on top of the tab</string>
 
 </resources>
