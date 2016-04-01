@@ -118,6 +118,7 @@ public class ScaleImageView extends ImageView implements OnTouchListener {
         mMatrix.reset();
         int r_norm = r - l;
         float scale = (float) r_norm / (float) mIntrinsicWidth;
+        // Log.d("justaway", "[setFrame] l:" + l + " t:" + t + " r:" + r + " b:" + b + " width:" + mWidth + " height:" + mHeight + " intrinsicWidth:" + mIntrinsicWidth + " scale:" + scale);
 
         int paddingHeight;
         int paddingWidth;
@@ -139,7 +140,8 @@ public class ScaleImageView extends ImageView implements OnTouchListener {
 
         if (!mIsInitializedScaling) {
             mIsInitializedScaling = true;
-            zoomTo(scale, mWidth / 2, mHeight / 2);
+            // zoomTo(scale, mWidth / 2, mHeight / 2);
+            // Log.d("justaway", "[setFrame] mIsInitializedScaling scale:" + scale);
         }
 
         cutting();
