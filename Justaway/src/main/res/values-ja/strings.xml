@@ -152,6 +152,29 @@
     <string name="toast_create_block_failure">ブロックに失敗しました</string>
     <string name="toast_create_block_success">ブロックに成功しました</string>
     <string name="toast_create_mute">ミュートを追加ました</string>
+
+    <string name="menu_destroy_block">ブロック解除</string>
+    <string name="confirm_create_official_mute">公式ミュートしますか？</string>
+    <string name="confirm_destroy_official_mute">公式ミュートを解除しますか？</string>
+    <string name="confirm_create_no_retweet">リツイートを非表示にしますか？</string>
+    <string name="confirm_destroy_no_retweet">リツイート非表示を解除しますか？</string>
+    <string name="button_create_official_mute">公式ミュート</string>
+    <string name="button_destroy_official_mute">公式ミュートを解除</string>
+    <string name="button_create_no_retweet">リツイートを非表示</string>
+    <string name="button_destroy_no_retweet">リツイート非表示を解除</string>
+    <string name="menu_create_official_mute">公式ミュート</string>
+    <string name="menu_destory_official_mute">公式ミュートを解除</string>
+    <string name="menu_create_no_retweet">リツイートを非表示</string>
+    <string name="menu_destory_no_retweet">リツイート非表示を解除</string>
+    <string name="toast_create_official_mute_failure">公式ミュートに失敗しました</string>
+    <string name="toast_create_official_mute_success">公式ミュートに成功しました</string>
+    <string name="toast_destroy_official_mute_failure">公式ミュート解除に失敗しました</string>
+    <string name="toast_destroy_official_mute_success">公式ミュート解除に成功しました</string>
+    <string name="toast_create_no_retweet_failure">リツイート非表示に失敗しました</string>
+    <string name="toast_create_no_retweet_success">リツイート非表示に成功しました</string>
+    <string name="toast_destroy_no_retweet_failure">リツイート非表示解除に失敗しました</string>
+    <string name="toast_destroy_no_retweet_success">リツイート非表示解除に成功しました</string>
+
     <string name="toast_create_streaming" tools:ignore="TypographyEllipsis">ストリーミングに接続しています...</string>
     <string name="toast_create_user_list_failure">リスト作成に失敗しました</string>
     <string name="toast_create_user_list_subscription_failure">リストの購読に失敗しました</string>

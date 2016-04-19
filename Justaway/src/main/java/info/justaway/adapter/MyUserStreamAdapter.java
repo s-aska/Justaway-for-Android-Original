@@ -6,14 +6,15 @@ import android.os.Handler;
 import java.util.ArrayList;
 
 import de.greenrobot.event.EventBus;
+import info.justaway.event.model.NotificationEvent;
 import info.justaway.event.model.StreamingCreateFavoriteEvent;
 import info.justaway.event.model.StreamingCreateStatusEvent;
 import info.justaway.event.model.StreamingDestroyMessageEvent;
 import info.justaway.event.model.StreamingDestroyStatusEvent;
-import info.justaway.event.model.NotificationEvent;
 import info.justaway.event.model.StreamingUnFavoriteEvent;
 import info.justaway.model.AccessTokenManager;
 import info.justaway.model.FavRetweetManager;
+import info.justaway.model.Relationship;
 import info.justaway.model.Row;
 import info.justaway.model.TwitterManager;
 import info.justaway.settings.MuteSettings;
@@ -79,12 +80,38 @@ public class MyUserStreamAdapter extends UserStreamAdapter {
         if (mStopped) {
             return;
         }
+        if (Relationship.isBlock(status.getUser().getId())) {
+            return;
+        }
+        if (Relationship.isOfficialMute(status.getUser().getId())) {
+            return;
+        }
+        Status retweet = status.getRetweetedStatus();
+        if (retweet != null) {
+            if (Relationship.isNoRetweet(status.getUser().getId())) {
+                return;
+            }
+            if (Relationship.isBlock(retweet.getUser().getId())) {
+                return;
+            }
+            if (Relationship.isOfficialMute(retweet.getUser().getId())) {
+                return;
+            }
+        }
+        Status quotedStatus = status.getQuotedStatus();
+        if (quotedStatus != null) {
+            if (Relationship.isBlock(quotedStatus.getUser().getId())) {
+                return;
+            }
+            if (Relationship.isOfficialMute(quotedStatus.getUser().getId())) {
+                return;
+            }
+        }
         Row row = Row.newStatus(status);
         if (MuteSettings.isMute(row)) {
             return;
         }
         long userId = AccessTokenManager.getUserId();
-        Status retweet = status.getRetweetedStatus();
         if (status.getInReplyToUserId() == userId || (retweet != null && retweet.getUser().getId() == userId)) {
             EventBus.getDefault().post(new NotificationEvent(row));
         }

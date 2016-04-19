@@ -1,49 +1,45 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:compat="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/send_reply"
         android:orderInCategory="100"
-        android:showAsAction="never"
+        compat:showAsAction="never"
         android:title="@string/menu_send_reply"/>
     <item
         android:id="@+id/send_direct_messages"
         android:orderInCategory="100"
-        android:showAsAction="never"
+        compat:showAsAction="never"
         android:title="@string/menu_send_direct_messages"/>
     <item
         android:id="@+id/add_to_list"
         android:orderInCategory="100"
-        android:showAsAction="never"
+        compat:showAsAction="never"
         android:title="@string/menu_add_to_list"/>
     <item
         android:id="@+id/open_twitter"
         android:orderInCategory="100"
-        android:showAsAction="never"
+        compat:showAsAction="never"
         android:title="@string/menu_open_twitter"/>
     <item
         android:id="@+id/open_favstar"
         android:orderInCategory="100"
-        android:showAsAction="never"
+        compat:showAsAction="never"
         android:title="@string/menu_open_favstar"/>
     <item
         android:id="@+id/open_aclog"
         android:orderInCategory="100"
-        android:showAsAction="never"
+        compat:showAsAction="never"
         android:title="@string/menu_open_aclog"/>
     <item
         android:id="@+id/open_twilog"
         android:orderInCategory="100"
-        android:showAsAction="never"
+        compat:showAsAction="never"
         android:title="@string/menu_open_twilog"/>
-    <item
-        android:id="@+id/create_block"
-        android:orderInCategory="100"
-        android:showAsAction="never"
-        android:title="@string/menu_create_block"/>
     <item
         android:id="@+id/report_spam"
         android:orderInCategory="100"
-        android:showAsAction="never"
+        compat:showAsAction="never"
         android:title="@string/menu_report_spam"/>
 
 </menu>

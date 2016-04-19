@@ -5,6 +5,7 @@ import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.os.StrictMode;
 
+import info.justaway.model.Relationship;
 import info.justaway.model.UserIconManager;
 import info.justaway.settings.BasicSettings;
 import info.justaway.settings.MuteSettings;
@@ -38,6 +39,8 @@ public class JustawayApplication extends Application {
         BasicSettings.init();
 
         UserIconManager.warmUpUserIconMap();
+
+        Relationship.init();
 
         sFontello = Typeface.createFromAsset(getAssets(), "fontello.ttf");
 

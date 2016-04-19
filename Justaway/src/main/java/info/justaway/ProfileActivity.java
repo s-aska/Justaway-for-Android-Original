@@ -60,6 +60,15 @@ public class ProfileActivity extends FragmentActivity implements
     @Bind(R.id.list_pager) ViewPager mListPager;
 
     private User mUser;
+    private Relationship mRelationship;
+    private Menu menu;
+    private static final int OPTION_MENU_GROUP_RELATION = 1;
+    private static final int OPTION_MENU_CREATE_BLOCK = 1;
+    private static final int OPTION_MENU_CREATE_OFFICIAL_MUTE = 2;
+    private static final int OPTION_MENU_CREATE_NO_RETWEET = 3;
+    private static final int OPTION_MENU_DESTROY_BLOCK = 4;
+    private static final int OPTION_MENU_DESTROY_OFFICIAL_MUTE = 5;
+    private static final int OPTION_MENU_DESTROY_NO_RETWEET = 6;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,11 +122,157 @@ public class ProfileActivity extends FragmentActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.profile, menu);
+        this.menu = menu;
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getGroupId() == OPTION_MENU_GROUP_RELATION) {
+            switch (item.getItemId()) {
+                case OPTION_MENU_CREATE_BLOCK:
+                    new AlertDialog.Builder(ProfileActivity.this)
+                            .setMessage(R.string.confirm_create_block)
+                            .setPositiveButton(
+                                    R.string.button_create_block,
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            MessageUtil.showProgressDialog(ProfileActivity.this, getString(R.string.progress_process));
+                                            new CreateBlockTask().execute(mUser.getId());
+                                        }
+                                    }
+                            )
+                            .setNegativeButton(
+                                    R.string.button_cancel,
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                        }
+                                    }
+                            )
+                            .show();
+                    break;
+                case OPTION_MENU_CREATE_OFFICIAL_MUTE:
+                    new AlertDialog.Builder(ProfileActivity.this)
+                            .setMessage(R.string.confirm_create_official_mute)
+                            .setPositiveButton(
+                                    R.string.button_create_official_mute,
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            MessageUtil.showProgressDialog(ProfileActivity.this, getString(R.string.progress_process));
+                                            new CreateOfficialMuteTask().execute(mUser.getId());
+                                        }
+                                    }
+                            )
+                            .setNegativeButton(
+                                    R.string.button_cancel,
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                        }
+                                    }
+                            )
+                            .show();
+                    break;
+                case OPTION_MENU_CREATE_NO_RETWEET:
+                    new AlertDialog.Builder(ProfileActivity.this)
+                            .setMessage(R.string.confirm_create_no_retweet)
+                            .setPositiveButton(
+                                    R.string.button_create_no_retweet,
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            MessageUtil.showProgressDialog(ProfileActivity.this, getString(R.string.progress_process));
+                                            new CreateNoRetweetTask(mRelationship.isSourceNotificationsEnabled()).execute(mUser.getId());
+                                        }
+                                    }
+                            )
+                            .setNegativeButton(
+                                    R.string.button_cancel,
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                        }
+                                    }
+                            )
+                            .show();
+                    break;
+                case OPTION_MENU_DESTROY_BLOCK:
+                    new AlertDialog.Builder(ProfileActivity.this)
+                            .setMessage(R.string.confirm_create_block)
+                            .setPositiveButton(
+                                    R.string.button_destroy_block,
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            MessageUtil.showProgressDialog(ProfileActivity.this, getString(R.string.progress_process));
+                                            new DestroyBlockTask().execute(mUser.getId());
+                                        }
+                                    }
+                            )
+                            .setNegativeButton(
+                                    R.string.button_cancel,
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                        }
+                                    }
+                            )
+                            .show();
+                    break;
+                case OPTION_MENU_DESTROY_OFFICIAL_MUTE:
+                    new AlertDialog.Builder(ProfileActivity.this)
+                            .setMessage(R.string.confirm_destroy_official_mute)
+                            .setPositiveButton(
+                                    R.string.button_destroy_official_mute,
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            MessageUtil.showProgressDialog(ProfileActivity.this, getString(R.string.progress_process));
+                                            new DestroyOfficialMuteTask().execute(mUser.getId());
+                                        }
+                                    }
+                            )
+                            .setNegativeButton(
+                                    R.string.button_cancel,
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                        }
+                                    }
+                            )
+                            .show();
+                    break;
+                case OPTION_MENU_DESTROY_NO_RETWEET:
+                    new AlertDialog.Builder(ProfileActivity.this)
+                            .setMessage(R.string.confirm_destroy_no_retweet)
+                            .setPositiveButton(
+                                    R.string.button_destroy_no_retweet,
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            MessageUtil.showProgressDialog(ProfileActivity.this, getString(R.string.progress_process));
+                                            new DestroyNoRetweetTask(mRelationship.isSourceNotificationsEnabled()).execute(mUser.getId());
+                                        }
+                                    }
+                            )
+                            .setNegativeButton(
+                                    R.string.button_cancel,
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                        }
+                                    }
+                            )
+                            .show();
+                    break;
+                default:
+                    break;
+            }
+            return true;
+        }
         Intent intent;
         String text;
         switch (item.getItemId()) {
@@ -187,30 +342,6 @@ public class ProfileActivity extends FragmentActivity implements
                         .show();
 
                 break;
-            case R.id.create_block:
-                new AlertDialog.Builder(ProfileActivity.this)
-                        .setMessage(R.string.confirm_create_block)
-                        .setPositiveButton(
-                                R.string.button_create_block,
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        MessageUtil.showProgressDialog(ProfileActivity.this, getString(R.string.progress_process));
-                                        new CreateBlockTask().execute(mUser.getId());
-                                    }
-                                }
-                        )
-                        .setNegativeButton(
-                                R.string.button_cancel,
-                                new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                    }
-                                }
-                        )
-                        .show();
-
-                break;
         }
         return true;
     }
@@ -253,6 +384,27 @@ public class ProfileActivity extends FragmentActivity implements
         }
 
         Relationship relationship = profile.getRelationship();
+        mRelationship = relationship;
+
+        if (menu != null) {
+            if (relationship.isSourceBlockingTarget()) {
+                menu.add(OPTION_MENU_GROUP_RELATION, OPTION_MENU_DESTROY_BLOCK, 100, R.string.menu_destroy_block);
+            } else {
+                menu.add(OPTION_MENU_GROUP_RELATION, OPTION_MENU_CREATE_BLOCK, 100, R.string.menu_create_block);
+            }
+            if (relationship.isSourceFollowingTarget()) {
+                if (relationship.isSourceMutingTarget()) {
+                    menu.add(OPTION_MENU_GROUP_RELATION, OPTION_MENU_DESTROY_OFFICIAL_MUTE, 100, R.string.menu_destory_official_mute);
+                } else {
+                    menu.add(OPTION_MENU_GROUP_RELATION, OPTION_MENU_CREATE_OFFICIAL_MUTE, 100, R.string.menu_create_official_mute);
+                }
+                if (relationship.isSourceWantRetweets()) {
+                    menu.add(OPTION_MENU_GROUP_RELATION, OPTION_MENU_CREATE_NO_RETWEET, 100, R.string.menu_create_no_retweet);
+                } else {
+                    menu.add(OPTION_MENU_GROUP_RELATION, OPTION_MENU_DESTROY_NO_RETWEET, 100, R.string.menu_destory_no_retweet);
+                }
+            }
+        }
 
         /**
          * スワイプで動かせるタブを実装するのに最低限必要な実装
@@ -391,6 +543,7 @@ public class ProfileActivity extends FragmentActivity implements
             Long userId = params[0];
             try {
                 TwitterManager.getTwitter().reportSpam(userId);
+                info.justaway.model.Relationship.setBlock(userId);
                 return true;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -417,6 +570,7 @@ public class ProfileActivity extends FragmentActivity implements
             Long userId = params[0];
             try {
                 TwitterManager.getTwitter().createBlock(userId);
+                info.justaway.model.Relationship.setBlock(userId);
                 return true;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -432,6 +586,153 @@ public class ProfileActivity extends FragmentActivity implements
                 restart();
             } else {
                 MessageUtil.showToast(R.string.toast_create_block_failure);
+            }
+
+        }
+    }
+
+    private class DestroyBlockTask extends AsyncTask<Long, Void, Boolean> {
+        @Override
+        protected Boolean doInBackground(Long... params) {
+            Long userId = params[0];
+            try {
+                TwitterManager.getTwitter().destroyBlock(userId);
+                info.justaway.model.Relationship.removeBlock(userId);
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            MessageUtil.dismissProgressDialog();
+            if (success) {
+                MessageUtil.showToast(R.string.toast_destroy_block_success);
+                restart();
+            } else {
+                MessageUtil.showToast(R.string.toast_destroy_block_failure);
+            }
+
+        }
+    }
+
+    private class CreateOfficialMuteTask extends AsyncTask<Long, Void, Boolean> {
+        @Override
+        protected Boolean doInBackground(Long... params) {
+            Long userId = params[0];
+            try {
+                TwitterManager.getTwitter().createMute(userId);
+                info.justaway.model.Relationship.setOfficialMute(userId);
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            MessageUtil.dismissProgressDialog();
+            if (success) {
+                MessageUtil.showToast(R.string.toast_create_official_mute_success);
+                restart();
+            } else {
+                MessageUtil.showToast(R.string.toast_create_official_mute_failure);
+            }
+
+        }
+    }
+
+    private class DestroyOfficialMuteTask extends AsyncTask<Long, Void, Boolean> {
+        @Override
+        protected Boolean doInBackground(Long... params) {
+            Long userId = params[0];
+            try {
+                TwitterManager.getTwitter().destroyMute(userId);
+                info.justaway.model.Relationship.removeOfficialMute(userId);
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            MessageUtil.dismissProgressDialog();
+            if (success) {
+                MessageUtil.showToast(R.string.toast_destroy_official_mute_success);
+                restart();
+            } else {
+                MessageUtil.showToast(R.string.toast_destroy_official_mute_failure);
+            }
+
+        }
+    }
+
+    private class CreateNoRetweetTask extends AsyncTask<Long, Void, Boolean> {
+        private boolean notification;
+
+        public CreateNoRetweetTask(boolean notification) {
+            this.notification = notification;
+        }
+
+        @Override
+        protected Boolean doInBackground(Long... params) {
+            Long userId = params[0];
+            try {
+                TwitterManager.getTwitter().updateFriendship(userId, notification, false);
+                info.justaway.model.Relationship.setNoRetweet(userId);
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            MessageUtil.dismissProgressDialog();
+            if (success) {
+                MessageUtil.showToast(R.string.toast_create_no_retweet_success);
+                restart();
+            } else {
+                MessageUtil.showToast(R.string.toast_create_no_retweet_failure);
+            }
+
+        }
+    }
+
+    private class DestroyNoRetweetTask extends AsyncTask<Long, Void, Boolean> {
+        private boolean notification;
+
+        public DestroyNoRetweetTask(boolean notification) {
+            this.notification = notification;
+        }
+
+        @Override
+        protected Boolean doInBackground(Long... params) {
+            Long userId = params[0];
+            try {
+                TwitterManager.getTwitter().updateFriendship(userId, notification, true);
+                info.justaway.model.Relationship.removeNoRetweet(userId);
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            MessageUtil.dismissProgressDialog();
+            if (success) {
+                MessageUtil.showToast(R.string.toast_destroy_no_retweet_success);
+                restart();
+            } else {
+                MessageUtil.showToast(R.string.toast_destroy_no_retweet_failure);
             }
 
         }
