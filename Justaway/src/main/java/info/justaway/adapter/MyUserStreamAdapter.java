@@ -80,39 +80,16 @@ public class MyUserStreamAdapter extends UserStreamAdapter {
         if (mStopped) {
             return;
         }
-        if (Relationship.isBlock(status.getUser().getId())) {
+        if (!Relationship.isVisible(status)) {
             return;
-        }
-        if (Relationship.isOfficialMute(status.getUser().getId())) {
-            return;
-        }
-        Status retweet = status.getRetweetedStatus();
-        if (retweet != null) {
-            if (Relationship.isNoRetweet(status.getUser().getId())) {
-                return;
-            }
-            if (Relationship.isBlock(retweet.getUser().getId())) {
-                return;
-            }
-            if (Relationship.isOfficialMute(retweet.getUser().getId())) {
-                return;
-            }
-        }
-        Status quotedStatus = status.getQuotedStatus();
-        if (quotedStatus != null) {
-            if (Relationship.isBlock(quotedStatus.getUser().getId())) {
-                return;
-            }
-            if (Relationship.isOfficialMute(quotedStatus.getUser().getId())) {
-                return;
-            }
         }
         Row row = Row.newStatus(status);
         if (MuteSettings.isMute(row)) {
             return;
         }
         long userId = AccessTokenManager.getUserId();
-        if (status.getInReplyToUserId() == userId || (retweet != null && retweet.getUser().getId() == userId)) {
+        Status retweetedStatus = status.getRetweetedStatus();
+        if (status.getInReplyToUserId() == userId || (retweetedStatus != null && retweetedStatus.getUser().getId() == userId)) {
             EventBus.getDefault().post(new NotificationEvent(row));
         }
         if (mPause) {
