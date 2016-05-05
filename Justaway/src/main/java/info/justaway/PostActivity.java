@@ -553,12 +553,15 @@ public class PostActivity extends FragmentActivity {
 
                     if (mImagePreviewContainer.getChildCount() == 0) {
                         mImagePreviewContainer.removeAllViews();
-                        mTweetButton.setEnabled(false);
+                        updateCount(mStatusText.getText().toString());
                     }
                 }
             });
             imageView.setImageURI(uri);
             mImagePreviewContainer.addView(imageView);
+            if (mStatusText.getText() != null) {
+                updateCount(mStatusText.getText().toString());
+            }
 
             if (mImagePreviewContainer.getChildCount() >= MAX_IMAGE) {
                 mImgButton.setEnabled(false);
@@ -575,6 +578,9 @@ public class PostActivity extends FragmentActivity {
         int textColor;
 
         int length = TwitterUtil.count(str);
+        if (mImagePreviewContainer.getChildCount() > 0) {
+            length -= 24;
+        }
         // 140文字をオーバーした時は文字数を赤色に
         if (length < 0) {
             textColor = Color.RED;
