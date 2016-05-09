@@ -11,8 +11,8 @@ import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 
-import butterknife.ButterKnife;
 import butterknife.Bind;
+import butterknife.ButterKnife;
 import de.greenrobot.event.EventBus;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
@@ -199,7 +199,7 @@ public abstract class BaseFragment extends Fragment implements OnRefreshListener
             }
             mStackRows.clear();
 
-            boolean autoScroll = position == 0 && y == 0 && count < 5;
+            boolean autoScroll = position == 0 && y == 0 && count < 3;
 
             if (highlight) {
                 EventBus.getDefault().post(new NewRecordEvent(getTabId(), getSearchWord(), autoScroll));
@@ -210,6 +210,10 @@ public abstract class BaseFragment extends Fragment implements OnRefreshListener
             } else {
                 // 少しでもスクロールさせている時は画面を動かさない様にスクロー位置を復元する
                 mListView.setSelectionFromTop(position + count, y);
+                // 未読の新規ツイートをチラ見せ
+                if (position == 0 && y == 0) {
+                    mListView.smoothScrollToPositionFromTop(position + count, 120);
+                }
             }
         }
     };
@@ -239,7 +243,11 @@ public abstract class BaseFragment extends Fragment implements OnRefreshListener
             return;
         }
         mStackRows.add(row);
-        showStack();
+        if (!mScrolling && isTop()) {
+            showStack();
+        } else {
+            EventBus.getDefault().post(new NewRecordEvent(getTabId(), getSearchWord(), false));
+        }
     }
 
     /**
