@@ -144,21 +144,6 @@ public class MainActivity extends FragmentActivity {
         }
     }
 
-    /**
-     * ButterKnife for Drawer
-     */
-    class DrawerHolder {
-        @OnClick(R.id.account_settings)
-        void openAccountSettings() {
-            Intent intent = new Intent(MainActivity.this, AccountSettingActivity.class);
-            startActivityForResult(intent, REQUEST_ACCOUNT_SETTING);
-        }
-
-        public DrawerHolder(View view) {
-            ButterKnife.bind(this, view);
-        }
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -230,7 +215,6 @@ public class MainActivity extends FragmentActivity {
                 ThemeUtil.getThemeTextColor(R.attr.text_color));
 
         View drawerFooterView = getLayoutInflater().inflate(R.layout.drawer_menu, null, false);
-        new DrawerHolder(drawerFooterView);
         mDrawerList.addFooterView(drawerFooterView, null, true);
         mDrawerList.setAdapter(mAccessTokenAdapter);
         mDrawerToggle = getActionBarDrawerToggle();
@@ -716,6 +700,8 @@ public class MainActivity extends FragmentActivity {
     @OnItemClick(R.id.account_list)
     void selectAccount(int position) {
         if (mAccessTokenAdapter.getCount() <= position) {
+            Intent intent = new Intent(MainActivity.this, AccountSettingActivity.class);
+            startActivityForResult(intent, REQUEST_ACCOUNT_SETTING);
             return;
         }
         AccessToken accessToken = mAccessTokenAdapter.getItem(position);
