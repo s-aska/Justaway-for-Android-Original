@@ -339,24 +339,18 @@ public class StatusMenuFragment extends DialogFragment {
         }
 
         /**
-         * リプの時
+         * 会話を表示
          */
-        if (source.getInReplyToStatusId() > 0) {
-
-            /**
-             * 会話を表示
-             */
-            adapter.add(new Menu(R.string.context_menu_talk, new Runnable() {
-                @Override
-                public void run() {
-                    TalkFragment dialog = new TalkFragment();
-                    Bundle args = new Bundle();
-                    args.putSerializable("status", source);
-                    dialog.setArguments(args);
-                    dialog.show(mActivity.getSupportFragmentManager(), "dialog");
-                }
-            }));
-        }
+        adapter.add(new Menu(R.string.context_menu_talk, new Runnable() {
+            @Override
+            public void run() {
+                TalkFragment dialog = new TalkFragment();
+                Bundle args = new Bundle();
+                args.putSerializable("status", source);
+                dialog.setArguments(args);
+                dialog.show(mActivity.getSupportFragmentManager(), "dialog");
+            }
+        }));
 
         /**
          * 前後のツイートを表示

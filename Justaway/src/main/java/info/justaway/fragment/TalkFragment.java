@@ -3,21 +3,32 @@ package info.justaway.fragment;
 import android.app.Dialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.util.LongSparseArray;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ListView;
 
+import com.google.common.primitives.Longs;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import de.greenrobot.event.EventBus;
 import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
-import info.justaway.event.model.StreamingDestroyStatusEvent;
 import info.justaway.event.action.StatusActionEvent;
+import info.justaway.event.model.StreamingDestroyStatusEvent;
 import info.justaway.listener.StatusClickListener;
 import info.justaway.listener.StatusLongClickListener;
 import info.justaway.model.Row;
 import info.justaway.model.TwitterManager;
+import twitter4j.Query;
+import twitter4j.QueryResult;
 import twitter4j.Status;
 import twitter4j.Twitter;
 
@@ -31,6 +42,7 @@ public class TalkFragment extends DialogFragment {
     private Twitter mTwitter;
     private TwitterAdapter mAdapter;
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
@@ -57,7 +69,10 @@ public class TalkFragment extends DialogFragment {
             mTwitter = TwitterManager.getTwitter();
             mAdapter.add(Row.newStatus(status));
             mAdapter.notifyDataSetChanged();
-            new LoadTalk().execute(status.getInReplyToStatusId());
+            if (status.getInReplyToStatusId() > 0) {
+                new LoadTalk().execute(status.getInReplyToStatusId());
+            }
+            new LoadTalkReply().execute(status);
         }
 
         return dialog;
@@ -104,13 +119,106 @@ public class TalkFragment extends DialogFragment {
         @Override
         protected void onPostExecute(twitter4j.Status status) {
             if (status != null) {
-                mAdapter.add(Row.newStatus(status));
+                mAdapter.insert(Row.newStatus(status), 0);
                 mAdapter.notifyDataSetChanged();
                 Long inReplyToStatusId = status.getInReplyToStatusId();
                 if (inReplyToStatusId > 0) {
                     new LoadTalk().execute(inReplyToStatusId);
                 }
             }
+        }
+    }
+
+    private class LoadTalkReply extends AsyncTask<twitter4j.Status, Void, ArrayList<twitter4j.Status>> {
+
+        public LoadTalkReply() {
+            super();
+        }
+
+        @Override
+        protected ArrayList<twitter4j.Status> doInBackground(twitter4j.Status... params) {
+            try {
+                final twitter4j.Status sourceStatus = params[0];
+                final Query toQuery = new Query("to:" + sourceStatus.getUser().getScreenName() + " AND filter:replies");
+                toQuery.setCount(200);
+                toQuery.setSinceId(sourceStatus.getId());
+                toQuery.setResultType(Query.ResultType.recent);
+                final QueryResult toResult = mTwitter.search(toQuery);
+                final List<twitter4j.Status> searchStatuses = toResult.getTweets();
+                if (toResult.hasNext()) {
+                    final QueryResult nextResult = mTwitter.search(toResult.nextQuery());
+                    searchStatuses.addAll(nextResult.getTweets());
+                }
+
+                final Query fromQuery = new Query("from:" + sourceStatus.getUser().getScreenName() + " AND filter:replies");
+                fromQuery.setCount(200);
+                fromQuery.setSinceId(sourceStatus.getId());
+                fromQuery.setResultType(Query.ResultType.recent);
+                final QueryResult fromResult = mTwitter.search(fromQuery);
+                searchStatuses.addAll(fromResult.getTweets());
+
+                LongSparseArray<Boolean> isLoadMap = new LongSparseArray<>();
+                for (final twitter4j.Status status : searchStatuses) {
+                    isLoadMap.put(status.getId(), true);
+                }
+
+                ArrayList<twitter4j.Status> lookupStatuses = new ArrayList<>();
+                final ArrayList<Long> statusIds = new ArrayList<>();
+                for (final twitter4j.Status status : searchStatuses) {
+                    if (status.getInReplyToStatusId() > 0 && !isLoadMap.get(status.getInReplyToStatusId(), false)) {
+                        statusIds.add(status.getInReplyToStatusId());
+                        isLoadMap.put(status.getInReplyToStatusId(), true);
+                        if (statusIds.size() == 100) {
+                            lookupStatuses.addAll(mTwitter.lookup(Longs.toArray(statusIds)));
+                            statusIds.clear();
+                        }
+                    }
+                }
+
+                if (statusIds.size() > 0) {
+                    lookupStatuses.addAll(mTwitter.lookup(Longs.toArray(statusIds)));
+                }
+
+                searchStatuses.addAll(lookupStatuses);
+
+                Collections.sort(searchStatuses, new Comparator<twitter4j.Status>() {
+
+                    @Override
+                    public int compare(twitter4j.Status arg0, twitter4j.Status arg1) {
+                        if (arg0.getId() > arg1.getId()) {
+                            return 1;
+                        } else if (arg0.getId() == arg1.getId()) {
+                            return 0;
+                        } else {
+                            return -1;
+                        }
+                    }
+                });
+                LongSparseArray<Boolean> isReplyMap = new LongSparseArray<>();
+                isReplyMap.put(sourceStatus.getId(), true);
+                ArrayList<twitter4j.Status> statuses = new ArrayList<>();
+                for (final twitter4j.Status status : searchStatuses) {
+                    if (isReplyMap.get(status.getInReplyToStatusId(), false)) {
+                        statuses.add(status);
+                        isReplyMap.put(status.getId(), true);
+                    }
+                }
+                return statuses;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<twitter4j.Status> statuses) {
+            if (statuses == null || statuses.size() == 0) {
+                return;
+            }
+            for (final twitter4j.Status status : statuses) {
+                mAdapter.add(Row.newStatus(status));
+            }
+            mAdapter.notifyDataSetChanged();
         }
     }
 }
