@@ -604,7 +604,7 @@ public class PostActivity extends FragmentActivity {
         if (mImagePreviewContainer.getChildCount() > 0) {
             length -= 24;
         }
-        // 140文字をオーバーした時は文字数を赤色に
+        // 文字数をオーバーした時は文字数を赤色に
         if (length < 0) {
             textColor = Color.RED;
         } else {
@@ -613,13 +613,12 @@ public class PostActivity extends FragmentActivity {
         mCount.setTextColor(textColor);
         mCount.setText(String.valueOf(length));
 
-        if (length < 0 || length == 140) {
-            // 文字数が0文字または140文字以上の時はボタンを無効
-            if (mImagePreviewContainer.getChildCount() > 0) {
-                mTweetButton.setEnabled(true);
-            } else {
-                mTweetButton.setEnabled(false);
-            }
+        if (length < 0) {
+            // 文字数オーバー
+            mTweetButton.setEnabled(false);
+        } else if (str.isEmpty()) {
+            // 何も入力されていない時も画像があれば投稿可
+            mTweetButton.setEnabled(mImagePreviewContainer.getChildCount() > 0);
         } else {
             mTweetButton.setEnabled(true);
         }

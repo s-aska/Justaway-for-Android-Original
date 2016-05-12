@@ -23,15 +23,15 @@ public class TwitterUtil {
      */
     public static int count(String str) {
         int length = str.codePointCount(0, str.length());
+        int max = str.indexOf("D ") == 0 ? 10000 : 140;
 
         // 短縮URLを考慮
         Matcher matcher = URL_PATTERN.matcher(str);
         while (matcher.find()) {
-            length = length - matcher.group().length() + 22;
-            if (matcher.group().contains("https://")) ++length;
+            length = length - matcher.group().length() + 23;
         }
 
-        return 140 - length;
+        return max - length;
     }
 
     /**

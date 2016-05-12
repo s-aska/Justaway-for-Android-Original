@@ -797,7 +797,7 @@ public class MainActivity extends FragmentActivity {
             // 140文字をオーバーした時は文字数を赤色に
             if (length < 0) {
                 textColor = Color.RED;
-            } else if (length == 140) {
+            } else if (charSequence.toString().isEmpty()) {
                 textColor = mDisabledTextColor;
             } else {
                 textColor = mDefaultTextColor;
@@ -806,8 +806,8 @@ public class MainActivity extends FragmentActivity {
             count.setTextColor(textColor);
             count.setText(String.valueOf(length));
 
-            if (length < 0 || length == 140) {
-                // 文字数が0文字または140文字以上の時はボタンを無効
+            if (length < 0 || charSequence.toString().isEmpty()) {
+                // 文字数オーバー又は未入力の時はボタンを無効
                 mSendButton.setEnabled(false);
             } else {
                 mSendButton.setEnabled(true);
