@@ -1,6 +1,7 @@
 package info.justaway;
 
 
+import android.Manifest;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -16,8 +17,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.RemoteInput;
+import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.method.ScrollingMovementMethod;
@@ -70,6 +73,7 @@ public class PostActivity extends FragmentActivity {
     private static final int REQUEST_GALLERY = 1;
     private static final int REQUEST_CAMERA = 2;
     private static final int REQUEST_TWICCA = 3;
+    private static final int REQUEST_PERMISSIONS_CAMERA = 1;
     private static final int OPTION_MENU_GROUP_TWICCA = 1;
     private static final int ERROR_CODE_DUPLICATE_STATUS = 187;
     private static final int ERROR_CODE_NOT_FOLLOW_DM = 150;
@@ -495,29 +499,48 @@ public class PostActivity extends FragmentActivity {
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        Intent intent;
         switch (item.getItemId()) {
             case REQUEST_GALLERY:
-                intent = new Intent(Intent.ACTION_PICK);
+                Intent intent = new Intent(Intent.ACTION_PICK);
                 intent.setType("image/*");
                 startActivityForResult(intent, REQUEST_GALLERY);
                 return true;
             case REQUEST_CAMERA:
-                String filename = System.currentTimeMillis() + ".jpg";
-                ContentValues values = new ContentValues();
-                values.put(MediaStore.Images.Media.TITLE, filename);
-                values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
-                mImageUri = getContentResolver().insert(
-                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-
-                intent = new Intent();
-                intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, mImageUri);
-                startActivityForResult(intent, REQUEST_CAMERA);
+                int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA);
+                if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+                    openCamera();
+                } else {
+                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, REQUEST_PERMISSIONS_CAMERA);
+                }
                 return true;
             default:
                 return true;
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_PERMISSIONS_CAMERA: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    openCamera();
+                }
+            }
+        }
+    }
+
+    public void openCamera() {
+        String filename = System.currentTimeMillis() + ".jpg";
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.TITLE, filename);
+        values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+        mImageUri = getContentResolver().insert(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+        Intent intent = new Intent();
+        intent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, mImageUri);
+        startActivityForResult(intent, REQUEST_CAMERA);
     }
 
     @Override

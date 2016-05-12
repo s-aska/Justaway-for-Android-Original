@@ -199,6 +199,7 @@
     <string name="toast_retweet_failure">You have been retweet already.</string>
     <string name="toast_retweet_success">You are now retweet this tweet.</string>
     <string name="toast_save_image_success">Saved.</string>
+    <string name="toast_save_image_failure">Failed.</string>
     <string name="toast_save_success">Saved.</string>
     <string name="toast_set_image_failure">Failed.</string>
     <string name="toast_set_image_success">Set image.</string>

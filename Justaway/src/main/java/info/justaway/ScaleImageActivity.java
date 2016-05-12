@@ -1,12 +1,16 @@
 package info.justaway;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -48,6 +52,7 @@ public class ScaleImageActivity extends FragmentActivity {
 
     private ArrayList<String> imageUrls = new ArrayList<>();
     private SimplePagerAdapter simplePagerAdapter;
+    static final int REQUEST_PERMISSIONS_STORAGE = 1;
 
     public ScaleImageActivity() {
     }
@@ -152,49 +157,78 @@ public class ScaleImageActivity extends FragmentActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
         if (itemId == R.id.save) {
-            final URL url;
-            try {
-                url = new URL(imageUrls.get(pager.getCurrentItem()));
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-                return false;
+            int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            if (permissionCheck == PackageManager.PERMISSION_GRANTED) {
+                saveImage();
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_PERMISSIONS_STORAGE);
             }
-            AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
-                @Override
-                protected Void doInBackground(Void... params) {
-                    int count;
-                    try {
-                        URLConnection connection = url.openConnection();
-                        connection.connect();
-                        InputStream input = new BufferedInputStream(url.openStream(), 10 * 1024);
-                        File root = new File(Environment.getExternalStorageDirectory(), "/Download/");
-                        File file = new File(root, new Date().getTime() + ".jpg");
-                        OutputStream output = new FileOutputStream(file);
-                        byte data[] = new byte[1024];
-                        while ((count = input.read(data)) != -1) {
-                            output.write(data, 0, count);
-                        }
-                        output.flush();
-                        output.close();
-                        input.close();
-                        String[] paths = {file.getPath()};
-                        String[] types = {"image/jpeg"};
-                        MediaScannerConnection.scanFile(getApplicationContext(), paths, types, null);
-                        MessageUtil.showToast(R.string.toast_save_image_success);
-                        finish();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    return null;
-                }
-
-                @Override
-                protected void onPostExecute(Void result) {
-                    MessageUtil.showToast(R.string.toast_save_image_success);
-                }
-            };
-            task.execute();
         }
         return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_PERMISSIONS_STORAGE: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    saveImage();
+                } else {
+                    MessageUtil.showToast(R.string.toast_save_image_failure);
+                }
+            }
+        }
+    }
+
+    public void saveImage() {
+        final URL url;
+        try {
+            url = new URL(imageUrls.get(pager.getCurrentItem()));
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            MessageUtil.showToast(R.string.toast_save_image_failure);
+            return;
+        }
+        AsyncTask<Void, Void, Boolean> task = new AsyncTask<Void, Void, Boolean>() {
+            @Override
+            protected Boolean doInBackground(Void... params) {
+                int count;
+                Boolean isSuccess;
+                try {
+                    URLConnection connection = url.openConnection();
+                    connection.connect();
+                    InputStream input = new BufferedInputStream(url.openStream(), 10 * 1024);
+                    File root = new File(Environment.getExternalStorageDirectory(), "/Download/");
+                    File file = new File(root, new Date().getTime() + ".jpg");
+                    OutputStream output = new FileOutputStream(file);
+                    byte data[] = new byte[1024];
+                    while ((count = input.read(data)) != -1) {
+                        output.write(data, 0, count);
+                    }
+                    output.flush();
+                    output.close();
+                    input.close();
+                    String[] paths = {file.getPath()};
+                    String[] types = {"image/jpeg"};
+                    MediaScannerConnection.scanFile(getApplicationContext(), paths, types, null);
+                    isSuccess = true;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    isSuccess = false;
+                }
+                return isSuccess;
+            }
+
+            @Override
+            protected void onPostExecute(Boolean isSuccess) {
+                if (isSuccess) {
+                    MessageUtil.showToast(R.string.toast_save_image_success);
+                } else {
+                    MessageUtil.showToast(R.string.toast_save_image_failure);
+                }
+                finish();
+            }
+        };
+        task.execute();
     }
 }

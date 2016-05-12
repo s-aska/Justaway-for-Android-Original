@@ -195,6 +195,7 @@
     <string name="toast_retweet_failure">No se pudo hacer retweet</string>
     <string name="toast_retweet_success">Retweet hecho</string>
     <string name="toast_save_image_success">Guardada</string>
+    <string name="toast_save_image_failure">No se pudo guardar</string>
     <string name="toast_save_success">Guardado</string>
     <string name="toast_set_image_failure">No se pudo aplicar</string>
     <string name="toast_set_image_success">Imagen aplicada</string>

@@ -219,6 +219,7 @@
     <string name="toast_retweet_success">RTに成功しました</string>
     <string name="toast_save_image_success">画像を保存しました</string>
     <string name="toast_save_success">保存しました</string>
+    <string name="toast_save_image_failure">画像の保存に失敗しました</string>
     <string name="toast_set_image_failure">添付に失敗しました</string>
     <string name="toast_set_image_success">画像がセットされました</string>
     <string name="toast_sign_in_failure">OAuthAccessTokenの取得に失敗しました</string>
