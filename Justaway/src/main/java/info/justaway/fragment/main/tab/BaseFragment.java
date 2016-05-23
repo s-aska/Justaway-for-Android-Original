@@ -43,9 +43,12 @@ public abstract class BaseFragment extends Fragment implements OnRefreshListener
     protected long mSentDirectMessagesMaxId = 0L; // 読み込んだ最新の送信メッセージID
     private ArrayList<Row> mStackRows = new ArrayList<>();
 
-    @Bind(R.id.list_view) protected ListView mListView;
-    @Bind(R.id.guruguru) protected ProgressBar mFooter;
-    @Bind(R.id.ptr_layout) protected PullToRefreshLayout mPullToRefreshLayout;
+    @Bind(R.id.list_view)
+    protected ListView mListView;
+    @Bind(R.id.guruguru)
+    protected ProgressBar mFooter;
+    @Bind(R.id.ptr_layout)
+    protected PullToRefreshLayout mPullToRefreshLayout;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -236,6 +239,7 @@ public abstract class BaseFragment extends Fragment implements OnRefreshListener
      * ストリーミングAPIからツイートやメッセージを受信した時の処理
      * 1. 表示スべき内容かチェックし、不適切な場合はスルーする
      * 2. すぐ表示すると流速が早い時にガクガクするので溜めておく
+     *
      * @param row ツイート情報
      */
     public void addStack(Row row) {
@@ -293,9 +297,12 @@ public abstract class BaseFragment extends Fragment implements OnRefreshListener
      * タブ固有のID、ユーザーリストではリストのIDを、その他はマイナスの固定値を返す
      */
     public abstract long getTabId();
+
     public String getSearchWord() {
         return "";
-    };
+    }
+
+    ;
 
     /**
      * 読み込み用のAsyncTaskを実行する
@@ -324,6 +331,7 @@ public abstract class BaseFragment extends Fragment implements OnRefreshListener
 
     /**
      * ストリーミングAPIからツイ消しイベントを受信
+     *
      * @param event ツイート
      */
     public void onEventMainThread(StreamingDestroyStatusEvent event) {
@@ -340,6 +348,7 @@ public abstract class BaseFragment extends Fragment implements OnRefreshListener
 
     /**
      * ストリーミングAPIからツイートイベントを受信
+     *
      * @param event ツイート
      */
     public void onEventMainThread(StreamingCreateStatusEvent event) {
@@ -348,6 +357,7 @@ public abstract class BaseFragment extends Fragment implements OnRefreshListener
 
     /**
      * アカウント変更通知を受け、表示中のタブはリロード、表示されていたいタブはクリアを行う
+     *
      * @param event アプリが表示しているタブのID
      */
     public void onEventMainThread(PostAccountChangeEvent event) {

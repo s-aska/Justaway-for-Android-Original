@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.util.LongSparseArray;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ListView;
@@ -41,6 +42,7 @@ public class TalkFragment extends DialogFragment {
 
     private Twitter mTwitter;
     private TwitterAdapter mAdapter;
+    private ListView mListView;
 
     @NonNull
     @Override
@@ -51,18 +53,18 @@ public class TalkFragment extends DialogFragment {
         dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
-        dialog.setContentView(R.layout.list);
+        dialog.setContentView(R.layout.list_talk);
 
-        ListView listView = (ListView) dialog.findViewById(R.id.list);
+        mListView = (ListView) dialog.findViewById(R.id.list);
 
         // Status(ツイート)をViewに描写するアダプター
         mAdapter = new TwitterAdapter(activity, R.layout.row_tweet);
-        listView.setAdapter(mAdapter);
+        mListView.setAdapter(mAdapter);
 
         // タップ操作の登録など
-        listView.setOnItemClickListener(new StatusClickListener(activity));
+        mListView.setOnItemClickListener(new StatusClickListener(activity));
 
-        listView.setOnItemLongClickListener(new StatusLongClickListener(getActivity()));
+        mListView.setOnItemLongClickListener(new StatusLongClickListener(getActivity()));
 
         Status status = (Status) getArguments().getSerializable("status");
         if (status != null) {
@@ -71,6 +73,8 @@ public class TalkFragment extends DialogFragment {
             mAdapter.notifyDataSetChanged();
             if (status.getInReplyToStatusId() > 0) {
                 new LoadTalk().execute(status.getInReplyToStatusId());
+            } else {
+                dialog.findViewById(R.id.guruguru_header).setVisibility(View.GONE);
             }
             new LoadTalkReply().execute(status);
         }
@@ -119,12 +123,26 @@ public class TalkFragment extends DialogFragment {
         @Override
         protected void onPostExecute(twitter4j.Status status) {
             if (status != null) {
+
+                // 表示している要素の位置
+                int position = mListView.getFirstVisiblePosition();
+
+                // 縦スクロール位置
+                View view = mListView.getChildAt(0);
+                int y = view != null ? view.getTop() : 0;
+
                 mAdapter.insert(Row.newStatus(status), 0);
-                mAdapter.notifyDataSetChanged();
+
+                mListView.setSelectionFromTop(position + 1, y);
+
                 Long inReplyToStatusId = status.getInReplyToStatusId();
                 if (inReplyToStatusId > 0) {
                     new LoadTalk().execute(inReplyToStatusId);
+                } else {
+                    getDialog().findViewById(R.id.guruguru_header).setVisibility(View.GONE);
                 }
+            } else {
+                getDialog().findViewById(R.id.guruguru_header).setVisibility(View.GONE);
             }
         }
     }
@@ -212,13 +230,13 @@ public class TalkFragment extends DialogFragment {
 
         @Override
         protected void onPostExecute(ArrayList<twitter4j.Status> statuses) {
+            getDialog().findViewById(R.id.guruguru_footer).setVisibility(View.GONE);
             if (statuses == null || statuses.size() == 0) {
                 return;
             }
             for (final twitter4j.Status status : statuses) {
                 mAdapter.add(Row.newStatus(status));
             }
-            mAdapter.notifyDataSetChanged();
         }
     }
 }
