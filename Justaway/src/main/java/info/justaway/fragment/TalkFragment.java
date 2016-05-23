@@ -3,13 +3,11 @@ package info.justaway.fragment;
 import android.app.Dialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.util.LongSparseArray;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -47,6 +45,7 @@ public class TalkFragment extends DialogFragment {
     private Twitter mTwitter;
     private TwitterAdapter mAdapter;
     private ListView mListView;
+    private View mHeaderView;
     private View mFooterView;
 
     @NonNull
@@ -62,11 +61,11 @@ public class TalkFragment extends DialogFragment {
 
         mListView = (ListView) dialog.findViewById(R.id.list);
 
-        View headerView = new View(activity);
+        mHeaderView = new View(activity);
         DisplayMetrics metrics = getResources().getDisplayMetrics();
-        headerView.setLayoutParams(new AbsListView.LayoutParams(
+        mHeaderView.setLayoutParams(new AbsListView.LayoutParams(
                 AbsListView.LayoutParams.MATCH_PARENT, metrics.heightPixels));
-        mListView.addHeaderView(headerView, null, false);
+        mListView.addHeaderView(mHeaderView, null, false);
         mFooterView = new View(activity);
         mFooterView.setLayoutParams(new AbsListView.LayoutParams(
                 AbsListView.LayoutParams.MATCH_PARENT, metrics.heightPixels / 2 - 200));
@@ -76,6 +75,8 @@ public class TalkFragment extends DialogFragment {
         mAdapter = new TwitterAdapter(activity, R.layout.row_tweet);
 
         mListView.setAdapter(mAdapter);
+
+        mListView.setOnScrollListener(mOnScrollListener);
 
         // タップ操作の登録など
         mListView.setOnItemClickListener(new HeaderStatusClickListener(activity));
@@ -121,6 +122,35 @@ public class TalkFragment extends DialogFragment {
         mAdapter.removeStatus(event.getStatusId());
     }
 
+    private AbsListView.OnScrollListener mOnScrollListener = new AbsListView.OnScrollListener() {
+
+        @Override
+        public void onScrollStateChanged(AbsListView view, int scrollState) {
+            switch (scrollState) {
+                case AbsListView.OnScrollListener.SCROLL_STATE_IDLE:
+                    int f = mListView.getFirstVisiblePosition();
+                    int l = mListView.getLastVisiblePosition();
+                    int c = mAdapter.getCount();
+                    if (f > 0) {
+                        mHeaderView.setLayoutParams(new AbsListView.LayoutParams(
+                                AbsListView.LayoutParams.MATCH_PARENT, 0));
+                    }
+                    if (l <= c) {
+                        mFooterView.setLayoutParams(new AbsListView.LayoutParams(
+                                AbsListView.LayoutParams.MATCH_PARENT, 0));
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        @Override
+        public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+
+        }
+    };
+
     private class LoadTalk extends AsyncTask<Long, Void, twitter4j.Status> {
 
         public LoadTalk() {
@@ -151,6 +181,11 @@ public class TalkFragment extends DialogFragment {
                 mAdapter.insert(Row.newStatus(status), 0);
 
                 mListView.setSelectionFromTop(position + 1, y);
+
+                if (mListView.getFirstVisiblePosition() > 0) {
+                    mHeaderView.setLayoutParams(new AbsListView.LayoutParams(
+                            AbsListView.LayoutParams.MATCH_PARENT, 0));
+                }
 
                 Long inReplyToStatusId = status.getInReplyToStatusId();
                 if (inReplyToStatusId > 0) {
