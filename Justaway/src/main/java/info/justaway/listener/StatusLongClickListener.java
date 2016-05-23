@@ -23,10 +23,14 @@ public class StatusLongClickListener implements AdapterView.OnItemLongClickListe
         mActivity = (FragmentActivity) activity;
     }
 
+    public TwitterAdapter getAdapter(AdapterView<?> adapterView) {
+        return (TwitterAdapter) adapterView.getAdapter();
+    }
+
     @Override
     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
-        TwitterAdapter adapter = (TwitterAdapter) adapterView.getAdapter();
-        Row row = adapter.getItem(position);
+        TwitterAdapter twitterAdapter = getAdapter(adapterView);
+        Row row = twitterAdapter.getItem(position);
         if (row == null) {
             return false;
         }

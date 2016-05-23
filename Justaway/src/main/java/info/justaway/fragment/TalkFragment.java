@@ -3,13 +3,17 @@ package info.justaway.fragment;
 import android.app.Dialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.util.LongSparseArray;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AbsListView;
 import android.widget.ListView;
 
 import com.google.common.primitives.Longs;
@@ -24,8 +28,8 @@ import info.justaway.R;
 import info.justaway.adapter.TwitterAdapter;
 import info.justaway.event.action.StatusActionEvent;
 import info.justaway.event.model.StreamingDestroyStatusEvent;
-import info.justaway.listener.StatusClickListener;
-import info.justaway.listener.StatusLongClickListener;
+import info.justaway.listener.HeaderStatusClickListener;
+import info.justaway.listener.HeaderStatusLongClickListener;
 import info.justaway.model.Row;
 import info.justaway.model.TwitterManager;
 import twitter4j.Query;
@@ -43,6 +47,7 @@ public class TalkFragment extends DialogFragment {
     private Twitter mTwitter;
     private TwitterAdapter mAdapter;
     private ListView mListView;
+    private View mFooterView;
 
     @NonNull
     @Override
@@ -57,20 +62,32 @@ public class TalkFragment extends DialogFragment {
 
         mListView = (ListView) dialog.findViewById(R.id.list);
 
+        View headerView = new View(activity);
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        headerView.setLayoutParams(new AbsListView.LayoutParams(
+                AbsListView.LayoutParams.MATCH_PARENT, metrics.heightPixels));
+        mListView.addHeaderView(headerView, null, false);
+        mFooterView = new View(activity);
+        mFooterView.setLayoutParams(new AbsListView.LayoutParams(
+                AbsListView.LayoutParams.MATCH_PARENT, metrics.heightPixels / 2 - 200));
+        mListView.addFooterView(mFooterView, null, false);
+
         // Status(ツイート)をViewに描写するアダプター
         mAdapter = new TwitterAdapter(activity, R.layout.row_tweet);
+
         mListView.setAdapter(mAdapter);
 
         // タップ操作の登録など
-        mListView.setOnItemClickListener(new StatusClickListener(activity));
+        mListView.setOnItemClickListener(new HeaderStatusClickListener(activity));
 
-        mListView.setOnItemLongClickListener(new StatusLongClickListener(getActivity()));
+        mListView.setOnItemLongClickListener(new HeaderStatusLongClickListener(getActivity()));
 
         Status status = (Status) getArguments().getSerializable("status");
         if (status != null) {
             mTwitter = TwitterManager.getTwitter();
             mAdapter.add(Row.newStatus(status));
-            mAdapter.notifyDataSetChanged();
+            mListView.setSelectionFromTop(1, 0);
+
             if (status.getInReplyToStatusId() > 0) {
                 new LoadTalk().execute(status.getInReplyToStatusId());
             } else {
@@ -125,10 +142,10 @@ public class TalkFragment extends DialogFragment {
             if (status != null) {
 
                 // 表示している要素の位置
-                int position = mListView.getFirstVisiblePosition();
+                int position = mListView.getLastVisiblePosition();
 
                 // 縦スクロール位置
-                View view = mListView.getChildAt(0);
+                View view = mListView.getChildAt(position);
                 int y = view != null ? view.getTop() : 0;
 
                 mAdapter.insert(Row.newStatus(status), 0);
