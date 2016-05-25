@@ -249,4 +249,6 @@
     <string name="toast_create_no_retweet_success">Success turn off retweets.</string>
     <string name="toast_destroy_no_retweet_failure">Failure turn on retweets.</string>
     <string name="toast_destroy_no_retweet_success">Success turn on retweets.</string>
+    <string name="pref_title_talk_order_newest">The latest order of conversation</string>
+    <string name="pref_description_talk_order_newest">Display the conversation from newest to oldest.</string>
 </resources>

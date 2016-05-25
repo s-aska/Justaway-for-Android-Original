@@ -32,6 +32,7 @@ public class BasicSettings {
     private static boolean mUserIconRounded;
     private static boolean mDisplayThumbnail;
     private static boolean mFastScroll;
+    private static boolean mTalkOrderNewest;
     private static String mUserIconSize;
     private static int mPageCount;
 
@@ -85,6 +86,7 @@ public class BasicSettings {
         mPageCount = Integer.parseInt(preferences.getString("page_count", "200"));
         mStreamingMode = getSharedPreferences().getBoolean(STREAMING_MODE, true);
         mFastScroll = preferences.getBoolean("fast_scroll_on", true);
+        mTalkOrderNewest = preferences.getBoolean("talk_order_newest", false);
         mDisplayAccountName = DisplayAccountName.valueOf(preferences.getString("display_account_name", "screen_name").toUpperCase());
     }
 
@@ -126,6 +128,10 @@ public class BasicSettings {
 
     public static boolean getFastScrollOn() {
         return mFastScroll;
+    }
+
+    public static boolean getTalkOrderNewest() {
+        return mTalkOrderNewest;
     }
 
     public static DisplayAccountName getDisplayAccountName() {

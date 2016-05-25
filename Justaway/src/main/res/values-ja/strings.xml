@@ -247,5 +247,7 @@
     <string name="toast_create_user_list_failure_name_blank">リスト名を入力してください</string>
     <string name="pref_title_quick_post_on">クイック投稿</string>
     <string name="pref_description_quick_post_on">クイック投稿バーをタブの上に表示します</string>
+    <string name="pref_title_talk_order_newest">会話表示を最新順に</string>
+    <string name="pref_description_talk_order_newest">会話を表示時、新しいツイートを上に表示</string>
 
 </resources>

@@ -30,6 +30,7 @@ import info.justaway.listener.HeaderStatusClickListener;
 import info.justaway.listener.HeaderStatusLongClickListener;
 import info.justaway.model.Row;
 import info.justaway.model.TwitterManager;
+import info.justaway.settings.BasicSettings;
 import twitter4j.Query;
 import twitter4j.QueryResult;
 import twitter4j.Status;
@@ -62,13 +63,23 @@ public class TalkFragment extends DialogFragment {
         mListView = (ListView) dialog.findViewById(R.id.list);
 
         mHeaderView = new View(activity);
-        DisplayMetrics metrics = getResources().getDisplayMetrics();
-        mHeaderView.setLayoutParams(new AbsListView.LayoutParams(
-                AbsListView.LayoutParams.MATCH_PARENT, metrics.heightPixels));
-        mListView.addHeaderView(mHeaderView, null, false);
         mFooterView = new View(activity);
-        mFooterView.setLayoutParams(new AbsListView.LayoutParams(
-                AbsListView.LayoutParams.MATCH_PARENT, metrics.heightPixels / 2 - 200));
+
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+
+        if (BasicSettings.getTalkOrderNewest()) {
+            mHeaderView.setLayoutParams(new AbsListView.LayoutParams(
+                    AbsListView.LayoutParams.MATCH_PARENT, 100));
+            mFooterView.setLayoutParams(new AbsListView.LayoutParams(
+                    AbsListView.LayoutParams.MATCH_PARENT, metrics.heightPixels));
+        } else {
+            mHeaderView.setLayoutParams(new AbsListView.LayoutParams(
+                    AbsListView.LayoutParams.MATCH_PARENT, metrics.heightPixels));
+            mFooterView.setLayoutParams(new AbsListView.LayoutParams(
+                    AbsListView.LayoutParams.MATCH_PARENT, metrics.heightPixels / 2 - 200));
+        }
+
+        mListView.addHeaderView(mHeaderView, null, false);
         mListView.addFooterView(mFooterView, null, false);
 
         // Status(ツイート)をViewに描写するアダプター
@@ -87,7 +98,9 @@ public class TalkFragment extends DialogFragment {
         if (status != null) {
             mTwitter = TwitterManager.getTwitter();
             mAdapter.add(Row.newStatus(status));
-            mListView.setSelectionFromTop(1, 0);
+            if (!BasicSettings.getTalkOrderNewest()) {
+                mListView.setSelectionFromTop(1, 0);
+            }
 
             if (status.getInReplyToStatusId() > 0) {
                 new LoadTalk().execute(status.getInReplyToStatusId());
@@ -171,30 +184,42 @@ public class TalkFragment extends DialogFragment {
         protected void onPostExecute(twitter4j.Status status) {
             if (status != null) {
 
-                // 表示している要素の位置
-                int position = mListView.getLastVisiblePosition();
+                if (BasicSettings.getTalkOrderNewest()) {
+                    mAdapter.add(Row.newStatus(status));
+                } else {
+                    // 表示している要素の位置
+                    int position = mListView.getLastVisiblePosition();
 
-                // 縦スクロール位置
-                View view = mListView.getChildAt(position);
-                int y = view != null ? view.getTop() : 0;
+                    // 縦スクロール位置
+                    View view = mListView.getChildAt(position);
+                    int y = view != null ? view.getTop() : 0;
 
-                mAdapter.insert(Row.newStatus(status), 0);
+                    mAdapter.insert(Row.newStatus(status), 0);
 
-                mListView.setSelectionFromTop(position + 1, y);
+                    mListView.setSelectionFromTop(position + 1, y);
 
-                if (mListView.getFirstVisiblePosition() > 0) {
-                    mHeaderView.setLayoutParams(new AbsListView.LayoutParams(
-                            AbsListView.LayoutParams.MATCH_PARENT, 0));
+                    if (mListView.getFirstVisiblePosition() > 0) {
+                        mHeaderView.setLayoutParams(new AbsListView.LayoutParams(
+                                AbsListView.LayoutParams.MATCH_PARENT, 0));
+                    }
                 }
 
                 Long inReplyToStatusId = status.getInReplyToStatusId();
                 if (inReplyToStatusId > 0) {
                     new LoadTalk().execute(inReplyToStatusId);
                 } else {
-                    getDialog().findViewById(R.id.guruguru_header).setVisibility(View.GONE);
+                    if (BasicSettings.getTalkOrderNewest()) {
+                        getDialog().findViewById(R.id.guruguru_footer).setVisibility(View.GONE);
+                    } else {
+                        getDialog().findViewById(R.id.guruguru_header).setVisibility(View.GONE);
+                    }
                 }
             } else {
-                getDialog().findViewById(R.id.guruguru_header).setVisibility(View.GONE);
+                if (BasicSettings.getTalkOrderNewest()) {
+                    getDialog().findViewById(R.id.guruguru_footer).setVisibility(View.GONE);
+                } else {
+                    getDialog().findViewById(R.id.guruguru_header).setVisibility(View.GONE);
+                }
             }
         }
     }
@@ -282,12 +307,36 @@ public class TalkFragment extends DialogFragment {
 
         @Override
         protected void onPostExecute(ArrayList<twitter4j.Status> statuses) {
-            getDialog().findViewById(R.id.guruguru_footer).setVisibility(View.GONE);
+            if (BasicSettings.getTalkOrderNewest()) {
+                getDialog().findViewById(R.id.guruguru_header).setVisibility(View.GONE);
+            } else {
+                getDialog().findViewById(R.id.guruguru_footer).setVisibility(View.GONE);
+            }
             if (statuses == null || statuses.size() == 0) {
                 return;
             }
-            for (final twitter4j.Status status : statuses) {
-                mAdapter.add(Row.newStatus(status));
+            if (BasicSettings.getTalkOrderNewest()) {
+                // 表示している要素の位置
+                int position = mListView.getLastVisiblePosition();
+
+                // 縦スクロール位置
+                View view = mListView.getChildAt(position);
+                int y = view != null ? view.getTop() : 0;
+
+                for (final twitter4j.Status status : statuses) {
+                    mAdapter.insert(Row.newStatus(status), 0);
+                }
+
+                mListView.setSelectionFromTop(position + statuses.size(), y);
+
+                if (mListView.getFirstVisiblePosition() > 0) {
+                    mHeaderView.setLayoutParams(new AbsListView.LayoutParams(
+                            AbsListView.LayoutParams.MATCH_PARENT, 0));
+                }
+            } else {
+                for (final twitter4j.Status status : statuses) {
+                    mAdapter.add(Row.newStatus(status));
+                }
             }
         }
     }

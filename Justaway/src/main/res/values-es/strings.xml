@@ -244,4 +244,6 @@
     <string name="toast_create_no_retweet_success">El éxito apagar los retweets</string>
     <string name="toast_destroy_no_retweet_failure">A su vez el fracaso de retweets</string>
     <string name="toast_destroy_no_retweet_success">A su vez el éxito de retweets</string>
+    <string name="pref_title_talk_order_newest">El nuevo orden de la conversación</string>
+    <string name="pref_description_talk_order_newest">Mostrar la conversación del más reciente al más antiguo.</string>
 </resources>

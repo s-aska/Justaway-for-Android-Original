@@ -53,6 +53,12 @@
         android:negativeButtonText="@null"
         android:positiveButtonText="@null"/>
 
+    <CheckBoxPreference
+        android:key="talk_order_newest"
+        android:title="@string/pref_title_talk_order_newest"
+        android:summary="@string/pref_description_talk_order_newest"
+        android:defaultValue="false"/>
+
     <PreferenceScreen
         android:key="mute"
         android:title="@string/pref_title_notification">
