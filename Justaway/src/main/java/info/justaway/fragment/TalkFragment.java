@@ -60,6 +60,11 @@ public class TalkFragment extends DialogFragment {
                 WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
         dialog.setContentView(R.layout.list_talk);
 
+        final Status status = (Status) getArguments().getSerializable("status");
+        if (status == null) {
+            return dialog;
+        }
+
         mListView = (ListView) dialog.findViewById(R.id.list);
 
         mHeaderView = new View(activity);
@@ -67,16 +72,18 @@ public class TalkFragment extends DialogFragment {
 
         DisplayMetrics metrics = getResources().getDisplayMetrics();
 
+        int inReplyToAreaPixels = status.getInReplyToStatusId() > 0 ? metrics.heightPixels : 0;
+
         if (BasicSettings.getTalkOrderNewest()) {
             mHeaderView.setLayoutParams(new AbsListView.LayoutParams(
                     AbsListView.LayoutParams.MATCH_PARENT, 100));
             mFooterView.setLayoutParams(new AbsListView.LayoutParams(
-                    AbsListView.LayoutParams.MATCH_PARENT, metrics.heightPixels));
+                    AbsListView.LayoutParams.MATCH_PARENT, inReplyToAreaPixels));
         } else {
             mHeaderView.setLayoutParams(new AbsListView.LayoutParams(
-                    AbsListView.LayoutParams.MATCH_PARENT, metrics.heightPixels));
+                    AbsListView.LayoutParams.MATCH_PARENT, inReplyToAreaPixels));
             mFooterView.setLayoutParams(new AbsListView.LayoutParams(
-                    AbsListView.LayoutParams.MATCH_PARENT, metrics.heightPixels / 2 - 200));
+                    AbsListView.LayoutParams.MATCH_PARENT, 100));
         }
 
         mListView.addHeaderView(mHeaderView, null, false);
@@ -94,21 +101,23 @@ public class TalkFragment extends DialogFragment {
 
         mListView.setOnItemLongClickListener(new HeaderStatusLongClickListener(getActivity()));
 
-        Status status = (Status) getArguments().getSerializable("status");
-        if (status != null) {
-            mTwitter = TwitterManager.getTwitter();
-            mAdapter.add(Row.newStatus(status));
-            if (!BasicSettings.getTalkOrderNewest()) {
-                mListView.setSelectionFromTop(1, 0);
-            }
+        mTwitter = TwitterManager.getTwitter();
+        mAdapter.add(Row.newStatus(status));
 
-            if (status.getInReplyToStatusId() > 0) {
-                new LoadTalk().execute(status.getInReplyToStatusId());
+        if (!BasicSettings.getTalkOrderNewest()) {
+            mListView.setSelectionFromTop(1, 0);
+        }
+
+        if (status.getInReplyToStatusId() > 0) {
+            new LoadTalk().execute(status.getInReplyToStatusId());
+        } else {
+            if (BasicSettings.getTalkOrderNewest()) {
+                dialog.findViewById(R.id.guruguru_footer).setVisibility(View.GONE);
             } else {
                 dialog.findViewById(R.id.guruguru_header).setVisibility(View.GONE);
             }
-            new LoadTalkReply().execute(status);
         }
+        new LoadTalkReply().execute(status);
 
         return dialog;
     }
@@ -182,6 +191,10 @@ public class TalkFragment extends DialogFragment {
 
         @Override
         protected void onPostExecute(twitter4j.Status status) {
+            Dialog dialog = getDialog();
+            if (dialog == null) {
+                return;
+            }
             if (status != null) {
 
                 if (BasicSettings.getTalkOrderNewest()) {
@@ -209,16 +222,16 @@ public class TalkFragment extends DialogFragment {
                     new LoadTalk().execute(inReplyToStatusId);
                 } else {
                     if (BasicSettings.getTalkOrderNewest()) {
-                        getDialog().findViewById(R.id.guruguru_footer).setVisibility(View.GONE);
+                        dialog.findViewById(R.id.guruguru_footer).setVisibility(View.GONE);
                     } else {
-                        getDialog().findViewById(R.id.guruguru_header).setVisibility(View.GONE);
+                        dialog.findViewById(R.id.guruguru_header).setVisibility(View.GONE);
                     }
                 }
             } else {
                 if (BasicSettings.getTalkOrderNewest()) {
-                    getDialog().findViewById(R.id.guruguru_footer).setVisibility(View.GONE);
+                    dialog.findViewById(R.id.guruguru_footer).setVisibility(View.GONE);
                 } else {
-                    getDialog().findViewById(R.id.guruguru_header).setVisibility(View.GONE);
+                    dialog.findViewById(R.id.guruguru_header).setVisibility(View.GONE);
                 }
             }
         }
@@ -307,10 +320,14 @@ public class TalkFragment extends DialogFragment {
 
         @Override
         protected void onPostExecute(ArrayList<twitter4j.Status> statuses) {
+            Dialog dialog = getDialog();
+            if (dialog == null) {
+                return;
+            }
             if (BasicSettings.getTalkOrderNewest()) {
-                getDialog().findViewById(R.id.guruguru_header).setVisibility(View.GONE);
+                dialog.findViewById(R.id.guruguru_header).setVisibility(View.GONE);
             } else {
-                getDialog().findViewById(R.id.guruguru_footer).setVisibility(View.GONE);
+                dialog.findViewById(R.id.guruguru_footer).setVisibility(View.GONE);
             }
             if (statuses == null || statuses.size() == 0) {
                 return;
