@@ -335,13 +335,16 @@ public abstract class BaseFragment extends Fragment implements OnRefreshListener
      * @param event ツイート
      */
     public void onEventMainThread(StreamingDestroyStatusEvent event) {
-        int removePosition = mAdapter.removeStatus(event.getStatusId());
-        if (removePosition >= 0) {
-            int visiblePosition = mListView.getFirstVisiblePosition();
-            if (visiblePosition > removePosition) {
-                View view = mListView.getChildAt(0);
-                int y = view != null ? view.getTop() : 0;
-                mListView.setSelectionFromTop(visiblePosition - 1, y);
+        ArrayList<Integer> removePositions = mAdapter.removeStatus(event.getStatusId());
+        for (Integer removePosition : removePositions) {
+            if (removePosition >= 0) {
+                int visiblePosition = mListView.getFirstVisiblePosition();
+                if (visiblePosition > removePosition) {
+                    View view = mListView.getChildAt(0);
+                    int y = view != null ? view.getTop() : 0;
+                    mListView.setSelectionFromTop(visiblePosition - 1, y);
+                    break;
+                }
             }
         }
     }

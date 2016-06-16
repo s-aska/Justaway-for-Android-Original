@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.util.LongSparseArray;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,8 +22,10 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import butterknife.ButterKnife;
+import java.util.ArrayList;
+
 import butterknife.Bind;
+import butterknife.ButterKnife;
 import de.greenrobot.event.EventBus;
 import info.justaway.BuildConfig;
 import info.justaway.ProfileActivity;
@@ -184,17 +187,27 @@ public class TwitterAdapter extends ArrayAdapter<Row> {
         }
     }
 
-    public int removeStatus(long statusId) {
+    public ArrayList<Integer> removeStatus(long statusId) {
         int position = 0;
+        ArrayList<Integer> positions = new ArrayList<>();
+        ArrayList<Row> rows = new ArrayList<>();
         for (int i = 0; i < getCount(); i++) {
             Row row = getItem(i);
-            if (!row.isDirectMessage() && row.getStatus().getId() == statusId) {
-                remove(row);
-                return position;
+            if (row.isDirectMessage()) {
+                continue;
+            }
+            twitter4j.Status status = row.getStatus();
+            twitter4j.Status retweet = status.getRetweetedStatus();
+            if (row.getStatus().getId() == statusId || (retweet != null && retweet.getId() == statusId)) {
+                rows.add(row);
+                positions.add(position);
             }
             position++;
         }
-        return -1;
+        for (Row row : rows) {
+            remove(row);
+        }
+        return positions;
     }
 
     public void removeDirectMessage(long directMessageId) {

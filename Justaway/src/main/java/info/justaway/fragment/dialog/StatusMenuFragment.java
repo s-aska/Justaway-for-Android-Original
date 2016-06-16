@@ -231,44 +231,21 @@ public class StatusMenuFragment extends DialogFragment {
         if (status.getUser().getId() == AccessTokenManager.getUserId()) {
 
             /**
-             * 自分のRT
+             * ツイ消し
              */
-            if (retweet != null) {
-
-                /**
-                 * RT解除
-                 */
-                adapter.add(new Menu(R.string.context_menu_destroy_retweet, new Runnable() {
-                    @Override
-                    public void run() {
-                        ActionUtil.doDestroyRetweet(status);
-                        dismiss();
-                    }
-                }));
-            }
-
-            /**
-             * 自分のツイート
-             */
-            else {
-
-                /**
-                 * ツイ消し
-                 */
-                adapter.add(new Menu(R.string.context_menu_destroy_status, new Runnable() {
-                    @Override
-                    public void run() {
-                        ActionUtil.doDestroyStatus(status.getId());
-                        dismiss();
-                    }
-                }));
-            }
+            adapter.add(new Menu(R.string.context_menu_destroy_status, new Runnable() {
+                @Override
+                public void run() {
+                    ActionUtil.doDestroyStatus(status.getId());
+                    dismiss();
+                }
+            }));
         }
 
         /**
          * 自分がRTした事があるツイート
          */
-        else if (FavRetweetManager.getRtId(status) != null) {
+        if (FavRetweetManager.getRtId(status) != null) {
 
             /**
              * RT解除

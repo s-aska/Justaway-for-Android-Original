@@ -37,12 +37,10 @@ public class ActionUtil {
     }
 
     public static void doDestroyRetweet(twitter4j.Status status) {
-        if (status.getUser().getId() == AccessTokenManager.getUserId()) {
+        twitter4j.Status retweet = status.getRetweetedStatus();
+        if (status.getUser().getId() == AccessTokenManager.getUserId() && retweet != null) {
             // 自分がRTしたStatus
-            twitter4j.Status retweet = status.getRetweetedStatus();
-            if (retweet != null) {
-                new UnRetweetTask(retweet.getId(), status.getId()).execute();
-            }
+            new UnRetweetTask(retweet.getId(), status.getId()).execute();
         } else {
             // 他人のStatusで、それを自分がRTしている
 
@@ -55,7 +53,6 @@ public class ActionUtil {
                 // そのStatusそのものをRTしている
                 retweetedStatusId = status.getId();
             } else {
-                twitter4j.Status retweet = status.getRetweetedStatus();
                 if (retweet != null) {
                     statusId = FavRetweetManager.getRtId(retweet.getId());
                     if (statusId != null && statusId > 0) {

@@ -3,6 +3,8 @@ package info.justaway.fragment.main.tab;
 import android.os.AsyncTask;
 import android.view.View;
 
+import java.util.ArrayList;
+
 import info.justaway.event.model.StreamingCreateFavoriteEvent;
 import info.justaway.event.model.StreamingUnFavoriteEvent;
 import info.justaway.model.AccessTokenManager;
@@ -128,13 +130,16 @@ public class InteractionsFragment extends BaseFragment {
      * @param event ツイート
      */
     public void onEventMainThread(StreamingUnFavoriteEvent event) {
-        int removePosition = mAdapter.removeStatus(event.getStatus().getId());
-        if (removePosition >= 0) {
-            int visiblePosition = mListView.getFirstVisiblePosition();
-            if (visiblePosition > removePosition) {
-                View view = mListView.getChildAt(0);
-                int y = view != null ? view.getTop() : 0;
-                mListView.setSelectionFromTop(visiblePosition - 1, y);
+        ArrayList<Integer> removePositions = mAdapter.removeStatus(event.getStatus().getId());
+        for (Integer removePosition : removePositions) {
+            if (removePosition >= 0) {
+                int visiblePosition = mListView.getFirstVisiblePosition();
+                if (visiblePosition > removePosition) {
+                    View view = mListView.getChildAt(0);
+                    int y = view != null ? view.getTop() : 0;
+                    mListView.setSelectionFromTop(visiblePosition - 1, y);
+                    break;
+                }
             }
         }
     }
