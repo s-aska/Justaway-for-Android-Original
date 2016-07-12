@@ -226,7 +226,6 @@ public class ScaleImageActivity extends FragmentActivity {
                 } else {
                     MessageUtil.showToast(R.string.toast_save_image_failure);
                 }
-                finish();
             }
         };
         task.execute();
