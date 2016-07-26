@@ -53,6 +53,7 @@
     <string name="context_menu_reply_direct_message">Responder mensaje</string>
     <string name="context_menu_retweet">Retweet</string>
     <string name="context_menu_share_url">Compartir</string>
+    <string name="context_menu_open_other_apps">Abrir en otras aplicaciones</string>
     <string name="context_menu_show_around">Ver otros tweets</string>
     <string name="context_menu_show_retweeters">Ver quienes hicieron retweet</string>
     <string name="context_menu_talk">Ver conversación</string>

@@ -47,6 +47,7 @@
     <string name="context_menu_destroy_status">Delete this Tweet</string>
     <string name="context_menu_favorite_and_retweet">Favorite and Retweet</string>
     <string name="context_menu_mute">Mute %s</string>
+    <string name="context_menu_open_other_apps">Open in other apps</string>
     <string name="context_menu_photo_camera">Taking Photos</string>
     <string name="context_menu_photo_gallery">Attach an image</string>
     <string name="context_menu_qt">Quote</string>

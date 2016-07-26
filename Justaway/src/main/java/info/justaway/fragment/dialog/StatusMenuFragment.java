@@ -503,6 +503,25 @@ public class StatusMenuFragment extends DialogFragment {
         }
 
         /**
+         * ツイートを開く
+         */
+        adapter.add(new Menu(R.string.context_menu_open_other_apps, new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse(
+                            "https://twitter.com/"
+                                    + source.getUser().getScreenName()
+                                    + "/status/"
+                                    + String.valueOf(source.getId())
+                        )
+                );
+                mActivity.startActivity(intent);
+            }
+        }));
+
+        /**
          * viaをミュート
          */
         adapter.add(new Menu(String.format(mActivity.getString(R.string.context_menu_mute), StatusUtil.getClientName(source.getSource())), new Runnable() {
