@@ -21,7 +21,7 @@
     <string name="button_save">Save</string>
     <string name="button_unfollow">Unfollow</string>
     <string name="button_yes">Yes</string>
-    <string name="close" translatable="false">close</string>
+    <string name="close">close</string>
     <string name="confirm_create_block">Do you want to block?</string>
     <string name="confirm_create_streaming">Do you want to connect to the streaming?</string>
     <string name="confirm_destroy_block">Do you want to unblock?</string>

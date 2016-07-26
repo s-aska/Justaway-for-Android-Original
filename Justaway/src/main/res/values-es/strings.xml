@@ -225,6 +225,7 @@
     <string name="toast_create_user_list_failure_name_blank">El nombre de la listas no puede estar vacío</string>
     <string name="pref_title_quick_post_on">Post rápido</string>
     <string name="pref_description_quick_post_on">Mostrar barra de post rápido</string>
+    <string name="menu_destroy_block">Desbloquear</string>
     <string name="confirm_create_official_mute">¿Quieres silenciar?</string>
     <string name="confirm_destroy_official_mute">¿Quieres activar el sonido?</string>
     <string name="confirm_create_no_retweet">¿Quieres apagar los retweets?</string>
