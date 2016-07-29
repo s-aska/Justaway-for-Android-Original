@@ -1,6 +1,8 @@
 package info.justaway.adapter;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,15 +14,17 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import info.justaway.MainActivity;
 import info.justaway.R;
 import info.justaway.model.TwitterManager;
+import info.justaway.util.MessageUtil;
 import twitter4j.ResponseList;
 import twitter4j.SavedSearch;
 
 public class SearchAdapter extends ArrayAdapter<String> implements Filterable {
 
-    private ArrayList<String> mStrings = new ArrayList<String>();
-    private ArrayList<String> mSavedSearches = new ArrayList<String>();
+    private ArrayList<String> mStrings = new ArrayList<>();
+    private ArrayList<twitter4j.SavedSearch> mSavedSearches = new ArrayList<>();
     private String mSearchWord;
     private LayoutInflater mInflater;
     private int mLayout;
@@ -65,7 +69,50 @@ public class SearchAdapter extends ArrayAdapter<String> implements Filterable {
 
         assert view != null;
 
-        ((TextView) view.findViewById(R.id.word)).setText(getItem(position));
+        final String word = getItem(position);
+
+        ((TextView) view.findViewById(R.id.word)).setText(word);
+
+        if (mSavedMode) {
+            final twitter4j.SavedSearch savedSearch = mSavedSearches.get(position);
+            view.findViewById(R.id.trash).setVisibility(View.VISIBLE);
+            view.findViewById(R.id.trash).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    MainActivity activity = (MainActivity) mContext;
+                    activity.cancelSearch();
+                    new AlertDialog.Builder(activity)
+                            .setMessage(String.format(mContext.getString(R.string.confirm_destroy_saved_search), word))
+                            .setPositiveButton(
+                                    R.string.button_yes,
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            new DestroySavedSearchesTask().execute(savedSearch.getId());
+                                            mSavedSearches.remove(savedSearch);
+                                            mStrings.remove(savedSearch.getQuery());
+                                            if (mSavedSearches.size() > 0) {
+                                                notifyDataSetChanged();
+                                            } else {
+                                                notifyDataSetInvalidated();
+                                            }
+                                        }
+                                    }
+                            )
+                            .setNegativeButton(
+                                    R.string.button_no,
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                        }
+                                    }
+                            )
+                            .show();
+                }
+            });
+        } else {
+            view.findViewById(R.id.trash).setVisibility(View.GONE);
+        }
 
         return view;
     }
@@ -78,10 +125,13 @@ public class SearchAdapter extends ArrayAdapter<String> implements Filterable {
                 FilterResults filterResults = new FilterResults();
                 mSavedMode = constraint == null || constraint.length() == 0;
                 if (mSavedMode) {
-                    mStrings = mSavedSearches;
+                    mStrings = new ArrayList<>();
+                    for (twitter4j.SavedSearch savedSearche : mSavedSearches) {
+                        mStrings.add(savedSearche.getQuery());
+                    }
                 } else {
                     mSearchWord = constraint.toString();
-                    mStrings = new ArrayList<String>();
+                    mStrings = new ArrayList<>();
                     mStrings.add(mSearchWord + mContext.getString(R.string.label_search_tweet));
                     mStrings.add(mSearchWord + mContext.getString(R.string.label_search_user));
                     mStrings.add("@" + mSearchWord + mContext.getString(R.string.label_display_profile));
@@ -112,6 +162,10 @@ public class SearchAdapter extends ArrayAdapter<String> implements Filterable {
         };
     }
 
+    public void reload() {
+        new SavedSearchesTask().execute();
+    }
+
     public class SavedSearchesTask extends AsyncTask<Void, Void, ResponseList<SavedSearch>> {
         @Override
         protected ResponseList<SavedSearch> doInBackground(Void... params) {
@@ -128,8 +182,29 @@ public class SearchAdapter extends ArrayAdapter<String> implements Filterable {
             if (savedSearches == null) {
                 return;
             }
+            mSavedSearches.clear();
             for (SavedSearch savedSearch : savedSearches) {
-                mSavedSearches.add(0, savedSearch.getQuery());
+                mSavedSearches.add(0, savedSearch);
+            }
+        }
+    }
+
+    public class DestroySavedSearchesTask extends AsyncTask<Long, Void, Boolean> {
+        @Override
+        protected Boolean doInBackground(Long... params) {
+            try {
+                TwitterManager.getTwitter().destroySavedSearch(params[0]);
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            if (success) {
+                MessageUtil.showToast(R.string.toast_destroy_success);
             }
         }
     }

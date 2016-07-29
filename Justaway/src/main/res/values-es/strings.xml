@@ -24,6 +24,7 @@
     <string name="confirm_create_streaming">¿Quieres conectarte a la transmisión?</string>
     <string name="confirm_destroy_block">¿Quieres desbloquear a este usuario?</string>
     <string name="confirm_destroy_mute">¿Quieres dejar de silenciar a [%s]?</string>
+    <string name="confirm_destroy_saved_search">¿Quieres eliminar a [%s]?</string>
     <string name="confirm_destroy_retweet">¿Quieres deshacer el retweet?</string>
     <string name="confirm_destroy_streaming">¿Quieres desconectar la transmisión?</string>
     <string name="confirm_destroy_user_list">¿Quieres eliminar esta lista?</string>

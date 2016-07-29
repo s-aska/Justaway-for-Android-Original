@@ -26,6 +26,7 @@
     <string name="confirm_create_streaming">Do you want to connect to the streaming?</string>
     <string name="confirm_destroy_block">Do you want to unblock?</string>
     <string name="confirm_destroy_mute">Do you want to undo mute [%s]?</string>
+    <string name="confirm_destroy_saved_search">Do you want to delete [%s]?</string>
     <string name="confirm_destroy_retweet">Do you want to undo retweet?</string>
     <string name="confirm_destroy_streaming">Do you want to disconnect to the streaming?</string>
     <string name="confirm_destroy_user_list">Do you want to delete list?</string>

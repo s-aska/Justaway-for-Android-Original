@@ -73,6 +73,7 @@ import info.justaway.util.TwitterUtil;
 import info.justaway.widget.AutoCompleteEditText;
 import info.justaway.widget.ClearEditText;
 import info.justaway.widget.FontelloButton;
+import twitter4j.SavedSearch;
 import twitter4j.Status;
 import twitter4j.StatusUpdate;
 import twitter4j.TwitterException;
@@ -276,6 +277,8 @@ public class MainActivity extends FragmentActivity {
             case REQUEST_SEARCH:
                 if (resultCode == RESULT_OK) {
                     setupTab();
+                } else if (resultCode == SearchActivity.RESULT_CREATE_SAVED_SEARCH) {
+                    mSearchAdapter.reload();
                 }
                 cancelSearch();
                 break;
@@ -689,7 +692,7 @@ public class MainActivity extends FragmentActivity {
         KeyboardUtil.showKeyboard(mActionBarHolder.searchText);
     }
 
-    private void cancelSearch() {
+    public void cancelSearch() {
         mActionBarHolder.searchText.setText("");
         KeyboardUtil.hideKeyboard(mActionBarHolder.searchText);
         mActionBarHolder.searchLayout.setVisibility(View.GONE);

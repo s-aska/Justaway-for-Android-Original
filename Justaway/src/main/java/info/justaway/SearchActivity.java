@@ -53,6 +53,7 @@ public class SearchActivity extends FragmentActivity implements LoaderManager.Lo
 
     private TwitterAdapter mAdapter;
     private Query mNextQuery;
+    public static int RESULT_CREATE_SAVED_SEARCH = 100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -283,6 +284,7 @@ public class SearchActivity extends FragmentActivity implements LoaderManager.Lo
             if (savedSearch == null) {
                 return;
             }
+            setResult(RESULT_CREATE_SAVED_SEARCH);
             MessageUtil.showToast(getString(R.string.toast_save_success));
         }
     }
