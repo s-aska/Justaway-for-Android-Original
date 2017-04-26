@@ -82,10 +82,6 @@ android {
     packagingOptions {
         exclude 'META-INF/LICENSE.txt'
     }
-
-    dexOptions {
-        incremental true
-    }
 }
 
 if (project.hasProperty('storeFile')) {
