@@ -3,9 +3,9 @@ apply plugin: 'com.neenbedankt.android-apt'
 
 dependencies {
     //noinspection GradleDynamicVersion
-    compile "com.android.support:appcompat-v7:23.4.0"
-    compile "com.google.code.gson:gson:2.4"
-    compile "com.google.guava:guava:19.0"
+    compile "com.android.support:appcompat-v7:25.3.0"
+    compile "com.google.code.gson:gson:2.7"
+    compile "com.google.guava:guava:20.0"
     compile "de.greenrobot:eventbus:2.2.0"
 
     compile "org.twitter4j:twitter4j-core:${twitter4jVersion}"
@@ -29,7 +29,7 @@ android {
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 23
+        targetSdkVersion 25
 
         versionCode 100
         versionName '1.0.100'
