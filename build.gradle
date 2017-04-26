@@ -5,7 +5,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.1.0'
+        classpath 'com.android.tools.build:gradle:2.2.3'
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.6'
     }
 }
@@ -40,7 +40,7 @@ project.ext {
     // CIサーバなどでは -PdisablePreDex をつける。 preDexが省略されてビルドが速くなる
     preDexLibs = !project.hasProperty('disablePreDex')
 
-    twitter4jVersion = "4.0.4"
+    twitter4jVersion = "4.0.6"
     butterKnifeVersion = '7.0.1'
     viewpagerIndicatorVersion = '2.4.1@aar'
 }

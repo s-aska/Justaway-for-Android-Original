@@ -29,10 +29,10 @@ android {
 
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 23
+        targetSdkVersion 25
 
-        versionCode 100
-        versionName '1.0.100'
+        versionCode 101
+        versionName '1.0.101'
         applicationId "info.justaway"
     }
 

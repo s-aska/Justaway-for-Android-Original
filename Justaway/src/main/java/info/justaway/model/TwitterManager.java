@@ -82,10 +82,13 @@ public class TwitterManager {
     }
 
     public static Twitter getTwitterInstance() {
-
-        TwitterFactory factory = new TwitterFactory();
+        ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+        twitter4j.conf.Configuration conf = configurationBuilder.setOAuthConsumerKey(getConsumerKey())
+                .setOAuthConsumerSecret(getConsumerSecret())
+                .setTweetModeExtended(true)
+                .build();
+        TwitterFactory factory = new TwitterFactory(conf);
         Twitter twitter = factory.getInstance();
-        twitter.setOAuthConsumer(getConsumerKey(), getConsumerSecret());
 
         return twitter;
     }
@@ -97,8 +100,11 @@ public class TwitterManager {
         }
         ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
         twitter4j.conf.Configuration conf = configurationBuilder.setOAuthConsumerKey(getConsumerKey())
-                .setOAuthConsumerSecret(getConsumerSecret()).setOAuthAccessToken(token.getToken())
-                .setOAuthAccessTokenSecret(token.getTokenSecret()).build();
+                .setOAuthConsumerSecret(getConsumerSecret())
+                .setOAuthAccessToken(token.getToken())
+                .setOAuthAccessTokenSecret(token.getTokenSecret())
+                .setTweetModeExtended(true)
+                .build();
         return new TwitterStreamFactory(conf).getInstance();
     }
 
