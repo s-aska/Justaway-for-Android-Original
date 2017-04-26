@@ -3,7 +3,7 @@ apply plugin: 'com.neenbedankt.android-apt'
 
 dependencies {
     //noinspection GradleDynamicVersion
-    compile "com.android.support:appcompat-v7:25.3.0"
+    compile "com.android.support:appcompat-v7:25.3.1"
     compile "com.google.code.gson:gson:2.7"
     compile "com.google.guava:guava:20.0"
     compile "de.greenrobot:eventbus:2.2.0"

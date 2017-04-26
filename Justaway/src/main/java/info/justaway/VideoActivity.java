@@ -131,6 +131,17 @@ public class VideoActivity extends FragmentActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        finish();
+    }
+
+    @Override
     protected void onDestroy() {
         if (musicWasPlaying) {
             Intent i = new Intent("com.android.music.musicservicecommand");
